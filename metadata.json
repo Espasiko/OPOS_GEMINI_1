@@ -1,0 +1,5 @@
+{
+  "name": "OpositaIA: Social Security Exam Assistant",
+  "description": "An AI-powered web application to help users study for Spanish Social Security civil service exams. It features an AI chatbot for explanations, a high-quality practical case generator using Gemini's thinking mode, and a search tool with Google Search grounding for up-to-date legal information.",
+  "requestFramePermissions": []
+}
