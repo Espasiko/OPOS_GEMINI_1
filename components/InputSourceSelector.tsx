@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { UploadIcon } from './icons/UploadIcon';
-import { LinkIcon } from './icons/LinkIcon';
 import { SparkIcon } from './icons/SparkIcon';
+import { LinkIcon } from './icons/LinkIcon';
 
 declare const pdfjsLib: any;
 
@@ -39,7 +39,7 @@ export async function extractTextFromFile(file: File): Promise<string> {
 
 
 interface InputSourceSelectorProps {
-    onTextSubmit: (source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url'; content: string }) => void;
+    onTextSubmit: (source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url', content: string }) => void;
     isLoading: boolean;
     error: string | null;
     initialText?: string;
@@ -50,8 +50,8 @@ interface InputSourceSelectorProps {
 const InputSourceSelector: React.FC<InputSourceSelectorProps> = ({ onTextSubmit, isLoading, error, initialText = '', showTextField = true, textAreaRows = 15 }) => {
     const [activeTab, setActiveTab] = useState(showTextField ? 'text' : 'file');
     const [textValue, setTextValue] = useState(initialText);
-    const [urlValue, setUrlValue] = useState('');
     const [fileValue, setFileValue] = useState<File | null>(null);
+    const [urlValue, setUrlValue] = useState('');
     const [fileName, setFileName] = useState('');
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +72,10 @@ const InputSourceSelector: React.FC<InputSourceSelectorProps> = ({ onTextSubmit,
         }
     }
 
-    const isSubmitDisabled = isLoading || (activeTab === 'text' && !textValue.trim()) || (activeTab === 'file' && !fileValue) || (activeTab === 'url' && !urlValue.trim());
+    const isSubmitDisabled = isLoading || 
+        (activeTab === 'text' && !textValue.trim()) || 
+        (activeTab === 'file' && !fileValue) ||
+        (activeTab === 'url' && !urlValue.trim());
 
     return (
         <div className="w-full bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 p-1">
@@ -103,18 +106,21 @@ const InputSourceSelector: React.FC<InputSourceSelectorProps> = ({ onTextSubmit,
                         </label>
                     </div>
                 )}
-                 {activeTab === 'url' && (
-                    <div className="relative">
-                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"/>
+                {activeTab === 'url' && (
+                     <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                           <LinkIcon className="w-5 h-5 text-slate-400"/>
+                        </span>
                         <input
                             type="url"
                             value={urlValue}
                             onChange={(e) => setUrlValue(e.target.value)}
-                            placeholder="https://www.boe.es/..."
+                            placeholder="https://www.boe.es/eli/es/lo/..."
                             className="w-full p-2 pl-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
                         />
-                    </div>
+                     </div>
                 )}
+
 
                 {fileName && activeTab === 'file' && (
                     <div className="mt-2 text-sm text-center text-slate-600 dark:text-slate-300">Archivo seleccionado: <strong>{fileName}</strong></div>

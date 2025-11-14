@@ -133,7 +133,7 @@ const ChatView: React.FC = () => {
         }
     }, [userInput, isLoading, activeConvId, conversations]);
     
-    const handleDataSourceSubmit = async (source: { type: 'file'; content: File } | { type: 'url'; content: string }) => {
+    const handleDataSourceSubmit = async (source: { type: 'file'; content: File } | { type: 'url', content: string }) => {
         setIsLoading(true);
         setInputError(null);
         try {
@@ -142,9 +142,9 @@ const ChatView: React.FC = () => {
             if (source.type === 'file') {
                 textContent = await extractTextFromFile(source.content);
                 contextMessage = `Analiza el siguiente texto del documento "${source.content.name}" y responde a mis preguntas sobre él:\n\n---\n${textContent}`;
-            } else {
+            } else if (source.type === 'url') {
                 textContent = await getTextFromUrl(source.content);
-                contextMessage = `He obtenido el siguiente contenido de la URL ${source.content}. Analízalo y responde a mis preguntas:\n\n---\n${textContent}`;
+                contextMessage = `Analiza el siguiente texto de la URL "${source.content}" y responde a mis preguntas sobre él:\n\n---\n${textContent}`;
             }
             // This will trigger a message send with the context.
              handleSendMessage({ preventDefault: () => {} } as React.FormEvent, contextMessage);

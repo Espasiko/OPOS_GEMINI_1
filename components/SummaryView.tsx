@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateSummary, getTextFromUrl } from '../services/geminiService';
 import { SummaryIcon } from './icons/SummaryIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
 
 interface SummaryViewProps {
-    savedSummary: string;
-    setSavedSummary: (summary: string) => void;
+    savedState: { text: string, summary: string };
+    setSavedState: (state: { text: string, summary: string }) => void;
 }
 
-const SummaryView: React.FC<SummaryViewProps> = ({ savedSummary, setSavedSummary }) => {
-    // FIX: Use local state for the input text to avoid storing large data in localStorage.
-    const [text, setText] = useState('');
-    const [summary, setSummary] = useState(savedSummary);
+const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) => {
+    const [text, setText] = useState(savedState.text);
+    const [summary, setSummary] = useState(savedState.summary);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Persist both input text and summary result.
+        // A potential improvement could be to not save extremely large texts to avoid localStorage quota issues.
+        setSavedState({ text, summary });
+    }, [text, summary, setSavedState]);
 
     const handleGenerate = async (sourceText: string) => {
         if (!sourceText.trim()) return;
@@ -23,8 +28,6 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedSummary, setSavedSummary
         try {
             const result = await generateSummary(sourceText);
             setSummary(result);
-            // FIX: Persist only the summary result, not the input text.
-            setSavedSummary(result);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -32,7 +35,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedSummary, setSavedSummary
         }
     };
     
-    const handleDataSourceSubmit = async (source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url'; content: string }) => {
+    const handleDataSourceSubmit = async (source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url', content: string }) => {
         setIsLoading(true);
         setError(null);
         let sourceText = '';

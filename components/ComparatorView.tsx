@@ -37,7 +37,7 @@ const ComparatorView: React.FC<ComparatorViewProps> = ({ savedComparison, setSav
     
     const handleDataSourceSubmit = async (
         target: 'A' | 'B', 
-        source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url'; content: string }
+        source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url', content: string }
     ) => {
         setIsLoading(true); 
         const setErrorState = target === 'A' ? setErrorA : setErrorB;

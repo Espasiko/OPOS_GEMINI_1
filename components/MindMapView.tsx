@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { generateMindMap } from '../services/geminiService';
 import { MindMapNode } from '../types';
 import { SparkIcon } from './icons/SparkIcon';
@@ -10,42 +10,45 @@ interface MindMapViewProps {
     setSavedState: React.Dispatch<React.SetStateAction<{ topic: string; map: MindMapNode | null }>>;
 }
 
-const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) => {
-    // The library is loaded from CDN, so we access it from the window object inside the component
-    // to ensure the script has loaded before we try to access it. This prevents a race condition.
-    const ForceGraph2D = (window as any).ForceGraph2D?.default;
+// Recursive component to render the mind map nodes as a hierarchical HTML list
+const RenderNode: React.FC<{ node: MindMapNode; onNodeUpdate: (id: string, newText: string) => void }> = ({ node, onNodeUpdate }) => {
+    
+    const handleDoubleClick = () => {
+        const newText = prompt("Edita el texto del nodo:", node.text);
+        if (newText !== null && newText.trim() !== '') {
+            onNodeUpdate(node.id, newText);
+        }
+    };
+    
+    return (
+        <li className="relative pl-8 before:absolute before:left-0 before:top-4 before:w-6 before:h-px before:bg-slate-400 dark:before:bg-slate-600 after:absolute after:left-0 after:top-0 after:bottom-0 after:w-px after:bg-slate-400 dark:after:bg-slate-600 last:after:h-4">
+            <div 
+                onDoubleClick={handleDoubleClick} 
+                className="inline-block px-3 py-1.5 bg-white dark:bg-slate-800 rounded-md shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+            >
+                {node.text}
+            </div>
+            {node.children && node.children.length > 0 && (
+                <ul className="pt-4">
+                    {node.children.map(child => <RenderNode key={child.id} node={child} onNodeUpdate={onNodeUpdate} />)}
+                </ul>
+            )}
+        </li>
+    );
+};
 
+
+const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) => {
     const [topic, setTopic] = useState(savedState.topic);
     const [mindMap, setMindMap] = useState<MindMapNode | null>(savedState.map);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    // FIX: The error "Expected 1 arguments, but got 0" likely refers to this useRef call.
-    // Providing an explicit `null` initial value resolves the issue.
-    const fgRef = useRef<any>(null);
     const graphContainerRef = useRef<HTMLDivElement>(null);
 
      useEffect(() => {
         setSavedState({ topic, map: mindMap });
     }, [topic, mindMap, setSavedState]);
 
-    const graphData = useMemo(() => {
-        if (!mindMap) return { nodes: [], links: [] };
-    
-        const nodes: any[] = [];
-        const links: any[] = [];
-    
-        const traverse = (node: MindMapNode, parent: MindMapNode | null) => {
-          nodes.push({ id: node.id, name: node.text, val: parent ? 1 : 10 }); // Root node is bigger
-          if (parent) {
-            links.push({ source: parent.id, target: node.id });
-          }
-          node.children.forEach(child => traverse(child, node));
-        };
-    
-        traverse(mindMap, null);
-        return { nodes, links };
-      }, [mindMap]);
-    
     const handleGenerate = async () => {
         if (!topic.trim()) return;
         setIsLoading(true);
@@ -60,41 +63,18 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
             setIsLoading(false);
         }
     };
-    
-    const handleNodeDoubleClick = useCallback((node: any) => {
-        const newText = prompt("Edita el texto del nodo:", node.name);
-        if (newText !== null && newText.trim() !== '') {
-          setMindMap(prevMap => {
-            if (!prevMap) return null;
-            const updateRecursively = (n: MindMapNode): MindMapNode => {
-              if (n.id === node.id) {
-                return { ...n, text: newText };
-              }
-              return { ...n, children: n.children.map(child => updateRecursively(child)) };
-            };
-            return updateRecursively(prevMap);
-          });
-        }
-    }, []);
 
-    const nodeCanvasObject = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
-        const label = node.name;
-        const fontSize = 14 / globalScale;
-        ctx.font = `600 ${fontSize}px Inter, sans-serif`;
-        const textWidth = ctx.measureText(label).width;
-        const bgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.6);
-
-        ctx.fillStyle = node.id === 'root' ? 'rgba(30, 64, 175, 1)' : 'rgba(45, 55, 72, 0.95)';
-        ctx.beginPath();
-        ctx.roundRect(node.x - bgDimensions[0] / 2, node.y - bgDimensions[1] / 2, bgDimensions[0], bgDimensions[1], 5 / globalScale);
-        ctx.fill();
-        
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(237, 242, 247, 1)';
-        ctx.fillText(label, node.x, node.y);
-
-        node.__bckgDimensions = bgDimensions;
+    const handleNodeUpdate = useCallback((id: string, newText: string) => {
+        setMindMap(prevMap => {
+          if (!prevMap) return null;
+          const updateRecursively = (n: MindMapNode): MindMapNode => {
+            if (n.id === id) {
+              return { ...n, text: newText };
+            }
+            return { ...n, children: n.children.map(child => updateRecursively(child)) };
+          };
+          return updateRecursively(prevMap);
+        });
     }, []);
     
     const downloadAs = (format: 'json' | 'md' | 'png') => {
@@ -103,7 +83,7 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
 
         if (format === 'png') {
             if (graphContainerRef.current) {
-                htmlToImage.toPng(graphContainerRef.current)
+                htmlToImage.toPng(graphContainerRef.current, { backgroundColor: '#f8fafc' }) // bg-slate-50
                     .then(dataUrl => {
                         const link = document.createElement('a');
                         link.download = `${filename}.png`;
@@ -143,7 +123,7 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
             <header className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                 <div>
                     <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Mapas Mentales con IA</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Genera mapas mentales interactivos sobre cualquier tema.</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Genera mapas mentales jerárquicos sobre cualquier tema.</p>
                 </div>
                  {mindMap && (
                     <div className="flex items-center gap-2">
@@ -180,28 +160,23 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
 
                     {error && <div className="text-red-500 bg-red-100 dark:bg-red-900 p-4 rounded-lg">{error}</div>}
                     
-                    <div ref={graphContainerRef} className="w-full flex-grow bg-slate-100 dark:bg-slate-800/50 rounded-xl shadow-inner flex items-center justify-center relative min-h-[400px]">
+                    <div className="w-full flex-grow bg-slate-50 dark:bg-slate-800/50 rounded-xl shadow-inner flex p-8 overflow-auto min-h-[400px]">
                         {isLoading ? (
-                            <div className="text-center">
+                            <div className="text-center m-auto">
                                 <SparkIcon className="w-12 h-12 text-blue-500 animate-pulse mx-auto"/>
                                 <p className="mt-2 font-semibold">Creando estructura de ideas...</p>
                             </div>
-                        ) : mindMap && ForceGraph2D ? (
-                            <ForceGraph2D
-                                ref={fgRef}
-                                graphData={graphData}
-                                onNodeDragEnd={(node: any) => { node.fx = node.x; node.fy = node.y; }}
-                                onNodeDoubleClick={handleNodeDoubleClick}
-                                nodeCanvasObject={nodeCanvasObject}
-                                linkColor={() => 'rgba(100, 116, 139, 0.5)'}
-                                linkWidth={1.5}
-                                backgroundColor="rgba(0,0,0,0)"
-                            />
+                        ) : mindMap ? (
+                            <div ref={graphContainerRef} className="p-4">
+                                <ul className="list-none">
+                                    <RenderNode node={mindMap} onNodeUpdate={handleNodeUpdate}/>
+                                </ul>
+                            </div>
                         ) : (
-                             <p className="text-slate-500">Genera un mapa para visualizarlo aquí.</p>
+                             <p className="text-slate-500 m-auto">Genera un mapa para visualizarlo aquí.</p>
                         )}
                     </div>
-                     <p className="text-xs text-center text-slate-500 mt-2">Doble clic en un nodo para editar. Arrastra los nodos para organizar. Usa la rueda del ratón para hacer zoom.</p>
+                     <p className="text-xs text-center text-slate-500 mt-2">Doble clic en un nodo para editar.</p>
                 </div>
             </div>
         </div>
