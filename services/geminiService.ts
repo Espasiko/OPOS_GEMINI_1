@@ -250,29 +250,108 @@ export async function generateSchema(topic: string): Promise<string> {
     }
 }
 
+const MAX_SUMMARY_CHUNK_SIZE = 400000; // Reduced size for safety margin with tokenization.
+
 export async function generateSummary(text: string): Promise<string> {
-    const prompt = `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
-    The summary should capture the main points, key articles, and essential conclusions of the text.
-    Format the output in clear, easy-to-read paragraphs using Markdown.
+    const originalPrompt = (textChunk: string) => `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
+The summary should capture the main points, key articles, and essential conclusions of the text.
+Format the output in clear, easy-to-read paragraphs using Markdown.
 
-    Text to summarize:
-    ---
-    ${text}
-    ---`;
-
+Text to summarize:
+---
+${textChunk}
+---`;
+    
     try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
+        // For reasonably sized texts, perform a single API call.
+        if (text.length <= MAX_SUMMARY_CHUNK_SIZE) {
+            const response = await ai.models.generateContent({
+                model: creativeModel,
+                contents: originalPrompt(text),
+            });
+            return response.text;
+        }
+
+        // --- Robust Chunking Strategy for very large texts ---
+        console.log(`Text is large (${text.length} chars), applying robust chunking strategy.`);
+        const chunks: string[] = [];
+        // Split by sentences to respect logical boundaries better than paragraphs.
+        const sentences = text.split(/(?<=[.?!])\s+/);
+        let currentChunk = "";
+
+        for (const sentence of sentences) {
+            const trimmedSentence = sentence.trim();
+            if (!trimmedSentence) continue;
+
+            if (currentChunk.length + trimmedSentence.length + 1 > MAX_SUMMARY_CHUNK_SIZE) {
+                // Current chunk is full, push it.
+                if (currentChunk) {
+                    chunks.push(currentChunk);
+                }
+                // Now, deal with the new sentence.
+                if (trimmedSentence.length > MAX_SUMMARY_CHUNK_SIZE) {
+                    // The sentence itself is too long, so we must split it by force.
+                    console.warn(`A single sentence is larger than the chunk size. Force-splitting.`);
+                    for (let i = 0; i < trimmedSentence.length; i += MAX_SUMMARY_CHUNK_SIZE) {
+                        chunks.push(trimmedSentence.substring(i, i + MAX_SUMMARY_CHUNK_SIZE));
+                    }
+                    currentChunk = ""; // The long sentence has been chunked and pushed.
+                } else {
+                    // The sentence is not too long; it will be the start of the next chunk.
+                    currentChunk = trimmedSentence;
+                }
+            } else {
+                // Add sentence to the current chunk.
+                currentChunk += (currentChunk ? " " : "") + trimmedSentence;
+            }
+        }
+        // Push the last remaining chunk.
+        if (currentChunk) {
+            chunks.push(currentChunk);
+        }
+        
+        console.log(`Split text into ${chunks.length} chunks.`);
+
+        if (chunks.length === 0) {
+            return "El texto proporcionado no contiene contenido analizable.";
+        }
+
+        // Map step: Summarize each chunk in parallel.
+        const chunkSummariesPromises = chunks.map((chunk, index) => {
+            const chunkPrompt = `You are part of a text summarization pipeline. Summarize the following text chunk from a larger legal document. Focus on the main legal points, articles, and conclusions. Do not add any introductory or concluding phrases. This is chunk ${index + 1} of ${chunks.length}. TEXT CHUNK: --- ${chunk} ---`;
+            return ai.models.generateContent({ model: creativeModel, contents: chunkPrompt })
+                .then(response => response.text)
+                .catch(err => {
+                    console.error(`Error summarizing chunk ${index + 1}:`, err);
+                    return `[Error al procesar la sección ${index + 1}]`;
+                });
         });
-        return response.text;
+        
+        const chunkSummaries = await Promise.all(chunkSummariesPromises);
+        console.log("Finished summarizing all chunks.");
+
+        const finalSummary = chunkSummaries.map((summary, index) => {
+            return `### Resumen de la Sección ${index + 1} de ${chunks.length}\n\n${summary}`;
+        }).join('\n\n---\n');
+        
+        return `## Resumen Completo del Documento\n\n*Nota: El texto original era muy extenso y se ha dividido en ${chunks.length} secciones para su análisis.*\n\n${finalSummary}`;
+
     } catch (error) {
         console.error("Error generating summary:", error);
+        if (error instanceof Error && (error.message.includes('token') || (error as any).status === 'INVALID_ARGUMENT')) {
+             throw new Error("El texto proporcionado es demasiado largo, incluso después de intentar dividirlo. Por favor, prueba con un texto más corto.");
+        }
         throw new Error("Failed to generate summary.");
     }
 }
 
+const MAX_COMPARISON_LENGTH = 500000; // Safe total character limit for the comparison prompt
+
 export async function compareLawVersions(textA: string, textB: string): Promise<string> {
+    if (textA.length + textB.length > MAX_COMPARISON_LENGTH) {
+        throw new Error(`Los textos son demasiado largos para ser comparados directamente (total: ${textA.length + textB.length} caracteres). Por favor, utiliza textos más cortos o resúmenes de los mismos.`);
+    }
+
     const prompt = `Act as an expert legislative analyst. I will provide you with two versions of a legal text, "Text A (Old Version)" and "Text B (New Version)".
     Your task is to compare them and produce a clear, structured report of the differences.
     The report should be formatted in Markdown and include:

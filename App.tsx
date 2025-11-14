@@ -60,8 +60,9 @@ const App: React.FC = () => {
   // States for other persistent views
   const [mindMapState, setMindMapState] = usePersistentState<{ topic: string; map: MindMapNode | null }>('mindMap_lastState', { topic: '', map: null });
   const [schemaState, setSchemaState] = usePersistentState<{ topic: string; schema: string }>('schema_lastState', { topic: '', schema: '' });
-  const [summaryState, setSummaryState] = usePersistentState<{ text: string; summary: string }>('summary_lastState', { text: '', summary: '' });
-  const [comparatorState, setComparatorState] = usePersistentState<{ textA: string; textB: string; comparison: string }>('comparator_lastState', { textA: '', textB: '', comparison: '' });
+  // FIX: Persist only the results (summary/comparison), not the large text inputs, to avoid exceeding localStorage quota.
+  const [summaryResult, setSummaryResult] = usePersistentState<string>('summary_lastResult', '');
+  const [comparisonResult, setComparisonResult] = usePersistentState<string>('comparator_lastResult', '');
 
 
   const renderView = () => {
@@ -97,9 +98,9 @@ const App: React.FC = () => {
       case AppView.SCHEMA:
         return <SchemaView savedState={schemaState} setSavedState={setSchemaState} />;
       case AppView.SUMMARY:
-        return <SummaryView savedState={summaryState} setSavedState={setSummaryState} />;
+        return <SummaryView savedSummary={summaryResult} setSavedSummary={setSummaryResult} />;
       case AppView.COMPARATOR:
-        return <ComparatorView savedState={comparatorState} setSavedState={setComparatorState} />;
+        return <ComparatorView savedComparison={comparisonResult} setSavedComparison={setComparisonResult} />;
       case AppView.MOCK_EXAM:
         return <MockExamView addProgressData={(data) => setProgressData(prev => [...prev, ...data])} />;
        case AppView.FLASHCARDS:

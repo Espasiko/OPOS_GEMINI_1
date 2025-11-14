@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { generateSummary, getTextFromUrl } from '../services/geminiService';
-import { SparkIcon } from './icons/SparkIcon';
 import { SummaryIcon } from './icons/SummaryIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
 
 interface SummaryViewProps {
-    savedState: { text: string; summary: string };
-    setSavedState: React.Dispatch<React.SetStateAction<{ text: string; summary: string }>>;
+    savedSummary: string;
+    setSavedSummary: (summary: string) => void;
 }
 
-const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) => {
-    const [text, setText] = useState(savedState.text);
-    const [summary, setSummary] = useState(savedState.summary);
+const SummaryView: React.FC<SummaryViewProps> = ({ savedSummary, setSavedSummary }) => {
+    // FIX: Use local state for the input text to avoid storing large data in localStorage.
+    const [text, setText] = useState('');
+    const [summary, setSummary] = useState(savedSummary);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        setSavedState({ text, summary });
-    }, [text, summary, setSavedState]);
 
     const handleGenerate = async (sourceText: string) => {
         if (!sourceText.trim()) return;
@@ -27,6 +23,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
         try {
             const result = await generateSummary(sourceText);
             setSummary(result);
+            // FIX: Persist only the summary result, not the input text.
+            setSavedSummary(result);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -84,6 +82,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
                             <div className="flex flex-col items-center justify-center h-full text-center">
                                 <SummaryIcon className="w-12 h-12 text-blue-500 animate-pulse" />
                                 <p className="mt-4 font-semibold">Sintetizando información...</p>
+                                <p className="mt-1 text-sm text-slate-500">Si el texto es muy largo, puede tardar un poco.</p>
                             </div>
                         )}
                         {summary && (
@@ -95,8 +94,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
                             </div>
                         )}
                          {error && !isLoading && (
-                            <div className="flex items-center justify-center h-full text-red-500 p-4">
-                                <p>Error: {error}</p>
+                            <div className="flex items-center justify-center h-full text-red-500 p-4 text-center">
+                                <p><strong>Error:</strong> {error}</p>
                             </div>
                          )}
                     </div>
