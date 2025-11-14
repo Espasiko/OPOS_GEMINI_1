@@ -13,6 +13,50 @@ const searchModel = 'gemini-2.5-flash';
 const creativeModel = 'gemini-2.5-pro';
 const imageModel = 'imagen-4.0-generate-001';
 
+// FIX: Re-implement getTextFromUrl using a robust multi-proxy strategy with timeouts to improve reliability.
+export async function getTextFromUrl(url: string): Promise<string> {
+    const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    ];
+
+    for (const proxyUrl of proxies) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
+
+        try {
+            const proxyName = new URL(proxyUrl).hostname;
+            console.log(`Attempting to fetch via proxy: ${proxyName}`);
+            
+            const response = await fetch(proxyUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const textContent = await response.text();
+                // Some proxies return empty content on soft failure, so we check for that.
+                if (textContent && textContent.trim().length > 0) {
+                     return textContent;
+                }
+                console.warn(`Proxy ${proxyName} returned empty or invalid content.`);
+            } else {
+                console.warn(`Proxy ${proxyName} failed with status: ${response.status}`);
+            }
+        } catch (error: any) {
+            clearTimeout(timeoutId);
+            const proxyName = new URL(proxyUrl).hostname;
+            if (error.name === 'AbortError') {
+                console.warn(`Proxy ${proxyName} timed out.`);
+            } else {
+                console.error(`Error with proxy ${proxyName}:`, error);
+            }
+        }
+    }
+
+    // If all proxies fail
+    console.error("All CORS proxies failed to fetch the URL:", url);
+    throw new Error("No se pudo obtener el contenido de la URL. Todos los servicios intermediarios fallaron. Esto puede deberse a que el sitio web de destino está bloqueando el acceso o a un problema de red. Por favor, intenta pegar el texto manualmente.");
+}
+
 
 const practicalCaseQuestionSchema = {
     type: Type.OBJECT,
@@ -60,7 +104,7 @@ Follow these instructions precisely:
 4.  **Provide 4 Options per Question**: For each question, create four plausible options (A, B, C, D). Only one option can be correct.
 5.  **Identify Correct Answer and Explain**: For each question, clearly identify the correct option ID and provide a thorough legal explanation, citing the specific articles of the relevant laws (e.g., Real Decreto Legislativo 8/2015) that justify the answer.
 
-You MUST return the output in a clean, valid JSON format that adheres to the provided schema.`;
+You MUST return the output in a clean, valid JSON format that adheres to the provided schema. The entire response must be in Spanish.`;
     
     try {
         const response = await ai.models.generateContent({
@@ -101,7 +145,7 @@ export function getChatInstance(conversationId: string): Chat {
         chatInstances[conversationId] = ai.chats.create({
             model: chatModel,
             config: {
-                systemInstruction: `You are a world-class expert tutor specializing in Spanish Social Security legislation for civil service exam candidates ('opositores'). Your tone is encouraging, precise, and clear. When a user asks a question, provide a direct and accurate answer. If they present a problem or a practical case, break down the explanation step-by-step, citing relevant legal articles (e.g., from the 'Real Decreto Legislativo 8/2015') whenever possible. Your goal is to help the user understand complex legal concepts, not just give them the answer.`
+                systemInstruction: `You are a world-class expert tutor specializing in Spanish Social Security legislation for civil service exam candidates ('opositores'). Your tone is encouraging, precise, and clear. When a user asks a question, provide a direct and accurate answer. If they present a problem or a practical case, break down the explanation step-by-step, citing relevant legal articles (e.g., from the 'Real Decreto Legislativo 8/2015') whenever possible. Your goal is to help the user understand complex legal concepts, not just give them the answer. All your responses must be in Spanish.`
             }
         });
     }
@@ -167,7 +211,7 @@ Example of expected JSON structure:
   ]
 }
 
-Do not include any text or markdown formatting outside of the main JSON object.`;
+Do not include any text or markdown formatting outside of the main JSON object. The entire response must be in Spanish.`;
 
     try {
         const response = await ai.models.generateContent({
@@ -175,24 +219,6 @@ Do not include any text or markdown formatting outside of the main JSON object.`
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        id: { type: Type.STRING },
-                        text: { type: Type.STRING },
-                        children: { 
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    id: { type: Type.STRING },
-                                    text: { type: Type.STRING },
-                                    children: { type: Type.ARRAY, items: { type: Type.OBJECT } } // Simplified for deeper nesting
-                                }
-                            }
-                        }
-                    }
-                }
             }
         });
         
@@ -212,7 +238,8 @@ export async function generateStudyPlan(input: StudyPlanInput): Promise<string> 
     Availability: ${availability}.
     The plan should be structured, realistic, and cover key areas of the syllabus. 
     Format the output as Markdown. Use headings for days or weeks, and bullet points for tasks.
-    Include a balance of theory study, practical cases, and review sessions.`;
+    Include a balance of theory study, practical cases, and review sessions.
+    IMPORTANTE: The entire response must be in Spanish.`;
 
     if (includeTracking) {
         prompt += "\nInclude a checkbox column `[ ]` for each task so the user can track their progress."
@@ -236,7 +263,8 @@ export async function generateStudyPlan(input: StudyPlanInput): Promise<string> 
 export async function generateSchema(topic: string): Promise<string> {
     const prompt = `Act as an expert legal tutor. Create a clear, hierarchical, and well-structured outline (esquema) on the following topic from Spanish law: "${topic}".
     Use Markdown formatting with nested bullet points to represent the hierarchy.
-    The outline must be detailed enough to be a useful study guide, covering key definitions, requirements, procedures, and relevant concepts.`;
+    The outline must be detailed enough to be a useful study guide, covering key definitions, requirements, procedures, and relevant concepts.
+    The entire response must be in Spanish.`;
 
     try {
         const response = await ai.models.generateContent({
@@ -256,6 +284,7 @@ export async function generateSummary(text: string): Promise<string> {
     const originalPrompt = (textChunk: string) => `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
 The summary should capture the main points, key articles, and essential conclusions of the text.
 Format the output in clear, easy-to-read paragraphs using Markdown.
+IMPORTANT: The entire response MUST be in Spanish from Spain. Do not use any English.
 
 Text to summarize:
 ---
@@ -318,7 +347,7 @@ ${textChunk}
 
         // Map step: Summarize each chunk in parallel.
         const chunkSummariesPromises = chunks.map((chunk, index) => {
-            const chunkPrompt = `You are part of a text summarization pipeline. Summarize the following text chunk from a larger legal document. Focus on the main legal points, articles, and conclusions. Do not add any introductory or concluding phrases. This is chunk ${index + 1} of ${chunks.length}. TEXT CHUNK: --- ${chunk} ---`;
+            const chunkPrompt = `You are part of a text summarization pipeline. Summarize the following text chunk from a larger legal document. Focus on the main legal points, articles, and conclusions. Do not add any introductory or concluding phrases. This is chunk ${index + 1} of ${chunks.length}. IMPORTANT: The entire response MUST be in Spanish from Spain. TEXT CHUNK: --- ${chunk} ---`;
             return ai.models.generateContent({ model: creativeModel, contents: chunkPrompt })
                 .then(response => response.text)
                 .catch(err => {
@@ -361,6 +390,7 @@ export async function compareLawVersions(textA: string, textB: string): Promise<
     4.  A section for "Deletions", listing parts that were in Text A but not in Text B.
 
     Be precise and focus on the substantive changes.
+    IMPORTANT: The entire response MUST be in Spanish from Spain. Do not use any English.
 
     ---
     Text A (Old Version):
@@ -382,26 +412,6 @@ export async function compareLawVersions(textA: string, textB: string): Promise<
     }
 }
 
-// NOTE: In a real-world application, this would call a backend service/proxy
-// to fetch the URL content to avoid CORS issues in the browser.
-export async function getTextFromUrl(url: string): Promise<string> {
-    console.warn("Using a simplified client-side fetch. This may fail due to CORS. A backend proxy is recommended for production.");
-    try {
-        // A simple proxy could be used, e.g., 'https://cors-anywhere.herokuapp.com/' + url
-        // For this example, we assume direct access or a browser extension handles CORS.
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        // This is a very basic text extraction and won't work well for complex sites.
-        // A proper backend would use a library like Cheerio or JSDOM to parse HTML.
-        return await response.text();
-    } catch (error) {
-        console.error("Failed to fetch URL content:", error);
-        throw new Error("No se pudo obtener el contenido de la URL. Esto puede deberse a restricciones de CORS. Se recomienda un proxy de backend.");
-    }
-}
-
 export async function generateMockExam(topics: string[], questionCount: number): Promise<MockExam> {
      const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Create a complete mock exam ('simulacro').
 Instructions:
@@ -411,7 +421,7 @@ Instructions:
 4.  **Structure**: For each question, create a small, realistic scenario OR a direct question about the topics. Then provide 4 plausible options (A, B, C, D) and identify the correct one, along with a detailed legal explanation citing relevant articles.
 5.  **Variety**: Ensure a good mix of questions covering all specified topics.
 
-You MUST return the output in a clean, valid JSON format.`;
+You MUST return the output in a clean, valid JSON format. The entire response must be in Spanish.`;
     
     // Create a dynamic schema for the questions array
     const examSchema = {
@@ -481,7 +491,7 @@ export async function generateFlashcardsAndMeme(topic: string): Promise<{ flashc
 1.  **Flashcards**: Create 5 to 10 high-quality flashcards. Each should have a 'front' (a clear question or key term) and a 'back' (a concise and accurate answer or definition).
 2.  **Meme Prompt**: Create a short, funny, and descriptive prompt for an image generation model to create a meme about this topic. It should be relatable to someone studying for the exam.
 
-Return the result as a single, valid JSON object.`;
+Return the result as a single, valid JSON object. All text content must be in Spanish.`;
 
     try {
         // Step 1: Generate flashcards and meme prompt text
