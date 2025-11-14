@@ -1,27 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { compareLawVersions, getTextFromUrl } from '../services/geminiService';
-import { SparkIcon } from './icons/SparkIcon';
 import { CompareIcon } from './icons/CompareIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
 
 interface ComparatorViewProps {
-    savedState: { textA: string; textB: string; comparison: string; };
-    setSavedState: React.Dispatch<React.SetStateAction<{ textA: string; textB: string; comparison: string; }>>;
+    savedComparison: string;
+    setSavedComparison: (comparison: string) => void;
 }
 
-const ComparatorView: React.FC<ComparatorViewProps> = ({ savedState, setSavedState }) => {
-    const [textA, setTextA] = useState(savedState.textA);
-    const [textB, setTextB] = useState(savedState.textB);
-    const [comparison, setComparison] = useState(savedState.comparison);
+const ComparatorView: React.FC<ComparatorViewProps> = ({ savedComparison, setSavedComparison }) => {
+    // FIX: Use local state for input texts to avoid storing large data in localStorage.
+    const [textA, setTextA] = useState('');
+    const [textB, setTextB] = useState('');
+    const [comparison, setComparison] = useState(savedComparison);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [errorA, setErrorA] = useState<string | null>(null);
     const [errorB, setErrorB] = useState<string | null>(null);
-
-    useEffect(() => {
-        setSavedState({ textA, textB, comparison });
-    }, [textA, textB, comparison, setSavedState]);
-
 
     const handleGenerate = async () => {
         if (!textA.trim() || !textB.trim()) return;
@@ -31,6 +26,8 @@ const ComparatorView: React.FC<ComparatorViewProps> = ({ savedState, setSavedSta
         try {
             const result = await compareLawVersions(textA, textB);
             setComparison(result);
+            // FIX: Persist only the comparison result, not the input texts.
+            setSavedComparison(result);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -42,11 +39,10 @@ const ComparatorView: React.FC<ComparatorViewProps> = ({ savedState, setSavedSta
         target: 'A' | 'B', 
         source: { type: 'text'; content: string } | { type: 'file'; content: File } | { type: 'url'; content: string }
     ) => {
-        const setLoading = target === 'A' ? setIsLoading : setIsLoading; // Use main loader
+        setIsLoading(true); 
         const setErrorState = target === 'A' ? setErrorA : setErrorB;
         const setTextState = target === 'A' ? setTextA : setTextB;
-
-        setLoading(true);
+        
         setErrorState(null);
         let sourceText = '';
         try {
@@ -65,7 +61,7 @@ const ComparatorView: React.FC<ComparatorViewProps> = ({ savedState, setSavedSta
         } catch(err: any) {
             setErrorState(err.message);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -82,7 +78,7 @@ const ComparatorView: React.FC<ComparatorViewProps> = ({ savedState, setSavedSta
                         <h2 className="text-lg font-semibold mb-2 p-2">Texto A (Versión Antigua)</h2>
                          <InputSourceSelector
                             onTextSubmit={(source) => handleDataSourceSubmit('A', source)}
-                            isLoading={isLoading} // Simplified loading state
+                            isLoading={isLoading}
                             error={errorA}
                             initialText={textA}
                             showTextField={true}
@@ -115,11 +111,11 @@ const ComparatorView: React.FC<ComparatorViewProps> = ({ savedState, setSavedSta
                                 <p className="mt-4 font-semibold">Buscando cambios, adiciones y eliminaciones...</p>
                             </div>
                         )}
-                        {error && <div className="text-red-500">{error}</div>}
+                        {error && <div className="text-red-500 text-center p-4"><strong>Error:</strong> {error}</div>}
                         {comparison && (
                             <div className="prose prose-slate dark:prose-invert max-w-none whitespace-pre-wrap animate-fade-in" dangerouslySetInnerHTML={{ __html: comparison.replace(/\n/g, '<br />') }}></div>
                         )}
-                        {!isLoading && !comparison && (
+                        {!isLoading && !comparison && !error && (
                             <div className="flex items-center justify-center h-full text-slate-500">
                                 <p>El análisis de las diferencias aparecerá aquí.</p>
                             </div>
