@@ -23,7 +23,7 @@ La aplicación se organiza en torno a un panel de navegación lateral que da acc
 *   **Comparador de Leyes:** Analiza dos versiones de un texto legal y resalta las modificaciones, adiciones y eliminaciones.
 *   **Tarjetas y Memes:** Una herramienta de estudio lúdica que genera flashcards interactivas y un meme visual relacionado con un tema para reforzar el aprendizaje.
 *   **Plan de Estudios:** Crea planes de estudio personalizados (semanales, mensuales, etc.) basados en la disponibilidad del usuario.
-*   **Mi Progreso:** Monitoriza el rendimiento del usuario en los casos prácticos y simulacros, mostrando estadísticas de aciertos y fallos.
+*   **Mi Progreso:** Monitoriza el rendimiento del usuario en los casos práctácticos y simulacros, mostrando estadísticas de aciertos y fallos.
 
 ---
 
@@ -69,7 +69,7 @@ El proyecto sigue una estructura modular y organizada, separando la lógica de l
 
 #### Ficheros Raíz
 
-*   **`index.html`**: Punto de entrada de la aplicación. Carga las dependencias externas a través de CDN (TailwindCSS, PDF.js, React-Force-Graph-2D, HTML-to-Image) y el script principal de la aplicación. Utiliza un `importmap` para gestionar las dependencias de JavaScript.
+*   **`index.html`**: Punto de entrada de la aplicación. Carga las dependencias externas a través de CDN (TailwindCSS, PDF.js, HTML-to-Image) y el script principal de la aplicación. Utiliza un `importmap` para gestionar las dependencias de JavaScript.
 *   **`index.tsx`**: Monta el componente principal `App` en el elemento `#root` del DOM.
 *   **`App.tsx`**: Es el corazón de la aplicación.
     *   Gestiona la vista activa (`currentView`).
@@ -110,7 +110,6 @@ La aplicación se construye sin un bundler (como Vite o Webpack) y carga sus dep
 *   **TailwindCSS (CDN)**: Framework de CSS "utility-first" para un diseño rápido y responsivo.
 *   **@google/genai (v1.29.0)**: SDK oficial de Google para interactuar con la API de Gemini.
 *   **pdf.js (CDN)**: Librería de Mozilla para parsear y extraer texto de archivos PDF en el cliente.
-*   **react-force-graph-2d (CDN)**: Componente para renderizar grafos interactivos, utilizado en los Mapas Mentales.
 *   **html-to-image (CDN)**: Librería para convertir elementos del DOM en imágenes (PNG), utilizada para la función de exportación de los mapas mentales.
 
 ---
@@ -124,8 +123,9 @@ Se ha realizado una selección estratégica de modelos para optimizar el coste y
 | **Generador de Casos/Exámenes** | `gemini-2.5-pro`            | **Agente:** "Experto examinador". Se necesita la máxima capacidad de razonamiento (`thinkingBudget`) y seguimiento de instrucciones complejas (esquema JSON) para crear escenarios legales de alta calidad. |
 | **Chat Explicativo**        | `gemini-2.5-flash`          | **Agente:** "Tutor experto en legislación". Optimizado para conversaciones rápidas y de baja latencia. Su rendimiento es excelente para responder preguntas directas. |
 | **Búsqueda Actualizada**    | `gemini-2.5-flash`          | **Agente:** Neutro. La tarea principal es procesar la información de la herramienta `googleSearch`, donde la velocidad es clave. |
-| **Mapas, Esquemas, Planes** | `gemini-2.5-pro`            | **Agente:** "Tutor experto/analista". Tareas creativas que se benefician de una mayor capacidad para estructurar información y generar contenido bien organizado. |
-| **Generación de Memes**     | `imagen-4.0-generate-001`   | Modelo de generación de imágenes de alta calidad para crear contenido visual atractivo a partir de un prompt de texto. |
+| **Mapas, Esquemas, Planes, Resúmenes, Comparador** | `gemini-2.5-pro`            | **Agente:** "Tutor experto/analista". Tareas creativas que se benefician de una mayor capacidad para estructurar información y generar contenido bien organizado. |
+| **Flashcards (texto)**      | `gemini-2.5-pro`            | **Agente:** "Generador de material de estudio". Crea preguntas y respuestas concisas y un prompt creativo para el meme. |
+| **Generación de Memes (imagen)**     | `imagen-4.0-generate-001`   | Modelo de generación de imágenes de alta calidad para crear contenido visual atractivo a partir de un prompt de texto. |
 
 ---
 
