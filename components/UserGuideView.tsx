@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -27,12 +28,22 @@ const UserGuideView: React.FC = () => {
                             <li>Pedir que te explique conceptos complejos de forma sencilla.</li>
                             <li>Analizar un artículo de una ley.</li>
                             <li>Crear un historial de conversaciones para repasar tus dudas más frecuentes.</li>
+                             <li>Puedes subir documentos (PDF, TXT) o pegar URLs para que el chat analice el contenido y responda a tus preguntas sobre él.</li>
                         </ul>
                     </Section>
 
                     <Section title="Generador de Casos">
-                        <p>La herramienta definitiva para practicar. Cada vez que pulsas "Nuevo Caso", la IA crea un escenario práctico complejo y 5 preguntas tipo test, imitando el formato del examen oficial.</p>
+                        <p>La herramienta para la práctica diaria. Cada vez que pulsas "Nuevo Caso", la IA crea un escenario práctico complejo y 5 preguntas tipo test, imitando el formato del examen oficial.</p>
                         <p>Tienes <strong>dos intentos</strong> por pregunta. Si fallas el primero, puedes volver a intentarlo. Tras el segundo intento o al acertar, se revelará la explicación detallada para que aprendas del error.</p>
+                    </Section>
+
+                    <Section title="Simulacros de Examen">
+                        <p>Prepara el día del examen en condiciones reales. Esta herramienta te permite:</p>
+                        <ul>
+                            <li><strong>Configurar tu examen:</strong> Elige los temas específicos que quieres incluir y el número de preguntas.</li>
+                            <li><strong>Contrarreloj:</strong> Realiza el examen con un tiempo límite (90 segundos por pregunta) para simular la presión real.</li>
+                            <li><strong>Revisión detallada:</strong> Al finalizar, obtendrás tu nota y podrás revisar cada pregunta, viendo tu respuesta, la correcta y una explicación legal completa.</li>
+                        </ul>
                     </Section>
 
                     <Section title="Búsqueda Actualizada">
@@ -45,7 +56,23 @@ const UserGuideView: React.FC = () => {
                     </Section>
 
                     <Section title="Mapas Mentales">
-                        <p>Una forma visual y efectiva de estructurar y memorizar información. Introduce un tema (ej: "El Recurso de Alzada") y la IA creará un mapa mental jerárquico. Puedes editar el texto de cada idea, descargarlo en formato JSON para usarlo en otras apps, o compartirlo.</p>
+                        <p>Una forma visual y efectiva de estructurar y memorizar información. Introduce un tema (ej: "El Recurso de Alzada") y la IA creará un mapa mental jerárquico. Puedes editar el texto de cada idea haciendo doble clic y descargarlo en formato PNG, Markdown o JSON.</p>
+                    </Section>
+
+                    <Section title="Esquemas">
+                        <p>Perfecto para obtener una vista estructurada de un tema. Introduce un concepto o el nombre de una ley y la IA generará un esquema detallado con puntos y subpuntos, ideal para repasar la estructura de la materia.</p>
+                    </Section>
+
+                    <Section title="Resúmenes">
+                        <p>Ahorra tiempo de lectura. Pega un texto largo, sube un documento PDF/TXT o introduce una URL, y la IA extraerá las ideas clave, creando un resumen conciso y fácil de entender.</p>
+                    </Section>
+
+                    <Section title="Comparador de Leyes">
+                        <p>¿Ha cambiado una ley y no sabes qué es diferente? Carga la versión antigua y la nueva del texto (desde archivo, URL o pegando el texto) y la IA generará un informe detallado con las modificaciones, adiciones y eliminaciones.</p>
+                    </Section>
+                    
+                    <Section title="Tarjetas y Memes">
+                         <p>Refuerza la memoria de forma divertida. Introduce un tema y la IA creará un conjunto de "flashcards" interactivas (pregunta y respuesta) y un meme relacionado con el tema para ayudarte a fijar conceptos de una manera más amena.</p>
                     </Section>
                     
                     <Section title="Plan de Estudios">
@@ -53,7 +80,7 @@ const UserGuideView: React.FC = () => {
                     </Section>
                     
                      <Section title="Mi Progreso">
-                        <p>Mide tu evolución de forma objetiva. Esta sección registra tus aciertos y fallos en el Generador de Casos y te los muestra en gráficos claros. Analiza tus estadísticas para saber dónde debes reforzar y mantén la motivación con los mensajes de ánimo personalizados.</p>
+                        <p>Mide tu evolución de forma objetiva. Esta sección registra tus aciertos y fallos en el Generador de Casos y en los Simulacros, y te los muestra en gráficos claros. Analiza tus estadísticas para saber dónde debes reforzar y mantén la motivación con los mensajes de ánimo personalizados.</p>
                     </Section>
 
                 </div>
