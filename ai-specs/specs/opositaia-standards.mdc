@@ -1,0 +1,323 @@
+---
+description: OpositaIA-specific development standards, AI agent configurations, and Gemini API integration patterns
+globs: ["services/geminiService.ts", "docs/**/*.md", "App.tsx", "types.ts", "components/**/*"]
+alwaysApply: true
+---
+
+# OpositaIA Development Standards
+
+## Project Overview
+
+OpositaIA is a React + TypeScript SPA designed as a comprehensive study assistant for Spanish Social Security exam preparation. The application leverages Google Gemini API to provide intelligent tools for exam practice, content generation, and study organization.
+
+## Core Documentation
+
+All AI interactions and architectural decisions are documented in `/docs`:
+
+- **`/docs/AI_AGENTS.md`**: Source of truth for all Gemini API interactions
+  - Defines agent personalities, models, and configurations
+  - Justifies model selection (gemini-2.5-pro vs gemini-2.5-flash)
+  - Specifies system instructions and response schemas
+  
+- **`/docs/ARCHITECTURE.md`**: System architecture and data flow
+  
+- **`/docs/DATA_MODEL.md`**: TypeScript types and data structures
+
+## Technology Stack
+
+### Core Technologies
+- React 18 with TypeScript
+- Native ES modules (no bundler like Vite/Webpack)
+- Bootstrap for UI components
+- Local storage for data persistence
+
+### AI Integration
+- **Google Gemini API** via `/services/geminiService.ts`
+- **Models Used**:
+  - `gemini-2.5-pro`: Complex tasks (case generation, exams, creative content)
+  - `gemini-2.5-flash`: Fast tasks (chat, search)
+  - `imagen-4.0-generate-001`: Image generation (memes)
+
+## Project Structure
+
+```
+/
+├── components/          # React UI components
+├── services/
+│   └── geminiService.ts # Centralized Gemini API calls
+├── docs/               # AI Specs and architecture docs
+│   ├── AI_AGENTS.md    # AI agent definitions (CRITICAL)
+│   ├── ARCHITECTURE.md
+│   └── DATA_MODEL.md
+├── ai-specs/           # AI development standards
+│   ├── specs/          # Development standards
+│   ├── changes/        # Feature implementation plans
+│   └── .commands/      # AI commands
+├── App.tsx             # Main app component (state + routing)
+├── types.ts            # TypeScript type definitions
+├── index.html          # Entry point
+└── index.tsx           # React DOM render
+```
+
+## Development Standards
+
+### 1. AI Agent Management
+
+**CRITICAL RULE**: All Gemini API interactions MUST be documented in `/docs/AI_AGENTS.md`
+
+When adding/modifying AI features:
+1. Define the agent personality/role
+2. Select appropriate model (pro vs flash)
+3. Justify model selection
+4. Document system instructions
+5. Specify response format (JSON schema, Markdown, etc.)
+6. Update `/docs/AI_AGENTS.md` with the new agent definition
+
+### 2. Service Layer Pattern
+
+All Gemini API calls go through `/services/geminiService.ts`:
+
+```typescript
+// Example pattern
+export async function generateFeature(input: string): Promise<FeatureResult> {
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.5-pro', // or gemini-2.5-flash
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: FeatureSchema
+    }
+  });
+  
+  const prompt = `Agent personality: ...
+  
+  Task: ${input}`;
+  
+  const result = await model.generateContent(prompt);
+  return JSON.parse(result.response.text());
+}
+```
+
+### 3. Component Patterns
+
+Components follow a consistent structure:
+
+```typescript
+// components/FeatureName.tsx
+import React, { useState } from 'react';
+import { FeatureType } from '../types';
+import * as geminiService from '../services/geminiService';
+
+interface FeatureNameProps {
+  onClose: () => void;
+}
+
+export const FeatureName: React.FC<FeatureNameProps> = ({ onClose }) => {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<FeatureType | null>(null);
+  
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      const data = await geminiService.generateFeature(input);
+      setResult(data);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return (
+    <div className="container">
+      {/* UI implementation */}
+    </div>
+  );
+};
+```
+
+### 4. Type Definitions
+
+All types defined in `/types.ts`:
+
+```typescript
+// Add new types here
+export interface NewFeatureType {
+  id: string;
+  content: string;
+  // ... other fields
+}
+
+// Update AppView enum for new views
+export enum AppView {
+  CHAT = 'CHAT',
+  NEW_FEATURE = 'NEW_FEATURE',
+  // ... other views
+}
+```
+
+### 5. State Management
+
+App-level state managed in `App.tsx`:
+
+```typescript
+const [currentView, setCurrentView] = useState<AppView>(AppView.CHAT);
+const [featureData, setFeatureData] = useState<FeatureType[]>([]);
+
+// Pass state and setters to components as props
+```
+
+## Model Selection Guidelines
+
+### Use `gemini-2.5-pro` when:
+- Complex reasoning required (legal case generation, exam creation)
+- Strict JSON schema adherence needed
+- High-quality creative content (mind maps, study plans)
+- Multi-step workflows (flashcards + meme prompts)
+- Quality > Speed
+
+### Use `gemini-2.5-flash` when:
+- Interactive chat/conversation
+- Quick explanations
+- Search result processing
+- Speed > Complexity
+
+### Use `imagen-4.0-generate-001` when:
+- Visual content generation (memes, diagrams)
+
+## Testing Standards
+
+### Manual Testing Checklist
+- [ ] Feature works in local server (live-server or python -m http.server)
+- [ ] Loading states display correctly
+- [ ] Error handling works (network errors, API errors)
+- [ ] Results display properly
+- [ ] Navigation works (back to menu, close buttons)
+- [ ] Data persists in localStorage (if applicable)
+
+### Future: Automated Testing
+- Consider adding Vitest for unit tests
+- Consider Cypress for E2E tests
+- Focus on critical user flows
+
+## Documentation Update Process
+
+When implementing new features:
+
+1. **Code Implementation**
+   - Add function to `geminiService.ts`
+   - Create/update component in `/components`
+   - Update types in `types.ts`
+   - Update App.tsx routing
+
+2. **Documentation Updates** (MANDATORY)
+   - Update `/docs/AI_AGENTS.md` with new agent definition
+   - Update `/docs/DATA_MODEL.md` if new types added
+   - Update `/docs/ARCHITECTURE.md` if architecture changes
+   - Update `README.md` if user-facing features added
+
+3. **AI Specs Updates**
+   - Create implementation plan in `/ai-specs/changes/`
+   - Follow plan step-by-step
+   - Verify all steps completed
+
+## Common Patterns
+
+### Error Handling
+```typescript
+try {
+  const result = await geminiService.someFunction();
+  setData(result);
+} catch (error) {
+  console.error('Error in feature:', error);
+  alert('Error: ' + (error as Error).message);
+}
+```
+
+### Loading States
+```typescript
+const [loading, setLoading] = useState(false);
+
+// In async function
+setLoading(true);
+try {
+  // ... API call
+} finally {
+  setLoading(false);
+}
+
+// In JSX
+{loading && <div className="spinner-border">Loading...</div>}
+```
+
+### Bootstrap UI Components
+- Use Bootstrap classes: `btn btn-primary`, `form-control`, `card`, etc.
+- Responsive: `container`, `row`, `col-md-6`
+- Icons: Bootstrap Icons or emoji
+
+## Git Workflow
+
+### Branch Naming
+- Feature: `feature/TICKET-ID-description`
+- Bugfix: `bugfix/TICKET-ID-description`
+- Docs: `docs/update-description`
+
+### Commit Messages
+- English only
+- Format: `[TICKET-ID] Action: Description`
+- Examples:
+  - `[OPOS-123] Add: Mind map generation feature`
+  - `[OPOS-124] Fix: Chat history persistence`
+  - `[OPOS-125] Update: AI_AGENTS.md with new model`
+
+## Performance Considerations
+
+### API Optimization
+- Use `gemini-2.5-flash` for real-time interactions
+- Implement loading states for all API calls
+- Consider caching results in localStorage when appropriate
+
+### Bundle Size
+- No bundler = no tree-shaking
+- Keep dependencies minimal
+- Use native ES modules
+
+### User Experience
+- Show loading indicators for all async operations
+- Provide clear error messages
+- Enable offline functionality where possible (cached data)
+
+## Security Best Practices
+
+### API Key Management
+- API key managed by development environment
+- Never commit API keys to git
+- Use environment variables in production
+
+### Input Validation
+- Validate user input before sending to API
+- Sanitize text inputs
+- Limit input lengths
+
+### Error Messages
+- Don't expose internal errors to users
+- Log detailed errors to console
+- Show user-friendly messages
+
+## Next Steps for New Features
+
+1. **Plan**: Create implementation plan in `/ai-specs/changes/`
+2. **Branch**: Create feature branch
+3. **Implement**: Follow plan step-by-step
+4. **Document**: Update `/docs/AI_AGENTS.md` and related docs
+5. **Test**: Manual testing checklist
+6. **Review**: Self-review against standards
+7. **Commit**: Clear commit messages in English
+8. **Merge**: PR with documentation updates
+
+## References
+
+- Base Standards: `./base-standards.mdc`
+- Frontend Standards: `./frontend-standards.mdc`
+- Documentation Standards: `./documentation-standards.mdc`
+- Project README: `/README.md`
+- AI Agents: `/docs/AI_AGENTS.md`
