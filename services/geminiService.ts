@@ -13,7 +13,14 @@ const searchModel = 'gemini-2.5-flash';
 const creativeModel = 'gemini-2.5-pro';
 const imageModel = 'imagen-4.0-generate-001';
 
-// FIX: Re-implement getTextFromUrl using a robust multi-proxy strategy with timeouts to improve reliability.
+/**
+ * Intenta obtener el contenido de texto de una URL utilizando una estrategia de múltiples proxies CORS.
+ * Prueba cada proxy en secuencia y devuelve el contenido del primero que tenga éxito.
+ * Implementa un timeout para evitar esperas prolongadas.
+ * @param {string} url La URL de la que se extraerá el texto.
+ * @returns {Promise<string>} Una promesa que se resuelve con el contenido de texto de la URL.
+ * @throws {Error} Si todos los proxies fallan o si ocurre un error de red.
+ */
 export async function getTextFromUrl(url: string): Promise<string> {
     const proxies = [
         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -95,6 +102,13 @@ const practicalCaseSchema = {
     required: ["topic", "scenario", "questions"],
 };
 
+/**
+ * Genera un caso práctico completo sobre un tema de la legislación de la Seguridad Social.
+ * Utiliza el modelo gemini-2.5-pro con un presupuesto de pensamiento elevado para garantizar
+ * un escenario complejo y preguntas de alta calidad, devolviendo un JSON estructurado.
+ * @returns {Promise<PracticalCase>} Una promesa que se resuelve con el objeto del caso práctico.
+ * @throws {Error} Si la API falla o devuelve un formato JSON inválido.
+ */
 export async function generatePracticalCase(): Promise<PracticalCase> {
     const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Your task is to create a high-quality 'supuesto práctico'.
 Follow these instructions precisely:
@@ -140,6 +154,12 @@ You MUST return the output in a clean, valid JSON format that adheres to the pro
 
 let chatInstances: { [key: string]: Chat } = {};
 
+/**
+ * Obtiene o crea una instancia de chat singleton para un ID de conversación específico.
+ * Esto mantiene el historial de la conversación en el backend de la API.
+ * @param {string} conversationId El ID único de la conversación.
+ * @returns {Chat} La instancia del chat para esa conversación.
+ */
 export function getChatInstance(conversationId: string): Chat {
     if (!chatInstances[conversationId]) {
         chatInstances[conversationId] = ai.chats.create({
@@ -152,6 +172,14 @@ export function getChatInstance(conversationId: string): Chat {
     return chatInstances[conversationId];
 }
 
+/**
+ * Realiza una búsqueda utilizando Google Search grounding para obtener respuestas actualizadas.
+ * Opcionalmente, puede limitar la información a una fecha específica.
+ * @param {string} query La pregunta del usuario.
+ * @param {string} [untilDate] Una fecha opcional en formato YYYY-MM-DD para limitar la vigencia de la información.
+ * @returns {Promise<{ text: string, sources: GroundingSource[] }>} Un objeto con el texto de la respuesta y las fuentes web utilizadas.
+ * @throws {Error} Si la búsqueda falla.
+ */
 export async function searchWithGrounding(query: string, untilDate?: string): Promise<{ text: string, sources: GroundingSource[] }> {
     try {
         let finalQuery = query;
@@ -186,7 +214,13 @@ export async function searchWithGrounding(query: string, untilDate?: string): Pr
         throw new Error("Failed to perform the search. Please check your query and try again.");
     }
 }
-  
+
+/**
+ * Genera un mapa mental jerárquico en formato JSON sobre un tema legal específico.
+ * @param {string} topic El tema sobre el cual generar el mapa mental.
+ * @returns {Promise<MindMapNode>} Una promesa que se resuelve con el nodo raíz del mapa mental.
+ * @throws {Error} Si la generación falla o el formato JSON es inválido.
+ */
 export async function generateMindMap(topic: string): Promise<MindMapNode> {
     const prompt = `Generate a hierarchical mind map about the following Spanish legislation topic: "${topic}".
 The structure must be logical for studying. Create a single root node and at least two levels of nested child nodes.
@@ -231,6 +265,12 @@ Do not include any text or markdown formatting outside of the main JSON object. 
     }
 }
 
+/**
+ * Genera un plan de estudios personalizado en formato Markdown.
+ * @param {StudyPlanInput} input Un objeto con la disponibilidad del usuario y otras preferencias.
+ * @returns {Promise<string>} Una promesa que se resuelve con el plan de estudios en formato Markdown.
+ * @throws {Error} Si la generación falla.
+ */
 export async function generateStudyPlan(input: StudyPlanInput): Promise<string> {
     const { availability, duration, includeTracking, includeSuggestions } = input;
 
@@ -260,6 +300,12 @@ export async function generateStudyPlan(input: StudyPlanInput): Promise<string> 
     }
 }
 
+/**
+ * Genera un esquema o resumen estructurado en formato Markdown sobre un tema.
+ * @param {string} topic El tema para el esquema.
+ * @returns {Promise<string>} Una promesa que se resuelve con el esquema en formato Markdown.
+ * @throws {Error} Si la generación falla.
+ */
 export async function generateSchema(topic: string): Promise<string> {
     const prompt = `Act as an expert legal tutor. Create a clear, hierarchical, and well-structured outline (esquema) on the following topic from Spanish law: "${topic}".
     Use Markdown formatting with nested bullet points to represent the hierarchy.
@@ -280,6 +326,13 @@ export async function generateSchema(topic: string): Promise<string> {
 
 const MAX_SUMMARY_CHUNK_SIZE = 400000; // Reduced size for safety margin with tokenization.
 
+/**
+ * Genera un resumen de un texto. Si el texto es muy largo, lo divide en fragmentos,
+ * resume cada fragmento y luego combina los resúmenes.
+ * @param {string} text El texto a resumir.
+ * @returns {Promise<string>} Una promesa que se resuelve con el resumen del texto.
+ * @throws {Error} Si la generación falla o si el texto es demasiado largo para ser procesado.
+ */
 export async function generateSummary(text: string): Promise<string> {
     const originalPrompt = (textChunk: string) => `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
 The summary should capture the main points, key articles, and essential conclusions of the text.
@@ -376,6 +429,13 @@ ${textChunk}
 
 const MAX_COMPARISON_LENGTH = 500000; // Safe total character limit for the comparison prompt
 
+/**
+ * Compara dos versiones de un texto legal y genera un informe de las diferencias.
+ * @param {string} textA El texto de la versión antigua.
+ * @param {string} textB El texto de la versión nueva.
+ * @returns {Promise<string>} Un informe en Markdown con las modificaciones, adiciones y eliminaciones.
+ * @throws {Error} Si los textos son demasiado largos o la comparación falla.
+ */
 export async function compareLawVersions(textA: string, textB: string): Promise<string> {
     if (textA.length + textB.length > MAX_COMPARISON_LENGTH) {
         throw new Error(`Los textos son demasiado largos para ser comparados directamente (total: ${textA.length + textB.length} caracteres). Por favor, utiliza textos más cortos o resúmenes de los mismos.`);
@@ -412,6 +472,13 @@ export async function compareLawVersions(textA: string, textB: string): Promise<
     }
 }
 
+/**
+ * Genera un simulacro de examen completo basado en una selección de temas y un número de preguntas.
+ * @param {string[]} topics Un array con los temas a incluir en el examen.
+ * @param {number} questionCount El número de preguntas a generar.
+ * @returns {Promise<MockExam>} Una promesa que se resuelve con el objeto del examen.
+ * @throws {Error} Si la generación falla o el formato JSON es inválido.
+ */
 export async function generateMockExam(topics: string[], questionCount: number): Promise<MockExam> {
      const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Create a complete mock exam ('simulacro').
 Instructions:
@@ -462,6 +529,14 @@ You MUST return the output in a clean, valid JSON format. The entire response mu
     }
 }
 
+/**
+ * Genera un conjunto de flashcards y un meme relacionado con un tema.
+ * Primero genera el contenido de texto (flashcards y prompt para el meme) con Gemini Pro.
+ * Luego, genera la imagen del meme con Imagen.
+ * @param {string} topic El tema para las flashcards y el meme.
+ * @returns {Promise<{ flashcards: Flashcard[], meme: { imageUrl: string, prompt: string } }>} Un objeto con las flashcards y la URL del meme.
+ * @throws {Error} Si alguna de las dos etapas de generación falla.
+ */
 export async function generateFlashcardsAndMeme(topic: string): Promise<{ flashcards: Flashcard[], meme: { imageUrl: string, prompt: string } }> {
     const flashcardSchema = {
         type: Type.OBJECT,

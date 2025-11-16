@@ -34,83 +34,66 @@ El proyecto sigue una estructura modular y organizada, separando la lógica de l
 ```
 /
 ├── components/
-│   ├── icons/
-│   │   ├── BrainIcon.tsx
-│   │   ├── ... (resto de iconos SVG como componentes React)
-│   ├── CaseGeneratorView.tsx
-│   ├── ChatView.tsx
-│   ├── ComparatorView.tsx
-│   ├── FlashcardsView.tsx
-│   ├── InputSourceSelector.tsx  (Componente reutilizable para entrada de datos)
-│   ├── MindMapView.tsx
-│   ├── MockExamView.tsx
-│   ├── ProgressView.tsx
-│   ├── SchemaView.tsx
-│   ├── SearchGroundingView.tsx
-│   ├── SettingsView.tsx
-│   ├── Sidebar.tsx
-│   ├── StudyPlanView.tsx
-│   ├── SummaryView.tsx
-│   ├── SyllabusView.tsx
-│   └── UserGuideView.tsx
+│   ├── ... (Componentes de la interfaz de usuario)
+├── docs/
+│   ├── AI_AGENTS.md           (Especificación de los prompts y modelos de IA)
+│   ├── ARCHITECTURE.md        (Visión general de la arquitectura)
+│   └── DATA_MODEL.md          (Descripción del modelo de datos y tipos)
 ├── services/
 │   └── geminiService.ts       (Centraliza todas las llamadas a la API de Gemini)
 ├── App.tsx                    (Componente principal, gestiona el estado y las vistas)
-├── index.html                 (Punto de entrada HTML, carga de CDNs y script principal)
+├── index.html                 (Punto de entrada HTML)
 ├── index.tsx                  (Renderiza la aplicación React en el DOM)
 ├── metadata.json              (Metadatos de la aplicación)
-├── types.ts                   (Definiciones de tipos de TypeScript para todo el proyecto)
+├── types.ts                   (Definiciones de tipos de TypeScript)
 └── README.md                  (Este archivo)
 ```
 
 ---
 
-## 4. Desglose de Ficheros y Componentes
+## 4. Arquitectura y Documentación (AI Specs)
 
-#### Ficheros Raíz
+Este proyecto sigue una estrategia de **"AI Spec Driven Development"**. La documentación no es solo para humanos, sino que está estructurada para que los asistentes de IA puedan entender el contexto del proyecto, su arquitectura y sus objetivos. Esto permite una colaboración más eficiente y precisa.
 
-*   **`index.html`**: Punto de entrada de la aplicación. Carga las dependencias externas a través de CDN (TailwindCSS, PDF.js, HTML-to-Image) y el script principal de la aplicación. Utiliza un `importmap` para gestionar las dependencias de JavaScript.
-*   **`index.tsx`**: Monta el componente principal `App` en el elemento `#root` del DOM.
-*   **`App.tsx`**: Es el corazón de la aplicación.
-    *   Gestiona la vista activa (`currentView`).
-    *   Utiliza el custom hook `usePersistentState` (definido en este mismo fichero) para mantener el estado de las herramientas (casos prácticos, mapas mentales, etc.) en `localStorage`, permitiendo que los datos persistan entre sesiones.
-    *   Funciona como un enrutador, renderizando el componente de la vista correspondiente según el estado `currentView`.
-*   **`types.ts`**: Define todas las interfaces y enumeraciones de TypeScript utilizadas en la aplicación (`AppView`, `PracticalCase`, `ChatMessage`, etc.), garantizando la seguridad de tipos y la claridad del código.
-*   **`metadata.json`**: Contiene información básica sobre la aplicación.
+La documentación principal se encuentra en la carpeta `/docs`:
 
-#### `services/`
-
-*   **`geminiService.ts`**: Módulo crucial que encapsula toda la interacción con la API de Google Gemini.
-    *   Inicializa el cliente de `GoogleGenAI`.
-    *   Define y exporta funciones asíncronas para cada herramienta que requiere IA:
-        *   `generatePracticalCase()`: Usa `gemini-2.5-pro` con un esquema JSON estricto y `thinkingConfig` para alta calidad.
-        *   `getChatInstance()`: Gestiona instancias de chat para mantener el historial de conversaciones.
-        *   `searchWithGrounding()`: Usa `gemini-2.5-flash` con la herramienta `googleSearch`.
-        *   `generateMindMap()`, `generateSchema()`, `generateSummary()`, `compareLawVersions()`: Usan `gemini-2.5-pro` (`creativeModel`) para tareas que requieren mayor creatividad y estructura.
-        *   `generateMockExam()`: Similar al generador de casos, pero con un esquema y prompt dinámicos según la configuración del usuario.
-        *   `generateFlashcardsAndMeme()`: Un flujo de dos pasos. Primero llama a `gemini-2.5-pro` para obtener el contenido de las tarjetas y un prompt para el meme. Luego, llama a `imagen-4.0-generate-001` con ese prompt para generar la imagen.
-
-#### `components/`
-
-*   **`Sidebar.tsx`**: La barra de navegación lateral. Muestra los botones para cambiar de vista y resalta la vista activa.
-*   **`InputSourceSelector.tsx`**: Un componente reutilizable y clave que ofrece una interfaz unificada (pestañas para Texto, Subir Archivo, URL) para que el usuario introduzca datos. Contiene la lógica para extraer texto de archivos PDF y TXT usando `pdf.js` y `FileReader`.
-*   **Componentes de Vista (`*View.tsx`)**: Cada uno de estos ficheros corresponde a una herramienta principal de la aplicación. Son responsables de:
-    *   Renderizar la interfaz específica de la herramienta.
-    *   Gestionar el estado local (ej: el `topic` en `MindMapView`).
-    *   Llamar a las funciones correspondientes de `geminiService.ts`.
-    *   Mostrar los resultados, estados de carga y errores al usuario.
+*   **[Arquitectura del Sistema](./docs/ARCHITECTURE.md):** Una visión de alto nivel de la aplicación, su flujo de datos y dependencias.
+*   **[Definición de Agentes de IA](./docs/AI_AGENTS.md):** El documento más importante. Detalla cada llamada a la API de Gemini, explicando el "agente" o "personalidad" que se le pide al modelo, la configuración específica, el modelo utilizado y la justificación de esa elección.
+*   **[Modelo de Datos](./docs/DATA_MODEL.md):** Una explicación clara de las estructuras de datos y tipos definidos en `types.ts`.
 
 ---
 
-## 5. Dependencias y Herramientas
+## 5. Despliegue y Desarrollo Local
 
-La aplicación se construye sin un bundler (como Vite o Webpack) y carga sus dependencias directamente en el navegador a través de CDNs, lo cual es ideal para este entorno de desarrollo.
+Dado que la aplicación no utiliza un *bundler* (como Vite o Webpack), el despliegue en un entorno local es muy sencillo y solo requiere un servidor web estático.
 
-*   **React (v19.2.0)**: Biblioteca principal para construir la interfaz de usuario.
-*   **TailwindCSS (CDN)**: Framework de CSS "utility-first" para un diseño rápido y responsivo.
-*   **@google/genai (v1.29.0)**: SDK oficial de Google para interactuar con la API de Gemini.
-*   **pdf.js (CDN)**: Librería de Mozilla para parsear y extraer texto de archivos PDF en el cliente.
-*   **html-to-image (CDN)**: Librería para convertir elementos del DOM en imágenes (PNG), utilizada para la función de exportación de los mapas mentales.
+**Pasos:**
+
+1.  **Obtén el código:** Clona o descarga todos los archivos del proyecto en una carpeta local.
+
+2.  **Inicia un servidor web local:** No puedes abrir `index.html` directamente en el navegador (`file:///...`) debido a las políticas de seguridad (CORS) que bloquean las importaciones de módulos. Necesitas servir los archivos a través de un servidor.
+
+    *   **Opción A (Recomendada con Node.js):** Usa `live-server`, un paquete de `npm` que crea un servidor de desarrollo con recarga automática.
+        ```bash
+        # Instala live-server globalmente (solo la primera vez)
+        npm install -g live-server
+
+        # Desde la carpeta raíz del proyecto, inicia el servidor
+        live-server
+        ```
+        Se abrirá automáticamente una pestaña en tu navegador en `http://127.0.0.1:8080`.
+
+    *   **Opción B (Alternativa con Python):** Si tienes Python instalado.
+        ```bash
+        # Desde la carpeta raíz del proyecto (para Python 3)
+        python -m http.server
+
+        # O para Python 2
+        # python -m SimpleHTTPServer
+        ```
+        Abre tu navegador y ve a `http://localhost:8000`.
+
+3.  **¡Listo!** La aplicación ya está funcionando en tu máquina local. La clave de API de Gemini es gestionada por el entorno de desarrollo y no requiere configuración manual en un fichero `.env`.
 
 ---
 
@@ -126,24 +109,3 @@ Se ha realizado una selección estratégica de modelos para optimizar el coste y
 | **Mapas, Esquemas, Planes, Resúmenes, Comparador** | `gemini-2.5-pro`            | **Agente:** "Tutor experto/analista". Tareas creativas que se benefician de una mayor capacidad para estructurar información y generar contenido bien organizado. |
 | **Flashcards (texto)**      | `gemini-2.5-pro`            | **Agente:** "Generador de material de estudio". Crea preguntas y respuestas concisas y un prompt creativo para el meme. |
 | **Generación de Memes (imagen)**     | `imagen-4.0-generate-001`   | Modelo de generación de imágenes de alta calidad para crear contenido visual atractivo a partir de un prompt de texto. |
-
----
-
-## 7. Flujos de Datos Clave
-
-*   **Persistencia de Datos**: El hook `usePersistentState` en `App.tsx` es fundamental. Serializa el estado de las herramientas (el último caso generado, el último mapa mental, etc.) a formato JSON y lo guarda en `window.localStorage`. Al recargar la aplicación, lee este valor para que el usuario no pierda su trabajo.
-*   **Gestión de Estado**: El estado global (como la vista actual o los datos de progreso) se gestiona en el componente `App.tsx` y se pasa a los componentes hijos a través de props. Esto sigue un patrón de "levantar el estado" (lifting state up). El estado local de cada vista (como el `userInput` en el chat) se gestiona dentro del propio componente.
-
----
-
-## 8. Cómo Continuar el Desarrollo
-
-Esta base de código es robusta y modular, permitiendo futuras expansiones.
-
-*   **Backend y Cuentas de Usuario**: Para una aplicación de producción, sería ideal desarrollar un backend (ej: con Node.js/Express o Firebase) para:
-    *   Gestionar cuentas de usuario y persistir datos en una base de datos (Firestore, PostgreSQL).
-    *   Implementar un proxy para las llamadas a la API de Gemini, ocultando la clave de API y gestionando la autenticación. Esto también solucionaría cualquier problema de CORS con la función `getTextFromUrl`.
-*   **Mejorar el Seguimiento de Progreso**: El componente `ProgressView` podría expandirse para mostrar gráficos más detallados, filtrar por temas específicos y mostrar la evolución a lo largo del tiempo.
-*   **Gamificación**: Añadir elementos como logros, rachas de estudio o insignias para aumentar la motivación del usuario.
-*   **Integración con Calendario**: Permitir que el "Plan de Estudios" se sincronice con Google Calendar u otros servicios.
-*   **Modelo de Monetización**: Implementar un sistema de suscripción (ej: con Stripe) para desbloquear funcionalidades ilimitadas, siguiendo el modelo Freemium descrito en `SettingsView.tsx`.

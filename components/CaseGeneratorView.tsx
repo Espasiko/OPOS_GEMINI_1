@@ -14,6 +14,16 @@ interface CaseGeneratorViewProps {
     addProgressData: (data: ProgressData) => void;
 }
 
+/**
+ * Un subcomponente que renderiza una única pregunta de un caso práctico.
+ * Gestiona la visualización de las opciones, el estado de la respuesta del usuario (correcta/incorrecta),
+ * y la revelación de la explicación.
+ * @param {object} props Las propiedades para el componente.
+ * @param {PracticalCaseQuestion} props.question El objeto de la pregunta a renderizar.
+ * @param {string} props.topic El tema del caso práctico actual.
+ * @param {CaseAnswer[string]} props.answers El estado de la respuesta del usuario para esta pregunta.
+ * @param {(questionId: string, optionId: string) => void} props.onSelect El callback que se ejecuta cuando el usuario selecciona una opción.
+ */
 const QuestionView: React.FC<{
     question: PracticalCaseQuestion;
     topic: string;
@@ -68,7 +78,13 @@ const QuestionView: React.FC<{
     );
 };
 
-
+/**
+ * Muestra la vista del Generador de Casos Prácticos.
+ * Gestiona la obtención de nuevos casos a través del `geminiService`, la interacción del
+ * usuario con las preguntas y la visualización del escenario y las explicaciones.
+ * También se encarga de registrar los datos de progreso de las respuestas.
+ * @param {CaseGeneratorViewProps} props Las propiedades para el componente, pasadas desde `App.tsx`.
+ */
 const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({ currentCase, setCurrentCase, caseAnswers, setCaseAnswers, isLoading, setIsLoading, addProgressData }) => {
   const [error, setError] = useState<string | null>(null);
 

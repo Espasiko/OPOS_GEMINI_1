@@ -23,7 +23,13 @@ export interface ProgressData {
   topic: string;
 }
 
-// Custom hook for localStorage persistence
+/**
+ * Un custom hook que persiste el estado en `window.localStorage`.
+ * Lee el valor inicial de localStorage y actualiza localStorage cada vez que el estado cambia.
+ * @param {string} key La clave a usar en localStorage.
+ * @param {T} initialState El estado inicial si no se encuentra nada en localStorage.
+ * @returns {[T, React.Dispatch<React.SetStateAction<T>>]} Un array con el estado y la función para actualizarlo.
+ */
 function usePersistentState<T>(key: string, initialState: T): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [state, setState] = useState<T>(() => {
     try {
@@ -46,7 +52,13 @@ function usePersistentState<T>(key: string, initialState: T): [T, React.Dispatch
   return [state, setState];
 }
 
-
+/**
+ * El componente principal de la aplicación OpositaIA.
+ * Actúa como el contenedor principal, gestionando el estado global como la vista actual
+ * y los datos persistentes entre sesiones (a través del hook `usePersistentState`).
+ * Funciona como un enrutador simple, renderizando el componente de la vista apropiado
+ * basado en el estado `currentView`.
+ */
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.CHAT);
 

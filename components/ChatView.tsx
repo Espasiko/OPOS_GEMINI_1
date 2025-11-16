@@ -7,6 +7,14 @@ import { PlusIcon } from './icons/PlusIcon';
 import { ChatIcon } from './icons/ChatIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
 
+/**
+ * Muestra la vista del Chat Explicativo.
+ * Este componente gestiona múltiples conversaciones, persistiendo el historial en localStorage.
+ * Cada conversación tiene su propia instancia de chat para mantener el contexto.
+ * Permite al usuario enviar mensajes de texto o cargar contexto desde archivos/URLs
+ * para que la IA los analice y responda preguntas sobre ellos.
+ * Las respuestas del modelo se reciben en streaming para una experiencia de usuario fluida.
+ */
 const ChatView: React.FC = () => {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeConvId, setActiveConvId] = useState<string>('');
