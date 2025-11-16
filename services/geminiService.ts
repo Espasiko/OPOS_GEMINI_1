@@ -1,11 +1,14 @@
 import { GoogleGenAI, Chat, Type } from "@google/genai";
 import { PracticalCase, GroundingSource, MindMapNode, StudyPlanInput, MockExam, Flashcard, PracticalCaseQuestion } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+// Vite exposes env variables with VITE_ prefix via import.meta.env
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+if (!API_KEY) {
+    throw new Error("VITE_API_KEY environment variable not set. Please add it to your .env file.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 const caseGeneratorModel = 'gemini-2.5-pro';
 const chatModel = 'gemini-2.5-flash';
