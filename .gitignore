@@ -27,6 +27,10 @@ npm-debug.log*
 temp-*/
 *.tmp
 
+# Test coverage
+coverage/
+*.lcov
+
 # Keep AI Specs
 !ai-specs/
 !docs/
