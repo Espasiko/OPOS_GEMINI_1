@@ -14,6 +14,7 @@ import SummaryView from './components/SummaryView';
 import ComparatorView from './components/ComparatorView';
 import MockExamView from './components/MockExamView';
 import FlashcardsView from './components/FlashcardsView';
+import { VPSTestView } from './components/VPSTestView';
 import { AppView, PracticalCase, CaseAnswer, MindMapNode } from './types';
 
 export interface ProgressData {
@@ -30,7 +31,10 @@ export interface ProgressData {
  * @param {T} initialState El estado inicial si no se encuentra nada en localStorage.
  * @returns {[T, React.Dispatch<React.SetStateAction<T>>]} Un array con el estado y la función para actualizarlo.
  */
-function usePersistentState<T>(key: string, initialState: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+function usePersistentState<T>(
+  key: string,
+  initialState: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [state, setState] = useState<T>(() => {
     try {
       const storedValue = window.localStorage.getItem(key);
@@ -63,18 +67,38 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.CHAT);
 
   // State lifted for persistence across views and sessions
-  const [currentCase, setCurrentCase] = usePersistentState<PracticalCase | null>('caseGenerator_currentCase', null);
-  const [caseAnswers, setCaseAnswers] = usePersistentState<CaseAnswer>('caseGenerator_caseAnswers', {});
+  const [currentCase, setCurrentCase] = usePersistentState<PracticalCase | null>(
+    'caseGenerator_currentCase',
+    null
+  );
+  const [caseAnswers, setCaseAnswers] = usePersistentState<CaseAnswer>(
+    'caseGenerator_caseAnswers',
+    {}
+  );
   const [caseIsLoading, setCaseIsLoading] = useState<boolean>(false);
-  
-  const [progressData, setProgressData] = usePersistentState<ProgressData[]>('progressTracker_data', []);
+
+  const [progressData, setProgressData] = usePersistentState<ProgressData[]>(
+    'progressTracker_data',
+    []
+  );
 
   // States for other persistent views
-  const [mindMapState, setMindMapState] = usePersistentState<{ topic: string; map: MindMapNode | null }>('mindMap_lastState', { topic: '', map: null });
-  const [schemaState, setSchemaState] = usePersistentState<{ topic: string; schema: string }>('schema_lastState', { topic: '', schema: '' });
-  const [summaryState, setSummaryState] = usePersistentState<{ text: string, summary: string }>('summary_lastState', { text: '', summary: '' });
-  const [comparisonResult, setComparisonResult] = usePersistentState<string>('comparator_lastResult', ''); // FIX: Persist only the result for the comparator to avoid exceeding localStorage quota with two large text inputs.
-
+  const [mindMapState, setMindMapState] = usePersistentState<{
+    topic: string;
+    map: MindMapNode | null;
+  }>('mindMap_lastState', { topic: '', map: null });
+  const [schemaState, setSchemaState] = usePersistentState<{ topic: string; schema: string }>(
+    'schema_lastState',
+    { topic: '', schema: '' }
+  );
+  const [summaryState, setSummaryState] = usePersistentState<{ text: string; summary: string }>(
+    'summary_lastState',
+    { text: '', summary: '' }
+  );
+  const [comparisonResult, setComparisonResult] = usePersistentState<string>(
+    'comparator_lastResult',
+    ''
+  ); // FIX: Persist only the result for the comparator to avoid exceeding localStorage quota with two large text inputs.
 
   const renderView = () => {
     switch (currentView) {
@@ -82,14 +106,14 @@ const App: React.FC = () => {
         return <ChatView />;
       case AppView.CASE_GENERATOR:
         return (
-          <CaseGeneratorView 
+          <CaseGeneratorView
             currentCase={currentCase}
             setCurrentCase={setCurrentCase}
             caseAnswers={caseAnswers}
             setCaseAnswers={setCaseAnswers}
             isLoading={caseIsLoading}
             setIsLoading={setCaseIsLoading}
-            addProgressData={(data) => setProgressData(prev => [...prev, data])}
+            addProgressData={data => setProgressData(prev => [...prev, data])}
           />
         );
       case AppView.SEARCH:
@@ -111,11 +135,20 @@ const App: React.FC = () => {
       case AppView.SUMMARY:
         return <SummaryView savedState={summaryState} setSavedState={setSummaryState} />;
       case AppView.COMPARATOR:
-        return <ComparatorView savedComparison={comparisonResult} setSavedComparison={setComparisonResult} />;
+        return (
+          <ComparatorView
+            savedComparison={comparisonResult}
+            setSavedComparison={setComparisonResult}
+          />
+        );
       case AppView.MOCK_EXAM:
-        return <MockExamView addProgressData={(data) => setProgressData(prev => [...prev, ...data])} />;
-       case AppView.FLASHCARDS:
+        return (
+          <MockExamView addProgressData={data => setProgressData(prev => [...prev, ...data])} />
+        );
+      case AppView.FLASHCARDS:
         return <FlashcardsView />;
+      case AppView.VPS_TEST:
+        return <VPSTestView />;
       default:
         return <ChatView />;
     }
@@ -124,9 +157,7 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen w-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 overflow-hidden">
       <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
-      <main className="flex-1 flex flex-col h-full overflow-y-auto">
-        {renderView()}
-      </main>
+      <main className="flex-1 flex flex-col h-full overflow-y-auto">{renderView()}</main>
     </div>
   );
 };
