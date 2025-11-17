@@ -18,6 +18,7 @@ npm install
 ```
 
 This will install all required packages including:
+
 - React 19.2.0
 - Google Gemini AI SDK
 - Vite (build tool)
@@ -35,11 +36,13 @@ This will install all required packages including:
 #### Add API Key to your project:
 
 1. Copy the example environment file:
+
    ```bash
    copy .env.example .env
    ```
 
 2. Open `.env` file and replace `your_api_key_here` with your actual API key:
+
    ```
    VITE_API_KEY=AIzaSyC...your_actual_key_here
    ```
@@ -55,6 +58,7 @@ npm run dev
 ```
 
 The application will be available at:
+
 - **Local**: http://localhost:3000/
 - **Network**: http://[your-ip]:3000/
 
@@ -67,6 +71,7 @@ npm run build
 This creates an optimized production build in the `dist/` folder.
 
 To preview the production build:
+
 ```bash
 npm run preview
 ```
@@ -76,6 +81,7 @@ npm run preview
 ### Error: "VITE_API_KEY environment variable not set"
 
 **Solution**: Make sure you have:
+
 1. Created a `.env` file in the root directory
 2. Added your API key: `VITE_API_KEY=your_key_here`
 3. Restarted the dev server (`npm run dev`)
@@ -83,17 +89,20 @@ npm run preview
 ### Error: "Unsupported engine"
 
 **Solution**: Update Node.js to v20+ or v24.11.1 LTS
+
 - Download: https://nodejs.org/
 
 ### Port 3000 already in use
 
-**Solution**: 
+**Solution**:
+
 - Stop other processes using port 3000
 - Or change the port in `vite.config.ts`
 
 ### API Key not working
 
 **Solution**:
+
 1. Verify your API key is correct
 2. Check if the API key has the necessary permissions
 3. Ensure you're not exceeding API rate limits
@@ -143,9 +152,9 @@ npm run preview
 
 ## 📝 Environment Variables Reference
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_API_KEY` | ✅ Yes | Google Gemini API key from https://aistudio.google.com/app/apikey |
+| Variable       | Required | Description                                                       |
+| -------------- | -------- | ----------------------------------------------------------------- |
+| `VITE_API_KEY` | ✅ Yes   | Google Gemini API key from https://aistudio.google.com/app/apikey |
 
 ## 🔐 Security Notes
 
@@ -157,12 +166,14 @@ npm run preview
 ## 📦 Dependencies
 
 ### Production Dependencies
+
 - `react` ^19.2.0 - UI framework
 - `react-dom` ^19.2.0 - React DOM renderer
 - `@google/genai` ^1.29.0 - Google Gemini AI SDK
 - `html-to-image` ^1.11.13 - Export mind maps as images
 
 ### Development Dependencies
+
 - `typescript` ~5.8.2 - Type safety
 - `vite` ^6.2.0 - Build tool
 - `@vitejs/plugin-react` ^5.0.0 - React plugin for Vite

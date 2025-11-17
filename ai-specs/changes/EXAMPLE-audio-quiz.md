@@ -11,10 +11,12 @@ Create an audio-based quiz feature that reads legal questions aloud and allows u
 ## 2. AI Agent Definition
 
 ### Model Selection
+
 - **Model**: `gemini-2.5-flash`
 - **Justification**: Quick quiz generation for interactive experience. Flash model provides fast response times needed for real-time quiz flow.
 
 ### Agent Configuration
+
 ```typescript
 {
   model: 'gemini-2.5-flash',
@@ -45,6 +47,7 @@ Create an audio-based quiz feature that reads legal questions aloud and allows u
 ```
 
 ### System Instruction / Prompt
+
 ```
 You are an expert quiz generator for Spanish Social Security law exam preparation.
 
@@ -64,6 +67,7 @@ Output format: JSON with questions array
 ## 3. Implementation Steps
 
 ### Step 0: Create Feature Branch
+
 - **Branch Name**: `feature/audio-quiz`
 - **Commands**:
   ```bash
@@ -71,9 +75,11 @@ Output format: JSON with questions array
   ```
 
 ### Step 1: Define Types
+
 - **File**: `types.ts`
 - **Action**: Add audio quiz types
 - **Types to Add**:
+
   ```typescript
   export interface AudioQuizQuestion {
     id: string;
@@ -83,7 +89,7 @@ Output format: JSON with questions array
     explanation: string;
     userAnswer?: number;
   }
-  
+
   export interface AudioQuizState {
     questions: AudioQuizQuestion[];
     currentQuestionIndex: number;
@@ -91,22 +97,23 @@ Output format: JSON with questions array
     isPlaying: boolean;
     isComplete: boolean;
   }
-  
+
   // Update AppView enum
   export enum AppView {
     // ... existing views
-    AUDIO_QUIZ = 'AUDIO_QUIZ'
+    AUDIO_QUIZ = 'AUDIO_QUIZ',
   }
   ```
 
 ### Step 2: Implement Service Function
+
 - **File**: `services/geminiService.ts`
 - **Function Signature**:
   ```typescript
   export async function generateAudioQuiz(
     topic: string,
     questionCount: number = 5
-  ): Promise<AudioQuizQuestion[]>
+  ): Promise<AudioQuizQuestion[]>;
   ```
 - **Implementation Steps**:
   1. Get gemini-2.5-flash model instance
@@ -118,33 +125,35 @@ Output format: JSON with questions array
   7. Handle errors (network, API, parsing)
 
 ### Step 3: Create Component
+
 - **File**: `components/AudioQuiz.tsx`
 - **Component Structure**:
+
   ```typescript
   interface AudioQuizProps {
     onClose: () => void;
   }
-  
+
   export const AudioQuiz: React.FC<AudioQuizProps> = ({ onClose }) => {
     // State
     const [topic, setTopic] = useState('');
     const [loading, setLoading] = useState(false);
     const [quizState, setQuizState] = useState<AudioQuizState | null>(null);
     const [error, setError] = useState('');
-    
+
     // Speech synthesis
     const speak = (text: string) => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'es-ES';
       window.speechSynthesis.speak(utterance);
     };
-    
+
     // Handlers
     const handleStartQuiz = async () => { /* ... */ };
     const handleAnswer = (answerIndex: number) => { /* ... */ };
     const handleNextQuestion = () => { /* ... */ };
     const handlePlayAudio = () => { /* ... */ };
-    
+
     return (
       <div className="container mt-4">
         {/* UI implementation */}
@@ -165,14 +174,12 @@ Output format: JSON with questions array
      - Topic input field
      - "Start Audio Quiz" button
      - Instructions
-  
   2. **Quiz Screen** (during quiz):
      - Question text (large, readable)
      - "Play Audio" button (🔊 icon)
      - 4 option buttons (A, B, C, D)
      - Progress indicator (Question 1/5)
      - Score display
-  
   3. **Result Screen** (after quiz):
      - Final score
      - Review of questions with correct answers
@@ -180,18 +187,17 @@ Output format: JSON with questions array
      - "Back to Menu" button
 
 ### Step 4: Update App.tsx
+
 - **Actions**:
   1. Import AudioQuiz component:
      ```typescript
      import { AudioQuiz } from './components/AudioQuiz';
      ```
-  
   2. Add to view switch statement:
      ```typescript
      case AppView.AUDIO_QUIZ:
        return <AudioQuiz onClose={() => setCurrentView(AppView.CHAT)} />;
      ```
-  
   3. Add navigation button in sidebar:
      ```typescript
      <button
@@ -205,54 +211,58 @@ Output format: JSON with questions array
 ### Step 5: Update Documentation
 
 #### Update `/docs/AI_AGENTS.md`
+
 Add new section after existing quiz sections:
 
 ```markdown
 ### 6. `generateAudioQuiz()`
 
-*   **Función:** `generateAudioQuiz(topic, questionCount)`
-*   **Agente/Personalidad:** "Generador de quiz experto para examen de Seguridad Social española."
-*   **Modelo:** `gemini-2.5-flash`
-*   **Justificación:** Se necesita generación rápida de preguntas para una experiencia interactiva fluida. El modelo Flash proporciona tiempos de respuesta rápidos necesarios para el flujo del quiz en tiempo real. Las preguntas deben ser claras y concisas para lectura de audio.
-*   **Configuración Clave:**
-    *   `model: 'gemini-2.5-flash'`
-    *   `responseMimeType: "application/json"`
-    *   `responseSchema`: Define la estructura para preguntas, opciones, respuesta correcta y explicación.
-    *   Preguntas optimizadas para lectura en voz alta (claras, concisas, sin ambigüedades).
+- **Función:** `generateAudioQuiz(topic, questionCount)`
+- **Agente/Personalidad:** "Generador de quiz experto para examen de Seguridad Social española."
+- **Modelo:** `gemini-2.5-flash`
+- **Justificación:** Se necesita generación rápida de preguntas para una experiencia interactiva fluida. El modelo Flash proporciona tiempos de respuesta rápidos necesarios para el flujo del quiz en tiempo real. Las preguntas deben ser claras y concisas para lectura de audio.
+- **Configuración Clave:**
+  - `model: 'gemini-2.5-flash'`
+  - `responseMimeType: "application/json"`
+  - `responseSchema`: Define la estructura para preguntas, opciones, respuesta correcta y explicación.
+  - Preguntas optimizadas para lectura en voz alta (claras, concisas, sin ambigüedades).
 ```
 
 #### Update `/docs/DATA_MODEL.md`
+
 Add new interfaces:
 
 ```markdown
 ### Audio Quiz Structures
 
-*   **`AudioQuizQuestion`**: Representa una pregunta del quiz de audio.
-    *   `id`: Identificador único.
-    *   `question`: Texto de la pregunta.
-    *   `options`: Array de 4 opciones de respuesta.
-    *   `correctAnswer`: Índice de la respuesta correcta (0-3).
-    *   `explanation`: Explicación de la respuesta correcta.
-    *   `userAnswer`: Respuesta del usuario (opcional).
+- **`AudioQuizQuestion`**: Representa una pregunta del quiz de audio.
+  - `id`: Identificador único.
+  - `question`: Texto de la pregunta.
+  - `options`: Array de 4 opciones de respuesta.
+  - `correctAnswer`: Índice de la respuesta correcta (0-3).
+  - `explanation`: Explicación de la respuesta correcta.
+  - `userAnswer`: Respuesta del usuario (opcional).
 
-*   **`AudioQuizState`**: Estado del quiz de audio.
-    *   `questions`: Array de preguntas.
-    *   `currentQuestionIndex`: Índice de la pregunta actual.
-    *   `score`: Puntuación actual.
-    *   `isPlaying`: Si el audio está reproduciéndose.
-    *   `isComplete`: Si el quiz ha terminado.
+- **`AudioQuizState`**: Estado del quiz de audio.
+  - `questions`: Array de preguntas.
+  - `currentQuestionIndex`: Índice de la pregunta actual.
+  - `score`: Puntuación actual.
+  - `isPlaying`: Si el audio está reproduciéndose.
+  - `isComplete`: Si el quiz ha terminado.
 ```
 
 #### Update `README.md`
+
 Add to features list:
 
 ```markdown
-*   **Audio Quiz:** Quiz interactivo con lectura de preguntas en voz alta para estudio manos libres y mejor accesibilidad.
+- **Audio Quiz:** Quiz interactivo con lectura de preguntas en voz alta para estudio manos libres y mejor accesibilidad.
 ```
 
 ## 4. Testing Checklist
 
 ### Manual Testing
+
 - [ ] Topic input accepts text
 - [ ] "Start Quiz" button triggers API call
 - [ ] Loading state displays during generation
@@ -271,6 +281,7 @@ Add to features list:
 - [ ] Responsive on mobile/tablet/desktop
 
 ### Edge Cases
+
 - [ ] Empty topic input (show validation error)
 - [ ] Very long topic name (truncate or handle)
 - [ ] Network error during generation (show error message)
@@ -281,16 +292,17 @@ Add to features list:
 ## 5. Error Handling
 
 ### API Errors
+
 ```typescript
 const handleStartQuiz = async () => {
   if (!topic.trim()) {
     setError('Please enter a topic');
     return;
   }
-  
+
   setLoading(true);
   setError('');
-  
+
   try {
     const questions = await geminiService.generateAudioQuiz(topic, 5);
     setQuizState({
@@ -298,7 +310,7 @@ const handleStartQuiz = async () => {
       currentQuestionIndex: 0,
       score: 0,
       isPlaying: false,
-      isComplete: false
+      isComplete: false,
     });
   } catch (error) {
     console.error('Error generating audio quiz:', error);
@@ -310,17 +322,18 @@ const handleStartQuiz = async () => {
 ```
 
 ### Speech Synthesis Errors
+
 ```typescript
 const speak = (text: string) => {
   if (!window.speechSynthesis) {
     setError('Audio not supported in this browser');
     return;
   }
-  
+
   try {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'es-ES';
-    utterance.onerror = (event) => {
+    utterance.onerror = event => {
       console.error('Speech synthesis error:', event);
       setError('Audio playback failed');
     };
@@ -333,6 +346,7 @@ const speak = (text: string) => {
 ```
 
 ### User-Facing Messages
+
 - Loading: "Generating audio quiz..."
 - Success: Display quiz interface
 - Error: "Error: [specific message]"
@@ -341,8 +355,9 @@ const speak = (text: string) => {
 ## 6. UI/UX Considerations
 
 ### Bootstrap Components
+
 - **Forms**: `form-control`, `form-label` for topic input
-- **Buttons**: 
+- **Buttons**:
   - Primary: `btn btn-primary` (Start Quiz, Play Audio)
   - Success: `btn btn-success` (Correct answer)
   - Danger: `btn btn-danger` (Wrong answer)
@@ -352,22 +367,26 @@ const speak = (text: string) => {
 - **Alerts**: `alert alert-info` for instructions
 
 ### Loading States
+
 - Spinner during quiz generation: `spinner-border`
 - Disable buttons during loading
 - Show "Generating quiz..." message
 
 ### Audio Feedback
+
 - 🔊 icon for play audio button
 - Visual feedback when audio is playing (pulsing icon)
 - Auto-play option (optional enhancement)
 
 ### Responsive Design
+
 - Large, readable text for questions
 - Touch-friendly buttons (min 44px height)
 - Stack options vertically on mobile
 - Horizontal layout on desktop
 
 ### Accessibility
+
 - ARIA labels for buttons
 - Keyboard navigation support
 - High contrast for answer feedback
@@ -391,17 +410,20 @@ const speak = (text: string) => {
 ## 8. Dependencies
 
 ### Existing Dependencies
+
 - React, TypeScript
 - Google Gemini API (`gemini-2.5-flash`)
 - Bootstrap for UI
 
 ### Browser APIs
+
 - **Web Speech API** (speechSynthesis)
   - Built into modern browsers
   - No installation needed
   - Fallback: Show text-only mode if not supported
 
 ### New Dependencies
+
 - None (using native browser APIs)
 
 ## 9. Notes
@@ -432,12 +454,14 @@ const speak = (text: string) => {
 ## 11. Rollback Plan
 
 If issues arise:
+
 ```bash
 git checkout main
 git branch -D feature/audio-quiz
 ```
 
 Or if partially implemented:
+
 ```bash
 git reset --hard HEAD~1  # Undo last commit
 ```

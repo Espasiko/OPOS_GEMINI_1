@@ -48,6 +48,7 @@ Create a markdown document at `ai-specs/changes/[feature-name].md` with this str
 ## Implementation Plan: [Feature Name]
 
 ### 1. Overview
+
 - Brief description of the feature
 - User benefit
 - Technical approach
@@ -55,10 +56,12 @@ Create a markdown document at `ai-specs/changes/[feature-name].md` with this str
 ### 2. AI Agent Definition
 
 #### Model Selection
+
 - **Model**: `gemini-2.5-pro` or `gemini-2.5-flash` or `imagen-4.0`
 - **Justification**: Why this model?
 
 #### Agent Configuration
+
 ```typescript
 {
   model: 'model-name',
@@ -70,6 +73,7 @@ Create a markdown document at `ai-specs/changes/[feature-name].md` with this str
 ```
 
 #### System Instruction / Prompt
+
 ```
 Agent personality: [Define the role]
 
@@ -81,6 +85,7 @@ Output format: [Expected format]
 ### 3. Implementation Steps
 
 #### Step 0: Create Feature Branch
+
 - **Branch Name**: `feature/[feature-name]`
 - **Commands**:
   ```bash
@@ -88,28 +93,29 @@ Output format: [Expected format]
   ```
 
 #### Step 1: Define Types
+
 - **File**: `types.ts`
 - **Action**: Add new types/interfaces
 - **Types to Add**:
+
   ```typescript
   export interface NewFeatureType {
     // Define structure
   }
-  
+
   // Update AppView enum if new view
   export enum AppView {
     // ... existing
-    NEW_FEATURE = 'NEW_FEATURE'
+    NEW_FEATURE = 'NEW_FEATURE',
   }
   ```
 
 #### Step 2: Implement Service Function
+
 - **File**: `services/geminiService.ts`
 - **Function Signature**:
   ```typescript
-  export async function generateNewFeature(
-    input: InputType
-  ): Promise<OutputType>
+  export async function generateNewFeature(input: InputType): Promise<OutputType>;
   ```
 - **Implementation Steps**:
   1. Get model instance with configuration
@@ -119,15 +125,18 @@ Output format: [Expected format]
   5. Handle errors appropriately
 
 #### Step 3: Create Component
+
 - **File**: `components/NewFeature.tsx`
 - **Component Structure**:
+
   ```typescript
   interface NewFeatureProps {
     onClose: () => void;
   }
-  
-  export const NewFeature: React.FC<NewFeatureProps>
+
+  export const NewFeature: React.FC<NewFeatureProps>;
   ```
+
 - **State Management**:
   - Loading state
   - Result state
@@ -142,6 +151,7 @@ Output format: [Expected format]
   - Close/back button
 
 #### Step 4: Update App.tsx
+
 - **Actions**:
   1. Import new component
   2. Add state for feature data (if needed)
@@ -151,29 +161,34 @@ Output format: [Expected format]
 #### Step 5: Update Documentation
 
 ##### Update `/docs/AI_AGENTS.md`
+
 Add new section:
+
 ```markdown
 ### N. `generateNewFeature()`
 
-*   **Función:** `generateNewFeature(input)`
-*   **Agente/Personalidad:** "[Agent description]"
-*   **Modelo:** `model-name`
-*   **Justificación:** [Why this model and configuration]
-*   **Configuración Clave:**
-    *   `model: 'model-name'`
-    *   `responseMimeType: "..."`
-    *   `responseSchema`: [Schema description]
+- **Función:** `generateNewFeature(input)`
+- **Agente/Personalidad:** "[Agent description]"
+- **Modelo:** `model-name`
+- **Justificación:** [Why this model and configuration]
+- **Configuración Clave:**
+  - `model: 'model-name'`
+  - `responseMimeType: "..."`
+  - `responseSchema`: [Schema description]
 ```
 
 ##### Update `/docs/DATA_MODEL.md`
+
 Add new types documentation
 
 ##### Update `README.md`
+
 Add feature to features list if user-facing
 
 ### 4. Testing Checklist
 
 #### Manual Testing
+
 - [ ] Feature loads without errors
 - [ ] Input validation works
 - [ ] Loading state displays correctly
@@ -185,6 +200,7 @@ Add feature to features list if user-facing
 - [ ] Data persists if applicable
 
 #### Edge Cases
+
 - [ ] Empty input
 - [ ] Very long input
 - [ ] Special characters
@@ -194,6 +210,7 @@ Add feature to features list if user-facing
 ### 5. Error Handling
 
 #### API Errors
+
 ```typescript
 try {
   const result = await geminiService.generateNewFeature(input);
@@ -205,6 +222,7 @@ try {
 ```
 
 #### User-Facing Messages
+
 - Loading: "Generating [feature]..."
 - Success: Display results
 - Error: "Error: [user-friendly message]"
@@ -212,17 +230,20 @@ try {
 ### 6. UI/UX Considerations
 
 #### Bootstrap Components
+
 - Forms: `form-control`, `form-label`
 - Buttons: `btn btn-primary`, `btn btn-secondary`
 - Cards: `card`, `card-body`
 - Layout: `container`, `row`, `col-md-*`
 
 #### Loading States
+
 - Spinner: `spinner-border`
 - Disable buttons during loading
 - Show progress if multi-step
 
 #### Responsive Design
+
 - Mobile-first approach
 - Test on different screen sizes
 - Use Bootstrap grid system
@@ -242,11 +263,13 @@ try {
 ### 8. Dependencies
 
 #### Existing Dependencies
+
 - React, TypeScript
 - Google Gemini API
 - Bootstrap
 
 #### New Dependencies (if any)
+
 - None expected (use existing stack)
 
 ### 9. Notes
@@ -269,6 +292,7 @@ try {
 ### 11. Rollback Plan
 
 If issues arise:
+
 ```bash
 git checkout main
 git branch -D feature/[feature-name]

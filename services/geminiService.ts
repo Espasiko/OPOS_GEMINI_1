@@ -1,11 +1,19 @@
-import { GoogleGenAI, Chat, Type } from "@google/genai";
-import { PracticalCase, GroundingSource, MindMapNode, StudyPlanInput, MockExam, Flashcard, PracticalCaseQuestion } from '../types';
+import { GoogleGenAI, Chat, Type } from '@google/genai';
+import {
+  PracticalCase,
+  GroundingSource,
+  MindMapNode,
+  StudyPlanInput,
+  MockExam,
+  Flashcard,
+  PracticalCaseQuestion,
+} from '../types';
 
 // Vite exposes env variables with VITE_ prefix via import.meta.env
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 if (!API_KEY) {
-    throw new Error("VITE_API_KEY environment variable not set. Please add it to your .env file.");
+  throw new Error('VITE_API_KEY environment variable not set. Please add it to your .env file.');
 }
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -25,84 +33,104 @@ const imageModel = 'imagen-4.0-generate-001';
  * @throws {Error} Si todos los proxies fallan o si ocurre un error de red.
  */
 export async function getTextFromUrl(url: string): Promise<string> {
-    const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-    ];
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
 
-    for (const proxyUrl of proxies) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
+  for (const proxyUrl of proxies) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
 
-        try {
-            const proxyName = new URL(proxyUrl).hostname;
-            console.log(`Attempting to fetch via proxy: ${proxyName}`);
-            
-            const response = await fetch(proxyUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
+    try {
+      const proxyName = new URL(proxyUrl).hostname;
+      console.log(`Attempting to fetch via proxy: ${proxyName}`);
 
-            if (response.ok) {
-                const textContent = await response.text();
-                // Some proxies return empty content on soft failure, so we check for that.
-                if (textContent && textContent.trim().length > 0) {
-                     return textContent;
-                }
-                console.warn(`Proxy ${proxyName} returned empty or invalid content.`);
-            } else {
-                console.warn(`Proxy ${proxyName} failed with status: ${response.status}`);
-            }
-        } catch (error: any) {
-            clearTimeout(timeoutId);
-            const proxyName = new URL(proxyUrl).hostname;
-            if (error.name === 'AbortError') {
-                console.warn(`Proxy ${proxyName} timed out.`);
-            } else {
-                console.error(`Error with proxy ${proxyName}:`, error);
-            }
+      const response = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const textContent = await response.text();
+        // Some proxies return empty content on soft failure, so we check for that.
+        if (textContent && textContent.trim().length > 0) {
+          return textContent;
         }
+        console.warn(`Proxy ${proxyName} returned empty or invalid content.`);
+      } else {
+        console.warn(`Proxy ${proxyName} failed with status: ${response.status}`);
+      }
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      const proxyName = new URL(proxyUrl).hostname;
+      if (error.name === 'AbortError') {
+        console.warn(`Proxy ${proxyName} timed out.`);
+      } else {
+        console.error(`Error with proxy ${proxyName}:`, error);
+      }
     }
+  }
 
-    // If all proxies fail
-    console.error("All CORS proxies failed to fetch the URL:", url);
-    throw new Error("No se pudo obtener el contenido de la URL. Todos los servicios intermediarios fallaron. Esto puede deberse a que el sitio web de destino está bloqueando el acceso o a un problema de red. Por favor, intenta pegar el texto manualmente.");
+  // If all proxies fail
+  console.error('All CORS proxies failed to fetch the URL:', url);
+  throw new Error(
+    'No se pudo obtener el contenido de la URL. Todos los servicios intermediarios fallaron. Esto puede deberse a que el sitio web de destino está bloqueando el acceso o a un problema de red. Por favor, intenta pegar el texto manualmente.'
+  );
 }
 
-
 const practicalCaseQuestionSchema = {
-    type: Type.OBJECT,
-    properties: {
-        id: { type: Type.STRING, description: "A unique identifier for the question, e.g., 'q1', 'q2'."},
-        question: { type: Type.STRING, description: "The specific question the user must answer based on the scenario." },
-        options: {
-            type: Type.ARRAY,
-            description: "An array of 4 multiple choice options.",
-            items: {
-                type: Type.OBJECT,
-                properties: {
-                    id: { type: Type.STRING, description: "A unique identifier for the option, e.g., 'A', 'B', 'C', 'D'." },
-                    text: { type: Type.STRING, description: "The text of the option." }
-                },
-                required: ["id", "text"],
-            }
-        },
-        correct_option_id: { type: Type.STRING, description: "The ID of the correct option." },
-        explanation: { type: Type.STRING, description: "A detailed explanation of why the correct option is right and the others are wrong, citing relevant articles if possible." }
+  type: Type.OBJECT,
+  properties: {
+    id: {
+      type: Type.STRING,
+      description: "A unique identifier for the question, e.g., 'q1', 'q2'.",
     },
-    required: ["id", "question", "options", "correct_option_id", "explanation"]
+    question: {
+      type: Type.STRING,
+      description: 'The specific question the user must answer based on the scenario.',
+    },
+    options: {
+      type: Type.ARRAY,
+      description: 'An array of 4 multiple choice options.',
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          id: {
+            type: Type.STRING,
+            description: "A unique identifier for the option, e.g., 'A', 'B', 'C', 'D'.",
+          },
+          text: { type: Type.STRING, description: 'The text of the option.' },
+        },
+        required: ['id', 'text'],
+      },
+    },
+    correct_option_id: { type: Type.STRING, description: 'The ID of the correct option.' },
+    explanation: {
+      type: Type.STRING,
+      description:
+        'A detailed explanation of why the correct option is right and the others are wrong, citing relevant articles if possible.',
+    },
+  },
+  required: ['id', 'question', 'options', 'correct_option_id', 'explanation'],
 };
 
 const practicalCaseSchema = {
-    type: Type.OBJECT,
-    properties: {
-        topic: { type: Type.STRING, description: "The legal topic of the case, e.g., 'Incapacidad Temporal'." },
-        scenario: { type: Type.STRING, description: "A detailed and complex scenario describing the practical case." },
-        questions: {
-            type: Type.ARRAY,
-            description: "An array of 5 challenging multiple-choice questions related to the scenario.",
-            items: practicalCaseQuestionSchema,
-        }
+  type: Type.OBJECT,
+  properties: {
+    topic: {
+      type: Type.STRING,
+      description: "The legal topic of the case, e.g., 'Incapacidad Temporal'.",
     },
-    required: ["topic", "scenario", "questions"],
+    scenario: {
+      type: Type.STRING,
+      description: 'A detailed and complex scenario describing the practical case.',
+    },
+    questions: {
+      type: Type.ARRAY,
+      description: 'An array of 5 challenging multiple-choice questions related to the scenario.',
+      items: practicalCaseQuestionSchema,
+    },
+  },
+  required: ['topic', 'scenario', 'questions'],
 };
 
 /**
@@ -113,7 +141,7 @@ const practicalCaseSchema = {
  * @throws {Error} Si la API falla o devuelve un formato JSON inválido.
  */
 export async function generatePracticalCase(): Promise<PracticalCase> {
-    const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Your task is to create a high-quality 'supuesto práctico'.
+  const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Your task is to create a high-quality 'supuesto práctico'.
 Follow these instructions precisely:
 1.  **Choose a Topic**: Select a relevant, specific topic from Spanish Social Security law (e.g., Jubilación parcial, Cotización en pluriempleo, Prestación por riesgo durante el embarazo).
 2.  **Create a Scenario**: Write a detailed, realistic, and complex scenario based on the chosen topic. Include specific dates, names, figures, and circumstances that are crucial for answering the questions. The scenario must be based on current Spanish legislation.
@@ -122,37 +150,43 @@ Follow these instructions precisely:
 5.  **Identify Correct Answer and Explain**: For each question, clearly identify the correct option ID and provide a thorough legal explanation, citing the specific articles of the relevant laws (e.g., Real Decreto Legislativo 8/2015) that justify the answer.
 
 You MUST return the output in a clean, valid JSON format that adheres to the provided schema. The entire response must be in Spanish.`;
-    
-    try {
-        const response = await ai.models.generateContent({
-            model: caseGeneratorModel,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: practicalCaseSchema,
-                thinkingConfig: { thinkingBudget: 32768 },
-                temperature: 0.4,
-            },
-        });
-        
-        const jsonText = response.text.trim();
-        const parsedJson = JSON.parse(jsonText);
-        
-        if (!parsedJson.topic || !parsedJson.scenario || !Array.isArray(parsedJson.questions) || parsedJson.questions.length === 0) {
-            console.error("API returned invalid format for practical case:", parsedJson);
-            throw new Error("Invalid format for practical case received from API.");
-        }
 
-        // Ensure questions array is correctly typed
-        return {
-            ...parsedJson,
-            questions: parsedJson.questions as PracticalCaseQuestion[]
-        } as PracticalCase;
+  try {
+    const response = await ai.models.generateContent({
+      model: caseGeneratorModel,
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: practicalCaseSchema,
+        thinkingConfig: { thinkingBudget: 32768 },
+        temperature: 0.4,
+      },
+    });
 
-    } catch (error) {
-        console.error("Error generating practical case:", error);
-        throw new Error("Failed to generate a new practical case. The model may be experiencing high load. Please try again in a moment.");
+    const jsonText = response.text.trim();
+    const parsedJson = JSON.parse(jsonText);
+
+    if (
+      !parsedJson.topic ||
+      !parsedJson.scenario ||
+      !Array.isArray(parsedJson.questions) ||
+      parsedJson.questions.length === 0
+    ) {
+      console.error('API returned invalid format for practical case:', parsedJson);
+      throw new Error('Invalid format for practical case received from API.');
     }
+
+    // Ensure questions array is correctly typed
+    return {
+      ...parsedJson,
+      questions: parsedJson.questions as PracticalCaseQuestion[],
+    } as PracticalCase;
+  } catch (error) {
+    console.error('Error generating practical case:', error);
+    throw new Error(
+      'Failed to generate a new practical case. The model may be experiencing high load. Please try again in a moment.'
+    );
+  }
 }
 
 let chatInstances: { [key: string]: Chat } = {};
@@ -164,15 +198,15 @@ let chatInstances: { [key: string]: Chat } = {};
  * @returns {Chat} La instancia del chat para esa conversación.
  */
 export function getChatInstance(conversationId: string): Chat {
-    if (!chatInstances[conversationId]) {
-        chatInstances[conversationId] = ai.chats.create({
-            model: chatModel,
-            config: {
-                systemInstruction: `You are a world-class expert tutor specializing in Spanish Social Security legislation for civil service exam candidates ('opositores'). Your tone is encouraging, precise, and clear. When a user asks a question, provide a direct and accurate answer. If they present a problem or a practical case, break down the explanation step-by-step, citing relevant legal articles (e.g., from the 'Real Decreto Legislativo 8/2015') whenever possible. Your goal is to help the user understand complex legal concepts, not just give them the answer. All your responses must be in Spanish.`
-            }
-        });
-    }
-    return chatInstances[conversationId];
+  if (!chatInstances[conversationId]) {
+    chatInstances[conversationId] = ai.chats.create({
+      model: chatModel,
+      config: {
+        systemInstruction: `You are a world-class expert tutor specializing in Spanish Social Security legislation for civil service exam candidates ('opositores'). Your tone is encouraging, precise, and clear. When a user asks a question, provide a direct and accurate answer. If they present a problem or a practical case, break down the explanation step-by-step, citing relevant legal articles (e.g., from the 'Real Decreto Legislativo 8/2015') whenever possible. Your goal is to help the user understand complex legal concepts, not just give them the answer. All your responses must be in Spanish.`,
+      },
+    });
+  }
+  return chatInstances[conversationId];
 }
 
 /**
@@ -183,39 +217,46 @@ export function getChatInstance(conversationId: string): Chat {
  * @returns {Promise<{ text: string, sources: GroundingSource[] }>} Un objeto con el texto de la respuesta y las fuentes web utilizadas.
  * @throws {Error} Si la búsqueda falla.
  */
-export async function searchWithGrounding(query: string, untilDate?: string): Promise<{ text: string, sources: GroundingSource[] }> {
-    try {
-        let finalQuery = query;
-        if (untilDate) {
-            try {
-                const formattedDate = new Date(untilDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-                finalQuery += ` (Important: all information and legislation cited must be effective on or before ${formattedDate})`;
-            } catch (dateError) {
-                console.error("Invalid date provided:", untilDate);
-            }
-        }
-
-        const response = await ai.models.generateContent({
-            model: searchModel,
-            contents: finalQuery,
-            config: {
-                tools: [{ googleSearch: {} }],
-            },
+export async function searchWithGrounding(
+  query: string,
+  untilDate?: string
+): Promise<{ text: string; sources: GroundingSource[] }> {
+  try {
+    let finalQuery = query;
+    if (untilDate) {
+      try {
+        const formattedDate = new Date(untilDate).toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
         });
-
-        const text = response.text;
-        const rawChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-        
-        const sources: GroundingSource[] = rawChunks
-            .map(chunk => chunk.web)
-            .filter(web => web && web.uri && web.title)
-            .map(web => ({ uri: web.uri!, title: web.title! }));
-
-        return { text, sources };
-    } catch (error) {
-        console.error("Error with grounded search:", error);
-        throw new Error("Failed to perform the search. Please check your query and try again.");
+        finalQuery += ` (Important: all information and legislation cited must be effective on or before ${formattedDate})`;
+      } catch (dateError) {
+        console.error('Invalid date provided:', untilDate);
+      }
     }
+
+    const response = await ai.models.generateContent({
+      model: searchModel,
+      contents: finalQuery,
+      config: {
+        tools: [{ googleSearch: {} }],
+      },
+    });
+
+    const text = response.text;
+    const rawChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+
+    const sources: GroundingSource[] = rawChunks
+      .map(chunk => chunk.web)
+      .filter(web => web && web.uri && web.title)
+      .map(web => ({ uri: web.uri!, title: web.title! }));
+
+    return { text, sources };
+  } catch (error) {
+    console.error('Error with grounded search:', error);
+    throw new Error('Failed to perform the search. Please check your query and try again.');
+  }
 }
 
 /**
@@ -225,7 +266,7 @@ export async function searchWithGrounding(query: string, untilDate?: string): Pr
  * @throws {Error} Si la generación falla o el formato JSON es inválido.
  */
 export async function generateMindMap(topic: string): Promise<MindMapNode> {
-    const prompt = `Generate a hierarchical mind map about the following Spanish legislation topic: "${topic}".
+  const prompt = `Generate a hierarchical mind map about the following Spanish legislation topic: "${topic}".
 The structure must be logical for studying. Create a single root node and at least two levels of nested child nodes.
 You MUST provide the output in a clean, valid JSON format.
 The JSON must represent the node tree. Each node must be an object with three properties:
@@ -250,22 +291,24 @@ Example of expected JSON structure:
 
 Do not include any text or markdown formatting outside of the main JSON object. The entire response must be in Spanish.`;
 
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-            }
-        });
-        
-        let jsonText = response.text.trim();
-        const parsed = JSON.parse(jsonText);
-        return parsed as MindMapNode;
-    } catch (error) {
-        console.error("Error generating mind map:", error);
-        throw new Error("Failed to generate mind map. The model might have returned an invalid format. Please try again.");
-    }
+  try {
+    const response = await ai.models.generateContent({
+      model: creativeModel,
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+      },
+    });
+
+    let jsonText = response.text.trim();
+    const parsed = JSON.parse(jsonText);
+    return parsed as MindMapNode;
+  } catch (error) {
+    console.error('Error generating mind map:', error);
+    throw new Error(
+      'Failed to generate mind map. The model might have returned an invalid format. Please try again.'
+    );
+  }
 }
 
 /**
@@ -275,32 +318,34 @@ Do not include any text or markdown formatting outside of the main JSON object. 
  * @throws {Error} Si la generación falla.
  */
 export async function generateStudyPlan(input: StudyPlanInput): Promise<string> {
-    const { availability, duration, includeTracking, includeSuggestions } = input;
+  const { availability, duration, includeTracking, includeSuggestions } = input;
 
-    let prompt = `Create a ${duration} study plan for a Spanish Social Security civil service exam candidate.
+  let prompt = `Create a ${duration} study plan for a Spanish Social Security civil service exam candidate.
     Availability: ${availability}.
     The plan should be structured, realistic, and cover key areas of the syllabus. 
     Format the output as Markdown. Use headings for days or weeks, and bullet points for tasks.
     Include a balance of theory study, practical cases, and review sessions.
     IMPORTANTE: The entire response must be in Spanish.`;
 
-    if (includeTracking) {
-        prompt += "\nInclude a checkbox column `[ ]` for each task so the user can track their progress."
-    }
-    if (includeSuggestions) {
-        prompt += "\nAt the end of each week/major section, add a 'Sugerencia IA' block with a proactive tip, like suggesting a specific law to review or a complex topic to focus on."
-    }
+  if (includeTracking) {
+    prompt +=
+      '\nInclude a checkbox column `[ ]` for each task so the user can track their progress.';
+  }
+  if (includeSuggestions) {
+    prompt +=
+      "\nAt the end of each week/major section, add a 'Sugerencia IA' block with a proactive tip, like suggesting a specific law to review or a complex topic to focus on.";
+  }
 
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error generating study plan:", error);
-        throw new Error("Failed to generate study plan.");
-    }
+  try {
+    const response = await ai.models.generateContent({
+      model: creativeModel,
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error('Error generating study plan:', error);
+    throw new Error('Failed to generate study plan.');
+  }
 }
 
 /**
@@ -310,21 +355,21 @@ export async function generateStudyPlan(input: StudyPlanInput): Promise<string> 
  * @throws {Error} Si la generación falla.
  */
 export async function generateSchema(topic: string): Promise<string> {
-    const prompt = `Act as an expert legal tutor. Create a clear, hierarchical, and well-structured outline (esquema) on the following topic from Spanish law: "${topic}".
+  const prompt = `Act as an expert legal tutor. Create a clear, hierarchical, and well-structured outline (esquema) on the following topic from Spanish law: "${topic}".
     Use Markdown formatting with nested bullet points to represent the hierarchy.
     The outline must be detailed enough to be a useful study guide, covering key definitions, requirements, procedures, and relevant concepts.
     The entire response must be in Spanish.`;
 
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error generating schema:", error);
-        throw new Error("Failed to generate schema.");
-    }
+  try {
+    const response = await ai.models.generateContent({
+      model: creativeModel,
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error('Error generating schema:', error);
+    throw new Error('Failed to generate schema.');
+  }
 }
 
 const MAX_SUMMARY_CHUNK_SIZE = 400000; // Reduced size for safety margin with tokenization.
@@ -337,7 +382,9 @@ const MAX_SUMMARY_CHUNK_SIZE = 400000; // Reduced size for safety margin with to
  * @throws {Error} Si la generación falla o si el texto es demasiado largo para ser procesado.
  */
 export async function generateSummary(text: string): Promise<string> {
-    const originalPrompt = (textChunk: string) => `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
+  const originalPrompt = (
+    textChunk: string
+  ) => `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
 The summary should capture the main points, key articles, and essential conclusions of the text.
 Format the output in clear, easy-to-read paragraphs using Markdown.
 IMPORTANT: The entire response MUST be in Spanish from Spain. Do not use any English.
@@ -346,88 +393,95 @@ Text to summarize:
 ---
 ${textChunk}
 ---`;
-    
-    try {
-        // For reasonably sized texts, perform a single API call.
-        if (text.length <= MAX_SUMMARY_CHUNK_SIZE) {
-            const response = await ai.models.generateContent({
-                model: creativeModel,
-                contents: originalPrompt(text),
-            });
-            return response.text;
-        }
 
-        // --- Robust Chunking Strategy for very large texts ---
-        console.log(`Text is large (${text.length} chars), applying robust chunking strategy.`);
-        const chunks: string[] = [];
-        // Split by sentences to respect logical boundaries better than paragraphs.
-        const sentences = text.split(/(?<=[.?!])\s+/);
-        let currentChunk = "";
-
-        for (const sentence of sentences) {
-            const trimmedSentence = sentence.trim();
-            if (!trimmedSentence) continue;
-
-            if (currentChunk.length + trimmedSentence.length + 1 > MAX_SUMMARY_CHUNK_SIZE) {
-                // Current chunk is full, push it.
-                if (currentChunk) {
-                    chunks.push(currentChunk);
-                }
-                // Now, deal with the new sentence.
-                if (trimmedSentence.length > MAX_SUMMARY_CHUNK_SIZE) {
-                    // The sentence itself is too long, so we must split it by force.
-                    console.warn(`A single sentence is larger than the chunk size. Force-splitting.`);
-                    for (let i = 0; i < trimmedSentence.length; i += MAX_SUMMARY_CHUNK_SIZE) {
-                        chunks.push(trimmedSentence.substring(i, i + MAX_SUMMARY_CHUNK_SIZE));
-                    }
-                    currentChunk = ""; // The long sentence has been chunked and pushed.
-                } else {
-                    // The sentence is not too long; it will be the start of the next chunk.
-                    currentChunk = trimmedSentence;
-                }
-            } else {
-                // Add sentence to the current chunk.
-                currentChunk += (currentChunk ? " " : "") + trimmedSentence;
-            }
-        }
-        // Push the last remaining chunk.
-        if (currentChunk) {
-            chunks.push(currentChunk);
-        }
-        
-        console.log(`Split text into ${chunks.length} chunks.`);
-
-        if (chunks.length === 0) {
-            return "El texto proporcionado no contiene contenido analizable.";
-        }
-
-        // Map step: Summarize each chunk in parallel.
-        const chunkSummariesPromises = chunks.map((chunk, index) => {
-            const chunkPrompt = `You are part of a text summarization pipeline. Summarize the following text chunk from a larger legal document. Focus on the main legal points, articles, and conclusions. Do not add any introductory or concluding phrases. This is chunk ${index + 1} of ${chunks.length}. IMPORTANT: The entire response MUST be in Spanish from Spain. TEXT CHUNK: --- ${chunk} ---`;
-            return ai.models.generateContent({ model: creativeModel, contents: chunkPrompt })
-                .then(response => response.text)
-                .catch(err => {
-                    console.error(`Error summarizing chunk ${index + 1}:`, err);
-                    return `[Error al procesar la sección ${index + 1}]`;
-                });
-        });
-        
-        const chunkSummaries = await Promise.all(chunkSummariesPromises);
-        console.log("Finished summarizing all chunks.");
-
-        const finalSummary = chunkSummaries.map((summary, index) => {
-            return `### Resumen de la Sección ${index + 1} de ${chunks.length}\n\n${summary}`;
-        }).join('\n\n---\n');
-        
-        return `## Resumen Completo del Documento\n\n*Nota: El texto original era muy extenso y se ha dividido en ${chunks.length} secciones para su análisis.*\n\n${finalSummary}`;
-
-    } catch (error) {
-        console.error("Error generating summary:", error);
-        if (error instanceof Error && (error.message.includes('token') || (error as any).status === 'INVALID_ARGUMENT')) {
-             throw new Error("El texto proporcionado es demasiado largo, incluso después de intentar dividirlo. Por favor, prueba con un texto más corto.");
-        }
-        throw new Error("Failed to generate summary.");
+  try {
+    // For reasonably sized texts, perform a single API call.
+    if (text.length <= MAX_SUMMARY_CHUNK_SIZE) {
+      const response = await ai.models.generateContent({
+        model: creativeModel,
+        contents: originalPrompt(text),
+      });
+      return response.text;
     }
+
+    // --- Robust Chunking Strategy for very large texts ---
+    console.log(`Text is large (${text.length} chars), applying robust chunking strategy.`);
+    const chunks: string[] = [];
+    // Split by sentences to respect logical boundaries better than paragraphs.
+    const sentences = text.split(/(?<=[.?!])\s+/);
+    let currentChunk = '';
+
+    for (const sentence of sentences) {
+      const trimmedSentence = sentence.trim();
+      if (!trimmedSentence) continue;
+
+      if (currentChunk.length + trimmedSentence.length + 1 > MAX_SUMMARY_CHUNK_SIZE) {
+        // Current chunk is full, push it.
+        if (currentChunk) {
+          chunks.push(currentChunk);
+        }
+        // Now, deal with the new sentence.
+        if (trimmedSentence.length > MAX_SUMMARY_CHUNK_SIZE) {
+          // The sentence itself is too long, so we must split it by force.
+          console.warn(`A single sentence is larger than the chunk size. Force-splitting.`);
+          for (let i = 0; i < trimmedSentence.length; i += MAX_SUMMARY_CHUNK_SIZE) {
+            chunks.push(trimmedSentence.substring(i, i + MAX_SUMMARY_CHUNK_SIZE));
+          }
+          currentChunk = ''; // The long sentence has been chunked and pushed.
+        } else {
+          // The sentence is not too long; it will be the start of the next chunk.
+          currentChunk = trimmedSentence;
+        }
+      } else {
+        // Add sentence to the current chunk.
+        currentChunk += (currentChunk ? ' ' : '') + trimmedSentence;
+      }
+    }
+    // Push the last remaining chunk.
+    if (currentChunk) {
+      chunks.push(currentChunk);
+    }
+
+    console.log(`Split text into ${chunks.length} chunks.`);
+
+    if (chunks.length === 0) {
+      return 'El texto proporcionado no contiene contenido analizable.';
+    }
+
+    // Map step: Summarize each chunk in parallel.
+    const chunkSummariesPromises = chunks.map((chunk, index) => {
+      const chunkPrompt = `You are part of a text summarization pipeline. Summarize the following text chunk from a larger legal document. Focus on the main legal points, articles, and conclusions. Do not add any introductory or concluding phrases. This is chunk ${index + 1} of ${chunks.length}. IMPORTANT: The entire response MUST be in Spanish from Spain. TEXT CHUNK: --- ${chunk} ---`;
+      return ai.models
+        .generateContent({ model: creativeModel, contents: chunkPrompt })
+        .then(response => response.text)
+        .catch(err => {
+          console.error(`Error summarizing chunk ${index + 1}:`, err);
+          return `[Error al procesar la sección ${index + 1}]`;
+        });
+    });
+
+    const chunkSummaries = await Promise.all(chunkSummariesPromises);
+    console.log('Finished summarizing all chunks.');
+
+    const finalSummary = chunkSummaries
+      .map((summary, index) => {
+        return `### Resumen de la Sección ${index + 1} de ${chunks.length}\n\n${summary}`;
+      })
+      .join('\n\n---\n');
+
+    return `## Resumen Completo del Documento\n\n*Nota: El texto original era muy extenso y se ha dividido en ${chunks.length} secciones para su análisis.*\n\n${finalSummary}`;
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    if (
+      error instanceof Error &&
+      (error.message.includes('token') || (error as any).status === 'INVALID_ARGUMENT')
+    ) {
+      throw new Error(
+        'El texto proporcionado es demasiado largo, incluso después de intentar dividirlo. Por favor, prueba con un texto más corto.'
+      );
+    }
+    throw new Error('Failed to generate summary.');
+  }
 }
 
 const MAX_COMPARISON_LENGTH = 500000; // Safe total character limit for the comparison prompt
@@ -440,11 +494,13 @@ const MAX_COMPARISON_LENGTH = 500000; // Safe total character limit for the comp
  * @throws {Error} Si los textos son demasiado largos o la comparación falla.
  */
 export async function compareLawVersions(textA: string, textB: string): Promise<string> {
-    if (textA.length + textB.length > MAX_COMPARISON_LENGTH) {
-        throw new Error(`Los textos son demasiado largos para ser comparados directamente (total: ${textA.length + textB.length} caracteres). Por favor, utiliza textos más cortos o resúmenes de los mismos.`);
-    }
+  if (textA.length + textB.length > MAX_COMPARISON_LENGTH) {
+    throw new Error(
+      `Los textos son demasiado largos para ser comparados directamente (total: ${textA.length + textB.length} caracteres). Por favor, utiliza textos más cortos o resúmenes de los mismos.`
+    );
+  }
 
-    const prompt = `Act as an expert legislative analyst. I will provide you with two versions of a legal text, "Text A (Old Version)" and "Text B (New Version)".
+  const prompt = `Act as an expert legislative analyst. I will provide you with two versions of a legal text, "Text A (Old Version)" and "Text B (New Version)".
     Your task is to compare them and produce a clear, structured report of the differences.
     The report should be formatted in Markdown and include:
     1.  A general summary of the main changes.
@@ -463,16 +519,16 @@ export async function compareLawVersions(textA: string, textB: string): Promise<
     ${textB}
     ---`;
 
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error comparing texts:", error);
-        throw new Error("Failed to compare law versions.");
-    }
+  try {
+    const response = await ai.models.generateContent({
+      model: creativeModel,
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error('Error comparing texts:', error);
+    throw new Error('Failed to compare law versions.');
+  }
 }
 
 /**
@@ -483,7 +539,7 @@ export async function compareLawVersions(textA: string, textB: string): Promise<
  * @throws {Error} Si la generación falla o el formato JSON es inválido.
  */
 export async function generateMockExam(topics: string[], questionCount: number): Promise<MockExam> {
-     const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Create a complete mock exam ('simulacro').
+  const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Create a complete mock exam ('simulacro').
 Instructions:
 1.  **Title**: The exam title should be "Simulacro de Examen - Seguridad Social".
 2.  **Topics**: The exam must exclusively cover the following topics: ${topics.join(', ')}.
@@ -492,44 +548,43 @@ Instructions:
 5.  **Variety**: Ensure a good mix of questions covering all specified topics.
 
 You MUST return the output in a clean, valid JSON format. The entire response must be in Spanish.`;
-    
-    // Create a dynamic schema for the questions array
-    const examSchema = {
-        type: Type.OBJECT,
-        properties: {
-            title: { type: Type.STRING },
-            questions: {
-                type: Type.ARRAY,
-                description: `An array of exactly ${questionCount} questions.`,
-                items: practicalCaseQuestionSchema,
-            }
-        },
-        required: ["title", "questions"]
-    };
 
-    try {
-        const response = await ai.models.generateContent({
-            model: caseGeneratorModel, // Use the powerful model for this complex task
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: examSchema,
-                thinkingConfig: { thinkingBudget: 32768 }
-            },
-        });
+  // Create a dynamic schema for the questions array
+  const examSchema = {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING },
+      questions: {
+        type: Type.ARRAY,
+        description: `An array of exactly ${questionCount} questions.`,
+        items: practicalCaseQuestionSchema,
+      },
+    },
+    required: ['title', 'questions'],
+  };
 
-        const jsonText = response.text.trim();
-        const parsedJson = JSON.parse(jsonText);
+  try {
+    const response = await ai.models.generateContent({
+      model: caseGeneratorModel, // Use the powerful model for this complex task
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: examSchema,
+        thinkingConfig: { thinkingBudget: 32768 },
+      },
+    });
 
-        if (!parsedJson.title || !Array.isArray(parsedJson.questions)) {
-            throw new Error("Invalid format for mock exam received from API.");
-        }
-        return parsedJson as MockExam;
+    const jsonText = response.text.trim();
+    const parsedJson = JSON.parse(jsonText);
 
-    } catch (error) {
-        console.error("Error generating mock exam:", error);
-        throw new Error("Failed to generate mock exam. Please try again.");
+    if (!parsedJson.title || !Array.isArray(parsedJson.questions)) {
+      throw new Error('Invalid format for mock exam received from API.');
     }
+    return parsedJson as MockExam;
+  } catch (error) {
+    console.error('Error generating mock exam:', error);
+    throw new Error('Failed to generate mock exam. Please try again.');
+  }
 }
 
 /**
@@ -540,67 +595,76 @@ You MUST return the output in a clean, valid JSON format. The entire response mu
  * @returns {Promise<{ flashcards: Flashcard[], meme: { imageUrl: string, prompt: string } }>} Un objeto con las flashcards y la URL del meme.
  * @throws {Error} Si alguna de las dos etapas de generación falla.
  */
-export async function generateFlashcardsAndMeme(topic: string): Promise<{ flashcards: Flashcard[], meme: { imageUrl: string, prompt: string } }> {
-    const flashcardSchema = {
-        type: Type.OBJECT,
-        properties: {
-            flashcards: {
-                type: Type.ARRAY,
-                description: "An array of 5-10 flashcards.",
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        id: { type: Type.STRING },
-                        front: { type: Type.STRING, description: "The front of the card (a question or term)." },
-                        back: { type: Type.STRING, description: "The back of the card (the answer or definition)." }
-                    },
-                    required: ["id", "front", "back"]
-                }
+export async function generateFlashcardsAndMeme(
+  topic: string
+): Promise<{ flashcards: Flashcard[]; meme: { imageUrl: string; prompt: string } }> {
+  const flashcardSchema = {
+    type: Type.OBJECT,
+    properties: {
+      flashcards: {
+        type: Type.ARRAY,
+        description: 'An array of 5-10 flashcards.',
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            id: { type: Type.STRING },
+            front: {
+              type: Type.STRING,
+              description: 'The front of the card (a question or term).',
             },
-            meme_prompt: {
-                type: Type.STRING,
-                description: "A short, witty, and visually descriptive prompt to generate a funny meme related to the topic. For example: 'A photo of a stressed person buried under a mountain of paperwork, with the caption: Trying to calculate the base reguladora'."
-            }
+            back: {
+              type: Type.STRING,
+              description: 'The back of the card (the answer or definition).',
+            },
+          },
+          required: ['id', 'front', 'back'],
         },
-        required: ["flashcards", "meme_prompt"]
-    };
+      },
+      meme_prompt: {
+        type: Type.STRING,
+        description:
+          "A short, witty, and visually descriptive prompt to generate a funny meme related to the topic. For example: 'A photo of a stressed person buried under a mountain of paperwork, with the caption: Trying to calculate the base reguladora'.",
+      },
+    },
+    required: ['flashcards', 'meme_prompt'],
+  };
 
-    const flashcardPrompt = `Generate a set of study flashcards and a meme idea for the Spanish legal topic: "${topic}".
+  const flashcardPrompt = `Generate a set of study flashcards and a meme idea for the Spanish legal topic: "${topic}".
 1.  **Flashcards**: Create 5 to 10 high-quality flashcards. Each should have a 'front' (a clear question or key term) and a 'back' (a concise and accurate answer or definition).
 2.  **Meme Prompt**: Create a short, funny, and descriptive prompt for an image generation model to create a meme about this topic. It should be relatable to someone studying for the exam.
 
 Return the result as a single, valid JSON object. All text content must be in Spanish.`;
 
-    try {
-        // Step 1: Generate flashcards and meme prompt text
-        const textResponse = await ai.models.generateContent({
-            model: creativeModel,
-            contents: flashcardPrompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: flashcardSchema,
-            }
-        });
-        const parsedText = JSON.parse(textResponse.text.trim());
-        const flashcards: Flashcard[] = parsedText.flashcards;
-        const memePrompt: string = parsedText.meme_prompt;
+  try {
+    // Step 1: Generate flashcards and meme prompt text
+    const textResponse = await ai.models.generateContent({
+      model: creativeModel,
+      contents: flashcardPrompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: flashcardSchema,
+      },
+    });
+    const parsedText = JSON.parse(textResponse.text.trim());
+    const flashcards: Flashcard[] = parsedText.flashcards;
+    const memePrompt: string = parsedText.meme_prompt;
 
-        // Step 2: Generate the image for the meme
-        const imageResponse = await ai.models.generateImages({
-            model: imageModel,
-            prompt: memePrompt,
-            config: {
-                numberOfImages: 1,
-                outputMimeType: 'image/jpeg',
-                aspectRatio: '1:1',
-            }
-        });
-        const base64ImageBytes: string = imageResponse.generatedImages[0].image.imageBytes;
-        const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
+    // Step 2: Generate the image for the meme
+    const imageResponse = await ai.models.generateImages({
+      model: imageModel,
+      prompt: memePrompt,
+      config: {
+        numberOfImages: 1,
+        outputMimeType: 'image/jpeg',
+        aspectRatio: '1:1',
+      },
+    });
+    const base64ImageBytes: string = imageResponse.generatedImages[0].image.imageBytes;
+    const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
 
-        return { flashcards, meme: { imageUrl, prompt: memePrompt } };
-    } catch (error) {
-        console.error("Error generating flashcards/meme:", error);
-        throw new Error("Failed to generate flashcards and meme.");
-    }
+    return { flashcards, meme: { imageUrl, prompt: memePrompt } };
+  } catch (error) {
+    console.error('Error generating flashcards/meme:', error);
+    throw new Error('Failed to generate flashcards and meme.');
+  }
 }
