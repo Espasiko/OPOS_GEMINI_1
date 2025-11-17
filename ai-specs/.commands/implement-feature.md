@@ -49,16 +49,19 @@ Implement the feature following the plan step-by-step with precision and quality
 # Implementation Workflow
 
 ## Phase 1: Setup (Step 0)
+
 1. Create feature branch
 2. Verify branch is active
 3. Pull latest changes if needed
 
 ## Phase 2: Foundation (Steps 1-2)
+
 1. Define types in `types.ts`
 2. Implement service function in `geminiService.ts`
 3. Test service function (manual console test if needed)
 
 ## Phase 3: UI (Step 3)
+
 1. Create component file
 2. Implement component structure
 3. Add state management
@@ -68,18 +71,21 @@ Implement the feature following the plan step-by-step with precision and quality
 7. Add loading states
 
 ## Phase 4: Integration (Step 4)
+
 1. Import component in `App.tsx`
 2. Add to view routing
 3. Add navigation button
 4. Test navigation flow
 
 ## Phase 5: Documentation (Step 5)
+
 1. Update `/docs/AI_AGENTS.md`
 2. Update `/docs/DATA_MODEL.md` if types added
 3. Update `README.md` if user-facing feature
 4. Verify all documentation is in English
 
 ## Phase 6: Testing (Step 6)
+
 1. Run through manual testing checklist
 2. Test all edge cases
 3. Verify error handling
@@ -87,6 +93,7 @@ Implement the feature following the plan step-by-step with precision and quality
 5. Check console for errors
 
 ## Phase 7: Finalization
+
 1. Code review (self)
 2. Final commit
 3. Push to remote

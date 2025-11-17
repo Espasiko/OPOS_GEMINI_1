@@ -5,6 +5,7 @@
 This document provides a comprehensive step-by-step implementation plan for the Position Update feature (SCRUM-10). The feature enables recruiters to update details of open positions through a REST API endpoint. The implementation follows Domain-Driven Design (DDD) principles, clean architecture patterns, and the project's established coding standards.
 
 **Key Architecture Principles:**
+
 - **Domain-Driven Design (DDD)**: Business logic encapsulated in domain models
 - **Layered Architecture**: Clear separation between Presentation, Application, and Domain layers
 - **SOLID Principles**: Single responsibility, dependency injection, and interface segregation
@@ -15,31 +16,38 @@ This document provides a comprehensive step-by-step implementation plan for the 
 ### Layers Involved
 
 **Presentation Layer** (`src/presentation/controllers/`)
+
 - `positionController.ts` - HTTP request/response handling for position updates
 
 **Application Layer** (`src/application/`)
+
 - `services/positionService.ts` - Business logic orchestration for position updates
 - `validator.ts` - Input validation for position data
 
 **Domain Layer** (`src/domain/models/`)
+
 - `Position.ts` - Domain entity with update capabilities (already has `save()` method)
 
 **Infrastructure Layer** (implicit)
+
 - Prisma ORM for database operations
 - Database schema already supports all position fields
 
 ### Components Referenced
 
 **Existing Files to Modify:**
+
 1. `backend/src/presentation/controllers/positionController.ts`
 2. `backend/src/application/services/positionService.ts`
 3. `backend/src/application/validator.ts`
 4. `backend/src/routes/positionRoutes.ts`
 
 **Domain Model (No Changes Required):**
+
 - `backend/src/domain/models/Position.ts` - Already has `save()` and `findOne()` methods
 
 **New Test Files to Create:**
+
 1. `backend/src/application/__tests__/validator.test.ts` (add tests for `validatePositionUpdate`)
 2. `backend/src/application/services/__tests__/positionService.test.ts` (add tests for `updatePositionService`)
 3. `backend/src/presentation/controllers/__tests__/positionController.test.ts` (add tests for `updatePosition`)
@@ -53,6 +61,7 @@ This document provides a comprehensive step-by-step implementation plan for the 
 **Branch Naming**: `feature/SCRUM-10-backend`
 
 **Implementation Steps**:
+
 1. Ensure you're on the latest `main` or `develop` branch
    ```bash
    git checkout main
@@ -70,7 +79,8 @@ This document provides a comprehensive step-by-step implementation plan for the 
    git branch
    ```
 
-**Notes**: 
+**Notes**:
+
 - This must be the FIRST step before any code changes
 - Follow branch naming convention: `feature/[ticket-id]-backend` as specified in `backend-standards.mdc`
 - All subsequent commits will be made to this branch
@@ -84,6 +94,7 @@ This document provides a comprehensive step-by-step implementation plan for the 
 **Action**: Implement comprehensive validation function for position update data
 
 **Function Signature**:
+
 ```typescript
 export const validatePositionUpdate = (data: any): void
 ```
@@ -110,11 +121,13 @@ export const validatePositionUpdate = (data: any): void
 4. Validate only fields that are present in the data object (support partial updates)
 
 **Dependencies**:
+
 ```typescript
 // No additional imports needed - use existing validation utilities
 ```
 
 **Implementation Notes**:
+
 - Validation occurs ONLY for fields present in the request (`!== undefined`)
 - This enables partial update functionality
 - All error messages must be in English (per coding standards)
@@ -122,94 +135,101 @@ export const validatePositionUpdate = (data: any): void
 - Status values must match the enum defined in Prisma schema: `Open`, `Contratado`, `Cerrado`, `Borrador`
 
 **Example Validation Logic**:
+
 ```typescript
 export const validatePositionUpdate = (data: any): void => {
-    // Title validation
-    if (data.title !== undefined) {
-        if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {
-            throw new Error('Title is required and must be a valid string');
-        }
-        if (data.title.length > 100) {
-            throw new Error('Title cannot exceed 100 characters');
-        }
+  // Title validation
+  if (data.title !== undefined) {
+    if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {
+      throw new Error('Title is required and must be a valid string');
     }
+    if (data.title.length > 100) {
+      throw new Error('Title cannot exceed 100 characters');
+    }
+  }
 
-    // Status validation
-    if (data.status !== undefined) {
-        const validStatuses = ['Open', 'Contratado', 'Cerrado', 'Borrador'];
-        if (!validStatuses.includes(data.status)) {
-            throw new Error('Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador');
-        }
+  // Status validation
+  if (data.status !== undefined) {
+    const validStatuses = ['Open', 'Contratado', 'Cerrado', 'Borrador'];
+    if (!validStatuses.includes(data.status)) {
+      throw new Error('Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador');
     }
+  }
 
-    // Salary validation
-    if (data.salaryMin !== undefined) {
-        if (typeof data.salaryMin !== 'number' || data.salaryMin < 0) {
-            throw new Error('Minimum salary must be a valid number greater than or equal to 0');
-        }
+  // Salary validation
+  if (data.salaryMin !== undefined) {
+    if (typeof data.salaryMin !== 'number' || data.salaryMin < 0) {
+      throw new Error('Minimum salary must be a valid number greater than or equal to 0');
     }
+  }
 
-    if (data.salaryMax !== undefined) {
-        if (typeof data.salaryMax !== 'number' || data.salaryMax < 0) {
-            throw new Error('Maximum salary must be a valid number greater than or equal to 0');
-        }
+  if (data.salaryMax !== undefined) {
+    if (typeof data.salaryMax !== 'number' || data.salaryMax < 0) {
+      throw new Error('Maximum salary must be a valid number greater than or equal to 0');
     }
+  }
 
-    // Salary range validation
-    if (data.salaryMin !== undefined && data.salaryMax !== undefined) {
-        if (data.salaryMin > data.salaryMax) {
-            throw new Error('Minimum salary cannot be greater than maximum salary');
-        }
+  // Salary range validation
+  if (data.salaryMin !== undefined && data.salaryMax !== undefined) {
+    if (data.salaryMin > data.salaryMax) {
+      throw new Error('Minimum salary cannot be greater than maximum salary');
     }
+  }
 
-    // Application deadline validation
-    if (data.applicationDeadline !== undefined) {
-        const deadline = new Date(data.applicationDeadline);
-        if (isNaN(deadline.getTime())) {
-            throw new Error('Invalid application deadline');
-        }
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (deadline < today) {
-            throw new Error('Application deadline cannot be in the past');
-        }
+  // Application deadline validation
+  if (data.applicationDeadline !== undefined) {
+    const deadline = new Date(data.applicationDeadline);
+    if (isNaN(deadline.getTime())) {
+      throw new Error('Invalid application deadline');
     }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (deadline < today) {
+      throw new Error('Application deadline cannot be in the past');
+    }
+  }
 
-    // Boolean validation
-    if (data.isVisible !== undefined && typeof data.isVisible !== 'boolean') {
-        throw new Error('isVisible must be a boolean value');
-    }
+  // Boolean validation
+  if (data.isVisible !== undefined && typeof data.isVisible !== 'boolean') {
+    throw new Error('isVisible must be a boolean value');
+  }
 
-    // Integer validations
-    if (data.companyId !== undefined) {
-        if (!Number.isInteger(data.companyId) || data.companyId <= 0) {
-            throw new Error('companyId must be a positive integer');
-        }
+  // Integer validations
+  if (data.companyId !== undefined) {
+    if (!Number.isInteger(data.companyId) || data.companyId <= 0) {
+      throw new Error('companyId must be a positive integer');
     }
+  }
 
-    if (data.interviewFlowId !== undefined) {
-        if (!Number.isInteger(data.interviewFlowId) || data.interviewFlowId <= 0) {
-            throw new Error('interviewFlowId must be a positive integer');
-        }
+  if (data.interviewFlowId !== undefined) {
+    if (!Number.isInteger(data.interviewFlowId) || data.interviewFlowId <= 0) {
+      throw new Error('interviewFlowId must be a positive integer');
     }
+  }
 
-    // String field validations
-    const stringFields = ['description', 'location', 'jobDescription', 'employmentType'];
-    for (const field of stringFields) {
-        if (data[field] !== undefined) {
-            if (!data[field] || typeof data[field] !== 'string' || data[field].trim().length === 0) {
-                throw new Error(`${field} is required and must be a valid string`);
-            }
-        }
+  // String field validations
+  const stringFields = ['description', 'location', 'jobDescription', 'employmentType'];
+  for (const field of stringFields) {
+    if (data[field] !== undefined) {
+      if (!data[field] || typeof data[field] !== 'string' || data[field].trim().length === 0) {
+        throw new Error(`${field} is required and must be a valid string`);
+      }
     }
+  }
 
-    // Optional string fields (can be empty but must be strings if provided)
-    const optionalStringFields = ['requirements', 'responsibilities', 'benefits', 'companyDescription', 'contactInfo'];
-    for (const field of optionalStringFields) {
-        if (data[field] !== undefined && typeof data[field] !== 'string') {
-            throw new Error(`${field} must be a string`);
-        }
+  // Optional string fields (can be empty but must be strings if provided)
+  const optionalStringFields = [
+    'requirements',
+    'responsibilities',
+    'benefits',
+    'companyDescription',
+    'contactInfo',
+  ];
+  for (const field of optionalStringFields) {
+    if (data[field] !== undefined && typeof data[field] !== 'string') {
+      throw new Error(`${field} must be a string`);
     }
+  }
 };
 ```
 
@@ -222,6 +242,7 @@ export const validatePositionUpdate = (data: any): void => {
 **Action**: Implement business logic for updating position data
 
 **Function Signature**:
+
 ```typescript
 export const updatePositionService = async (positionId: number, updateData: any): Promise<any>
 ```
@@ -240,6 +261,7 @@ export const updatePositionService = async (positionId: number, updateData: any)
 10. Return updated position object
 
 **Dependencies**:
+
 ```typescript
 import { PrismaClient } from '@prisma/client';
 import { Position } from '../../domain/models/Position';
@@ -249,6 +271,7 @@ const prisma = new PrismaClient();
 ```
 
 **Implementation Notes**:
+
 - Use existing Prisma client instance (already imported in the file)
 - Validation errors should propagate naturally (no try-catch needed for validation)
 - Reference validation (company/interviewFlow) should throw descriptive errors
@@ -257,53 +280,55 @@ const prisma = new PrismaClient();
 - Error messages must be in English
 
 **Example Service Logic**:
+
 ```typescript
 export const updatePositionService = async (positionId: number, updateData: any): Promise<any> => {
-    // Verify position exists
-    const existingPosition = await Position.findOne(positionId);
-    if (!existingPosition) {
-        throw new Error('Position not found');
+  // Verify position exists
+  const existingPosition = await Position.findOne(positionId);
+  if (!existingPosition) {
+    throw new Error('Position not found');
+  }
+
+  // Validate update data
+  validatePositionUpdate(updateData);
+
+  // Validate company reference if provided
+  if (updateData.companyId !== undefined) {
+    const company = await prisma.company.findUnique({
+      where: { id: updateData.companyId },
+    });
+    if (!company) {
+      throw new Error('Company not found');
     }
+  }
 
-    // Validate update data
-    validatePositionUpdate(updateData);
-
-    // Validate company reference if provided
-    if (updateData.companyId !== undefined) {
-        const company = await prisma.company.findUnique({
-            where: { id: updateData.companyId }
-        });
-        if (!company) {
-            throw new Error('Company not found');
-        }
+  // Validate interview flow reference if provided
+  if (updateData.interviewFlowId !== undefined) {
+    const interviewFlow = await prisma.interviewFlow.findUnique({
+      where: { id: updateData.interviewFlowId },
+    });
+    if (!interviewFlow) {
+      throw new Error('Interview flow not found');
     }
+  }
 
-    // Validate interview flow reference if provided
-    if (updateData.interviewFlowId !== undefined) {
-        const interviewFlow = await prisma.interviewFlow.findUnique({
-            where: { id: updateData.interviewFlowId }
-        });
-        if (!interviewFlow) {
-            throw new Error('Interview flow not found');
-        }
-    }
+  // Merge existing data with updates
+  const mergedData = {
+    ...existingPosition,
+    ...updateData,
+    id: positionId, // Ensure ID is preserved
+  };
 
-    // Merge existing data with updates
-    const mergedData = {
-        ...existingPosition,
-        ...updateData,
-        id: positionId // Ensure ID is preserved
-    };
+  // Create Position instance and save
+  const position = new Position(mergedData);
+  const updatedPosition = await position.save();
 
-    // Create Position instance and save
-    const position = new Position(mergedData);
-    const updatedPosition = await position.save();
-
-    return updatedPosition;
+  return updatedPosition;
 };
 ```
 
 **Business Rules**:
+
 - Position must exist before update
 - Referenced entities (company, interviewFlow) must exist if IDs are provided
 - Only provided fields are updated (partial update support)
@@ -318,6 +343,7 @@ export const updatePositionService = async (positionId: number, updateData: any)
 **Action**: Implement HTTP request/response handling for position updates
 
 **Function Signature**:
+
 ```typescript
 export const updatePosition = async (req: Request, res: Response): Promise<void>
 ```
@@ -337,12 +363,14 @@ export const updatePosition = async (req: Request, res: Response): Promise<void>
 11. Ensure all error responses include descriptive messages
 
 **Dependencies**:
+
 ```typescript
 import { Request, Response } from 'express';
 import { updatePositionService } from '../../application/services/positionService';
 ```
 
 **Implementation Notes**:
+
 - Use try-catch for error handling
 - Check error messages to determine appropriate HTTP status codes
 - Response format must be consistent with existing controllers
@@ -351,85 +379,89 @@ import { updatePositionService } from '../../application/services/positionServic
 - All error messages must be in English
 
 **Example Controller Logic**:
+
 ```typescript
 export const updatePosition = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // Parse and validate position ID
-        const positionId = parseInt(req.params.id);
-        if (isNaN(positionId)) {
-            res.status(400).json({
-                message: 'Invalid position ID format',
-                error: 'Position ID must be a valid number'
-            });
-            return;
-        }
-
-        // Validate request body is not empty
-        if (!req.body || Object.keys(req.body).length === 0) {
-            res.status(400).json({
-                message: 'No data provided for update',
-                error: 'Request body cannot be empty'
-            });
-            return;
-        }
-
-        // Call service layer
-        const updatedPosition = await updatePositionService(positionId, req.body);
-
-        // Success response
-        res.status(200).json({
-            message: 'Position updated successfully',
-            data: updatedPosition
-        });
-    } catch (error) {
-        if (error instanceof Error) {
-            // Position not found
-            if (error.message === 'Position not found') {
-                res.status(404).json({
-                    message: 'Position not found',
-                    error: error.message
-                });
-                return;
-            }
-
-            // Reference validation errors (company or interview flow not found)
-            if (error.message === 'Company not found' || error.message === 'Interview flow not found') {
-                res.status(400).json({
-                    message: 'Invalid reference data',
-                    error: error.message
-                });
-                return;
-            }
-
-            // Validation errors (from validatePositionUpdate)
-            if (error.message.includes('must be') || 
-                error.message.includes('cannot') || 
-                error.message.includes('required') ||
-                error.message.includes('Invalid')) {
-                res.status(400).json({
-                    message: 'Validation error',
-                    error: error.message
-                });
-                return;
-            }
-
-            // Other errors
-            res.status(500).json({
-                message: 'Error updating position',
-                error: error.message
-            });
-        } else {
-            // Non-Error exceptions
-            res.status(500).json({
-                message: 'Error updating position',
-                error: 'An unexpected error occurred'
-            });
-        }
+  try {
+    // Parse and validate position ID
+    const positionId = parseInt(req.params.id);
+    if (isNaN(positionId)) {
+      res.status(400).json({
+        message: 'Invalid position ID format',
+        error: 'Position ID must be a valid number',
+      });
+      return;
     }
+
+    // Validate request body is not empty
+    if (!req.body || Object.keys(req.body).length === 0) {
+      res.status(400).json({
+        message: 'No data provided for update',
+        error: 'Request body cannot be empty',
+      });
+      return;
+    }
+
+    // Call service layer
+    const updatedPosition = await updatePositionService(positionId, req.body);
+
+    // Success response
+    res.status(200).json({
+      message: 'Position updated successfully',
+      data: updatedPosition,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      // Position not found
+      if (error.message === 'Position not found') {
+        res.status(404).json({
+          message: 'Position not found',
+          error: error.message,
+        });
+        return;
+      }
+
+      // Reference validation errors (company or interview flow not found)
+      if (error.message === 'Company not found' || error.message === 'Interview flow not found') {
+        res.status(400).json({
+          message: 'Invalid reference data',
+          error: error.message,
+        });
+        return;
+      }
+
+      // Validation errors (from validatePositionUpdate)
+      if (
+        error.message.includes('must be') ||
+        error.message.includes('cannot') ||
+        error.message.includes('required') ||
+        error.message.includes('Invalid')
+      ) {
+        res.status(400).json({
+          message: 'Validation error',
+          error: error.message,
+        });
+        return;
+      }
+
+      // Other errors
+      res.status(500).json({
+        message: 'Error updating position',
+        error: error.message,
+      });
+    } else {
+      // Non-Error exceptions
+      res.status(500).json({
+        message: 'Error updating position',
+        error: 'An unexpected error occurred',
+      });
+    }
+  }
 };
 ```
 
 **Error Handling Strategy**:
+
 - 400 (Bad Request): Invalid ID format, empty body, validation errors, invalid references
 - 404 (Not Found): Position does not exist
 - 500 (Internal Server Error): Unexpected errors, database failures
@@ -449,32 +481,35 @@ export const updatePosition = async (req: Request, res: Response): Promise<void>
 3. Ensure route is registered before parameterized routes to avoid conflicts
 
 **Dependencies**:
+
 ```typescript
 import { updatePosition } from '../presentation/controllers/positionController';
 ```
 
 **Implementation Notes**:
+
 - Route must be placed after the GET `/:id` route to maintain proper routing order
 - Express routes are matched in order, so more specific routes should come first
 - The route path is `/:id` to match RESTful conventions
 
 **Example Route Configuration**:
+
 ```typescript
 import { Router } from 'express';
-import { 
-    getCandidatesByPosition, 
-    getInterviewFlowByPosition, 
-    getAllPositions, 
-    getCandidateNamesByPosition, 
-    getPositionById,
-    updatePosition  // Add this import
+import {
+  getCandidatesByPosition,
+  getInterviewFlowByPosition,
+  getAllPositions,
+  getCandidateNamesByPosition,
+  getPositionById,
+  updatePosition, // Add this import
 } from '../presentation/controllers/positionController';
 
 const router = Router();
 
 router.get('/', getAllPositions);
 router.get('/:id', getPositionById);
-router.put('/:id', updatePosition);  // Add this route
+router.put('/:id', updatePosition); // Add this route
 router.get('/:id/candidates', getCandidatesByPosition);
 router.get('/:id/candidates/names', getCandidateNamesByPosition);
 router.get('/:id/interviewflow', getInterviewFlowByPosition);
@@ -549,230 +584,253 @@ export default router;
    - Non-string values for optional string fields
 
 **Implementation Structure**:
+
 ```typescript
 import { validatePositionUpdate } from '../validator';
 
 describe('validatePositionUpdate', () => {
-    describe('should_pass_validation_with_valid_data', () => {
-        it('should not throw error with all valid fields', () => {
-            const validData = {
-                title: 'Senior Software Engineer',
-                description: 'A great position',
-                location: 'Madrid',
-                jobDescription: 'Detailed description',
-                status: 'Open',
-                isVisible: true,
-                salaryMin: 50000,
-                salaryMax: 70000,
-                employmentType: 'Full-time',
-                applicationDeadline: new Date(Date.now() + 86400000).toISOString() // Tomorrow
-            };
-            
-            expect(() => validatePositionUpdate(validData)).not.toThrow();
-        });
+  describe('should_pass_validation_with_valid_data', () => {
+    it('should not throw error with all valid fields', () => {
+      const validData = {
+        title: 'Senior Software Engineer',
+        description: 'A great position',
+        location: 'Madrid',
+        jobDescription: 'Detailed description',
+        status: 'Open',
+        isVisible: true,
+        salaryMin: 50000,
+        salaryMax: 70000,
+        employmentType: 'Full-time',
+        applicationDeadline: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+      };
 
-        it('should not throw error with partial update (only status)', () => {
-            const partialData = { status: 'Open' };
-            expect(() => validatePositionUpdate(partialData)).not.toThrow();
-        });
-
-        it('should not throw error when optional fields are omitted', () => {
-            const dataWithoutOptionals = {
-                title: 'Developer',
-                description: 'Job desc',
-                location: 'Barcelona',
-                jobDescription: 'Detailed job description'
-            };
-            expect(() => validatePositionUpdate(dataWithoutOptionals)).not.toThrow();
-        });
+      expect(() => validatePositionUpdate(validData)).not.toThrow();
     });
 
-    describe('should_reject_invalid_title', () => {
-        it('should throw error when title is empty string', () => {
-            expect(() => validatePositionUpdate({ title: '' }))
-                .toThrow('Title is required and must be a valid string');
-        });
-
-        it('should throw error when title exceeds 100 characters', () => {
-            const longTitle = 'x'.repeat(101);
-            expect(() => validatePositionUpdate({ title: longTitle }))
-                .toThrow('Title cannot exceed 100 characters');
-        });
-
-        it('should throw error when title is not a string', () => {
-            expect(() => validatePositionUpdate({ title: 123 }))
-                .toThrow('Title is required and must be a valid string');
-        });
-
-        it('should throw error when title is whitespace only', () => {
-            expect(() => validatePositionUpdate({ title: '   ' }))
-                .toThrow('Title is required and must be a valid string');
-        });
-
-        it('should throw error when title is null', () => {
-            expect(() => validatePositionUpdate({ title: null }))
-                .toThrow('Title is required and must be a valid string');
-        });
+    it('should not throw error with partial update (only status)', () => {
+      const partialData = { status: 'Open' };
+      expect(() => validatePositionUpdate(partialData)).not.toThrow();
     });
 
-    describe('should_reject_invalid_status', () => {
-        it('should throw error for invalid status value', () => {
-            expect(() => validatePositionUpdate({ status: 'InvalidStatus' }))
-                .toThrow('Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador');
-        });
+    it('should not throw error when optional fields are omitted', () => {
+      const dataWithoutOptionals = {
+        title: 'Developer',
+        description: 'Job desc',
+        location: 'Barcelona',
+        jobDescription: 'Detailed job description',
+      };
+      expect(() => validatePositionUpdate(dataWithoutOptionals)).not.toThrow();
+    });
+  });
 
-        it('should accept valid status: Open', () => {
-            expect(() => validatePositionUpdate({ status: 'Open' })).not.toThrow();
-        });
-
-        it('should accept valid status: Contratado', () => {
-            expect(() => validatePositionUpdate({ status: 'Contratado' })).not.toThrow();
-        });
-
-        it('should accept valid status: Cerrado', () => {
-            expect(() => validatePositionUpdate({ status: 'Cerrado' })).not.toThrow();
-        });
-
-        it('should accept valid status: Borrador', () => {
-            expect(() => validatePositionUpdate({ status: 'Borrador' })).not.toThrow();
-        });
+  describe('should_reject_invalid_title', () => {
+    it('should throw error when title is empty string', () => {
+      expect(() => validatePositionUpdate({ title: '' })).toThrow(
+        'Title is required and must be a valid string'
+      );
     });
 
-    describe('should_reject_invalid_salary_values', () => {
-        it('should throw error when salaryMin is negative', () => {
-            expect(() => validatePositionUpdate({ salaryMin: -1000 }))
-                .toThrow('Minimum salary must be a valid number greater than or equal to 0');
-        });
-
-        it('should throw error when salaryMax is negative', () => {
-            expect(() => validatePositionUpdate({ salaryMax: -1000 }))
-                .toThrow('Maximum salary must be a valid number greater than or equal to 0');
-        });
-
-        it('should throw error when salaryMin > salaryMax', () => {
-            expect(() => validatePositionUpdate({ salaryMin: 80000, salaryMax: 60000 }))
-                .toThrow('Minimum salary cannot be greater than maximum salary');
-        });
-
-        it('should throw error when salaryMin is not a number', () => {
-            expect(() => validatePositionUpdate({ salaryMin: 'not-a-number' }))
-                .toThrow('Minimum salary must be a valid number greater than or equal to 0');
-        });
-
-        it('should accept valid salary range', () => {
-            expect(() => validatePositionUpdate({ salaryMin: 50000, salaryMax: 70000 }))
-                .not.toThrow();
-        });
-
-        it('should accept salaryMin = 0', () => {
-            expect(() => validatePositionUpdate({ salaryMin: 0 })).not.toThrow();
-        });
+    it('should throw error when title exceeds 100 characters', () => {
+      const longTitle = 'x'.repeat(101);
+      expect(() => validatePositionUpdate({ title: longTitle })).toThrow(
+        'Title cannot exceed 100 characters'
+      );
     });
 
-    describe('should_reject_invalid_application_deadline', () => {
-        it('should throw error for invalid date format', () => {
-            expect(() => validatePositionUpdate({ applicationDeadline: 'not-a-date' }))
-                .toThrow('Invalid application deadline');
-        });
-
-        it('should throw error for past date', () => {
-            const yesterday = new Date(Date.now() - 86400000);
-            expect(() => validatePositionUpdate({ applicationDeadline: yesterday.toISOString() }))
-                .toThrow('Application deadline cannot be in the past');
-        });
-
-        it('should accept future date', () => {
-            const tomorrow = new Date(Date.now() + 86400000);
-            expect(() => validatePositionUpdate({ applicationDeadline: tomorrow.toISOString() }))
-                .not.toThrow();
-        });
+    it('should throw error when title is not a string', () => {
+      expect(() => validatePositionUpdate({ title: 123 })).toThrow(
+        'Title is required and must be a valid string'
+      );
     });
 
-    describe('should_reject_invalid_boolean_values', () => {
-        it('should throw error when isVisible is not boolean', () => {
-            expect(() => validatePositionUpdate({ isVisible: 'true' }))
-                .toThrow('isVisible must be a boolean value');
-        });
-
-        it('should accept true for isVisible', () => {
-            expect(() => validatePositionUpdate({ isVisible: true })).not.toThrow();
-        });
-
-        it('should accept false for isVisible', () => {
-            expect(() => validatePositionUpdate({ isVisible: false })).not.toThrow();
-        });
+    it('should throw error when title is whitespace only', () => {
+      expect(() => validatePositionUpdate({ title: '   ' })).toThrow(
+        'Title is required and must be a valid string'
+      );
     });
 
-    describe('should_reject_invalid_id_values', () => {
-        it('should throw error when companyId is negative', () => {
-            expect(() => validatePositionUpdate({ companyId: -1 }))
-                .toThrow('companyId must be a positive integer');
-        });
+    it('should throw error when title is null', () => {
+      expect(() => validatePositionUpdate({ title: null })).toThrow(
+        'Title is required and must be a valid string'
+      );
+    });
+  });
 
-        it('should throw error when companyId is zero', () => {
-            expect(() => validatePositionUpdate({ companyId: 0 }))
-                .toThrow('companyId must be a positive integer');
-        });
-
-        it('should throw error when companyId is not an integer', () => {
-            expect(() => validatePositionUpdate({ companyId: 1.5 }))
-                .toThrow('companyId must be a positive integer');
-        });
-
-        it('should throw error when interviewFlowId is negative', () => {
-            expect(() => validatePositionUpdate({ interviewFlowId: -1 }))
-                .toThrow('interviewFlowId must be a positive integer');
-        });
-
-        it('should accept valid positive integer IDs', () => {
-            expect(() => validatePositionUpdate({ companyId: 1, interviewFlowId: 2 }))
-                .not.toThrow();
-        });
+  describe('should_reject_invalid_status', () => {
+    it('should throw error for invalid status value', () => {
+      expect(() => validatePositionUpdate({ status: 'InvalidStatus' })).toThrow(
+        'Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador'
+      );
     });
 
-    describe('should_reject_invalid_string_fields', () => {
-        it('should throw error when description is empty', () => {
-            expect(() => validatePositionUpdate({ description: '' }))
-                .toThrow('description is required and must be a valid string');
-        });
-
-        it('should throw error when location is not a string', () => {
-            expect(() => validatePositionUpdate({ location: 123 }))
-                .toThrow('location is required and must be a valid string');
-        });
-
-        it('should throw error when jobDescription is whitespace only', () => {
-            expect(() => validatePositionUpdate({ jobDescription: '   ' }))
-                .toThrow('jobDescription is required and must be a valid string');
-        });
-
-        it('should throw error when employmentType is empty', () => {
-            expect(() => validatePositionUpdate({ employmentType: '' }))
-                .toThrow('employmentType is required and must be a valid string');
-        });
+    it('should accept valid status: Open', () => {
+      expect(() => validatePositionUpdate({ status: 'Open' })).not.toThrow();
     });
 
-    describe('should_validate_optional_string_fields', () => {
-        it('should throw error when requirements is not a string', () => {
-            expect(() => validatePositionUpdate({ requirements: 123 }))
-                .toThrow('requirements must be a string');
-        });
-
-        it('should accept empty string for optional fields', () => {
-            expect(() => validatePositionUpdate({ requirements: '', benefits: '' }))
-                .not.toThrow();
-        });
-
-        it('should accept valid strings for optional fields', () => {
-            expect(() => validatePositionUpdate({
-                requirements: 'Some requirements',
-                responsibilities: 'Some responsibilities',
-                benefits: 'Some benefits',
-                companyDescription: 'Company info',
-                contactInfo: 'contact@example.com'
-            })).not.toThrow();
-        });
+    it('should accept valid status: Contratado', () => {
+      expect(() => validatePositionUpdate({ status: 'Contratado' })).not.toThrow();
     });
+
+    it('should accept valid status: Cerrado', () => {
+      expect(() => validatePositionUpdate({ status: 'Cerrado' })).not.toThrow();
+    });
+
+    it('should accept valid status: Borrador', () => {
+      expect(() => validatePositionUpdate({ status: 'Borrador' })).not.toThrow();
+    });
+  });
+
+  describe('should_reject_invalid_salary_values', () => {
+    it('should throw error when salaryMin is negative', () => {
+      expect(() => validatePositionUpdate({ salaryMin: -1000 })).toThrow(
+        'Minimum salary must be a valid number greater than or equal to 0'
+      );
+    });
+
+    it('should throw error when salaryMax is negative', () => {
+      expect(() => validatePositionUpdate({ salaryMax: -1000 })).toThrow(
+        'Maximum salary must be a valid number greater than or equal to 0'
+      );
+    });
+
+    it('should throw error when salaryMin > salaryMax', () => {
+      expect(() => validatePositionUpdate({ salaryMin: 80000, salaryMax: 60000 })).toThrow(
+        'Minimum salary cannot be greater than maximum salary'
+      );
+    });
+
+    it('should throw error when salaryMin is not a number', () => {
+      expect(() => validatePositionUpdate({ salaryMin: 'not-a-number' })).toThrow(
+        'Minimum salary must be a valid number greater than or equal to 0'
+      );
+    });
+
+    it('should accept valid salary range', () => {
+      expect(() => validatePositionUpdate({ salaryMin: 50000, salaryMax: 70000 })).not.toThrow();
+    });
+
+    it('should accept salaryMin = 0', () => {
+      expect(() => validatePositionUpdate({ salaryMin: 0 })).not.toThrow();
+    });
+  });
+
+  describe('should_reject_invalid_application_deadline', () => {
+    it('should throw error for invalid date format', () => {
+      expect(() => validatePositionUpdate({ applicationDeadline: 'not-a-date' })).toThrow(
+        'Invalid application deadline'
+      );
+    });
+
+    it('should throw error for past date', () => {
+      const yesterday = new Date(Date.now() - 86400000);
+      expect(() =>
+        validatePositionUpdate({ applicationDeadline: yesterday.toISOString() })
+      ).toThrow('Application deadline cannot be in the past');
+    });
+
+    it('should accept future date', () => {
+      const tomorrow = new Date(Date.now() + 86400000);
+      expect(() =>
+        validatePositionUpdate({ applicationDeadline: tomorrow.toISOString() })
+      ).not.toThrow();
+    });
+  });
+
+  describe('should_reject_invalid_boolean_values', () => {
+    it('should throw error when isVisible is not boolean', () => {
+      expect(() => validatePositionUpdate({ isVisible: 'true' })).toThrow(
+        'isVisible must be a boolean value'
+      );
+    });
+
+    it('should accept true for isVisible', () => {
+      expect(() => validatePositionUpdate({ isVisible: true })).not.toThrow();
+    });
+
+    it('should accept false for isVisible', () => {
+      expect(() => validatePositionUpdate({ isVisible: false })).not.toThrow();
+    });
+  });
+
+  describe('should_reject_invalid_id_values', () => {
+    it('should throw error when companyId is negative', () => {
+      expect(() => validatePositionUpdate({ companyId: -1 })).toThrow(
+        'companyId must be a positive integer'
+      );
+    });
+
+    it('should throw error when companyId is zero', () => {
+      expect(() => validatePositionUpdate({ companyId: 0 })).toThrow(
+        'companyId must be a positive integer'
+      );
+    });
+
+    it('should throw error when companyId is not an integer', () => {
+      expect(() => validatePositionUpdate({ companyId: 1.5 })).toThrow(
+        'companyId must be a positive integer'
+      );
+    });
+
+    it('should throw error when interviewFlowId is negative', () => {
+      expect(() => validatePositionUpdate({ interviewFlowId: -1 })).toThrow(
+        'interviewFlowId must be a positive integer'
+      );
+    });
+
+    it('should accept valid positive integer IDs', () => {
+      expect(() => validatePositionUpdate({ companyId: 1, interviewFlowId: 2 })).not.toThrow();
+    });
+  });
+
+  describe('should_reject_invalid_string_fields', () => {
+    it('should throw error when description is empty', () => {
+      expect(() => validatePositionUpdate({ description: '' })).toThrow(
+        'description is required and must be a valid string'
+      );
+    });
+
+    it('should throw error when location is not a string', () => {
+      expect(() => validatePositionUpdate({ location: 123 })).toThrow(
+        'location is required and must be a valid string'
+      );
+    });
+
+    it('should throw error when jobDescription is whitespace only', () => {
+      expect(() => validatePositionUpdate({ jobDescription: '   ' })).toThrow(
+        'jobDescription is required and must be a valid string'
+      );
+    });
+
+    it('should throw error when employmentType is empty', () => {
+      expect(() => validatePositionUpdate({ employmentType: '' })).toThrow(
+        'employmentType is required and must be a valid string'
+      );
+    });
+  });
+
+  describe('should_validate_optional_string_fields', () => {
+    it('should throw error when requirements is not a string', () => {
+      expect(() => validatePositionUpdate({ requirements: 123 })).toThrow(
+        'requirements must be a string'
+      );
+    });
+
+    it('should accept empty string for optional fields', () => {
+      expect(() => validatePositionUpdate({ requirements: '', benefits: '' })).not.toThrow();
+    });
+
+    it('should accept valid strings for optional fields', () => {
+      expect(() =>
+        validatePositionUpdate({
+          requirements: 'Some requirements',
+          responsibilities: 'Some responsibilities',
+          benefits: 'Some benefits',
+          companyDescription: 'Company info',
+          contactInfo: 'contact@example.com',
+        })
+      ).not.toThrow();
+    });
+  });
 });
 ```
 
@@ -823,6 +881,7 @@ describe('validatePositionUpdate', () => {
    - Reference validation errors are propagated
 
 **Mock Strategy**:
+
 ```typescript
 jest.mock('@prisma/client');
 jest.mock('../../domain/models/Position');
@@ -830,6 +889,7 @@ jest.mock('../validator');
 ```
 
 **Implementation Structure**:
+
 ```typescript
 import { updatePositionService } from '../positionService';
 import { Position } from '../../../domain/models/Position';
@@ -842,257 +902,257 @@ jest.mock('../../../domain/models/Position');
 jest.mock('../../validator');
 
 describe('PositionService - updatePositionService', () => {
-    let mockPrisma: any;
-    let mockPosition: any;
+  let mockPrisma: any;
+  let mockPosition: any;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-        // Mock Prisma client
-        mockPrisma = {
-            company: {
-                findUnique: jest.fn()
-            },
-            interviewFlow: {
-                findUnique: jest.fn()
-            }
-        };
-        (PrismaClient as jest.MockedClass<typeof PrismaClient>).mockImplementation(() => mockPrisma);
+    // Mock Prisma client
+    mockPrisma = {
+      company: {
+        findUnique: jest.fn(),
+      },
+      interviewFlow: {
+        findUnique: jest.fn(),
+      },
+    };
+    (PrismaClient as jest.MockedClass<typeof PrismaClient>).mockImplementation(() => mockPrisma);
 
-        // Mock Position model
-        mockPosition = {
-            id: 1,
-            title: 'Old Title',
-            description: 'Old Description',
-            location: 'Old Location',
-            jobDescription: 'Old Job Description',
-            status: 'Borrador',
-            isVisible: false,
-            companyId: 1,
-            interviewFlowId: 1,
-            save: jest.fn()
-        };
+    // Mock Position model
+    mockPosition = {
+      id: 1,
+      title: 'Old Title',
+      description: 'Old Description',
+      location: 'Old Location',
+      jobDescription: 'Old Job Description',
+      status: 'Borrador',
+      isVisible: false,
+      companyId: 1,
+      interviewFlowId: 1,
+      save: jest.fn(),
+    };
+  });
+
+  describe('should_update_position_successfully', () => {
+    it('should update position with all valid fields', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = {
+        title: 'New Title',
+        description: 'New Description',
+        status: 'Open',
+        isVisible: true,
+        salaryMin: 50000,
+        salaryMax: 70000,
+      };
+      const expectedUpdatedPosition = { ...mockPosition, ...updateData };
+
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
+      mockPosition.save.mockResolvedValue(expectedUpdatedPosition);
+
+      // Mock Position constructor
+      (Position as jest.MockedClass<typeof Position>).mockImplementation(data => {
+        return { ...data, save: mockPosition.save };
+      });
+
+      // Act
+      const result = await updatePositionService(positionId, updateData);
+
+      // Assert
+      expect(Position.findOne).toHaveBeenCalledWith(positionId);
+      expect(validatePositionUpdate).toHaveBeenCalledWith(updateData);
+      expect(mockPosition.save).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(expectedUpdatedPosition);
     });
 
-    describe('should_update_position_successfully', () => {
-        it('should update position with all valid fields', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = {
-                title: 'New Title',
-                description: 'New Description',
-                status: 'Open',
-                isVisible: true,
-                salaryMin: 50000,
-                salaryMax: 70000
-            };
-            const expectedUpdatedPosition = { ...mockPosition, ...updateData };
+    it('should update position with partial data (only status)', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { status: 'Open' };
+      const expectedUpdatedPosition = { ...mockPosition, status: 'Open' };
 
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            mockPosition.save.mockResolvedValue(expectedUpdatedPosition);
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
+      mockPosition.save.mockResolvedValue(expectedUpdatedPosition);
+      (Position as jest.MockedClass<typeof Position>).mockImplementation(data => {
+        return { ...data, save: mockPosition.save };
+      });
 
-            // Mock Position constructor
-            (Position as jest.MockedClass<typeof Position>).mockImplementation((data) => {
-                return { ...data, save: mockPosition.save };
-            });
+      // Act
+      const result = await updatePositionService(positionId, updateData);
 
-            // Act
-            const result = await updatePositionService(positionId, updateData);
-
-            // Assert
-            expect(Position.findOne).toHaveBeenCalledWith(positionId);
-            expect(validatePositionUpdate).toHaveBeenCalledWith(updateData);
-            expect(mockPosition.save).toHaveBeenCalledTimes(1);
-            expect(result).toEqual(expectedUpdatedPosition);
-        });
-
-        it('should update position with partial data (only status)', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { status: 'Open' };
-            const expectedUpdatedPosition = { ...mockPosition, status: 'Open' };
-
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            mockPosition.save.mockResolvedValue(expectedUpdatedPosition);
-            (Position as jest.MockedClass<typeof Position>).mockImplementation((data) => {
-                return { ...data, save: mockPosition.save };
-            });
-
-            // Act
-            const result = await updatePositionService(positionId, updateData);
-
-            // Assert
-            expect(result.title).toBe('Old Title'); // Unchanged
-            expect(result.status).toBe('Open'); // Updated
-        });
-
-        it('should validate companyId exists when provided', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { companyId: 2 };
-            const mockCompany = { id: 2, name: 'New Company' };
-
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            mockPrisma.company.findUnique.mockResolvedValue(mockCompany);
-            mockPosition.save.mockResolvedValue({ ...mockPosition, companyId: 2 });
-            (Position as jest.MockedClass<typeof Position>).mockImplementation((data) => {
-                return { ...data, save: mockPosition.save };
-            });
-
-            // Act
-            await updatePositionService(positionId, updateData);
-
-            // Assert
-            expect(mockPrisma.company.findUnique).toHaveBeenCalledWith({
-                where: { id: 2 }
-            });
-        });
-
-        it('should validate interviewFlowId exists when provided', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { interviewFlowId: 3 };
-            const mockInterviewFlow = { id: 3, description: 'New Flow' };
-
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            mockPrisma.interviewFlow.findUnique.mockResolvedValue(mockInterviewFlow);
-            mockPosition.save.mockResolvedValue({ ...mockPosition, interviewFlowId: 3 });
-            (Position as jest.MockedClass<typeof Position>).mockImplementation((data) => {
-                return { ...data, save: mockPosition.save };
-            });
-
-            // Act
-            await updatePositionService(positionId, updateData);
-
-            // Assert
-            expect(mockPrisma.interviewFlow.findUnique).toHaveBeenCalledWith({
-                where: { id: 3 }
-            });
-        });
+      // Assert
+      expect(result.title).toBe('Old Title'); // Unchanged
+      expect(result.status).toBe('Open'); // Updated
     });
 
-    describe('should_throw_error_when_position_not_found', () => {
-        it('should throw "Position not found" error when position does not exist', async () => {
-            // Arrange
-            const positionId = 999;
-            const updateData = { title: 'New Title' };
+    it('should validate companyId exists when provided', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { companyId: 2 };
+      const mockCompany = { id: 2, name: 'New Company' };
 
-            (Position.findOne as jest.Mock).mockResolvedValue(null);
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
+      mockPrisma.company.findUnique.mockResolvedValue(mockCompany);
+      mockPosition.save.mockResolvedValue({ ...mockPosition, companyId: 2 });
+      (Position as jest.MockedClass<typeof Position>).mockImplementation(data => {
+        return { ...data, save: mockPosition.save };
+      });
 
-            // Act & Assert
-            await expect(updatePositionService(positionId, updateData))
-                .rejects
-                .toThrow('Position not found');
+      // Act
+      await updatePositionService(positionId, updateData);
 
-            expect(Position.findOne).toHaveBeenCalledWith(positionId);
-            expect(validatePositionUpdate).not.toHaveBeenCalled();
-        });
+      // Assert
+      expect(mockPrisma.company.findUnique).toHaveBeenCalledWith({
+        where: { id: 2 },
+      });
     });
 
-    describe('should_throw_error_for_validation_failures', () => {
-        it('should propagate validation error from validator', async () => {
-            // Arrange
-            const positionId = 1;
-            const invalidData = { salaryMin: -1000 };
+    it('should validate interviewFlowId exists when provided', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { interviewFlowId: 3 };
+      const mockInterviewFlow = { id: 3, description: 'New Flow' };
 
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {
-                throw new Error('Minimum salary must be a valid number greater than or equal to 0');
-            });
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
+      mockPrisma.interviewFlow.findUnique.mockResolvedValue(mockInterviewFlow);
+      mockPosition.save.mockResolvedValue({ ...mockPosition, interviewFlowId: 3 });
+      (Position as jest.MockedClass<typeof Position>).mockImplementation(data => {
+        return { ...data, save: mockPosition.save };
+      });
 
-            // Act & Assert
-            await expect(updatePositionService(positionId, invalidData))
-                .rejects
-                .toThrow('Minimum salary must be a valid number greater than or equal to 0');
+      // Act
+      await updatePositionService(positionId, updateData);
 
-            expect(validatePositionUpdate).toHaveBeenCalledWith(invalidData);
-        });
+      // Assert
+      expect(mockPrisma.interviewFlow.findUnique).toHaveBeenCalledWith({
+        where: { id: 3 },
+      });
+    });
+  });
+
+  describe('should_throw_error_when_position_not_found', () => {
+    it('should throw "Position not found" error when position does not exist', async () => {
+      // Arrange
+      const positionId = 999;
+      const updateData = { title: 'New Title' };
+
+      (Position.findOne as jest.Mock).mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(updatePositionService(positionId, updateData)).rejects.toThrow(
+        'Position not found'
+      );
+
+      expect(Position.findOne).toHaveBeenCalledWith(positionId);
+      expect(validatePositionUpdate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('should_throw_error_for_validation_failures', () => {
+    it('should propagate validation error from validator', async () => {
+      // Arrange
+      const positionId = 1;
+      const invalidData = { salaryMin: -1000 };
+
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {
+        throw new Error('Minimum salary must be a valid number greater than or equal to 0');
+      });
+
+      // Act & Assert
+      await expect(updatePositionService(positionId, invalidData)).rejects.toThrow(
+        'Minimum salary must be a valid number greater than or equal to 0'
+      );
+
+      expect(validatePositionUpdate).toHaveBeenCalledWith(invalidData);
+    });
+  });
+
+  describe('should_throw_error_for_invalid_references', () => {
+    it('should throw "Company not found" when companyId does not exist', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { companyId: 999 };
+
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
+      mockPrisma.company.findUnique.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(updatePositionService(positionId, updateData)).rejects.toThrow(
+        'Company not found'
+      );
+
+      expect(mockPrisma.company.findUnique).toHaveBeenCalledWith({
+        where: { id: 999 },
+      });
     });
 
-    describe('should_throw_error_for_invalid_references', () => {
-        it('should throw "Company not found" when companyId does not exist', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { companyId: 999 };
+    it('should throw "Interview flow not found" when interviewFlowId does not exist', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { interviewFlowId: 999 };
 
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            mockPrisma.company.findUnique.mockResolvedValue(null);
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
+      mockPrisma.interviewFlow.findUnique.mockResolvedValue(null);
 
-            // Act & Assert
-            await expect(updatePositionService(positionId, updateData))
-                .rejects
-                .toThrow('Company not found');
+      // Act & Assert
+      await expect(updatePositionService(positionId, updateData)).rejects.toThrow(
+        'Interview flow not found'
+      );
 
-            expect(mockPrisma.company.findUnique).toHaveBeenCalledWith({
-                where: { id: 999 }
-            });
-        });
-
-        it('should throw "Interview flow not found" when interviewFlowId does not exist', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { interviewFlowId: 999 };
-
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            mockPrisma.interviewFlow.findUnique.mockResolvedValue(null);
-
-            // Act & Assert
-            await expect(updatePositionService(positionId, updateData))
-                .rejects
-                .toThrow('Interview flow not found');
-
-            expect(mockPrisma.interviewFlow.findUnique).toHaveBeenCalledWith({
-                where: { id: 999 }
-            });
-        });
+      expect(mockPrisma.interviewFlow.findUnique).toHaveBeenCalledWith({
+        where: { id: 999 },
+      });
     });
+  });
 
-    describe('should_merge_data_correctly', () => {
-        it('should preserve unchanged fields when doing partial update', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { status: 'Open' };
+  describe('should_merge_data_correctly', () => {
+    it('should preserve unchanged fields when doing partial update', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { status: 'Open' };
 
-            (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
-            (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
-            
-            let mergedData: any;
-            (Position as jest.MockedClass<typeof Position>).mockImplementation((data) => {
-                mergedData = data;
-                return { ...data, save: jest.fn().mockResolvedValue(data) };
-            });
+      (Position.findOne as jest.Mock).mockResolvedValue(mockPosition);
+      (validatePositionUpdate as jest.Mock).mockImplementation(() => {});
 
-            // Act
-            await updatePositionService(positionId, updateData);
+      let mergedData: any;
+      (Position as jest.MockedClass<typeof Position>).mockImplementation(data => {
+        mergedData = data;
+        return { ...data, save: jest.fn().mockResolvedValue(data) };
+      });
 
-            // Assert
-            expect(mergedData.title).toBe('Old Title'); // Preserved
-            expect(mergedData.description).toBe('Old Description'); // Preserved
-            expect(mergedData.status).toBe('Open'); // Updated
-            expect(mergedData.id).toBe(positionId); // ID preserved
-        });
+      // Act
+      await updatePositionService(positionId, updateData);
+
+      // Assert
+      expect(mergedData.title).toBe('Old Title'); // Preserved
+      expect(mergedData.description).toBe('Old Description'); // Preserved
+      expect(mergedData.status).toBe('Open'); // Updated
+      expect(mergedData.id).toBe(positionId); // ID preserved
     });
+  });
 
-    describe('should_handle_errors_gracefully', () => {
-        it('should propagate database errors', async () => {
-            // Arrange
-            const positionId = 1;
-            const updateData = { title: 'New Title' };
+  describe('should_handle_errors_gracefully', () => {
+    it('should propagate database errors', async () => {
+      // Arrange
+      const positionId = 1;
+      const updateData = { title: 'New Title' };
 
-            (Position.findOne as jest.Mock).mockRejectedValue(new Error('Database connection failed'));
+      (Position.findOne as jest.Mock).mockRejectedValue(new Error('Database connection failed'));
 
-            // Act & Assert
-            await expect(updatePositionService(positionId, updateData))
-                .rejects
-                .toThrow('Database connection failed');
-        });
+      // Act & Assert
+      await expect(updatePositionService(positionId, updateData)).rejects.toThrow(
+        'Database connection failed'
+      );
     });
+  });
 });
 ```
 
@@ -1152,11 +1212,13 @@ describe('PositionService - updatePositionService', () => {
    - All responses include message field
 
 **Mock Strategy**:
+
 ```typescript
 jest.mock('../../application/services/positionService');
 ```
 
 **Implementation Structure**:
+
 ```typescript
 import { Request, Response } from 'express';
 import { updatePosition } from '../positionController';
@@ -1166,456 +1228,450 @@ import { updatePositionService } from '../../../application/services/positionSer
 jest.mock('../../../application/services/positionService');
 
 describe('PositionController - updatePosition', () => {
-    let mockRequest: Partial<Request>;
-    let mockResponse: Partial<Response>;
-    let mockJson: jest.Mock;
-    let mockStatus: jest.Mock;
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response>;
+  let mockJson: jest.Mock;
+  let mockStatus: jest.Mock;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-        mockJson = jest.fn();
-        mockStatus = jest.fn().mockReturnValue({ json: mockJson });
+    mockJson = jest.fn();
+    mockStatus = jest.fn().mockReturnValue({ json: mockJson });
 
-        mockRequest = {
-            params: { id: '1' },
-            body: {}
-        };
+    mockRequest = {
+      params: { id: '1' },
+      body: {},
+    };
 
-        mockResponse = {
-            status: mockStatus,
-            json: mockJson
-        };
+    mockResponse = {
+      status: mockStatus,
+      json: mockJson,
+    };
+  });
+
+  describe('should_update_position_successfully', () => {
+    it('should return 200 with success message when update succeeds', async () => {
+      // Arrange
+      const updateData = { title: 'New Title', status: 'Open' };
+      const updatedPosition = { id: 1, ...updateData };
+
+      mockRequest.params = { id: '1' };
+      mockRequest.body = updateData;
+
+      (updatePositionService as jest.Mock).mockResolvedValue(updatedPosition);
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(1, updateData);
+      expect(mockStatus).toHaveBeenCalledWith(200);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Position updated successfully',
+        data: updatedPosition,
+      });
     });
 
-    describe('should_update_position_successfully', () => {
-        it('should return 200 with success message when update succeeds', async () => {
-            // Arrange
-            const updateData = { title: 'New Title', status: 'Open' };
-            const updatedPosition = { id: 1, ...updateData };
+    it('should handle partial update with only status field', async () => {
+      // Arrange
+      const updateData = { status: 'Open' };
+      const updatedPosition = { id: 1, title: 'Existing Title', status: 'Open' };
 
-            mockRequest.params = { id: '1' };
-            mockRequest.body = updateData;
+      mockRequest.params = { id: '1' };
+      mockRequest.body = updateData;
 
-            (updatePositionService as jest.Mock).mockResolvedValue(updatedPosition);
+      (updatePositionService as jest.Mock).mockResolvedValue(updatedPosition);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(1, updateData);
-            expect(mockStatus).toHaveBeenCalledWith(200);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Position updated successfully',
-                data: updatedPosition
-            });
-        });
-
-        it('should handle partial update with only status field', async () => {
-            // Arrange
-            const updateData = { status: 'Open' };
-            const updatedPosition = { id: 1, title: 'Existing Title', status: 'Open' };
-
-            mockRequest.params = { id: '1' };
-            mockRequest.body = updateData;
-
-            (updatePositionService as jest.Mock).mockResolvedValue(updatedPosition);
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(1, updateData);
-            expect(mockStatus).toHaveBeenCalledWith(200);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Position updated successfully',
-                data: updatedPosition
-            });
-        });
-
-        it('should handle update with all fields', async () => {
-            // Arrange
-            const updateData = {
-                title: 'Senior Developer',
-                description: 'New description',
-                location: 'Barcelona',
-                jobDescription: 'Detailed job description',
-                status: 'Open',
-                isVisible: true,
-                salaryMin: 60000,
-                salaryMax: 80000,
-                employmentType: 'Full-time',
-                companyId: 1,
-                interviewFlowId: 1
-            };
-            const updatedPosition = { id: 1, ...updateData };
-
-            mockRequest.params = { id: '1' };
-            mockRequest.body = updateData;
-
-            (updatePositionService as jest.Mock).mockResolvedValue(updatedPosition);
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(1, updateData);
-            expect(mockStatus).toHaveBeenCalledWith(200);
-        });
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(1, updateData);
+      expect(mockStatus).toHaveBeenCalledWith(200);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Position updated successfully',
+        data: updatedPosition,
+      });
     });
 
-    describe('should_return_400_for_invalid_position_id', () => {
-        it('should return 400 when position ID is not a number', async () => {
-            // Arrange
-            mockRequest.params = { id: 'invalid' };
-            mockRequest.body = { title: 'New Title' };
+    it('should handle update with all fields', async () => {
+      // Arrange
+      const updateData = {
+        title: 'Senior Developer',
+        description: 'New description',
+        location: 'Barcelona',
+        jobDescription: 'Detailed job description',
+        status: 'Open',
+        isVisible: true,
+        salaryMin: 60000,
+        salaryMax: 80000,
+        employmentType: 'Full-time',
+        companyId: 1,
+        interviewFlowId: 1,
+      };
+      const updatedPosition = { id: 1, ...updateData };
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      mockRequest.params = { id: '1' };
+      mockRequest.body = updateData;
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Invalid position ID format',
-                error: 'Position ID must be a valid number'
-            });
-            expect(updatePositionService).not.toHaveBeenCalled();
-        });
+      (updatePositionService as jest.Mock).mockResolvedValue(updatedPosition);
 
-        it('should return 400 when position ID is NaN', async () => {
-            // Arrange
-            mockRequest.params = { id: 'abc123' };
-            mockRequest.body = { title: 'New Title' };
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(1, updateData);
+      expect(mockStatus).toHaveBeenCalledWith(200);
+    });
+  });
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Invalid position ID format',
-                error: 'Position ID must be a valid number'
-            });
-        });
+  describe('should_return_400_for_invalid_position_id', () => {
+    it('should return 400 when position ID is not a number', async () => {
+      // Arrange
+      mockRequest.params = { id: 'invalid' };
+      mockRequest.body = { title: 'New Title' };
 
-        it('should accept negative position ID and let service handle it', async () => {
-            // Arrange
-            mockRequest.params = { id: '-1' };
-            mockRequest.body = { title: 'New Title' };
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            (updatePositionService as jest.Mock).mockResolvedValue({ id: -1, title: 'New Title' });
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(-1, { title: 'New Title' });
-        });
-
-        it('should accept zero position ID and let service handle it', async () => {
-            // Arrange
-            mockRequest.params = { id: '0' };
-            mockRequest.body = { title: 'New Title' };
-
-            (updatePositionService as jest.Mock).mockResolvedValue({ id: 0, title: 'New Title' });
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(0, { title: 'New Title' });
-        });
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Invalid position ID format',
+        error: 'Position ID must be a valid number',
+      });
+      expect(updatePositionService).not.toHaveBeenCalled();
     });
 
-    describe('should_return_400_for_empty_request_body', () => {
-        it('should return 400 when request body is empty object', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = {};
+    it('should return 400 when position ID is NaN', async () => {
+      // Arrange
+      mockRequest.params = { id: 'abc123' };
+      mockRequest.body = { title: 'New Title' };
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'No data provided for update',
-                error: 'Request body cannot be empty'
-            });
-            expect(updatePositionService).not.toHaveBeenCalled();
-        });
-
-        it('should return 400 when request body is null', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = null;
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'No data provided for update',
-                error: 'Request body cannot be empty'
-            });
-        });
-
-        it('should return 400 when request body is undefined', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = undefined;
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'No data provided for update',
-                error: 'Request body cannot be empty'
-            });
-        });
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Invalid position ID format',
+        error: 'Position ID must be a valid number',
+      });
     });
 
-    describe('should_return_404_when_position_not_found', () => {
-        it('should return 404 when position does not exist', async () => {
-            // Arrange
-            mockRequest.params = { id: '999' };
-            mockRequest.body = { title: 'New Title' };
+    it('should accept negative position ID and let service handle it', async () => {
+      // Arrange
+      mockRequest.params = { id: '-1' };
+      mockRequest.body = { title: 'New Title' };
 
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Position not found')
-            );
+      (updatePositionService as jest.Mock).mockResolvedValue({ id: -1, title: 'New Title' });
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(404);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Position not found',
-                error: 'Position not found'
-            });
-        });
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(-1, { title: 'New Title' });
     });
 
-    describe('should_return_400_for_validation_errors', () => {
-        it('should return 400 when title is empty', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { title: '' };
+    it('should accept zero position ID and let service handle it', async () => {
+      // Arrange
+      mockRequest.params = { id: '0' };
+      mockRequest.body = { title: 'New Title' };
 
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Title is required and must be a valid string')
-            );
+      (updatePositionService as jest.Mock).mockResolvedValue({ id: 0, title: 'New Title' });
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Validation error',
-                error: 'Title is required and must be a valid string'
-            });
-        });
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(0, { title: 'New Title' });
+    });
+  });
 
-        it('should return 400 when status is invalid', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { status: 'InvalidStatus' };
+  describe('should_return_400_for_empty_request_body', () => {
+    it('should return 400 when request body is empty object', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = {};
 
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador')
-            );
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Validation error',
-                error: 'Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador'
-            });
-        });
-
-        it('should return 400 when salaryMin > salaryMax', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { salaryMin: 80000, salaryMax: 60000 };
-
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Minimum salary cannot be greater than maximum salary')
-            );
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Validation error',
-                error: 'Minimum salary cannot be greater than maximum salary'
-            });
-        });
-
-        it('should return 400 when applicationDeadline is in the past', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { applicationDeadline: '2020-01-01' };
-
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Application deadline cannot be in the past')
-            );
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Validation error',
-                error: 'Application deadline cannot be in the past'
-            });
-        });
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'No data provided for update',
+        error: 'Request body cannot be empty',
+      });
+      expect(updatePositionService).not.toHaveBeenCalled();
     });
 
-    describe('should_return_400_for_invalid_reference_data', () => {
-        it('should return 400 when companyId does not exist', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { companyId: 999 };
+    it('should return 400 when request body is null', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = null;
 
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Company not found')
-            );
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Invalid reference data',
-                error: 'Company not found'
-            });
-        });
-
-        it('should return 400 when interviewFlowId does not exist', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { interviewFlowId: 999 };
-
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Interview flow not found')
-            );
-
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(400);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Invalid reference data',
-                error: 'Interview flow not found'
-            });
-        });
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'No data provided for update',
+        error: 'Request body cannot be empty',
+      });
     });
 
-    describe('should_return_500_for_server_errors', () => {
-        it('should return 500 for unexpected errors', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { title: 'New Title' };
+    it('should return 400 when request body is undefined', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = undefined;
 
-            (updatePositionService as jest.Mock).mockRejectedValue(
-                new Error('Database connection failed')
-            );
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'No data provided for update',
+        error: 'Request body cannot be empty',
+      });
+    });
+  });
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(500);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Error updating position',
-                error: 'Database connection failed'
-            });
-        });
+  describe('should_return_404_when_position_not_found', () => {
+    it('should return 404 when position does not exist', async () => {
+      // Arrange
+      mockRequest.params = { id: '999' };
+      mockRequest.body = { title: 'New Title' };
 
-        it('should return 500 for non-Error exceptions', async () => {
-            // Arrange
-            mockRequest.params = { id: '1' };
-            mockRequest.body = { title: 'New Title' };
+      (updatePositionService as jest.Mock).mockRejectedValue(new Error('Position not found'));
 
-            (updatePositionService as jest.Mock).mockRejectedValue('String error');
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Position not found',
+        error: 'Position not found',
+      });
+    });
+  });
 
-            // Assert
-            expect(mockStatus).toHaveBeenCalledWith(500);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: 'Error updating position',
-                error: 'An unexpected error occurred'
-            });
-        });
+  describe('should_return_400_for_validation_errors', () => {
+    it('should return 400 when title is empty', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { title: '' };
+
+      (updatePositionService as jest.Mock).mockRejectedValue(
+        new Error('Title is required and must be a valid string')
+      );
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Validation error',
+        error: 'Title is required and must be a valid string',
+      });
     });
 
-    describe('should_handle_large_position_ids', () => {
-        it('should handle very large position IDs', async () => {
-            // Arrange
-            const largeId = 2147483647; // Max 32-bit integer
-            mockRequest.params = { id: largeId.toString() };
-            mockRequest.body = { title: 'New Title' };
+    it('should return 400 when status is invalid', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { status: 'InvalidStatus' };
 
-            (updatePositionService as jest.Mock).mockResolvedValue({
-                id: largeId,
-                title: 'New Title'
-            });
+      (updatePositionService as jest.Mock).mockRejectedValue(
+        new Error('Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador')
+      );
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(largeId, { title: 'New Title' });
-            expect(mockStatus).toHaveBeenCalledWith(200);
-        });
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Validation error',
+        error: 'Invalid status. Must be one of: Open, Contratado, Cerrado, Borrador',
+      });
     });
 
-    describe('should_handle_complex_update_data', () => {
-        it('should handle update with multiple fields including optional ones', async () => {
-            // Arrange
-            const complexUpdateData = {
-                title: 'Senior Software Engineer',
-                description: 'Updated description',
-                status: 'Open',
-                isVisible: true,
-                salaryMin: 60000,
-                salaryMax: 80000,
-                requirements: 'Updated requirements',
-                responsibilities: 'Updated responsibilities',
-                benefits: 'Updated benefits'
-            };
+    it('should return 400 when salaryMin > salaryMax', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { salaryMin: 80000, salaryMax: 60000 };
 
-            mockRequest.params = { id: '1' };
-            mockRequest.body = complexUpdateData;
+      (updatePositionService as jest.Mock).mockRejectedValue(
+        new Error('Minimum salary cannot be greater than maximum salary')
+      );
 
-            (updatePositionService as jest.Mock).mockResolvedValue({
-                id: 1,
-                ...complexUpdateData
-            });
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
 
-            // Act
-            await updatePosition(mockRequest as Request, mockResponse as Response);
-
-            // Assert
-            expect(updatePositionService).toHaveBeenCalledWith(1, complexUpdateData);
-            expect(mockStatus).toHaveBeenCalledWith(200);
-        });
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Validation error',
+        error: 'Minimum salary cannot be greater than maximum salary',
+      });
     });
+
+    it('should return 400 when applicationDeadline is in the past', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { applicationDeadline: '2020-01-01' };
+
+      (updatePositionService as jest.Mock).mockRejectedValue(
+        new Error('Application deadline cannot be in the past')
+      );
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Validation error',
+        error: 'Application deadline cannot be in the past',
+      });
+    });
+  });
+
+  describe('should_return_400_for_invalid_reference_data', () => {
+    it('should return 400 when companyId does not exist', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { companyId: 999 };
+
+      (updatePositionService as jest.Mock).mockRejectedValue(new Error('Company not found'));
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Invalid reference data',
+        error: 'Company not found',
+      });
+    });
+
+    it('should return 400 when interviewFlowId does not exist', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { interviewFlowId: 999 };
+
+      (updatePositionService as jest.Mock).mockRejectedValue(new Error('Interview flow not found'));
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Invalid reference data',
+        error: 'Interview flow not found',
+      });
+    });
+  });
+
+  describe('should_return_500_for_server_errors', () => {
+    it('should return 500 for unexpected errors', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { title: 'New Title' };
+
+      (updatePositionService as jest.Mock).mockRejectedValue(
+        new Error('Database connection failed')
+      );
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(500);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Error updating position',
+        error: 'Database connection failed',
+      });
+    });
+
+    it('should return 500 for non-Error exceptions', async () => {
+      // Arrange
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { title: 'New Title' };
+
+      (updatePositionService as jest.Mock).mockRejectedValue('String error');
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(500);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Error updating position',
+        error: 'An unexpected error occurred',
+      });
+    });
+  });
+
+  describe('should_handle_large_position_ids', () => {
+    it('should handle very large position IDs', async () => {
+      // Arrange
+      const largeId = 2147483647; // Max 32-bit integer
+      mockRequest.params = { id: largeId.toString() };
+      mockRequest.body = { title: 'New Title' };
+
+      (updatePositionService as jest.Mock).mockResolvedValue({
+        id: largeId,
+        title: 'New Title',
+      });
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(largeId, { title: 'New Title' });
+      expect(mockStatus).toHaveBeenCalledWith(200);
+    });
+  });
+
+  describe('should_handle_complex_update_data', () => {
+    it('should handle update with multiple fields including optional ones', async () => {
+      // Arrange
+      const complexUpdateData = {
+        title: 'Senior Software Engineer',
+        description: 'Updated description',
+        status: 'Open',
+        isVisible: true,
+        salaryMin: 60000,
+        salaryMax: 80000,
+        requirements: 'Updated requirements',
+        responsibilities: 'Updated responsibilities',
+        benefits: 'Updated benefits',
+      };
+
+      mockRequest.params = { id: '1' };
+      mockRequest.body = complexUpdateData;
+
+      (updatePositionService as jest.Mock).mockResolvedValue({
+        id: 1,
+        ...complexUpdateData,
+      });
+
+      // Act
+      await updatePosition(mockRequest as Request, mockResponse as Response);
+
+      // Assert
+      expect(updatePositionService).toHaveBeenCalledWith(1, complexUpdateData);
+      expect(mockStatus).toHaveBeenCalledWith(200);
+    });
+  });
 });
 ```
 
@@ -1640,7 +1696,7 @@ describe('PositionController - updatePosition', () => {
    - `openspec/specs/data-model.md` - Verify Position model documentation is current (no changes needed)
 
 3. **Update API Specification** (`openspec/specs/api-spec.yml`):
-   
+
    Add the following endpoint specification after the `GET /positions/{id}` endpoint:
 
    ```yaml
@@ -1770,7 +1826,7 @@ describe('PositionController - updatePosition', () => {
      properties:
        message:
          type: string
-         example: "Position updated successfully"
+         example: 'Position updated successfully'
        data:
          $ref: '#/components/schemas/Position'
      required:
@@ -1789,10 +1845,12 @@ describe('PositionController - updatePosition', () => {
    - List specific changes made to each file
 
 **References**:
+
 - Follow process described in `openspec/specs/documentation-standards.mdc`
 - All documentation must be written in English
 
-**Notes**: 
+**Notes**:
+
 - This step is MANDATORY before considering the implementation complete
 - Do not skip documentation updates
 - Ensure consistency between code implementation and API documentation
@@ -1814,6 +1872,7 @@ describe('PositionController - updatePosition', () => {
 7. **Step 6**: Update Technical Documentation (`api-spec.yml`)
 
 **Critical Order Notes**:
+
 - Steps 1-4 must be completed sequentially (dependencies between layers)
 - Step 5 (tests) must be completed AFTER implementation code (Steps 1-4)
 - All three test suites (5.1, 5.2, 5.3) must be completed
@@ -1826,6 +1885,7 @@ describe('PositionController - updatePosition', () => {
 After implementation, verify the following:
 
 ### Unit Tests
+
 - [ ] Validation layer tests pass with >90% coverage
 - [ ] Service layer tests pass with >90% coverage
 - [ ] Controller layer tests pass with >90% coverage
@@ -1833,6 +1893,7 @@ After implementation, verify the following:
 - [ ] Coverage report meets threshold: `npm run test:coverage`
 
 ### Manual Testing
+
 - [ ] Valid update with all fields succeeds
 - [ ] Partial update (only one field) succeeds
 - [ ] Invalid position ID returns 400
@@ -1846,12 +1907,14 @@ After implementation, verify the following:
 - [ ] Successful update preserves unchanged fields
 
 ### Integration Testing
+
 - [ ] API endpoint accessible via HTTP client (Postman, curl)
 - [ ] Request/response format matches API specification
 - [ ] Database updated correctly after successful request
 - [ ] Error responses include appropriate status codes and messages
 
 ### Regression Testing
+
 - [ ] Existing position endpoints still work (GET /positions, GET /positions/:id)
 - [ ] No breaking changes to existing functionality
 - [ ] All existing tests still pass
@@ -1872,15 +1935,18 @@ All error responses follow this consistent structure:
 ### HTTP Status Code Mapping
 
 **400 Bad Request**
+
 - Invalid position ID format
 - Empty request body
 - Validation errors (invalid field values)
 - Invalid reference data (company or interview flow not found)
 
 **404 Not Found**
+
 - Position does not exist
 
 **500 Internal Server Error**
+
 - Unexpected errors
 - Database connection failures
 - Non-Error exceptions
@@ -1888,6 +1954,7 @@ All error responses follow this consistent structure:
 ### Example Error Responses
 
 **Invalid Position ID (400)**:
+
 ```json
 {
   "message": "Invalid position ID format",
@@ -1896,6 +1963,7 @@ All error responses follow this consistent structure:
 ```
 
 **Position Not Found (404)**:
+
 ```json
 {
   "message": "Position not found",
@@ -1904,6 +1972,7 @@ All error responses follow this consistent structure:
 ```
 
 **Validation Error (400)**:
+
 ```json
 {
   "message": "Validation error",
@@ -1912,6 +1981,7 @@ All error responses follow this consistent structure:
 ```
 
 **Invalid Reference (400)**:
+
 ```json
 {
   "message": "Invalid reference data",
@@ -1920,6 +1990,7 @@ All error responses follow this consistent structure:
 ```
 
 **Server Error (500)**:
+
 ```json
 {
   "message": "Error updating position",
@@ -1959,18 +2030,21 @@ The implementation supports partial updates, meaning:
 ## Dependencies
 
 ### External Libraries
+
 - **Express.js**: Web framework for HTTP handling (already installed)
 - **Prisma**: ORM for database operations (already installed)
 - **Jest**: Testing framework (already installed)
 - **TypeScript**: Type-safe development (already installed)
 
 ### Internal Dependencies
+
 - **Domain Model**: `Position.ts` (already implemented with `save()` and `findOne()` methods)
 - **Prisma Client**: Database client (already configured)
 - **Validation Utilities**: Add new validation function to existing `validator.ts`
 - **Existing Services**: Follow patterns from `candidateService.ts` and existing `positionService.ts`
 
 ### Database Requirements
+
 - PostgreSQL database (already running via Docker)
 - Prisma schema already includes all required Position fields
 - No database migrations needed
@@ -2038,6 +2112,7 @@ The implementation supports partial updates, meaning:
 Before considering the implementation complete, verify:
 
 ### Code Quality
+
 - [ ] TypeScript compiles without errors
 - [ ] ESLint passes without warnings
 - [ ] All code follows project coding standards
@@ -2045,6 +2120,7 @@ Before considering the implementation complete, verify:
 - [ ] No console.log statements (use logger instead)
 
 ### Functionality
+
 - [ ] Validation function handles all field types correctly
 - [ ] Service function merges data correctly for partial updates
 - [ ] Controller function returns appropriate status codes
@@ -2053,6 +2129,7 @@ Before considering the implementation complete, verify:
 - [ ] Full updates work correctly
 
 ### Testing
+
 - [ ] All validation layer tests pass
 - [ ] All service layer tests pass
 - [ ] All controller layer tests pass
@@ -2061,12 +2138,14 @@ Before considering the implementation complete, verify:
 - [ ] Mocks are used appropriately in each layer
 
 ### Integration
+
 - [ ] Endpoint works with HTTP client (Postman/curl)
 - [ ] Database updates correctly
 - [ ] Error responses are properly formatted
 - [ ] Existing functionality is not broken
 
 ### Documentation
+
 - [ ] API specification updated with PUT /positions/:id endpoint
 - [ ] Request/response schemas documented
 - [ ] Error responses documented
@@ -2074,6 +2153,7 @@ Before considering the implementation complete, verify:
 - [ ] Data model documentation reviewed (no changes needed)
 
 ### Final Checks
+
 - [ ] All tests pass: `npm test`
 - [ ] Coverage meets threshold: `npm run test:coverage`
 - [ ] Application builds successfully: `npm run build`
@@ -2086,4 +2166,3 @@ Before considering the implementation complete, verify:
 **END OF IMPLEMENTATION PLAN**
 
 This plan provides complete, step-by-step instructions for implementing the Position Update feature (SCRUM-10) following Domain-Driven Design principles, clean architecture patterns, and the project's established standards. The developer can implement this feature end-to-end autonomously using only this plan.
-

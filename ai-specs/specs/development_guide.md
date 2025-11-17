@@ -7,6 +7,7 @@ This guide provides step-by-step instructions for setting up the development env
 ### Prerequisites
 
 Ensure you have the following installed:
+
 - **Node.js** (v16 or higher)
 - **npm** (v8 or higher)
 - **Docker** and **Docker Compose**
@@ -24,6 +25,7 @@ cd AI4Devs-LTI-extended
 Create environment files for both backend and frontend:
 
 **Backend Environment** (`backend/.env`):
+
 ```env
 # Database Configuration
 DB_HOST=localhost
@@ -41,6 +43,7 @@ DATABASE_URL="postgresql://LTIdbUser:D1ymf8wyQEGthFR1E9xhCq@localhost:5432/LTIdb
 ```
 
 **Frontend Environment** (`frontend/.env`):
+
 ```env
 REACT_APP_API_URL=http://localhost:3000
 ```
@@ -58,6 +61,7 @@ docker-compose ps
 ```
 
 The PostgreSQL database will be available at:
+
 - **Host**: `localhost`
 - **Port**: `5432`
 - **Database**: `LTIdb`
@@ -150,4 +154,3 @@ npm run cypress:run
 # Open Cypress Test Runner
 npm run cypress:open
 ```
-

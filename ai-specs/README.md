@@ -36,6 +36,7 @@ Or reference the command:
 ```
 
 This will:
+
 - Analyze the feature requirements
 - Select appropriate Gemini model
 - Create a detailed implementation plan in `ai-specs/changes/`
@@ -52,6 +53,7 @@ Once you have a plan:
 ```
 
 This will:
+
 - Follow the plan step-by-step
 - Create feature branch
 - Implement types, service, component
@@ -74,6 +76,7 @@ All development follows these standards:
 ### 1. AI Agent Documentation is Mandatory
 
 Every Gemini API interaction MUST be documented in `/docs/AI_AGENTS.md`:
+
 - Agent personality/role
 - Model selection and justification
 - System instructions
@@ -82,6 +85,7 @@ Every Gemini API interaction MUST be documented in `/docs/AI_AGENTS.md`:
 ### 2. Follow Existing Patterns
 
 OpositaIA has established patterns:
+
 - Service layer: `services/geminiService.ts`
 - Component structure: `components/[Feature].tsx`
 - Type definitions: `types.ts`
@@ -94,6 +98,7 @@ All code, comments, documentation, and commit messages in English.
 ### 4. Incremental Development
 
 Work in small steps:
+
 1. Plan → 2. Types → 3. Service → 4. Component → 5. Integration → 6. Documentation → 7. Testing
 
 ### 5. Quality Over Speed
@@ -108,6 +113,7 @@ Work in small steps:
 ### Scenario: Add a "Legal Term Glossary" feature
 
 #### Step 1: Plan
+
 ```
 @plan-feature.md Create a legal term glossary that allows users to search for Spanish Social Security legal terms and get AI-generated definitions and examples. Use gemini-2.5-flash for quick responses.
 ```
@@ -115,16 +121,19 @@ Work in small steps:
 **Output**: `ai-specs/changes/legal-glossary.md` with complete implementation plan
 
 #### Step 2: Review Plan
+
 - Read the generated plan
 - Verify it makes sense
 - Adjust if needed
 
 #### Step 3: Implement
+
 ```
 @implement-feature.md @legal-glossary.md
 ```
 
 **Kiro will**:
+
 1. Create branch `feature/legal-glossary`
 2. Add types to `types.ts`
 3. Add `searchLegalTerm()` to `geminiService.ts`
@@ -135,11 +144,13 @@ Work in small steps:
 8. Commit changes
 
 #### Step 4: Test & Refine
+
 - Test manually
 - Fix any issues
 - Refine UX
 
 #### Step 5: Merge
+
 - Review changes
 - Merge to main
 
@@ -165,6 +176,7 @@ Work in small steps:
 ### Documentation Commands
 
 - **Update AI Agents**: When adding new Gemini API function
+
   ```
   Update /docs/AI_AGENTS.md with the new generateFeature() function
   ```
@@ -208,6 +220,7 @@ The AI Specs system complements existing documentation:
 - **`/README.md`**: Still the main project README
 
 AI Specs adds:
+
 - Structured development workflow
 - Implementation planning
 - Step-by-step execution
