@@ -1,11 +1,33 @@
-# 🚀 PRÓXIMOS PASOS - OpositaIA
+# 🚀 PRÓXIMOS PASOS - OpositaIA (PLAN DEFINITIVO)
 
 **Fecha**: 2025-11-18  
-**Estado Actual**: ✅ Test RoBERTalex completado, repo verificado
+**Estado**: ✅ Análisis 5 capas completado, arquitectura 3 capas aprobada  
+**Decisión**: Implementar 3 CAPAS + 2 SISTEMAS (respaldado por papers académicos)
 
 ---
 
-## 🎯 PRIORIDAD INMEDIATA: Indexación de Leyes Principales
+## 🎯 ARQUITECTURA APROBADA: 3 CAPAS + 2 SISTEMAS
+
+### ✅ Decisiones Clave
+
+1. **3 Capas de Contenido** (en Qdrant única colección)
+   - Capa 1: Normativa Oficial (BOE, leyes, RD)
+   - Capa 2: Jurisprudencia y Doctrina (STS, TSJ)
+   - Capa 3: Materiales de Estudio (tests, casos, temarios)
+
+2. **Diferenciación por Metadata** (NO por modelo)
+   - RoBERTalex genera embeddings únicos (768 dim)
+   - Capas se distinguen por metadata: `layer`, `tipo`, `nivel_jerarquia`
+
+3. **2 Sistemas Auxiliares** (fuera de Qdrant)
+   - Sistema 1: Temporal Tracking (PostgreSQL) - ⏸️ FUTURO
+   - Sistema 2: Quality Evaluator (CRAG) - ⏸️ FUTURO
+
+4. **Fine-tuning RoBERTalex** - ⏸️ DEJADO PARA MÁS ADELANTE
+
+---
+
+## 📋 PLAN DE IMPLEMENTACIÓN (SCRUM)
 
 ### 📋 Plan Completo
 
@@ -404,3 +426,382 @@ Kiro, prefiero trabajar en [otra cosa]
 ---
 
 **¿Con qué empezamos?** 🚀
+
+
+### 🎯 SPRINT 1: Setup Infraestructura (Día 1)
+
+**Objetivo**: Preparar entorno para indexación con 3 capas
+
+**Tareas**:
+- [ ] 1.1: Activar venv backend
+- [ ] 1.2: Instalar dependencias adicionales
+- [ ] 1.3: Verificar Qdrant corriendo
+- [ ] 1.4: Crear colección única `opositaia_unified`
+- [ ] 1.5: Definir schema de metadata
+- [ ] 1.6: Testing: Insertar documento de prueba
+
+**Criterios de Aceptación**:
+- Qdrant responde en localhost:6333
+- Colección creada con 768 dimensiones (RoBERTalex)
+- Schema de metadata documentado
+- Test de inserción exitoso
+
+---
+
+### 🎯 SPRINT 2: Indexar Capa 1 - Normativa (Día 2-3)
+
+**Objetivo**: Indexar 8 leyes principales del BOE
+
+**Tareas**:
+- [ ] 2.1: Crear `backend/agents/boe_downloader.py`
+- [ ] 2.2: Descargar 8 PDFs principales (LGSS, Ley 39/2015, etc.)
+- [ ] 2.3: Crear `backend/agents/pdf_processor.py`
+- [ ] 2.4: Procesar PDFs → chunks (512 tokens, overlap 50)
+- [ ] 2.5: Crear `backend/agents/robertalex_embedder.py`
+- [ ] 2.6: Generar embeddings con RoBERTalex
+- [ ] 2.7: Indexar en Qdrant con metadata Capa 1
+- [ ] 2.8: Testing: Búsqueda de prueba
+
+**Criterios de Aceptación**:
+- 8 PDFs descargados en `backend/data/leyes/`
+- ~1,000 chunks generados
+- Embeddings generados con RoBERTalex
+- Indexados en Qdrant con `layer=1`
+- Búsqueda devuelve resultados relevantes
+
+---
+
+### 🎯 SPRINT 3: Indexar Capa 2 - Jurisprudencia (Día 4)
+
+**Objetivo**: Indexar Top 50 sentencias STS relevantes
+
+**Tareas**:
+- [ ] 3.1: Identificar Top 50 sentencias STS (manual)
+- [ ] 3.2: Descargar sentencias (si disponibles)
+- [ ] 3.3: Procesar sentencias → chunks
+- [ ] 3.4: Indexar con metadata Capa 2
+- [ ] 3.5: Testing: Búsqueda por jerarquía
+
+**Criterios de Aceptación**:
+- 50 sentencias identificadas
+- Procesadas y chunkeadas
+- Indexadas con `layer=2`, `tipo=sentencia_sts`
+- Búsqueda prioriza Capa 1 > Capa 2
+
+---
+
+### 🎯 SPRINT 4: Indexar Capa 3 - Materiales (Día 5-6)
+
+**Objetivo**: Indexar materiales de tu hija (tests, casos, temarios)
+
+**Tareas**:
+- [ ] 4.1: Seleccionar archivos clave de `elemplos_leyes_info/`
+- [ ] 4.2: Procesar tests con respuestas
+- [ ] 4.3: Procesar casos prácticos
+- [ ] 4.4: Procesar temarios (primeras 100 páginas)
+- [ ] 4.5: Indexar con metadata Capa 3
+- [ ] 4.6: Testing: Búsqueda multi-capa
+
+**Criterios de Aceptación**:
+- Tests indexados con formato detectado
+- Casos prácticos con soluciones
+- Temarios principales indexados
+- Búsqueda funciona en las 3 capas
+- Total ~7,600 chunks indexados
+
+---
+
+### 🎯 SPRINT 5: API RAG Básica (Día 7)
+
+**Objetivo**: Crear endpoints FastAPI para búsqueda
+
+**Tareas**:
+- [ ] 5.1: Actualizar `backend/agents/rag_agent.py`
+- [ ] 5.2: Implementar búsqueda con filtros por capa
+- [ ] 5.3: Implementar reranking por jerarquía
+- [ ] 5.4: Crear endpoint `POST /api/rag/search`
+- [ ] 5.5: Crear endpoint `GET /api/rag/stats`
+- [ ] 5.6: Testing: 100 queries de prueba
+
+**Criterios de Aceptación**:
+- Endpoint `/api/rag/search` funciona
+- Filtros por capa funcionan
+- Reranking por jerarquía implementado
+- 100 queries testeadas con score >0.75
+
+---
+
+### 🎯 SPRINT 6: Integración Frontend (Día 8)
+
+**Objetivo**: Conectar frontend con nuevo RAG
+
+**Tareas**:
+- [ ] 6.1: Actualizar `services/ragService.ts`
+- [ ] 6.2: Crear componente `RAGSearch.tsx`
+- [ ] 6.3: Integrar con chat existente
+- [ ] 6.4: Testing E2E
+- [ ] 6.5: Documentar en `docs/`
+
+**Criterios de Aceptación**:
+- Frontend puede buscar en RAG
+- Resultados se muestran correctamente
+- Metadata visible (capa, tipo, fecha)
+- Testing E2E exitoso
+
+---
+
+## 🔧 IMPLEMENTACIÓN TÉCNICA
+
+### Paso 1.4: Crear Colección Qdrant
+
+```python
+# backend/setup_qdrant_collection.py
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams
+
+def create_collection():
+    client = QdrantClient(url="http://localhost:6333")
+    
+    # Eliminar si existe
+    try:
+        client.delete_collection("opositaia_unified")
+        print("✅ Colección anterior eliminada")
+    except:
+        print("ℹ️  No había colección anterior")
+    
+    # Crear nueva
+    client.create_collection(
+        collection_name="opositaia_unified",
+        vectors_config=VectorParams(
+            size=768,  # RoBERTalex dimension
+            distance=Distance.COSINE
+        )
+    )
+    print("✅ Colección 'opositaia_unified' creada (768 dim)")
+
+if __name__ == "__main__":
+    create_collection()
+```
+
+### Paso 1.5: Schema de Metadata
+
+```python
+# backend/models/metadata_schema.py
+from typing import Literal, Optional
+from pydantic import BaseModel
+from datetime import date
+
+class DocumentMetadata(BaseModel):
+    """Schema de metadata para documentos indexados"""
+    
+    # Identificación de capa
+    layer: Literal[1, 2, 3]  # 1=Normativa, 2=Jurisprudencia, 3=Materiales
+    nivel_jerarquia: Literal[1, 2, 3]  # Para reranking
+    
+    # Tipo de documento
+    tipo: str  # "ley", "real_decreto", "sentencia_sts", "test", etc.
+    
+    # Información temporal
+    fecha: Optional[date] = None
+    fecha_vigencia: Optional[date] = None
+    fecha_derogacion: Optional[date] = None
+    
+    # Referencias
+    norma_id: Optional[str] = None  # "BOE-A-2015-11724"
+    articulo: Optional[str] = None  # "212"
+    norma_modificadora: Optional[str] = None
+    
+    # Jurisprudencia
+    tribunal: Optional[str] = None  # "Tribunal Supremo"
+    superada_por: Optional[str] = None  # "STS 1250/2024"
+    
+    # Materiales
+    fuente: Optional[str] = None  # "Academia Las Cortes"
+    tema: Optional[str] = None  # "8"
+    formato: Optional[str] = None  # "pregunta_respuesta"
+    
+    # Contenido
+    text: str
+    chunk_id: int
+    total_chunks: int
+
+# Ejemplo de uso
+metadata_ley = DocumentMetadata(
+    layer=1,
+    nivel_jerarquia=1,
+    tipo="ley",
+    fecha=date(2015, 10, 30),
+    fecha_vigencia=date(2016, 1, 2),
+    norma_id="BOE-A-2015-11724",
+    articulo="212",
+    text="Artículo 212. Jubilación ordinaria...",
+    chunk_id=1,
+    total_chunks=5
+)
+```
+
+### Paso 2.1: BOE Downloader
+
+```python
+# backend/agents/boe_downloader.py
+import requests
+from pathlib import Path
+from typing import List, Dict
+
+class BOEDownloader:
+    """Descarga PDFs del BOE"""
+    
+    LEYES_PRINCIPALES = [
+        {
+            "nombre": "LGSS",
+            "boe_id": "BOE-A-2015-11724",
+            "url": "https://www.boe.es/buscar/pdf/2015/BOE-A-2015-11724-consolidado.pdf"
+        },
+        {
+            "nombre": "Ley_39_2015",
+            "boe_id": "BOE-A-2015-10565",
+            "url": "https://www.boe.es/buscar/pdf/2015/BOE-A-2015-10565-consolidado.pdf"
+        },
+        {
+            "nombre": "Ley_40_2015",
+            "boe_id": "BOE-A-2015-10566",
+            "url": "https://www.boe.es/buscar/pdf/2015/BOE-A-2015-10566-consolidado.pdf"
+        },
+        {
+            "nombre": "EBEP",
+            "boe_id": "BOE-A-2015-11719",
+            "url": "https://www.boe.es/buscar/pdf/2015/BOE-A-2015-11719-consolidado.pdf"
+        },
+        {
+            "nombre": "RD_Recaudacion",
+            "boe_id": "BOE-A-2004-11836",
+            "url": "https://www.boe.es/buscar/pdf/2004/BOE-A-2004-11836-consolidado.pdf"
+        },
+        {
+            "nombre": "RD_Afiliacion",
+            "boe_id": "BOE-A-1996-4447",
+            "url": "https://www.boe.es/buscar/pdf/1996/BOE-A-1996-4447-consolidado.pdf"
+        },
+        {
+            "nombre": "Ley_IMV",
+            "boe_id": "BOE-A-2021-21007",
+            "url": "https://www.boe.es/buscar/pdf/2021/BOE-A-2021-21007-consolidado.pdf"
+        },
+        {
+            "nombre": "LOPDGDD",
+            "boe_id": "BOE-A-2018-16673",
+            "url": "https://www.boe.es/buscar/pdf/2018/BOE-A-2018-16673-consolidado.pdf"
+        }
+    ]
+    
+    def __init__(self, output_dir: str = "backend/data/leyes"):
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+    
+    def download_all(self) -> List[Dict]:
+        """Descarga todas las leyes principales"""
+        results = []
+        
+        for ley in self.LEYES_PRINCIPALES:
+            print(f"📥 Descargando {ley['nombre']}...")
+            
+            try:
+                response = requests.get(ley['url'], timeout=30)
+                response.raise_for_status()
+                
+                # Guardar PDF
+                filepath = self.output_dir / f"{ley['nombre']}.pdf"
+                filepath.write_bytes(response.content)
+                
+                results.append({
+                    "nombre": ley['nombre'],
+                    "boe_id": ley['boe_id'],
+                    "filepath": str(filepath),
+                    "size_mb": len(response.content) / (1024 * 1024),
+                    "status": "success"
+                })
+                
+                print(f"✅ {ley['nombre']} descargado ({results[-1]['size_mb']:.2f} MB)")
+                
+            except Exception as e:
+                print(f"❌ Error descargando {ley['nombre']}: {e}")
+                results.append({
+                    "nombre": ley['nombre'],
+                    "status": "error",
+                    "error": str(e)
+                })
+        
+        return results
+
+if __name__ == "__main__":
+    downloader = BOEDownloader()
+    results = downloader.download_all()
+    
+    print(f"\n📊 Resumen:")
+    print(f"✅ Exitosos: {sum(1 for r in results if r['status'] == 'success')}")
+    print(f"❌ Errores: {sum(1 for r in results if r['status'] == 'error')}")
+```
+
+---
+
+## 📊 ESTIMACIÓN DE TIEMPO
+
+| Sprint | Duración | Prioridad |
+|--------|----------|-----------|
+| Sprint 1: Setup | 4 horas | 🔴 CRÍTICA |
+| Sprint 2: Capa 1 | 2 días | 🔴 CRÍTICA |
+| Sprint 3: Capa 2 | 1 día | 🟡 ALTA |
+| Sprint 4: Capa 3 | 2 días | 🟡 ALTA |
+| Sprint 5: API | 1 día | 🟡 ALTA |
+| Sprint 6: Frontend | 1 día | 🟢 MEDIA |
+
+**TOTAL**: 7-8 días de trabajo
+
+---
+
+## ✅ CRITERIOS DE ÉXITO
+
+1. **Funcionalidad**:
+   - ✅ Búsqueda funciona en 3 capas
+   - ✅ Reranking por jerarquía implementado
+   - ✅ Metadata correcta en todos los documentos
+
+2. **Calidad**:
+   - ✅ Score promedio >0.75 en 100 queries
+   - ✅ Top-5 resultados relevantes
+   - ✅ Sin errores en indexación
+
+3. **Performance**:
+   - ✅ Búsqueda <2s
+   - ✅ Indexación completa <4 horas
+   - ✅ Qdrant <1GB storage
+
+4. **Documentación**:
+   - ✅ README actualizado
+   - ✅ API documentada
+   - ✅ Tests documentados
+
+---
+
+## 🚀 COMANDO PARA EMPEZAR
+
+```bash
+# 1. Activar venv
+cd backend
+.\venv\Scripts\activate  # Windows
+
+# 2. Instalar dependencias
+pip install pypdf python-docx sentence-transformers
+
+# 3. Verificar Qdrant
+docker ps | findstr qdrant
+# Si no está: docker-compose up -d qdrant
+
+# 4. Crear colección
+python setup_qdrant_collection.py
+```
+
+---
+
+**¿Empezamos con Sprint 1?** 🚀
+

@@ -129,13 +129,12 @@ Cuando empieces una nueva conversación, lee este documento primero para recorda
 - Entendido spec-driven development
 - Usuarios finales: Opositores C1 Seguridad Social
 
-**Prioridad 2**: 🔄 Indexar Leyes Principales (EN CURSO)
-- Plan creado: `ai-specs/changes/RAG-indexacion-leyes-principales.md`
-- Descargar PDFs del BOE (8 leyes principales)
-- Procesar con chunking (512 tokens, 50-75 overlap)
-- Indexar en Qdrant local
-- Testing con 100 queries
-- Tiempo estimado: 2-3 días
+**Prioridad 2**: 🔄 Arquitectura RAG 3 Capas (EN CURSO)
+- ✅ Análisis 5 capas de Perplexity completado
+- ✅ Decisión: 3 CAPAS + 2 SISTEMAS (respaldado por papers)
+- ✅ Scripts creados: setup_qdrant, metadata_schema, boe_downloader
+- 🔄 Sprint 1: Setup infraestructura
+- Tiempo estimado: 7-8 días
 
 **Prioridad 3**: Crear Prompts Basados en Ejemplos Reales
 - Una vez leídos los exámenes, crear:
