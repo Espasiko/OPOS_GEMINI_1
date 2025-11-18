@@ -38,6 +38,9 @@ temp-*/
 coverage/
 *.lcov
 
+# Examples and materials (NEVER COMMIT)
+elemplos_leyes_info/
+
 # Keep AI Specs
 !ai-specs/
 !docs/
