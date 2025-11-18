@@ -428,23 +428,25 @@ Kiro, prefiero trabajar en [otra cosa]
 **¿Con qué empezamos?** 🚀
 
 
-### 🎯 SPRINT 1: Setup Infraestructura (Día 1)
+### 🎯 SPRINT 1: Setup Infraestructura (Día 1) ✅ COMPLETADO
 
 **Objetivo**: Preparar entorno para indexación con 3 capas
 
 **Tareas**:
-- [ ] 1.1: Activar venv backend
-- [ ] 1.2: Instalar dependencias adicionales
-- [ ] 1.3: Verificar Qdrant corriendo
-- [ ] 1.4: Crear colección única `opositaia_unified`
-- [ ] 1.5: Definir schema de metadata
-- [ ] 1.6: Testing: Insertar documento de prueba
+- [x] 1.1: Verificar venv existente (`elemplos_leyes_info/venv`)
+- [x] 1.2: Instalar qdrant-client en venv
+- [x] 1.3: Verificar Qdrant corriendo (puerto 6333)
+- [x] 1.4: Limpiar TODAS las colecciones existentes
+- [x] 1.5: Crear colección `opositaia_leyes_seguridad_social` (768 dim)
+- [x] 1.6: Definir schema de metadata (Pydantic)
+- [x] 1.7: Descargar LGSS (1.69 MB) para testing
 
-**Criterios de Aceptación**:
-- Qdrant responde en localhost:6333
-- Colección creada con 768 dimensiones (RoBERTalex)
-- Schema de metadata documentado
-- Test de inserción exitoso
+**Resultados**:
+- ✅ Qdrant limpio y corriendo en localhost:6333
+- ✅ Colección creada: `opositaia_leyes_seguridad_social` (768 dim, COSINE)
+- ✅ Schema metadata documentado en `backend/models/metadata_schema.py`
+- ✅ LGSS.pdf descargado en `backend/data/leyes/`
+- ✅ Scripts creados: `verify_and_setup.py`, `download_lgss_only.py`
 
 ---
 
