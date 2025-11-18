@@ -38,6 +38,21 @@ temp-*/
 coverage/
 *.lcov
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
 # Examples and materials (NEVER COMMIT)
 elemplos_leyes_info/
 
