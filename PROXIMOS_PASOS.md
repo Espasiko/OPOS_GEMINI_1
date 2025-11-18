@@ -1,0 +1,406 @@
+# 🚀 PRÓXIMOS PASOS - OpositaIA
+
+**Fecha**: 2025-11-18  
+**Estado Actual**: ✅ Test RoBERTalex completado, repo verificado
+
+---
+
+## 🎯 PRIORIDAD INMEDIATA: Indexación de Leyes Principales
+
+### 📋 Plan Completo
+
+**Documento**: `ai-specs/changes/RAG-indexacion-leyes-principales.md`  
+**Tiempo estimado**: 2-3 días  
+**Estado**: ✅ Planificado, listo para implementar
+
+---
+
+## 📊 RESUMEN EJECUTIVO
+
+### ✅ Lo que YA tenemos:
+
+1. **Test RoBERTalex completado**
+   - 🏆 RoBERTalex GANA con +10% calidad (0.76 vs 0.69)
+   - Script: `backend/test_robertalex_local.py`
+   - Decisión: Usar RoBERTalex en producción
+
+2. **Infraestructura lista**
+   - ✅ Qdrant local en WSL
+   - ✅ Backend FastAPI estructurado
+   - ✅ Docker compose configurado
+   - ✅ Script migración Qdrant→Cloud
+
+3. **Materiales disponibles**
+   - 📚 2,500+ páginas de temarios
+   - 📝 600+ páginas de tests
+   - 💼 200+ páginas de casos prácticos
+   - 📖 ~100 documentos BOE principales
+
+---
+
+## 🎯 FASE 1: Indexación de Leyes (SIGUIENTE)
+
+### Paso 1: Preparación del Entorno (30 min)
+
+```bash
+# 1. Activar venv
+cd backend
+.\venv\Scripts\activate  # Windows
+
+# 2. Instalar dependencias adicionales
+pip install pypdf python-docx beautifulsoup4 lxml
+
+# 3. Verificar Qdrant está corriendo
+docker ps | findstr qdrant
+# Si no está: docker-compose up -d qdrant
+```
+
+**Checklist**:
+- [ ] Venv activado
+- [ ] Dependencias instaladas
+- [ ] Qdrant corriendo en localhost:6333
+- [ ] RoBERTalex funcionando (ya testeado)
+
+---
+
+### Paso 2: Crear Colección en Qdrant (15 min)
+
+**Archivo a crear**: `backend/setup_qdrant_collection.py`
+
+```python
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams
+
+client = QdrantClient(url="http://localhost:6333")
+
+# Eliminar colección antigua si existe
+try:
+    client.delete_collection("opositaia_documents")
+    print("✅ Colección antigua eliminada")
+except:
+    print("ℹ️  No había colección anterior")
+
+# Crear nueva colección
+client.create_collection(
+    collection_name="opositaia_documents",
+    vectors_config=VectorParams(
+        size=768,  # RoBERTalex dimension
+        distance=Distance.COSINE
+    )
+)
+print("✅ Colección 'opositaia_documents' creada")
+```
+
+**Ejecutar**:
+```bash
+python backend/setup_qdrant_collection.py
+```
+
+**Checklist**:
+- [ ] Script creado
+- [ ] Colección creada exitosamente
+- [ ] Verificado en Qdrant UI (http://localhost:6333/dashboard)
+
+---
+
+### Paso 3: Descargar Leyes del BOE (2-3 horas)
+
+**Archivo a crear**: `backend/agents/boe_scraper.py`
+
+**Leyes a descargar** (8 principales):
+1. LGSS (RDL 8/2015)
+2. Ley 39/2015 (Procedimiento Administrativo)
+3. Ley 40/2015 (Régimen Jurídico)
+4. RDL 5/2015 (EBEP)
+5. RD 1415/2004 (Recaudación SS)
+6. RD 84/1996 (Afiliación)
+7. Ley 19/2021 (Ingreso Mínimo Vital)
+8. LO 3/2018 (Protección de Datos)
+
+**URLs BOE**:
+```python
+LEYES_PRINCIPALES = [
+    {
+        "nombre": "LGSS",
+        "boe_id": "BOE-A-2015-11724",
+        "url": "https://www.boe.es/eli/es/rdlg/2015/10/30/8/con"
+    },
+    {
+        "nombre": "Ley 39/2015",
+        "boe_id": "BOE-A-2015-10565",
+        "url": "https://www.boe.es/eli/es/l/2015/10/01/39/con"
+    },
+    # ... resto
+]
+```
+
+**Ejecutar**:
+```bash
+python backend/agents/boe_scraper.py
+```
+
+**Output esperado**: PDFs guardados en `backend/data/leyes/`
+
+**Checklist**:
+- [ ] Script `boe_scraper.py` creado
+- [ ] 8 PDFs descargados exitosamente
+- [ ] Carpeta `backend/data/leyes/` creada
+- [ ] Verificar tamaño total (~50-100 MB)
+
+---
+
+### Paso 4: Procesar y Chunkear (1-2 horas)
+
+**Archivos a crear**:
+1. `backend/agents/pdf_processor.py` - Procesa PDFs del BOE
+2. `backend/agents/materials_processor.py` - Procesa materiales de academia
+
+**Estrategia de chunking**:
+- **Tamaño**: 512 tokens
+- **Overlap**: 50-75 tokens
+- **Respeto de estructura**: Detectar artículos y no cortarlos
+
+**Funcionalidades**:
+- Detectar artículos (regex: `Artículo \d+` o `Art\. \d+`)
+- Extraer texto limpio
+- Crear chunks con metadata (artículo, ley, fecha)
+
+**Checklist**:
+- [ ] `pdf_processor.py` creado
+- [ ] `materials_processor.py` creado
+- [ ] Testeado con 1 PDF
+- [ ] Chunks generados correctamente
+
+---
+
+### Paso 5: Generar Embeddings e Indexar (3-4 horas)
+
+**Archivo a crear**: `backend/agents/indexer.py`
+
+**Proceso**:
+1. Cargar RoBERTalex
+2. Generar embeddings en batches (100 chunks/vez)
+3. Subir a Qdrant con metadata
+4. Mostrar progreso
+
+**Estimación de tiempo**:
+- 8 leyes BOE: ~1,000 chunks → ~30 min
+- Temarios: ~5,000 chunks → ~2 horas
+- Tests: ~1,200 chunks → ~30 min
+- Casos: ~400 chunks → ~10 min
+- **TOTAL**: ~3-4 horas
+
+**Comando**:
+```bash
+python backend/index_all_materials.py
+```
+
+**Checklist**:
+- [ ] `indexer.py` creado
+- [ ] Script principal `index_all_materials.py` creado
+- [ ] Leyes BOE indexadas
+- [ ] Temarios indexados
+- [ ] Tests indexados
+- [ ] Casos prácticos indexados
+- [ ] Verificar en Qdrant UI (~7,600 puntos)
+
+---
+
+### Paso 6: Testing de Calidad (1 hora)
+
+**Archivo a crear**: `backend/test_queries.py`
+
+**100 queries de test** (ejemplos):
+```python
+QUERIES_TEST = [
+    # Incapacidad
+    "Diferencia entre incapacidad temporal y permanente según LGSS",
+    "Requisitos para incapacidad permanente total Art. 194",
+    "Duración máxima de la incapacidad temporal",
+    
+    # Jubilación
+    "Edad mínima para jubilación ordinaria 2025",
+    "Requisitos jubilación anticipada voluntaria Art. 208",
+    
+    # Cotización
+    "Bases de cotización Régimen General 2025",
+    
+    # ... 94 más
+]
+```
+
+**Métricas a medir**:
+- Score promedio de similitud
+- Top 5 mejores queries
+- Top 5 peores queries
+- Distribución de scores
+
+**Objetivo**: Score promedio >0.75
+
+**Checklist**:
+- [ ] 100 queries creadas
+- [ ] Script de testing ejecutado
+- [ ] Score promedio calculado
+- [ ] Resultados analizados
+- [ ] Decisión: ¿Calidad suficiente?
+
+---
+
+### Paso 7: Calcular Tamaño Real (15 min)
+
+**Usar script**: `backend/migrate_qdrant_to_cloud.py`
+
+```bash
+python backend/migrate_qdrant_to_cloud.py --calculate-only
+```
+
+**Estimación teórica**: ~33 MB
+**Verificar**: Tamaño real en Qdrant
+
+**Decisión**:
+- Si <500 MB → ✅ Usar Qdrant Cloud Free (1GB)
+- Si >500 MB → Evaluar Qdrant Cloud Paid ($25/mes)
+
+**Checklist**:
+- [ ] Tamaño calculado
+- [ ] Decisión tomada (Free vs Paid)
+- [ ] Documentado en `docs/DECISIONES_CLAVE.md`
+
+---
+
+## 🎯 FASE 2: Integración con Backend (DESPUÉS)
+
+### Una vez indexado todo:
+
+1. **Actualizar RAG Agent** (`backend/agents/rag_agent.py`)
+   - Conectar a colección `opositaia_documents`
+   - Implementar búsqueda semántica
+   - Formatear contexto para LLM
+
+2. **Crear Endpoints API** (`backend/routers/rag.py`)
+   - `POST /api/rag/search` - Búsqueda semántica
+   - `GET /api/rag/stats` - Estadísticas
+   - `POST /api/rag/test` - Testing rápido
+
+3. **Testing End-to-End**
+   - Probar desde frontend
+   - Verificar latencia (<2s)
+   - Verificar calidad de respuestas
+
+---
+
+## 🎯 FASE 3: Prompts Basados en Ejemplos (FUTURO)
+
+### Una vez tengamos RAG funcionando:
+
+1. **Analizar materiales indexados**
+   - Extraer patrones de preguntas tipo test
+   - Extraer estructura de casos prácticos
+   - Identificar formato de respuestas
+
+2. **Crear prompts mejorados**
+   - Generador de tests (basado en ejemplos reales)
+   - Generador de casos (basado en ejemplos reales)
+   - Evaluador de respuestas (basado en criterios reales)
+
+3. **Actualizar `docs/AI_AGENTS.md`**
+   - Documentar nuevos prompts
+   - Justificar decisiones
+   - Incluir ejemplos
+
+---
+
+## 📊 ESTIMACIÓN DE TIEMPO TOTAL
+
+| Fase | Tiempo | Prioridad |
+|------|--------|-----------|
+| **Fase 1: Indexación** | 2-3 días | 🔴 ALTA |
+| Paso 1: Preparación | 30 min | - |
+| Paso 2: Crear colección | 15 min | - |
+| Paso 3: Descargar BOE | 2-3 horas | - |
+| Paso 4: Procesar/Chunkear | 1-2 horas | - |
+| Paso 5: Indexar | 3-4 horas | - |
+| Paso 6: Testing | 1 hora | - |
+| Paso 7: Calcular tamaño | 15 min | - |
+| **Fase 2: Integración Backend** | 1-2 días | 🟡 MEDIA |
+| **Fase 3: Prompts Mejorados** | 2-3 días | 🟢 BAJA |
+
+**TOTAL**: ~5-8 días de trabajo
+
+---
+
+## 🚀 COMANDO PARA EMPEZAR AHORA
+
+```bash
+# 1. Activar entorno
+cd backend
+.\venv\Scripts\activate
+
+# 2. Instalar dependencias
+pip install pypdf python-docx beautifulsoup4 lxml
+
+# 3. Verificar Qdrant
+docker ps | findstr qdrant
+
+# 4. Crear colección
+# (Kiro te ayudará a crear el script)
+```
+
+---
+
+## 📝 NOTAS IMPORTANTES
+
+### ⚠️ Antes de empezar:
+
+1. **Qdrant debe estar corriendo**
+   ```bash
+   docker-compose up -d qdrant
+   ```
+
+2. **RoBERTalex ya está testeado** ✅
+   - Funciona correctamente
+   - +10% mejor que all-minilm
+   - Listo para usar
+
+3. **Materiales en `elemplos_leyes_info/`**
+   - ❌ NO están en GitHub (ignorados)
+   - ✅ Están en tu PC local
+   - ✅ Listos para procesar
+
+4. **Tiempo de indexación**
+   - Primera vez: 3-4 horas
+   - Actualizaciones: 30 min (solo nuevos docs)
+
+---
+
+## 🎯 DECISIÓN: ¿Empezamos con Fase 1?
+
+**Opción A**: Empezar ahora con indexación
+```
+Kiro, empecemos con la Fase 1: Indexación de Leyes.
+Crea el script setup_qdrant_collection.py
+```
+
+**Opción B**: Revisar plan primero
+```
+Kiro, explícame más detalles sobre [paso específico]
+```
+
+**Opción C**: Hacer algo diferente
+```
+Kiro, prefiero trabajar en [otra cosa]
+```
+
+---
+
+## 📚 DOCUMENTOS DE REFERENCIA
+
+- **Plan completo**: `ai-specs/changes/RAG-indexacion-leyes-principales.md`
+- **Decisiones técnicas**: `docs/DECISIONES_CLAVE.md`
+- **Estado implementación**: `docs/IMPLEMENTATION_STATUS.md`
+- **Roadmap**: `docs/ROADMAP.md`
+- **Test RoBERTalex**: `backend/test_robertalex_local.py`
+
+---
+
+**¿Con qué empezamos?** 🚀
