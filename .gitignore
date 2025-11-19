@@ -56,6 +56,12 @@ build/
 # Examples and materials (NEVER COMMIT)
 elemplos_leyes_info/
 
+# Qdrant storage (local database)
+qdrant_storage/
+
+# Backend data (PDFs are too large)
+backend/data/
+
 # Keep AI Specs
 !ai-specs/
 !docs/
