@@ -351,22 +351,28 @@ python backend/migrate_qdrant_to_cloud.py --calculate-only
 
 ---
 
-## 🚀 COMANDO PARA EMPEZAR AHORA
+## 🚀 COMANDOS PARA EJECUTAR SPRINT 2
 
 ```bash
 # 1. Activar entorno
-cd backend
+cd elemplos_leyes_info
 .\venv\Scripts\activate
 
-# 2. Instalar dependencias
-pip install pypdf python-docx beautifulsoup4 lxml
+# 2. Instalar dependencias nuevas
+pip install pypdf==5.1.0 python-docx==1.1.2 tqdm==4.66.0
 
 # 3. Verificar Qdrant
 docker ps | findstr qdrant
 
-# 4. Crear colección
-# (Kiro te ayudará a crear el script)
+# 4. INDEXAR LGSS (Script maestro - hace todo)
+cd ..
+python backend/index_lgss_complete.py
+
+# 5. Probar búsquedas
+python backend/agents/test_search.py
 ```
+
+**📖 Instrucciones detalladas**: `backend/SPRINT2_INSTRUCCIONES.md`
 
 ---
 
@@ -450,26 +456,71 @@ Kiro, prefiero trabajar en [otra cosa]
 
 ---
 
-### 🎯 SPRINT 2: Indexar Capa 1 - Normativa (Día 2-3)
+### 🎯 SPRINT 2: Indexar Capa 1 - Normativa (Día 2-3) ✅ COMPLETADO
 
-**Objetivo**: Indexar 8 leyes principales del BOE
+**Objetivo**: Indexar LGSS primero, luego 7 leyes más del BOE
 
 **Tareas**:
-- [ ] 2.1: Crear `backend/agents/boe_downloader.py`
-- [ ] 2.2: Descargar 8 PDFs principales (LGSS, Ley 39/2015, etc.)
-- [ ] 2.3: Crear `backend/agents/pdf_processor.py`
-- [ ] 2.4: Procesar PDFs → chunks (512 tokens, overlap 50)
-- [ ] 2.5: Crear `backend/agents/robertalex_embedder.py`
-- [ ] 2.6: Generar embeddings con RoBERTalex
-- [ ] 2.7: Indexar en Qdrant con metadata Capa 1
-- [ ] 2.8: Testing: Búsqueda de prueba
+- [x] 2.1: Crear `backend/agents/boe_downloader.py` ✅
+- [x] 2.2: Descargar LGSS (1.69 MB) ✅
+- [x] 2.3: Crear `backend/agents/pdf_processor.py` ✅
+- [x] 2.4: Crear `backend/agents/robertalex_embedder.py` ✅
+- [x] 2.5: Crear `backend/agents/indexer.py` ✅
+- [x] 2.6: Crear `backend/agents/test_search.py` ✅
+- [x] 2.7: Crear script maestro `backend/index_lgss_complete.py` ✅
+- [x] 2.8: **EJECUTADO**: Indexar LGSS completo (17 min) ✅
+- [x] 2.9: **EJECUTADO**: Probar búsquedas con test_search.py ✅
+- [x] 2.10: Descargar Constitución Española ✅
+- [x] 2.11: Indexar Constitución Española ✅
 
-**Criterios de Aceptación**:
-- 8 PDFs descargados en `backend/data/leyes/`
-- ~1,000 chunks generados
-- Embeddings generados con RoBERTalex
-- Indexados en Qdrant con `layer=1`
-- Búsqueda devuelve resultados relevantes
+### 🎯 SPRINT 3: Leyes Prioritarias (Día 3) ✅ COMPLETADO
+
+- [x] 3.1: Descargar Ley 39/2015, Ley 40/2015, EBEP ✅
+- [x] 3.2: Indexar las 3 leyes prioritarias ✅
+- [x] 3.3: Verificar calidad de indexación ✅
+
+**Resultados Sprint 3**:
+- ✅ 3 leyes indexadas (Ley 39/2015, Ley 40/2015, EBEP)
+- ✅ 960 nuevos chunks indexados
+- ✅ Total colección: 1,543 chunks
+- ✅ 5 normas completas en sistema
+- ✅ Tiempo: 13 minutos
+
+### 🎯 SPRINT 4: Completar Capa 1 (Día 3) ✅ COMPLETADO
+
+- [x] 4.1: Descargar 4 leyes restantes ✅
+- [x] 4.2: Indexar RD Recaudación, RD Afiliación, Ley IMV, LOPDGDD ✅
+- [x] 4.3: Verificar colección completa ✅
+
+**Resultados Sprint 4**:
+- ✅ 4 leyes indexadas
+- ✅ 473 nuevos chunks indexados
+- ✅ Total colección: 2,016 chunks
+- ✅ 9 normas completas (Capa 1 COMPLETA)
+- ✅ Tiempo: 14 minutos
+
+### 🎯 SPRINT 5: Capa 3 - Materiales de Estudio (Día 3-4) ⏳ EN PROGRESO
+
+- [x] 5.1: Crear procesador para materiales de estudio ✅
+- [x] 5.2: Iniciar indexación de tests y temarios ✅
+- [ ] 5.3: Completar indexación (corriendo en background) ⏳
+- [ ] 5.4: Verificar calidad de Capa 3 ⏸️
+
+**Progreso Sprint 5**:
+- ✅ Test 1 AGE indexado (391 chunks)
+- ⏳ Test 2 AGE en progreso (~500 chunks)
+- ⏸️ Temarios pendientes (~4,000 chunks)
+- ⏸️ Casos prácticos pendientes (~200 chunks)
+- **Total estimado**: ~5,000 chunks Capa 3
+
+**Resultados Obtenidos**:
+- ✅ LGSS procesado: 269 páginas → 521 chunks
+- ✅ 167 artículos detectados automáticamente
+- ✅ Embeddings generados con RoBERTalex (768 dim)
+- ✅ 521 puntos indexados en Qdrant con metadata Capa 1
+- ✅ Búsquedas funcionando con score promedio: **0.64**
+- ✅ Score máximo: 0.71 | Score mínimo: 0.55
+- ✅ Tiempo total: ~17 minutos
 
 ---
 

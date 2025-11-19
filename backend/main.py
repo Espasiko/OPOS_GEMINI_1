@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 # Import routers
-from routers import rag
+from routers import rag, rag_v2
 
 # Configure logging
 logging.basicConfig(
@@ -56,7 +56,8 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(rag.router)
+app.include_router(rag.router)  # V1 (legacy)
+app.include_router(rag_v2.router)  # V2 (RoBERTalex + 2 capas)
 
 # Root endpoint
 @app.get("/")
