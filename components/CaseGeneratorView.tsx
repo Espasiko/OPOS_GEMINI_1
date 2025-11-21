@@ -1,8 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { generatePracticalCase } from '../services/geminiService';
+import { useModel } from '../contexts/ModelContext';
 import { PracticalCase, PracticalCaseQuestion, PracticalCaseOption, CaseAnswer } from '../types';
 import { BrainIcon } from './icons/BrainIcon';
 import { ProgressData } from '../App';
+
+// TODO: Migrar a backend multi-proveedor cuando esté disponible
+// Por ahora usa Gemini directamente
 
 interface CaseGeneratorViewProps {
   currentCase: PracticalCase | null;
@@ -29,7 +33,7 @@ const QuestionView: React.FC<{
   topic: string;
   answers: CaseAnswer[string];
   onSelect: (questionId: string, optionId: string) => void;
-}> = ({ question, topic, answers, onSelect }) => {
+}> = ({ question, answers, onSelect }) => {
   const { selectedOptions = [], attempts = 0, showExplanation = false } = answers || {};
 
   const getOptionClasses = (option: PracticalCaseOption) => {

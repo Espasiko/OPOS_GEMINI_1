@@ -90,6 +90,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView }) => {
       icon: <SparkIcon className="h-5 w-5" />,
     },
     {
+      view: AppView.BACKEND_TEST,
+      label: '🧪 Backend Test',
+      icon: <SparkIcon className="h-5 w-5" />,
+    },
+    {
       view: AppView.USER_GUIDE,
       label: 'Guía de Uso',
       icon: <QuestionMarkCircleIcon className="h-5 w-5" />,

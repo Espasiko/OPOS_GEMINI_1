@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
+import ModelSelector from './components/ModelSelector';
+import { ModelProvider } from './contexts/ModelContext';
 import ChatView from './components/ChatView';
 import CaseGeneratorView from './components/CaseGeneratorView';
 import SearchGroundingView from './components/SearchGroundingView';
@@ -15,6 +17,7 @@ import ComparatorView from './components/ComparatorView';
 import MockExamView from './components/MockExamView';
 import FlashcardsView from './components/FlashcardsView';
 import { VPSTestView } from './components/VPSTestView';
+import BackendTestView from './components/BackendTestView';
 import { AppView, PracticalCase, CaseAnswer, MindMapNode } from './types';
 
 export interface ProgressData {
@@ -65,6 +68,7 @@ function usePersistentState<T>(
  */
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.CHAT);
+  const [selectedModel, setSelectedModel] = usePersistentState<string>('selectedModel', 'groq-8b');
 
   // State lifted for persistence across views and sessions
   const [currentCase, setCurrentCase] = usePersistentState<PracticalCase | null>(
@@ -149,16 +153,25 @@ const App: React.FC = () => {
         return <FlashcardsView />;
       case AppView.VPS_TEST:
         return <VPSTestView />;
+      case AppView.BACKEND_TEST:
+        return <BackendTestView />;
       default:
         return <ChatView />;
     }
   };
 
   return (
-    <div className="flex h-screen w-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 overflow-hidden">
-      <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
-      <main className="flex-1 flex flex-col h-full overflow-y-auto">{renderView()}</main>
-    </div>
+    <ModelProvider value={{ selectedModel, setSelectedModel }}>
+      <div className="flex h-screen w-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 overflow-hidden">
+        <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
+        <main className="flex-1 flex flex-col h-full overflow-hidden">
+          <div className="flex items-center justify-end px-6 py-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+          </div>
+          <div className="flex-1 overflow-y-auto">{renderView()}</div>
+        </main>
+      </div>
+    </ModelProvider>
   );
 };
 
