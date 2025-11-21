@@ -29,7 +29,7 @@ except Exception as e:
     logger.error(f"❌ Error loading .env.backend: {e}")
 
 # Import routers
-from routers import rag, rag_v2, chat, upload
+from routers import rag, rag_v2, chat, upload, ai_functions
 
 
 # Lifespan context manager
@@ -72,6 +72,7 @@ app.include_router(rag.router)  # V1 (legacy)
 app.include_router(rag_v2.router)  # V2 (RoBERTalex + 2 capas)
 app.include_router(chat.router)  # Sprint 7: Chat with Mistral + RAG
 app.include_router(upload.router)  # Sprint 7: File/URL upload
+app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
 
 # Root endpoint
 @app.get("/")
