@@ -14,6 +14,7 @@ export enum AppView {
   USER_GUIDE = 'USER_GUIDE',
   SETTINGS = 'SETTINGS',
   VPS_TEST = 'VPS_TEST',
+  BACKEND_TEST = 'BACKEND_TEST',
 }
 
 export interface ChatMessage {

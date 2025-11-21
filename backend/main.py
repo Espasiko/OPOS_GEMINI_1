@@ -5,19 +5,31 @@ Multi-Agent Architecture with RAG
 
 import os
 import logging
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-# Import routers
-from routers import rag, rag_v2
-
-# Configure logging
+# Configure logging first
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Load environment variables from .env.backend
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent / '.env.backend'
+    load_dotenv(dotenv_path=env_path)
+    logger.info(f"✅ Loaded environment from: {env_path}")
+except ImportError:
+    logger.warning("⚠️  python-dotenv not installed, using system env vars")
+except Exception as e:
+    logger.error(f"❌ Error loading .env.backend: {e}")
+
+# Import routers
+from routers import rag, rag_v2, chat, upload
 
 
 # Lifespan context manager
@@ -28,7 +40,7 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     logger.info("🚀 OpositAIA Backend starting...")
-    logger.info(f"Embedding Model: {os.getenv('EMBEDDING_MODEL', 'bge-m3')}")
+    logger.info(f"Embedding Model: {os.getenv('EMBEDDING_MODEL', 'PlanTL-GOB-ES/RoBERTalex')}")
     logger.info(f"Qdrant URL: {os.getenv('QDRANT_URL', 'http://localhost:6333')}")
     logger.info(f"Ollama URL: {os.getenv('OLLAMA_URL', 'http://localhost:11434')}")
     
@@ -58,6 +70,8 @@ app.add_middleware(
 # Include routers
 app.include_router(rag.router)  # V1 (legacy)
 app.include_router(rag_v2.router)  # V2 (RoBERTalex + 2 capas)
+app.include_router(chat.router)  # Sprint 7: Chat with Mistral + RAG
+app.include_router(upload.router)  # Sprint 7: File/URL upload
 
 # Root endpoint
 @app.get("/")
@@ -67,9 +81,14 @@ async def root():
     """
     return {
         "name": "OpositAIA API",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "healthy",
-        "agents": ["RAG", "Analysis", "Quiz", "Recommendations"],
+        "features": [
+            "RAG search (v1 & v2)",
+            "Chat with Mistral + RAG",
+            "File upload and processing",
+            "URL content extraction"
+        ],
         "docs": "/docs"
     }
 
@@ -81,7 +100,7 @@ async def health():
     """
     return {
         "status": "healthy",
-        "embedding_model": os.getenv("EMBEDDING_MODEL", "bge-m3"),
+        "embedding_model": os.getenv("EMBEDDING_MODEL", "PlanTL-GOB-ES/RoBERTalex"),
         "qdrant_url": os.getenv("QDRANT_URL", "http://localhost:6333"),
         "ollama_url": os.getenv("OLLAMA_URL", "http://localhost:11434")
     }

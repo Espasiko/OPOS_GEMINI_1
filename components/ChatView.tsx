@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Chat } from '@google/genai';
-import { getChatInstance, getTextFromUrl } from '../services/geminiService';
+import { sendChatMessageStream } from '../services/backendService';
+import { useModel } from '../contexts/ModelContext';
 import { ChatMessage, Conversation } from '../types';
 import { SparkIcon } from './icons/SparkIcon';
 import { PlusIcon } from './icons/PlusIcon';
@@ -16,6 +16,7 @@ import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector'
  * Las respuestas del modelo se reciben en streaming para una experiencia de usuario fluida.
  */
 const ChatView: React.FC = () => {
+  const { selectedModel } = useModel();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string>('');
   const [userInput, setUserInput] = useState('');
@@ -71,8 +72,6 @@ const ChatView: React.FC = () => {
       const messageText = textToSend || userInput;
       if (!messageText.trim() || isLoading || !activeConvId) return;
 
-      const chat = getChatInstance(activeConvId);
-
       const userMessage: ChatMessage = {
         id: `user-${Date.now()}`,
         role: 'user',
@@ -113,17 +112,30 @@ const ChatView: React.FC = () => {
       );
 
       try {
-        const stream = await chat.sendMessageStream({ message: messageText });
+        // Use backend service with streaming
+        const stream = sendChatMessageStream({
+          message: messageText,
+          conversation_id: activeConvId,
+          use_rag: true,
+          provider: selectedModel,
+          top_k: 5,
+          min_score: 0.5,
+        });
 
         for await (const chunk of stream) {
-          const chunkText = chunk.text;
+          // Check if chunk is sources metadata (skip it from display)
+          if (chunk.startsWith('{') && chunk.includes('"type":"sources"')) {
+            // Sources received, we could store them separately if needed
+            continue;
+          }
+
           setConversations(prev =>
             prev.map(conv => {
               if (conv.id === activeConvId) {
                 return {
                   ...conv,
                   messages: conv.messages.map(msg =>
-                    msg.id === modelResponseId ? { ...msg, text: msg.text + chunkText } : msg
+                    msg.id === modelResponseId ? { ...msg, text: msg.text + chunk } : msg
                   ),
                 };
               }
@@ -155,7 +167,7 @@ const ChatView: React.FC = () => {
         setIsLoading(false);
       }
     },
-    [userInput, isLoading, activeConvId, conversations]
+    [userInput, isLoading, activeConvId, conversations, selectedModel]
   );
 
   const handleDataSourceSubmit = async (
@@ -170,7 +182,10 @@ const ChatView: React.FC = () => {
         textContent = await extractTextFromFile(source.content);
         contextMessage = `Analiza el siguiente texto del documento "${source.content.name}" y responde a mis preguntas sobre él:\n\n---\n${textContent}`;
       } else if (source.type === 'url') {
-        textContent = await getTextFromUrl(source.content);
+        // For URLs, we'll just send the URL and let the backend handle it
+        // Or we can use a simple fetch
+        const response = await fetch(source.content);
+        textContent = await response.text();
         contextMessage = `Analiza el siguiente texto de la URL "${source.content}" y responde a mis preguntas sobre él:\n\n---\n${textContent}`;
       }
       // This will trigger a message send with the context.
