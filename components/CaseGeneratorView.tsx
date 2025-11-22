@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { generatePracticalCase } from '../services/geminiService';
+import { generatePracticalCase } from '../services/backendService';
 import { useModel } from '../contexts/ModelContext';
 import { PracticalCase, PracticalCaseQuestion, PracticalCaseOption, CaseAnswer } from '../types';
 import { BrainIcon } from './icons/BrainIcon';
 import { ProgressData } from '../App';
 
-// TODO: Migrar a backend multi-proveedor cuando esté disponible
-// Por ahora usa Gemini directamente
+// Sprint 9: Migrado a backend multi-proveedor
 
 interface CaseGeneratorViewProps {
   currentCase: PracticalCase | null;
@@ -30,7 +29,6 @@ interface CaseGeneratorViewProps {
  */
 const QuestionView: React.FC<{
   question: PracticalCaseQuestion;
-  topic: string;
   answers: CaseAnswer[string];
   onSelect: (questionId: string, optionId: string) => void;
 }> = ({ question, answers, onSelect }) => {
@@ -116,6 +114,30 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
   addProgressData,
 }) => {
   const [error, setError] = useState<string | null>(null);
+  const { selectedModel } = useModel();
+
+  // Mapear ID del modelo al provider
+  const getProviderFromModelId = (modelId: string): string => {
+    if (modelId.startsWith('groq-')) {
+      return 'groq';
+    }
+    if (modelId.startsWith('deepseek-')) {
+      return 'deepseek';
+    }
+    if (modelId.startsWith('gemini-')) {
+      return 'google';
+    }
+    if (modelId.startsWith('hf-')) {
+      return 'huggingface';
+    }
+    if (modelId.startsWith('cohere-')) {
+      return 'cohere';
+    }
+    if (modelId.startsWith('mistral-')) {
+      return 'mistral-vps';
+    }
+    return 'groq'; // Default
+  };
 
   const fetchNewCase = useCallback(() => {
     setIsLoading(true);
@@ -123,8 +145,32 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
     setCurrentCase(null);
     setCaseAnswers({});
 
-    generatePracticalCase()
-      .then(newCase => {
+    const provider = getProviderFromModelId(selectedModel);
+
+    generatePracticalCase({
+      topic: 'Seguridad Social',
+      difficulty: 'medium',
+      provider,
+    })
+      .then(response => {
+        // Convertir respuesta del backend al formato PracticalCase
+        const newCase: PracticalCase = {
+          topic: 'Seguridad Social',
+          scenario: response.scenario,
+          questions: response.questions.map((q, idx) => ({
+            id: `q${idx + 1}`,
+            question: q.question,
+            options: [
+              { id: 'A', text: 'Opción A' },
+              { id: 'B', text: 'Opción B' },
+              { id: 'C', text: 'Opción C' },
+              { id: 'D', text: 'Opción D' },
+            ],
+            correct_option_id: 'A',
+            explanation: `Pregunta ${idx + 1} - ${q.points} puntos`,
+          })),
+        };
+        
         setCurrentCase(newCase);
         const initialAnswers: CaseAnswer = {};
         newCase.questions.forEach(q => {
@@ -132,13 +178,18 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
         });
         setCaseAnswers(initialAnswers);
       })
-      .catch((err: Error) => setError(err.message))
+      .catch((err) => {
+        const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
+        setError(`Error con modelo ${selectedModel}: ${errorMsg}`);
+      })
       .finally(() => setIsLoading(false));
-  }, [setIsLoading, setCurrentCase, setCaseAnswers]);
+  }, [setIsLoading, setCurrentCase, setCaseAnswers, selectedModel]);
 
   const handleOptionSelect = (questionId: string, optionId: string) => {
     const questionState = caseAnswers[questionId];
-    if (questionState.showExplanation || questionState.attempts >= 2) return;
+    if (questionState.showExplanation || questionState.attempts >= 2) {
+      return;
+    }
 
     const newAttempts = questionState.attempts + 1;
     const isCorrect =
@@ -171,11 +222,10 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
         <div className="flex flex-col items-center justify-center h-full text-center">
           <BrainIcon className="w-16 h-16 text-blue-500 animate-pulse" />
           <h2 className="mt-4 text-xl font-semibold text-slate-700 dark:text-slate-300">
-            Generando caso práctico con Gemini Pro...
+            Generando caso práctico con {selectedModel}...
           </h2>
           <p className="mt-2 text-slate-500 dark:text-slate-400">
-            El modelo está usando su "modo de pensamiento" para crear un desafío realista y
-            complejo. Esto puede tardar unos segundos.
+            El modelo está creando un desafío realista y complejo. Esto puede tardar unos segundos.
           </p>
         </div>
       );
@@ -187,9 +237,14 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
       return (
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
-            <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full mb-3">
-              {currentCase.topic}
-            </span>
+            <div className="flex items-center justify-between mb-3">
+              <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
+                {currentCase.topic}
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
+                Generado con {selectedModel}
+              </span>
+            </div>
             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">
               Escenario:
             </h2>
@@ -203,7 +258,6 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
               <QuestionView
                 key={q.id}
                 question={q}
-                topic={currentCase.topic}
                 answers={caseAnswers[q.id]}
                 onSelect={handleOptionSelect}
               />

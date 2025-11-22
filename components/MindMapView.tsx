@@ -1,9 +1,14 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { generateMindMap } from '../services/geminiService';
+import { generateMindMap } from '../services/backendService';
+import { useAIProvider } from '../hooks/useAIProvider';
+import { convertMindMapNode, validateResponse } from '../utils/formatters';
 import { MindMapNode } from '../types';
 import { SparkIcon } from './icons/SparkIcon';
 import { DownloadIcon } from './icons/DownloadIcon';
+import ErrorMessage from './ErrorMessage';
 import * as htmlToImage from 'html-to-image';
+
+// Sprint 10: Refactorizado con utilidades compartidas
 
 interface MindMapViewProps {
   savedState: { topic: string; map: MindMapNode | null };
@@ -46,22 +51,34 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
   const [mindMap, setMindMap] = useState<MindMapNode | null>(savedState.map);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const graphContainerRef = useRef<HTMLDivElement>(null);
+  const graphContainerRef = useRef<HTMLDivElement | null>(null);
+  const { provider, providerInfo, executeWithRetry, handleError } = useAIProvider();
 
   useEffect(() => {
     setSavedState({ topic, map: mindMap });
   }, [topic, mindMap, setSavedState]);
 
   const handleGenerate = async () => {
-    if (!topic.trim()) return;
+    if (!topic.trim()) {
+      return;
+    }
     setIsLoading(true);
     setError(null);
     setMindMap(null);
+
     try {
-      const map = await generateMindMap(topic);
-      setMindMap(map);
-    } catch (err: any) {
-      setError(err.message);
+      const response = await executeWithRetry(async p =>
+        generateMindMap({
+          topic,
+          depth: 3,
+          provider: p,
+        })
+      );
+
+      validateResponse(response, ['root']);
+      setMindMap(convertMindMapNode(response.root));
+    } catch (err) {
+      setError(handleError(err));
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +98,9 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
   }, []);
 
   const downloadAs = (format: 'json' | 'md' | 'png') => {
-    if (!mindMap) return;
+    if (!mindMap) {
+      return;
+    }
     const filename = `mapa_mental_${topic.replace(/\s+/g, '_').toLowerCase()}`;
 
     if (format === 'png') {
@@ -131,7 +150,7 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
             Mapas Mentales con IA
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Genera mapas mentales jerárquicos sobre cualquier tema.
+            Genera mapas mentales jerárquicos sobre cualquier tema con {providerInfo.name}
           </p>
         </div>
         {mindMap && (
@@ -190,18 +209,21 @@ const MindMapView: React.FC<MindMapViewProps> = ({ savedState, setSavedState }) 
             </button>
           </div>
 
-          {error && (
-            <div className="text-red-500 bg-red-100 dark:bg-red-900 p-4 rounded-lg">{error}</div>
-          )}
+          {error && <ErrorMessage error={error} onRetry={handleGenerate} />}
 
           <div className="w-full flex-grow bg-slate-50 dark:bg-slate-800/50 rounded-xl shadow-inner flex p-8 overflow-auto min-h-[400px]">
             {isLoading ? (
               <div className="text-center m-auto">
                 <SparkIcon className="w-12 h-12 text-blue-500 animate-pulse mx-auto" />
-                <p className="mt-2 font-semibold">Creando estructura de ideas...</p>
+                <p className="mt-2 font-semibold">
+                  Creando estructura de ideas con {providerInfo.name}...
+                </p>
               </div>
             ) : mindMap ? (
               <div ref={graphContainerRef} className="p-4">
+                <div className="mb-4 text-xs text-slate-500 dark:text-slate-400 text-right">
+                  Generado con {providerInfo.name}
+                </div>
                 <ul className="list-none">
                   <RenderNode node={mindMap} onNodeUpdate={handleNodeUpdate} />
                 </ul>

@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { generateSummary, getTextFromUrl } from '../services/geminiService';
+import { generateSummary } from '../services/backendService';
+import { getTextFromUrl } from '../services/geminiService';
+import { useAIProvider } from '../hooks/useAIProvider';
+import { formatSummaryWithKeyPoints } from '../utils/formatters';
 import { SummaryIcon } from './icons/SummaryIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
+import ErrorMessage from './ErrorMessage';
+
+// Sprint 10: Refactorizado con utilidades compartidas
 
 interface SummaryViewProps {
   savedState: { text: string; summary: string };
-  setSavedState: (state: { text: string; summary: string }) => void;
+  setSavedState: (newState: { text: string; summary: string }) => void;
 }
 
 const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) => {
@@ -13,23 +19,32 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
   const [summary, setSummary] = useState(savedState.summary);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { provider, providerInfo, executeWithRetry, handleError } = useAIProvider();
 
   useEffect(() => {
-    // Persist both input text and summary result.
-    // A potential improvement could be to not save extremely large texts to avoid localStorage quota issues.
     setSavedState({ text, summary });
   }, [text, summary, setSavedState]);
 
   const handleGenerate = async (sourceText: string) => {
-    if (!sourceText.trim()) return;
+    if (!sourceText.trim()) {
+      return;
+    }
     setIsLoading(true);
     setError(null);
     setSummary('');
+
     try {
-      const result = await generateSummary(sourceText);
-      setSummary(result);
-    } catch (err: any) {
-      setError(err.message);
+      const response = await executeWithRetry(async p =>
+        generateSummary({
+          text: sourceText,
+          length: 'medium',
+          provider: p,
+        })
+      );
+
+      setSummary(formatSummaryWithKeyPoints(response));
+    } catch (err) {
+      setError(handleError(err));
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +73,9 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
       }
       setText(sourceText);
       await handleGenerate(sourceText);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMsg);
       setIsLoading(false);
     }
   };
@@ -71,7 +87,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
           Generador de Resúmenes
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Pega un texto legal, sube un archivo o introduce una URL y la IA extraerá las ideas clave.
+          Pega un texto legal, sube un archivo o introduce una URL y {providerInfo.name} extraerá
+          las ideas clave.
         </p>
       </header>
 
@@ -93,7 +110,9 @@ const SummaryView: React.FC<SummaryViewProps> = ({ savedState, setSavedState }) 
             {isLoading && (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <SummaryIcon className="w-12 h-12 text-blue-500 animate-pulse" />
-                <p className="mt-4 font-semibold">Sintetizando información...</p>
+                <p className="mt-4 font-semibold">
+                  Sintetizando información con {providerInfo.name}...
+                </p>
                 <p className="mt-1 text-sm text-slate-500">
                   Si el texto es muy largo, puede tardar un poco.
                 </p>
