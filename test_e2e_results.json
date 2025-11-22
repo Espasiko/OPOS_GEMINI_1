@@ -1,0 +1,99 @@
+{
+  "timestamp": "2025-11-22T22:28:41.941246",
+  "tests": {
+    "ENV: QDRANT_URL": {
+      "status": "PASS",
+      "details": "Configured"
+    },
+    "ENV: QDRANT_API_KEY": {
+      "status": "FAIL",
+      "details": "Missing required variable"
+    },
+    "ENV: MISTRAL_API_KEY": {
+      "status": "FAIL",
+      "details": "Missing required variable"
+    },
+    "ENV: OPENAI_API_KEY": {
+      "status": "SKIP",
+      "details": "Not configured (optional)"
+    },
+    "ENV: ANTHROPIC_API_KEY": {
+      "status": "SKIP",
+      "details": "Not configured (optional)"
+    },
+    "ENV: GOOGLE_API_KEY": {
+      "status": "SKIP",
+      "details": "Not configured (optional)"
+    },
+    "Qdrant Connection": {
+      "status": "FAIL",
+      "details": "No module named 'qdrant_client'"
+    },
+    "LLM Providers": {
+      "status": "FAIL",
+      "details": "No module named 'qdrant_client'"
+    },
+    "RAG System": {
+      "status": "FAIL",
+      "details": "No module named 'qdrant_client'"
+    },
+    "AI Functions": {
+      "status": "FAIL",
+      "details": "No module named 'fastapi'"
+    },
+    "Frontend: App.tsx": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Frontend: components/ChatView.tsx": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Frontend: components/ModelSelector.tsx": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Frontend: contexts/ModelContext.tsx": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Frontend: services/backendService.ts": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Frontend: utils/providers.ts": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Frontend: hooks/useAIProvider.ts": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Backend: backend/main.py": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Backend: backend/routers/rag_v2.py": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Backend: backend/routers/ai_functions.py": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Backend: backend/agents/rag_agent_v2.py": {
+      "status": "PASS",
+      "details": "File exists"
+    },
+    "Backend: backend/agents/llm_providers.py": {
+      "status": "PASS",
+      "details": "File exists"
+    }
+  },
+  "summary": {
+    "total": 7,
+    "passed": 2,
+    "failed": 5,
+    "percentage": 28
+  }
+}
