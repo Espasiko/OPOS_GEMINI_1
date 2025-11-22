@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { generateFlashcardsAndMeme } from '../services/geminiService';
+import { generateFlashcards } from '../services/backendService';
+import { useAIProvider } from '../hooks/useAIProvider';
+import { validateResponse } from '../utils/formatters';
 import { Flashcard } from '../types';
 import { SparkIcon } from './icons/SparkIcon';
 import { FlashcardIcon } from './icons/FlashcardIcon';
+import ErrorMessage from './ErrorMessage';
+
+// Sprint 10: Refactorizado con utilidades compartidas
 
 const FlashcardComponent: React.FC<{ card: Flashcard }> = ({ card }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -28,19 +33,38 @@ const FlashcardsView: React.FC = () => {
   const [meme, setMeme] = useState<{ imageUrl: string; prompt: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { provider, providerInfo, executeWithRetry, handleError } = useAIProvider();
 
   const handleGenerate = async () => {
-    if (!topic.trim()) return;
+    if (!topic.trim()) {
+      return;
+    }
     setIsLoading(true);
     setError(null);
     setFlashcards([]);
     setMeme(null);
+
     try {
-      const result = await generateFlashcardsAndMeme(topic);
-      setFlashcards(result.flashcards);
-      setMeme(result.meme);
-    } catch (err: any) {
-      setError(err.message);
+      const response = await executeWithRetry(async p =>
+        generateFlashcards({
+          topic,
+          count: 10,
+          provider: p,
+        })
+      );
+
+      validateResponse(response, ['cards']);
+
+      const convertedCards: Flashcard[] = response.cards.map((card: any, idx: number) => ({
+        id: `card-${idx + 1}`,
+        front: card.front,
+        back: card.back,
+      }));
+
+      setFlashcards(convertedCards);
+      setMeme(null);
+    } catch (err) {
+      setError(handleError(err));
     } finally {
       setIsLoading(false);
     }
@@ -50,10 +74,10 @@ const FlashcardsView: React.FC = () => {
     <div className="flex flex-col h-full bg-white dark:bg-slate-900">
       <header className="p-4 border-b border-slate-200 dark:border-slate-800">
         <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-          Tarjetas y Memes para Estudiar
+          Tarjetas para Estudiar
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Memoriza conceptos clave de forma rápida y divertida.
+          Memoriza conceptos clave de forma rápida con {providerInfo.name}
         </p>
       </header>
 
@@ -90,42 +114,32 @@ const FlashcardsView: React.FC = () => {
           {isLoading && (
             <div className="text-center">
               <FlashcardIcon className="w-16 h-16 text-blue-500 animate-pulse mx-auto" />
-              <h2 className="mt-4 text-xl font-semibold">Creando material de estudio...</h2>
-              <p className="mt-2 text-slate-500">
-                Esto puede tardar unos segundos, especialmente la generación del meme.
-              </p>
+              <h2 className="mt-4 text-xl font-semibold">
+                Creando tarjetas con {providerInfo.name}...
+              </h2>
+              <p className="mt-2 text-slate-500">Esto puede tardar unos segundos.</p>
             </div>
           )}
 
           {!isLoading && flashcards.length === 0 && !error && (
             <div className="text-center text-slate-500">
-              <p>Introduce un tema para generar tarjetas de memoria y un meme.</p>
+              <p>Introduce un tema para generar tarjetas de memoria.</p>
             </div>
           )}
 
           {flashcards.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <h2 className="text-2xl font-bold mb-4">Tarjetas de Memoria</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {flashcards.map(card => (
-                    <FlashcardComponent key={card.id} card={card} />
-                  ))}
-                </div>
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold">Tarjetas de Memoria</h2>
+                <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
+                  Generado con {providerInfo.name}
+                </span>
               </div>
-              {meme && (
-                <div className="lg:col-span-1">
-                  <h2 className="text-2xl font-bold mb-4">Meme para Recordar</h2>
-                  <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-4 shadow-lg">
-                    <img
-                      src={meme.imageUrl}
-                      alt="Meme generado por IA"
-                      className="w-full h-auto rounded-md object-cover"
-                    />
-                    <p className="text-xs italic text-slate-500 mt-2 text-center">{meme.prompt}</p>
-                  </div>
-                </div>
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {flashcards.map(card => (
+                  <FlashcardComponent key={card.id} card={card} />
+                ))}
+              </div>
             </div>
           )}
         </div>

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { generateSchema } from '../services/geminiService';
+import { generateSchema } from '../services/backendService';
+import { useAIProvider } from '../hooks/useAIProvider';
+import { convertSchemaToMarkdown } from '../utils/formatters';
 import { SparkIcon } from './icons/SparkIcon';
 import { SchemaIcon } from './icons/SchemaIcon';
+import ErrorMessage from './ErrorMessage';
+
+// Sprint 10: Refactorizado con utilidades compartidas
 
 interface SchemaViewProps {
   savedState: { topic: string; schema: string };
@@ -15,7 +20,9 @@ const parseSchemaToHtml = (markdown: string): string => {
   let level = 0;
 
   for (const line of lines) {
-    if (!line.trim()) continue;
+    if (!line.trim()) {
+      continue;
+    }
 
     const trimmedLine = line.trim();
     const currentLevel = (line.match(/^\s*\*/) || [''])[0].length - 1;
@@ -40,21 +47,32 @@ const SchemaView: React.FC<SchemaViewProps> = ({ savedState, setSavedState }) =>
   const [schema, setSchema] = useState(savedState.schema);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { provider, providerInfo, executeWithRetry, handleError } = useAIProvider();
 
   useEffect(() => {
     setSavedState({ topic, schema });
   }, [topic, schema, setSavedState]);
 
   const handleGenerate = async () => {
-    if (!topic.trim()) return;
+    if (!topic.trim()) {
+      return;
+    }
     setIsLoading(true);
     setError(null);
     setSchema('');
+
     try {
-      const result = await generateSchema(topic);
-      setSchema(result);
-    } catch (err: any) {
-      setError(err.message);
+      const response = await executeWithRetry(async p =>
+        generateSchema({
+          topic,
+          format: 'outline',
+          provider: p,
+        })
+      );
+
+      setSchema(convertSchemaToMarkdown(response));
+    } catch (err) {
+      setError(handleError(err));
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +85,7 @@ const SchemaView: React.FC<SchemaViewProps> = ({ savedState, setSavedState }) =>
           Generador de Esquemas
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Introduce un tema del temario y la IA creará un esquema detallado.
+          Introduce un tema del temario y {providerInfo.name} creará un esquema detallado.
         </p>
       </header>
 
@@ -103,7 +121,9 @@ const SchemaView: React.FC<SchemaViewProps> = ({ savedState, setSavedState }) =>
             {isLoading && (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <SchemaIcon className="w-12 h-12 text-blue-500 animate-pulse" />
-                <p className="mt-4 font-semibold">Estructurando el conocimiento...</p>
+                <p className="mt-4 font-semibold">
+                  Estructurando el conocimiento con {providerInfo.name}...
+                </p>
               </div>
             )}
             {schema && (

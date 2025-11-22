@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { generateStudyPlan } from '../services/geminiService';
+import { generateStudyPlan } from '../services/backendService';
+import { useAIProvider } from '../hooks/useAIProvider';
+import { convertStudyPlanToText } from '../utils/formatters';
 import { StudyPlanInput } from '../types';
 import { SparkIcon } from './icons/SparkIcon';
+import ErrorMessage from './ErrorMessage';
+
+// Sprint 10: Refactorizado con utilidades compartidas
 
 const StudyPlanView: React.FC = () => {
   const [inputs, setInputs] = useState<StudyPlanInput>({
@@ -13,16 +18,27 @@ const StudyPlanView: React.FC = () => {
   const [plan, setPlan] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { provider, providerInfo, executeWithRetry, handleError } = useAIProvider();
 
   const handleGenerate = async () => {
     setIsLoading(true);
     setError(null);
     setPlan('');
+
     try {
-      const result = await generateStudyPlan(inputs);
-      setPlan(result);
-    } catch (err: any) {
-      setError(err.message);
+      const response = await executeWithRetry(async p =>
+        generateStudyPlan({
+          topic: 'Seguridad Social',
+          duration_weeks:
+            inputs.duration === 'semanal' ? 1 : inputs.duration === 'mensual' ? 4 : 12,
+          hours_per_week: 20,
+          provider: p,
+        })
+      );
+
+      setPlan(convertStudyPlanToText(response));
+    } catch (err) {
+      setError(handleError(err));
     } finally {
       setIsLoading(false);
     }
@@ -35,7 +51,7 @@ const StudyPlanView: React.FC = () => {
           Plan de Estudios Personalizado
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Crea un plan de estudio a tu medida con la ayuda de la IA.
+          Crea un plan de estudio a tu medida con {providerInfo.name}.
         </p>
       </header>
 
@@ -111,7 +127,7 @@ const StudyPlanView: React.FC = () => {
           )}
           <h2 className="text-lg font-semibold mb-4">Plan Generado</h2>
           <textarea
-            value={isLoading ? 'Generando tu plan...' : plan}
+            value={isLoading ? `Generando tu plan con ${providerInfo.name}...` : plan}
             readOnly={isLoading}
             onChange={e => setPlan(e.target.value)}
             placeholder="Aquí aparecerá tu plan de estudio editable..."

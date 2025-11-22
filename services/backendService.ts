@@ -68,6 +68,121 @@ export interface HealthResponse {
 }
 
 // ============================================================================
+// AI FUNCTIONS TYPES (Sprint 9)
+// ============================================================================
+
+export interface PracticalCaseRequest {
+  topic: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  provider?: string;
+}
+
+export interface PracticalCaseResponse {
+  scenario: string;
+  questions: Array<{
+    question: string;
+    points: number;
+  }>;
+  total_points: number;
+  estimated_time: number;
+}
+
+export interface MindMapRequest {
+  topic: string;
+  depth?: number;
+  provider?: string;
+}
+
+export interface MindMapNode {
+  label: string;
+  children?: MindMapNode[];
+}
+
+export interface MindMapResponse {
+  root: MindMapNode;
+}
+
+export interface FlashcardsRequest {
+  topic: string;
+  count?: number;
+  provider?: string;
+}
+
+export interface Flashcard {
+  front: string;
+  back: string;
+  difficulty: string;
+}
+
+export interface FlashcardsResponse {
+  cards: Flashcard[];
+}
+
+export interface SchemaRequest {
+  topic: string;
+  format?: 'outline' | 'hierarchical';
+  provider?: string;
+}
+
+export interface SchemaResponse {
+  title: string;
+  sections: Array<{
+    title: string;
+    content: string[];
+    subsections?: Array<{
+      title: string;
+      content: string[];
+    }>;
+  }>;
+}
+
+export interface SummaryRequest {
+  text: string;
+  length?: 'short' | 'medium' | 'long';
+  provider?: string;
+}
+
+export interface SummaryResponse {
+  summary: string;
+  key_points: string[];
+  word_count: number;
+}
+
+export interface CompareRequest {
+  text1: string;
+  text2: string;
+  aspect?: string;
+  provider?: string;
+}
+
+export interface CompareResponse {
+  similarities: string[];
+  differences: string[];
+  conclusion: string;
+}
+
+export interface StudyPlanRequest {
+  topic: string;
+  duration_weeks: number;
+  hours_per_week: number;
+  provider?: string;
+}
+
+export interface StudyPlanWeek {
+  week: number;
+  topics: string[];
+  activities: string[];
+  goals: string[];
+}
+
+export interface StudyPlanResponse {
+  title: string;
+  total_weeks: number;
+  total_hours: number;
+  weeks: StudyPlanWeek[];
+}
+
+// ============================================================================
 // CHAT ENDPOINTS
 // ============================================================================
 
@@ -352,6 +467,201 @@ export async function getBackendInfo(): Promise<Record<string, unknown>> {
     return await response.json();
   } catch (error) {
     console.error('Error getting backend info:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// AI FUNCTIONS ENDPOINTS (Sprint 9)
+// ============================================================================
+
+/**
+ * Generate a practical case
+ */
+export async function generatePracticalCase(request: PracticalCaseRequest): Promise<PracticalCaseResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/practical-case`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Practical case generation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating practical case:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate a mind map
+ */
+export async function generateMindMap(request: MindMapRequest): Promise<MindMapResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/mind-map`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Mind map generation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating mind map:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate flashcards
+ */
+export async function generateFlashcards(request: FlashcardsRequest): Promise<FlashcardsResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/flashcards`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Flashcards generation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating flashcards:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate a schema/outline
+ */
+export async function generateSchema(request: SchemaRequest): Promise<SchemaResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/schema`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Schema generation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating schema:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate a summary
+ */
+export async function generateSummary(request: SummaryRequest): Promise<SummaryResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/summary`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Summary generation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    throw error;
+  }
+}
+
+/**
+ * Compare two texts
+ */
+export async function compareTexts(request: CompareRequest): Promise<CompareResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/compare`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Text comparison failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error comparing texts:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate a study plan
+ */
+export async function generateStudyPlan(request: StudyPlanRequest): Promise<StudyPlanResponse> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/study-plan`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Study plan generation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating study plan:', error);
+    throw error;
+  }
+}
+
+/**
+ * Check AI functions health
+ */
+export async function checkAIHealth(): Promise<{ status: string; providers_available: number }> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/ai/health`);
+    if (!response.ok) {
+      throw new Error(`AI health check failed: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error checking AI health:', error);
     throw error;
   }
 }
