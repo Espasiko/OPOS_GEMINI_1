@@ -7,6 +7,11 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import json
 import logging
+import random
+import tempfile
+import os
+from fastapi.responses import FileResponse
+import genanki
 
 # Import LLM providers
 import sys
@@ -313,6 +318,118 @@ Incluye:
     return {"plan": response_text}
 
 
+@router.post("/mock-exam")
+async def generate_mock_exam(request: MockExamRequest):
+    """Genera un simulacro de examen"""
+    
+    system_prompt = """Eres un experto examinador de oposiciones.
+Crea un simulacro de examen con preguntas tipo test difíciles y realistas.
+
+FORMATO JSON REQUERIDO:
+{
+  "title": "Simulacro de Examen",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Pregunta del examen",
+      "options": [
+        {"id": "a", "text": "Opción A"},
+        {"id": "b", "text": "Opción B"},
+        {"id": "c", "text": "Opción C"},
+        {"id": "d", "text": "Opción D"}
+      ],
+      "correct_option_id": "a",
+      "explanation": "Explicación detallada"
+    }
+  ]
+}"""
+    
+    topics_str = ", ".join(request.topics)
+    user_prompt = f"""Crea un examen de {request.num_questions} preguntas.
+Temas: {topics_str}
+Responde SOLO con el JSON, sin texto adicional."""
+    
+    response_text = await call_llm(request.provider, system_prompt, user_prompt)
+    
+    try:
+        clean_text = response_text.strip()
+        if clean_text.startswith("```json"):
+            clean_text = clean_text[7:]
+        if clean_text.startswith("```"):
+            clean_text = clean_text[3:]
+        if clean_text.endswith("```"):
+            clean_text = clean_text[:-3]
+        clean_text = clean_text.strip()
+        
+        exam_data = json.loads(clean_text)
+        return exam_data
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON parse error: {e}")
+        raise HTTPException(status_code=500, detail="Error parsing LLM response")
+
+
+@router.post("/flashcards/export")
+async def export_anki(request: FlashcardsRequest):
+    """Genera y descarga un mazo de Anki (.apkg)"""
+    
+    # 1. Generar flashcards si no se pasan (reutilizamos lógica existente)
+    # En un caso real, el frontend enviaría las cards ya generadas.
+    # Aquí asumimos que el usuario quiere generar Y exportar.
+    
+    flashcards_data = await generate_flashcards(request)
+    cards = flashcards_data.get("cards", [])
+    
+    if not cards:
+        raise HTTPException(status_code=400, detail="No flashcards generated")
+
+    # 2. Crear Mazo Anki
+    # ID aleatorio para el mazo
+    deck_id = random.randrange(1 << 30, 1 << 31)
+    deck = genanki.Deck(deck_id, f"OpositaIA: {request.topic}")
+
+    # Modelo básico
+    model = genanki.Model(
+        1607392319,
+        'OpositaIA Flashcard',
+        fields=[
+            {'name': 'Question'},
+            {'name': 'Answer'},
+        ],
+        templates=[
+            {
+                'name': 'Card 1',
+                'qfmt': '{{Question}}',
+                'afmt': '{{FrontSide}}<hr id="answer">{{Answer}}',
+            },
+        ])
+
+    # 3. Añadir notas
+    for card in cards:
+        note = genanki.Note(
+            model=model,
+            fields=[card.get("front", ""), card.get("back", "")]
+        )
+        deck.add_note(note)
+
+    # 4. Generar archivo temporal
+    try:
+        # Usar directorio temporal del sistema
+        temp_dir = tempfile.gettempdir()
+        output_file = os.path.join(temp_dir, f"opositaia_deck_{deck_id}.apkg")
+        
+        package = genanki.Package(deck)
+        package.write_to_file(output_file)
+        
+        return FileResponse(
+            path=output_file,
+            filename=f"opositaia_{request.topic.replace(' ', '_')}.apkg",
+            media_type='application/octet-stream'
+        )
+    except Exception as e:
+        logger.error(f"Error generating Anki package: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating Anki package: {str(e)}")
+
+
 @router.get("/health")
 async def health_check():
     """Health check del servicio de funciones IA"""
@@ -325,6 +442,8 @@ async def health_check():
             "schema",
             "summary",
             "compare",
-            "study-plan"
+            "study-plan",
+            "mock-exam",
+            "flashcards/export"
         ]
     }

@@ -29,7 +29,8 @@ except Exception as e:
     logger.error(f"❌ Error loading .env.backend: {e}")
 
 # Import routers
-from routers import rag, rag_v2, chat, upload, ai_functions
+from routers import rag, rag_v2, chat, upload, ai_functions, user
+from database.db import db
 
 
 # Lifespan context manager
@@ -44,10 +45,18 @@ async def lifespan(app: FastAPI):
     logger.info(f"Qdrant URL: {os.getenv('QDRANT_URL', 'http://localhost:6333')}")
     logger.info(f"Ollama URL: {os.getenv('OLLAMA_URL', 'http://localhost:11434')}")
     
+    # Initialize DB
+    try:
+        db.initialize()
+        logger.info("✅ Database connection initialized")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize database: {e}")
+
     yield
     
     # Shutdown
     logger.info("👋 OpositAIA Backend shutting down...")
+    db.close()
 
 
 # Create FastAPI app
@@ -73,6 +82,7 @@ app.include_router(rag_v2.router)  # V2 (RoBERTalex + 2 capas)
 app.include_router(chat.router)  # Sprint 7: Chat with Mistral + RAG
 app.include_router(upload.router)  # Sprint 7: File/URL upload
 app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
+app.include_router(user.router)  # Sprint 11: User management
 
 # Root endpoint
 @app.get("/")
