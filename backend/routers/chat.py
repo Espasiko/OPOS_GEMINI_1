@@ -1,6 +1,7 @@
 """
 Chat Router - Streaming chat with Mistral + RAG
 Sprint 7 - Fase 1
+Sprint 11 - Tracking PostgreSQL
 """
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -10,6 +11,7 @@ import httpx
 import json
 import logging
 import os
+import time
 
 # Import RAG Agent V2 and LLM Providers
 import sys
@@ -17,6 +19,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from agents.rag_agent_v2 import RAGAgentV2
 from agents.llm_providers import get_provider, list_providers
+from database.db import db
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +49,7 @@ class ChatRequest(BaseModel):
     provider: str = 'groq-8b'  # ID del proveedor
     top_k: int = 3
     min_score: float = 0.5
+    user_id: Optional[str] = None  # Sprint 11: Para tracking
 
 
 class ChatResponse(BaseModel):

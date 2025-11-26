@@ -23,14 +23,18 @@ class RAGAgentV2:
         self,
         qdrant_url: str = "http://localhost:6333",
         collection_name: str = "opositaia_leyes_seguridad_social",
-        embedding_model: str = "PlanTL-GOB-ES/RoBERTalex"
+        embedding_model: str = "PlanTL-GOB-ES/RoBERTalex",
+        api_key: Optional[str] = None
     ):
         self.qdrant_url = qdrant_url
         self.collection_name = collection_name
         self.embedding_model = embedding_model
         
         # Initialize Qdrant client
-        self.qdrant_client = QdrantClient(url=qdrant_url)
+        if api_key:
+            self.qdrant_client = QdrantClient(url=qdrant_url, api_key=api_key)
+        else:
+            self.qdrant_client = QdrantClient(url=qdrant_url)
         
         # Initialize RoBERTalex
         logger.info(f"Loading embedding model: {embedding_model}")
@@ -255,6 +259,7 @@ def get_rag_agent_v2() -> RAGAgentV2:
         _rag_agent_v2_instance = RAGAgentV2(
             qdrant_url=os.getenv("QDRANT_URL", "http://localhost:6333"),
             collection_name=os.getenv("QDRANT_COLLECTION", "opositaia_leyes_seguridad_social"),
-            embedding_model=os.getenv("EMBEDDING_MODEL", "PlanTL-GOB-ES/RoBERTalex")
+            embedding_model=os.getenv("EMBEDDING_MODEL", "PlanTL-GOB-ES/RoBERTalex"),
+            api_key=os.getenv("QDRANT_API_KEY")
         )
     return _rag_agent_v2_instance

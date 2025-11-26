@@ -10,17 +10,33 @@ import requests
 import json
 from typing import List, Dict
 import time
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde el archivo correcto
+env_path = Path(__file__).parent / '.env.backend'
+load_dotenv(env_path)
 
 # Configuración
 QDRANT_LOCAL_URL = "http://localhost:6333"
-QDRANT_CLOUD_URL = "https://your-cluster.qdrant.io"  # Cambiar por tu URL
-QDRANT_CLOUD_API_KEY = "your-api-key-here"  # Cambiar por tu API key
+QDRANT_CLOUD_URL_RAW = os.getenv('QDRANT_URL', 'https://b554ceb5-2169-4064-9ce7-83c8cd44cf84.europe-west3.gcp.cloud.qdrant.io')
+# Asegurar que tiene el puerto 6333
+if ':6333' not in QDRANT_CLOUD_URL_RAW:
+    QDRANT_CLOUD_URL = f"{QDRANT_CLOUD_URL_RAW}:6333"
+else:
+    QDRANT_CLOUD_URL = QDRANT_CLOUD_URL_RAW
 
-COLLECTION_NAME = "opositaia_documents"
+QDRANT_CLOUD_API_KEY = os.getenv('QDRANT_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.8bgnDB3v7ze2ST9THOHf7IdWziXM5cmA_PQpzHZUGGU')
+
+COLLECTION_NAME = "opositaia_leyes_seguridad_social"
+
+print(f"🔧 Debug: URL: {QDRANT_CLOUD_URL}")
+print(f"🔧 Debug: API Key cargada: {QDRANT_CLOUD_API_KEY[:20]}..." if QDRANT_CLOUD_API_KEY else "❌ No API Key")
 
 def get_collection_info(base_url: str, api_key: str = None) -> Dict:
     """Obtiene información de la colección"""
-    headers = {}
+    headers = {"Content-Type": "application/json"}
     if api_key:
         headers["api-key"] = api_key
     
@@ -36,7 +52,10 @@ def get_collection_info(base_url: str, api_key: str = None) -> Dict:
 
 def create_collection_in_cloud(config: Dict):
     """Crea la colección en Qdrant Cloud con la misma configuración"""
-    headers = {"api-key": QDRANT_CLOUD_API_KEY}
+    headers = {
+        "api-key": QDRANT_CLOUD_API_KEY,
+        "Content-Type": "application/json"
+    }
     
     payload = {
         "vectors": config["config"]["params"]["vectors"],
@@ -52,8 +71,10 @@ def create_collection_in_cloud(config: Dict):
     
     if response.status_code in [200, 201]:
         print(f"✅ Colección creada en cloud")
+    elif response.status_code == 409:
+        print(f"⚠️  Colección ya existe en cloud (esto es OK)")
     else:
-        print(f"⚠️  Colección ya existe o error: {response.text}")
+        print(f"⚠️  Error: {response.text}")
 
 def get_all_points_local() -> List[Dict]:
     """Obtiene todos los puntos de Qdrant local"""
@@ -111,7 +132,10 @@ def upload_points_to_cloud(points: List[Dict]):
     """Sube puntos a Qdrant Cloud"""
     print(f"\n📤 Subiendo {len(points)} puntos a Qdrant Cloud...")
     
-    headers = {"api-key": QDRANT_CLOUD_API_KEY}
+    headers = {
+        "api-key": QDRANT_CLOUD_API_KEY,
+        "Content-Type": "application/json"
+    }
     
     # Subir en batches de 100
     batch_size = 100
@@ -200,10 +224,11 @@ def migrate():
     
     # Paso 4: Crear colección en cloud
     print("\n📍 Paso 4: Crear colección en Qdrant Cloud")
-    print(f"⚠️  IMPORTANTE: Actualiza QDRANT_CLOUD_URL y QDRANT_CLOUD_API_KEY en el script")
+    print(f"   URL: {QDRANT_CLOUD_URL}")
+    print(f"   Colección: {COLLECTION_NAME}")
     
-    if QDRANT_CLOUD_URL == "https://your-cluster.qdrant.io":
-        print("❌ Debes configurar QDRANT_CLOUD_URL primero")
+    if not QDRANT_CLOUD_API_KEY:
+        print("❌ No se encontró QDRANT_API_KEY en .env.backend")
         print("\n📊 RESUMEN:")
         print(f"   - Puntos a migrar: {size_info['num_points']}")
         print(f"   - Tamaño total: {size_info['total_mb']:.2f} MB")
