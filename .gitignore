@@ -56,11 +56,16 @@ build/
 # Examples and materials (NEVER COMMIT)
 elemplos_leyes_info/
 
+# Basura folder (temporary/trash files)
+basura/
+
 # Qdrant storage (local database)
 qdrant_storage/
+backend/qdrant_export.json
 
 # Backend data (PDFs are too large)
 backend/data/
+backend/backend/
 
 # Keep AI Specs
 !ai-specs/
