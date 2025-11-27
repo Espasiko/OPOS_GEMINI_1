@@ -1,5 +1,11 @@
 # OpositaIA: Asistente de Examen para la Seguridad Social
 
+[![Installation Guide](https://img.shields.io/badge/📦-Installation_Guide-blue)](./INSTALLATION.md)
+[![Setup Guide](https://img.shields.io/badge/⚙️-Setup_Guide-green)](./SETUP.md)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
+> 🚀 **¿Primera vez aquí?** Lee la [Guía de Instalación Completa](./INSTALLATION.md) para configurar el proyecto desde cero.
+
 ## 1. Descripción General
 
 OpositaIA es una aplicación web de página única (SPA) construida con React y TypeScript, diseñada como un asistente de estudio integral para opositores al Cuerpo Administrativo de la Administración de la Seguridad Social en España. La aplicación utiliza la API de Google Gemini para ofrecer un conjunto de herramientas inteligentes que ayudan a los usuarios a comprender la legislación, practicar con casos realistas y organizar su estudio de manera eficiente.
