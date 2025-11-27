@@ -17,6 +17,8 @@ out/
 .DS_Store
 *.pem
 .env*.local
+.env.backend
+.credentials.local
 .vscode/
 .idea/
 
