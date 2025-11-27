@@ -1,603 +1,219 @@
-import { GoogleGenAI, Chat, Type } from "@google/genai";
-import { PracticalCase, GroundingSource, MindMapNode, StudyPlanInput, MockExam, Flashcard, PracticalCaseQuestion } from '../types';
+import {
+  PracticalCase,
+  GroundingSource,
+  MindMapNode,
+  StudyPlanInput,
+  MockExam,
+  Flashcard,
+} from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+// Configuration
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+/**
+ * Helper function to make API calls to the backend
+ */
+async function apiCall<T>(endpoint: string, body: any): Promise<T> {
+  try {
+    const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `API Error: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error calling ${endpoint}:`, error);
+    throw error;
+  }
 }
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-const caseGeneratorModel = 'gemini-2.5-pro';
-const chatModel = 'gemini-2.5-flash';
-const searchModel = 'gemini-2.5-flash';
-const creativeModel = 'gemini-2.5-pro';
-const imageModel = 'imagen-4.0-generate-001';
 
 /**
  * Intenta obtener el contenido de texto de una URL utilizando una estrategia de múltiples proxies CORS.
- * Prueba cada proxy en secuencia y devuelve el contenido del primero que tenga éxito.
- * Implementa un timeout para evitar esperas prolongadas.
- * @param {string} url La URL de la que se extraerá el texto.
- * @returns {Promise<string>} Una promesa que se resuelve con el contenido de texto de la URL.
- * @throws {Error} Si todos los proxies fallan o si ocurre un error de red.
  */
 export async function getTextFromUrl(url: string): Promise<string> {
-    const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-    ];
+  // TODO: Implementar endpoint en backend para esto para evitar proxies públicos
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
 
-    for (const proxyUrl of proxies) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
+  for (const proxyUrl of proxies) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        try {
-            const proxyName = new URL(proxyUrl).hostname;
-            console.log(`Attempting to fetch via proxy: ${proxyName}`);
-            
-            const response = await fetch(proxyUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
+    try {
+      const response = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
 
-            if (response.ok) {
-                const textContent = await response.text();
-                // Some proxies return empty content on soft failure, so we check for that.
-                if (textContent && textContent.trim().length > 0) {
-                     return textContent;
-                }
-                console.warn(`Proxy ${proxyName} returned empty or invalid content.`);
-            } else {
-                console.warn(`Proxy ${proxyName} failed with status: ${response.status}`);
-            }
-        } catch (error: any) {
-            clearTimeout(timeoutId);
-            const proxyName = new URL(proxyUrl).hostname;
-            if (error.name === 'AbortError') {
-                console.warn(`Proxy ${proxyName} timed out.`);
-            } else {
-                console.error(`Error with proxy ${proxyName}:`, error);
-            }
+      if (response.ok) {
+        const textContent = await response.text();
+        if (textContent && textContent.trim().length > 0) {
+          return textContent;
         }
+      }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      console.warn(`Proxy failed: ${proxyUrl}`);
     }
+  }
 
-    // If all proxies fail
-    console.error("All CORS proxies failed to fetch the URL:", url);
-    throw new Error("No se pudo obtener el contenido de la URL. Todos los servicios intermediarios fallaron. Esto puede deberse a que el sitio web de destino está bloqueando el acceso o a un problema de red. Por favor, intenta pegar el texto manualmente.");
+  throw new Error('No se pudo obtener el contenido de la URL.');
 }
 
-
-const practicalCaseQuestionSchema = {
-    type: Type.OBJECT,
-    properties: {
-        id: { type: Type.STRING, description: "A unique identifier for the question, e.g., 'q1', 'q2'."},
-        question: { type: Type.STRING, description: "The specific question the user must answer based on the scenario." },
-        options: {
-            type: Type.ARRAY,
-            description: "An array of 4 multiple choice options.",
-            items: {
-                type: Type.OBJECT,
-                properties: {
-                    id: { type: Type.STRING, description: "A unique identifier for the option, e.g., 'A', 'B', 'C', 'D'." },
-                    text: { type: Type.STRING, description: "The text of the option." }
-                },
-                required: ["id", "text"],
-            }
-        },
-        correct_option_id: { type: Type.STRING, description: "The ID of the correct option." },
-        explanation: { type: Type.STRING, description: "A detailed explanation of why the correct option is right and the others are wrong, citing relevant articles if possible." }
-    },
-    required: ["id", "question", "options", "correct_option_id", "explanation"]
-};
-
-const practicalCaseSchema = {
-    type: Type.OBJECT,
-    properties: {
-        topic: { type: Type.STRING, description: "The legal topic of the case, e.g., 'Incapacidad Temporal'." },
-        scenario: { type: Type.STRING, description: "A detailed and complex scenario describing the practical case." },
-        questions: {
-            type: Type.ARRAY,
-            description: "An array of 5 challenging multiple-choice questions related to the scenario.",
-            items: practicalCaseQuestionSchema,
-        }
-    },
-    required: ["topic", "scenario", "questions"],
-};
-
 /**
- * Genera un caso práctico completo sobre un tema de la legislación de la Seguridad Social.
- * Utiliza el modelo gemini-2.5-pro con un presupuesto de pensamiento elevado para garantizar
- * un escenario complejo y preguntas de alta calidad, devolviendo un JSON estructurado.
- * @returns {Promise<PracticalCase>} Una promesa que se resuelve con el objeto del caso práctico.
- * @throws {Error} Si la API falla o devuelve un formato JSON inválido.
+ * Genera un caso práctico completo.
  */
 export async function generatePracticalCase(): Promise<PracticalCase> {
-    const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Your task is to create a high-quality 'supuesto práctico'.
-Follow these instructions precisely:
-1.  **Choose a Topic**: Select a relevant, specific topic from Spanish Social Security law (e.g., Jubilación parcial, Cotización en pluriempleo, Prestación por riesgo durante el embarazo).
-2.  **Create a Scenario**: Write a detailed, realistic, and complex scenario based on the chosen topic. Include specific dates, names, figures, and circumstances that are crucial for answering the questions. The scenario must be based on current Spanish legislation.
-3.  **Generate 5 Questions**: Based ONLY on the scenario provided, create exactly 5 distinct multiple-choice questions. Each question must be challenging and require careful analysis of the scenario.
-4.  **Provide 4 Options per Question**: For each question, create four plausible options (A, B, C, D). Only one option can be correct.
-5.  **Identify Correct Answer and Explain**: For each question, clearly identify the correct option ID and provide a thorough legal explanation, citing the specific articles of the relevant laws (e.g., Real Decreto Legislativo 8/2015) that justify the answer.
-
-You MUST return the output in a clean, valid JSON format that adheres to the provided schema. The entire response must be in Spanish.`;
-    
-    try {
-        const response = await ai.models.generateContent({
-            model: caseGeneratorModel,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: practicalCaseSchema,
-                thinkingConfig: { thinkingBudget: 32768 },
-                temperature: 0.4,
-            },
-        });
-        
-        const jsonText = response.text.trim();
-        const parsedJson = JSON.parse(jsonText);
-        
-        if (!parsedJson.topic || !parsedJson.scenario || !Array.isArray(parsedJson.questions) || parsedJson.questions.length === 0) {
-            console.error("API returned invalid format for practical case:", parsedJson);
-            throw new Error("Invalid format for practical case received from API.");
-        }
-
-        // Ensure questions array is correctly typed
-        return {
-            ...parsedJson,
-            questions: parsedJson.questions as PracticalCaseQuestion[]
-        } as PracticalCase;
-
-    } catch (error) {
-        console.error("Error generating practical case:", error);
-        throw new Error("Failed to generate a new practical case. The model may be experiencing high load. Please try again in a moment.");
-    }
+  return apiCall<PracticalCase>('/ai/practical-case', {
+    topic: 'Seguridad Social', // Se podría hacer dinámico
+    difficulty: 'hard',
+    provider: 'groq-70b' // Usar modelo potente
+  });
 }
 
-let chatInstances: { [key: string]: Chat } = {};
-
 /**
- * Obtiene o crea una instancia de chat singleton para un ID de conversación específico.
- * Esto mantiene el historial de la conversación en el backend de la API.
- * @param {string} conversationId El ID único de la conversación.
- * @returns {Chat} La instancia del chat para esa conversación.
+ * Obtiene o crea una instancia de chat.
+ * En la nueva arquitectura, el estado del chat se gestiona en el backend o via API stateless.
+ * Por compatibilidad, mantenemos la firma pero ahora usaremos el endpoint de chat.
  */
-export function getChatInstance(conversationId: string): Chat {
-    if (!chatInstances[conversationId]) {
-        chatInstances[conversationId] = ai.chats.create({
-            model: chatModel,
-            config: {
-                systemInstruction: `You are a world-class expert tutor specializing in Spanish Social Security legislation for civil service exam candidates ('opositores'). Your tone is encouraging, precise, and clear. When a user asks a question, provide a direct and accurate answer. If they present a problem or a practical case, break down the explanation step-by-step, citing relevant legal articles (e.g., from the 'Real Decreto Legislativo 8/2015') whenever possible. Your goal is to help the user understand complex legal concepts, not just give them the answer. All your responses must be in Spanish.`
-            }
-        });
-    }
-    return chatInstances[conversationId];
-}
-
-/**
- * Realiza una búsqueda utilizando Google Search grounding para obtener respuestas actualizadas.
- * Opcionalmente, puede limitar la información a una fecha específica.
- * @param {string} query La pregunta del usuario.
- * @param {string} [untilDate] Una fecha opcional en formato YYYY-MM-DD para limitar la vigencia de la información.
- * @returns {Promise<{ text: string, sources: GroundingSource[] }>} Un objeto con el texto de la respuesta y las fuentes web utilizadas.
- * @throws {Error} Si la búsqueda falla.
- */
-export async function searchWithGrounding(query: string, untilDate?: string): Promise<{ text: string, sources: GroundingSource[] }> {
-    try {
-        let finalQuery = query;
-        if (untilDate) {
-            try {
-                const formattedDate = new Date(untilDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-                finalQuery += ` (Important: all information and legislation cited must be effective on or before ${formattedDate})`;
-            } catch (dateError) {
-                console.error("Invalid date provided:", untilDate);
-            }
+export const getChatInstance = (conversationId: string) => {
+  return {
+    sendMessage: async (message: string) => {
+      const response = await apiCall<any>('/chat/message', {
+        message,
+        conversation_id: conversationId,
+        use_rag: true,
+        provider: 'mistral-vps' // O el que se prefiera
+      });
+      return {
+        response: {
+          text: () => response.response
         }
-
-        const response = await ai.models.generateContent({
-            model: searchModel,
-            contents: finalQuery,
-            config: {
-                tools: [{ googleSearch: {} }],
-            },
-        });
-
-        const text = response.text;
-        const rawChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-        
-        const sources: GroundingSource[] = rawChunks
-            .map(chunk => chunk.web)
-            .filter(web => web && web.uri && web.title)
-            .map(web => ({ uri: web.uri!, title: web.title! }));
-
-        return { text, sources };
-    } catch (error) {
-        console.error("Error with grounded search:", error);
-        throw new Error("Failed to perform the search. Please check your query and try again.");
+      };
     }
+  };
+};
+
+/**
+ * Realiza una búsqueda utilizando RAG (anteriormente Grounding).
+ */
+export async function searchWithGrounding(
+  query: string,
+  untilDate?: string
+): Promise<{ text: string; sources: GroundingSource[] }> {
+  // Usamos el endpoint de chat que ya devuelve fuentes
+  const response = await apiCall<any>('/chat/message', {
+    message: query + (untilDate ? ` (Información válida hasta ${untilDate})` : ''),
+    conversation_id: 'search-' + Date.now(),
+    use_rag: true,
+    provider: 'mistral-vps'
+  });
+
+  return {
+    text: response.response,
+    sources: response.sources.map((s: any) => ({
+      uri: s.norma, // Ajustar mapeo según respuesta del backend
+      title: `${s.norma} ${s.articulo ? '- Art. ' + s.articulo : ''}`
+    }))
+  };
 }
 
 /**
- * Genera un mapa mental jerárquico en formato JSON sobre un tema legal específico.
- * @param {string} topic El tema sobre el cual generar el mapa mental.
- * @returns {Promise<MindMapNode>} Una promesa que se resuelve con el nodo raíz del mapa mental.
- * @throws {Error} Si la generación falla o el formato JSON es inválido.
+ * Genera un mapa mental jerárquico.
  */
 export async function generateMindMap(topic: string): Promise<MindMapNode> {
-    const prompt = `Generate a hierarchical mind map about the following Spanish legislation topic: "${topic}".
-The structure must be logical for studying. Create a single root node and at least two levels of nested child nodes.
-You MUST provide the output in a clean, valid JSON format.
-The JSON must represent the node tree. Each node must be an object with three properties:
-1. "id": a unique string identifier (e.g., "root", "1.1", "1.1.2").
-2. "text": a string containing the concept or idea.
-3. "children": an array of node objects.
-
-Example of expected JSON structure:
-{
-  "id": "root",
-  "text": "Main Topic",
-  "children": [
-    {
-      "id": "1",
-      "text": "Sub-Topic 1",
-      "children": [
-        { "id": "1.1", "text": "Detail A", "children": [] }
-      ]
-    }
-  ]
-}
-
-Do not include any text or markdown formatting outside of the main JSON object. The entire response must be in Spanish.`;
-
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-            }
-        });
-        
-        let jsonText = response.text.trim();
-        const parsed = JSON.parse(jsonText);
-        return parsed as MindMapNode;
-    } catch (error) {
-        console.error("Error generating mind map:", error);
-        throw new Error("Failed to generate mind map. The model might have returned an invalid format. Please try again.");
-    }
+  return apiCall<MindMapNode>('/ai/mind-map', {
+    topic,
+    provider: 'groq-70b'
+  });
 }
 
 /**
- * Genera un plan de estudios personalizado en formato Markdown.
- * @param {StudyPlanInput} input Un objeto con la disponibilidad del usuario y otras preferencias.
- * @returns {Promise<string>} Una promesa que se resuelve con el plan de estudios en formato Markdown.
- * @throws {Error} Si la generación falla.
+ * Genera un plan de estudios personalizado.
  */
 export async function generateStudyPlan(input: StudyPlanInput): Promise<string> {
-    const { availability, duration, includeTracking, includeSuggestions } = input;
-
-    let prompt = `Create a ${duration} study plan for a Spanish Social Security civil service exam candidate.
-    Availability: ${availability}.
-    The plan should be structured, realistic, and cover key areas of the syllabus. 
-    Format the output as Markdown. Use headings for days or weeks, and bullet points for tasks.
-    Include a balance of theory study, practical cases, and review sessions.
-    IMPORTANTE: The entire response must be in Spanish.`;
-
-    if (includeTracking) {
-        prompt += "\nInclude a checkbox column `[ ]` for each task so the user can track their progress."
-    }
-    if (includeSuggestions) {
-        prompt += "\nAt the end of each week/major section, add a 'Sugerencia IA' block with a proactive tip, like suggesting a specific law to review or a complex topic to focus on."
-    }
-
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error generating study plan:", error);
-        throw new Error("Failed to generate study plan.");
-    }
+  const response = await apiCall<{ plan: string }>('/ai/study-plan', {
+    exam_date: '2025-06-01', // Placeholder o input
+    topics: ['Seguridad Social'],
+    hours_per_day: 4,
+    provider: 'groq-70b'
+  });
+  return response.plan;
 }
 
 /**
- * Genera un esquema o resumen estructurado en formato Markdown sobre un tema.
- * @param {string} topic El tema para el esquema.
- * @returns {Promise<string>} Una promesa que se resuelve con el esquema en formato Markdown.
- * @throws {Error} Si la generación falla.
+ * Genera un esquema estructurado.
  */
 export async function generateSchema(topic: string): Promise<string> {
-    const prompt = `Act as an expert legal tutor. Create a clear, hierarchical, and well-structured outline (esquema) on the following topic from Spanish law: "${topic}".
-    Use Markdown formatting with nested bullet points to represent the hierarchy.
-    The outline must be detailed enough to be a useful study guide, covering key definitions, requirements, procedures, and relevant concepts.
-    The entire response must be in Spanish.`;
-
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error generating schema:", error);
-        throw new Error("Failed to generate schema.");
-    }
+  const response = await apiCall<{ schema: string }>('/ai/schema', {
+    topic,
+    provider: 'groq-70b'
+  });
+  return response.schema;
 }
 
-const MAX_SUMMARY_CHUNK_SIZE = 400000; // Reduced size for safety margin with tokenization.
-
 /**
- * Genera un resumen de un texto. Si el texto es muy largo, lo divide en fragmentos,
- * resume cada fragmento y luego combina los resúmenes.
- * @param {string} text El texto a resumir.
- * @returns {Promise<string>} Una promesa que se resuelve con el resumen del texto.
- * @throws {Error} Si la generación falla o si el texto es demasiado largo para ser procesado.
+ * Genera un resumen de un texto.
  */
 export async function generateSummary(text: string): Promise<string> {
-    const originalPrompt = (textChunk: string) => `Act as an expert legal analyst. Read the following legal text and provide a concise summary.
-The summary should capture the main points, key articles, and essential conclusions of the text.
-Format the output in clear, easy-to-read paragraphs using Markdown.
-IMPORTANT: The entire response MUST be in Spanish from Spain. Do not use any English.
-
-Text to summarize:
----
-${textChunk}
----`;
-    
-    try {
-        // For reasonably sized texts, perform a single API call.
-        if (text.length <= MAX_SUMMARY_CHUNK_SIZE) {
-            const response = await ai.models.generateContent({
-                model: creativeModel,
-                contents: originalPrompt(text),
-            });
-            return response.text;
-        }
-
-        // --- Robust Chunking Strategy for very large texts ---
-        console.log(`Text is large (${text.length} chars), applying robust chunking strategy.`);
-        const chunks: string[] = [];
-        // Split by sentences to respect logical boundaries better than paragraphs.
-        const sentences = text.split(/(?<=[.?!])\s+/);
-        let currentChunk = "";
-
-        for (const sentence of sentences) {
-            const trimmedSentence = sentence.trim();
-            if (!trimmedSentence) continue;
-
-            if (currentChunk.length + trimmedSentence.length + 1 > MAX_SUMMARY_CHUNK_SIZE) {
-                // Current chunk is full, push it.
-                if (currentChunk) {
-                    chunks.push(currentChunk);
-                }
-                // Now, deal with the new sentence.
-                if (trimmedSentence.length > MAX_SUMMARY_CHUNK_SIZE) {
-                    // The sentence itself is too long, so we must split it by force.
-                    console.warn(`A single sentence is larger than the chunk size. Force-splitting.`);
-                    for (let i = 0; i < trimmedSentence.length; i += MAX_SUMMARY_CHUNK_SIZE) {
-                        chunks.push(trimmedSentence.substring(i, i + MAX_SUMMARY_CHUNK_SIZE));
-                    }
-                    currentChunk = ""; // The long sentence has been chunked and pushed.
-                } else {
-                    // The sentence is not too long; it will be the start of the next chunk.
-                    currentChunk = trimmedSentence;
-                }
-            } else {
-                // Add sentence to the current chunk.
-                currentChunk += (currentChunk ? " " : "") + trimmedSentence;
-            }
-        }
-        // Push the last remaining chunk.
-        if (currentChunk) {
-            chunks.push(currentChunk);
-        }
-        
-        console.log(`Split text into ${chunks.length} chunks.`);
-
-        if (chunks.length === 0) {
-            return "El texto proporcionado no contiene contenido analizable.";
-        }
-
-        // Map step: Summarize each chunk in parallel.
-        const chunkSummariesPromises = chunks.map((chunk, index) => {
-            const chunkPrompt = `You are part of a text summarization pipeline. Summarize the following text chunk from a larger legal document. Focus on the main legal points, articles, and conclusions. Do not add any introductory or concluding phrases. This is chunk ${index + 1} of ${chunks.length}. IMPORTANT: The entire response MUST be in Spanish from Spain. TEXT CHUNK: --- ${chunk} ---`;
-            return ai.models.generateContent({ model: creativeModel, contents: chunkPrompt })
-                .then(response => response.text)
-                .catch(err => {
-                    console.error(`Error summarizing chunk ${index + 1}:`, err);
-                    return `[Error al procesar la sección ${index + 1}]`;
-                });
-        });
-        
-        const chunkSummaries = await Promise.all(chunkSummariesPromises);
-        console.log("Finished summarizing all chunks.");
-
-        const finalSummary = chunkSummaries.map((summary, index) => {
-            return `### Resumen de la Sección ${index + 1} de ${chunks.length}\n\n${summary}`;
-        }).join('\n\n---\n');
-        
-        return `## Resumen Completo del Documento\n\n*Nota: El texto original era muy extenso y se ha dividido en ${chunks.length} secciones para su análisis.*\n\n${finalSummary}`;
-
-    } catch (error) {
-        console.error("Error generating summary:", error);
-        if (error instanceof Error && (error.message.includes('token') || (error as any).status === 'INVALID_ARGUMENT')) {
-             throw new Error("El texto proporcionado es demasiado largo, incluso después de intentar dividirlo. Por favor, prueba con un texto más corto.");
-        }
-        throw new Error("Failed to generate summary.");
-    }
+  const response = await apiCall<{ summary: string }>('/ai/summary', {
+    text,
+    provider: 'groq-70b'
+  });
+  return response.summary;
 }
 
-const MAX_COMPARISON_LENGTH = 500000; // Safe total character limit for the comparison prompt
-
 /**
- * Compara dos versiones de un texto legal y genera un informe de las diferencias.
- * @param {string} textA El texto de la versión antigua.
- * @param {string} textB El texto de la versión nueva.
- * @returns {Promise<string>} Un informe en Markdown con las modificaciones, adiciones y eliminaciones.
- * @throws {Error} Si los textos son demasiado largos o la comparación falla.
+ * Compara dos versiones de un texto legal.
  */
 export async function compareLawVersions(textA: string, textB: string): Promise<string> {
-    if (textA.length + textB.length > MAX_COMPARISON_LENGTH) {
-        throw new Error(`Los textos son demasiado largos para ser comparados directamente (total: ${textA.length + textB.length} caracteres). Por favor, utiliza textos más cortos o resúmenes de los mismos.`);
-    }
-
-    const prompt = `Act as an expert legislative analyst. I will provide you with two versions of a legal text, "Text A (Old Version)" and "Text B (New Version)".
-    Your task is to compare them and produce a clear, structured report of the differences.
-    The report should be formatted in Markdown and include:
-    1.  A general summary of the main changes.
-    2.  A section for "Modifications", detailing what has been changed in existing articles.
-    3.  A section for "Additions", listing new articles or significant new clauses.
-    4.  A section for "Deletions", listing parts that were in Text A but not in Text B.
-
-    Be precise and focus on the substantive changes.
-    IMPORTANT: The entire response MUST be in Spanish from Spain. Do not use any English.
-
-    ---
-    Text A (Old Version):
-    ${textA}
-    ---
-    Text B (New Version):
-    ${textB}
-    ---`;
-
-    try {
-        const response = await ai.models.generateContent({
-            model: creativeModel,
-            contents: prompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error comparing texts:", error);
-        throw new Error("Failed to compare law versions.");
-    }
+  const response = await apiCall<{ comparison: string }>('/ai/compare', {
+    text1: textA,
+    text2: textB,
+    provider: 'groq-70b'
+  });
+  return response.comparison;
 }
 
 /**
- * Genera un simulacro de examen completo basado en una selección de temas y un número de preguntas.
- * @param {string[]} topics Un array con los temas a incluir en el examen.
- * @param {number} questionCount El número de preguntas a generar.
- * @returns {Promise<MockExam>} Una promesa que se resuelve con el objeto del examen.
- * @throws {Error} Si la generación falla o el formato JSON es inválido.
+ * Genera un simulacro de examen.
  */
 export async function generateMockExam(topics: string[], questionCount: number): Promise<MockExam> {
-     const prompt = `Act as an expert examiner for the Spanish Social Security civil service exam. Create a complete mock exam ('simulacro').
-Instructions:
-1.  **Title**: The exam title should be "Simulacro de Examen - Seguridad Social".
-2.  **Topics**: The exam must exclusively cover the following topics: ${topics.join(', ')}.
-3.  **Question Count**: Generate exactly ${questionCount} multiple-choice questions.
-4.  **Structure**: For each question, create a small, realistic scenario OR a direct question about the topics. Then provide 4 plausible options (A, B, C, D) and identify the correct one, along with a detailed legal explanation citing relevant articles.
-5.  **Variety**: Ensure a good mix of questions covering all specified topics.
-
-You MUST return the output in a clean, valid JSON format. The entire response must be in Spanish.`;
-    
-    // Create a dynamic schema for the questions array
-    const examSchema = {
-        type: Type.OBJECT,
-        properties: {
-            title: { type: Type.STRING },
-            questions: {
-                type: Type.ARRAY,
-                description: `An array of exactly ${questionCount} questions.`,
-                items: practicalCaseQuestionSchema,
-            }
-        },
-        required: ["title", "questions"]
-    };
-
-    try {
-        const response = await ai.models.generateContent({
-            model: caseGeneratorModel, // Use the powerful model for this complex task
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: examSchema,
-                thinkingConfig: { thinkingBudget: 32768 }
-            },
-        });
-
-        const jsonText = response.text.trim();
-        const parsedJson = JSON.parse(jsonText);
-
-        if (!parsedJson.title || !Array.isArray(parsedJson.questions)) {
-            throw new Error("Invalid format for mock exam received from API.");
-        }
-        return parsedJson as MockExam;
-
-    } catch (error) {
-        console.error("Error generating mock exam:", error);
-        throw new Error("Failed to generate mock exam. Please try again.");
-    }
+  return apiCall<MockExam>('/ai/mock-exam', {
+    topics,
+    num_questions: questionCount,
+    provider: 'groq-70b'
+  });
 }
 
 /**
- * Genera un conjunto de flashcards y un meme relacionado con un tema.
- * Primero genera el contenido de texto (flashcards y prompt para el meme) con Gemini Pro.
- * Luego, genera la imagen del meme con Imagen.
- * @param {string} topic El tema para las flashcards y el meme.
- * @returns {Promise<{ flashcards: Flashcard[], meme: { imageUrl: string, prompt: string } }>} Un objeto con las flashcards y la URL del meme.
- * @throws {Error} Si alguna de las dos etapas de generación falla.
+ * Genera flashcards y meme.
+ * NOTA: Por ahora solo flashcards, el meme se deja pendiente o se implementará en backend.
  */
-export async function generateFlashcardsAndMeme(topic: string): Promise<{ flashcards: Flashcard[], meme: { imageUrl: string, prompt: string } }> {
-    const flashcardSchema = {
-        type: Type.OBJECT,
-        properties: {
-            flashcards: {
-                type: Type.ARRAY,
-                description: "An array of 5-10 flashcards.",
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        id: { type: Type.STRING },
-                        front: { type: Type.STRING, description: "The front of the card (a question or term)." },
-                        back: { type: Type.STRING, description: "The back of the card (the answer or definition)." }
-                    },
-                    required: ["id", "front", "back"]
-                }
-            },
-            meme_prompt: {
-                type: Type.STRING,
-                description: "A short, witty, and visually descriptive prompt to generate a funny meme related to the topic. For example: 'A photo of a stressed person buried under a mountain of paperwork, with the caption: Trying to calculate the base reguladora'."
-            }
-        },
-        required: ["flashcards", "meme_prompt"]
-    };
+export async function generateFlashcardsAndMeme(
+  topic: string
+): Promise<{ flashcards: Flashcard[]; meme: { imageUrl: string; prompt: string } }> {
+  const response = await apiCall<any>('/ai/flashcards', {
+    topic,
+    num_cards: 10,
+    provider: 'groq-70b'
+  });
 
-    const flashcardPrompt = `Generate a set of study flashcards and a meme idea for the Spanish legal topic: "${topic}".
-1.  **Flashcards**: Create 5 to 10 high-quality flashcards. Each should have a 'front' (a clear question or key term) and a 'back' (a concise and accurate answer or definition).
-2.  **Meme Prompt**: Create a short, funny, and descriptive prompt for an image generation model to create a meme about this topic. It should be relatable to someone studying for the exam.
-
-Return the result as a single, valid JSON object. All text content must be in Spanish.`;
-
-    try {
-        // Step 1: Generate flashcards and meme prompt text
-        const textResponse = await ai.models.generateContent({
-            model: creativeModel,
-            contents: flashcardPrompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: flashcardSchema,
-            }
-        });
-        const parsedText = JSON.parse(textResponse.text.trim());
-        const flashcards: Flashcard[] = parsedText.flashcards;
-        const memePrompt: string = parsedText.meme_prompt;
-
-        // Step 2: Generate the image for the meme
-        const imageResponse = await ai.models.generateImages({
-            model: imageModel,
-            prompt: memePrompt,
-            config: {
-                numberOfImages: 1,
-                outputMimeType: 'image/jpeg',
-                aspectRatio: '1:1',
-            }
-        });
-        const base64ImageBytes: string = imageResponse.generatedImages[0].image.imageBytes;
-        const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
-
-        return { flashcards, meme: { imageUrl, prompt: memePrompt } };
-    } catch (error) {
-        console.error("Error generating flashcards/meme:", error);
-        throw new Error("Failed to generate flashcards and meme.");
+  // Placeholder para meme ya que el backend aún no genera imágenes
+  return {
+    flashcards: response.cards,
+    meme: {
+      imageUrl: 'https://placehold.co/400x400?text=Meme+Generator+Coming+Soon',
+      prompt: 'Meme generation pending backend implementation'
     }
+  };
 }
+

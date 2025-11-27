@@ -1,0 +1,444 @@
+---
+description: Spec para probar la integración Frontend-Backend del Sprint 7
+status: testing
+priority: high
+sprint: 7
+phase: 2
+---
+
+# Test: Backend Integration - Sprint 7 Fase 2
+
+## Objetivo
+
+Verificar que el frontend puede conectarse correctamente con el backend FastAPI y que todos los endpoints funcionan como se espera.
+
+## Pre-requisitos
+
+### Backend
+- [ ] Backend corriendo en `http://localhost:8000`
+- [ ] Qdrant con datos indexados
+- [ ] Mistral VPS accesible (147.93.95.67:8001)
+
+### Frontend
+- [ ] Variable `VITE_BACKEND_URL=http://localhost:8000` en `.env`
+- [ ] Frontend corriendo en `http://localhost:3000`
+- [ ] Dependencias instaladas
+
+## Tests a Ejecutar
+
+### 1. Health Checks ✅
+
+**Test 1.1: Backend Health**
+```
+Endpoint: GET /health
+Expected: 
+{
+  "status": "healthy",
+  "services": {
+    "rag": "up",
+    "mistral": "up" | "down",
+    "upload": "up"
+  }
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200
+- `status` es "healthy" o "degraded"
+- Todos los servicios reportan estado
+
+**Test 1.2: Chat Health**
+```
+Endpoint: GET /chat/health
+Expected:
+{
+  "status": "healthy",
+  "mistral": "up" | "down",
+  "rag": "up",
+  "mistral_url": "http://147.93.95.67:8001",
+  "model": "mistral-8b"
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200
+- RAG debe estar "up"
+- Mistral puede estar "down" (no crítico para test)
+
+**Test 1.3: Upload Health**
+```
+Endpoint: GET /upload/health
+Expected:
+{
+  "status": "healthy",
+  "cached_documents": 0,
+  "supported_types": ["PDF", "TXT", "HTML"]
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200
+- `cached_documents` es un número
+
+---
+
+### 2. Chat Operations ✅
+
+**Test 2.1: Chat Message Sin RAG**
+```
+Request:
+POST /chat/message
+{
+  "message": "¿Qué es la incapacidad temporal?",
+  "conversation_id": "test-001",
+  "use_rag": false
+}
+
+Expected:
+{
+  "response": "...",
+  "sources": [],
+  "conversation_id": "test-001"
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200 o 503 (si Mistral está caído)
+- Si 200: `response` contiene texto
+- Si 200: `sources` es array vacío (no RAG)
+- Si 503: Error claro sobre Mistral
+
+**Test 2.2: Chat Message Con RAG**
+```
+Request:
+POST /chat/message
+{
+  "message": "¿Cuál es la duración máxima de la IT?",
+  "conversation_id": "test-002",
+  "use_rag": true,
+  "top_k": 3,
+  "min_score": 0.5
+}
+
+Expected:
+{
+  "response": "...",
+  "sources": [
+    {
+      "norma": "RD 1430/2009 Incapacidad Temporal",
+      "articulo": "5",
+      "score": 0.87,
+      "content_preview": "..."
+    }
+  ],
+  "conversation_id": "test-002"
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200 o 503
+- Si 200: `response` contiene texto
+- Si 200: `sources` tiene al menos 1 elemento
+- Si 200: Cada source tiene `norma`, `score`, `content_preview`
+- Score debe ser >= 0.5
+
+**Test 2.3: Chat Streaming (Manual)**
+```
+Request:
+POST /chat/stream
+{
+  "message": "Explica la jubilación ordinaria",
+  "conversation_id": "test-003",
+  "use_rag": true
+}
+
+Expected:
+- Stream SSE con chunks de texto
+- Al final: sources en formato JSON
+- Señal [DONE]
+```
+
+**Criterio de éxito:**
+- Status code: 200
+- Recibe chunks progresivamente
+- No se bloquea
+- Termina correctamente
+
+---
+
+### 3. Upload Operations ✅
+
+**Test 3.1: Upload Archivo TXT**
+```
+Request:
+POST /upload/file
+FormData: file = test.txt (contenido: "Texto de prueba IT")
+
+Expected:
+{
+  "document_id": "uuid",
+  "filename": "test.txt",
+  "text_length": 19,
+  "pages": null,
+  "indexed": false,
+  "text_preview": "Texto de prueba IT"
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200
+- `document_id` es un UUID válido
+- `text_length` coincide con el contenido
+- `text_preview` contiene el texto
+
+**Test 3.2: Upload Archivo PDF**
+```
+Request:
+POST /upload/file
+FormData: file = test.pdf
+
+Expected:
+{
+  "document_id": "uuid",
+  "filename": "test.pdf",
+  "text_length": > 0,
+  "pages": > 0,
+  "indexed": false,
+  "text_preview": "..."
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200
+- `pages` es un número > 0
+- `text_preview` contiene texto extraído
+
+**Test 3.3: Upload Archivo No Soportado**
+```
+Request:
+POST /upload/file
+FormData: file = test.jpg
+
+Expected:
+Status: 400
+{
+  "detail": "Unsupported file type: image/jpeg. Allowed: PDF, TXT"
+}
+```
+
+**Criterio de éxito:**
+- Status code: 400
+- Error message claro
+
+**Test 3.4: Upload URL**
+```
+Request:
+POST /upload/url
+{
+  "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2009-15442"
+}
+
+Expected:
+{
+  "document_id": "uuid",
+  "url": "https://...",
+  "text_length": > 0,
+  "indexed": false,
+  "text_preview": "..."
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200 o 503
+- Si 200: `text_length` > 0
+- Si 503: Error claro sobre conexión
+
+**Test 3.5: Get Document**
+```
+Request:
+GET /upload/document/{document_id}
+
+Expected:
+{
+  "document_id": "uuid",
+  "text": "...",
+  "metadata": {
+    "filename": "test.txt",
+    ...
+  }
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200 o 404
+- Si 200: `text` contiene el contenido completo
+- Si 404: Document no existe (esperado si caché limpio)
+
+**Test 3.6: Delete Document**
+```
+Request:
+DELETE /upload/document/{document_id}
+
+Expected:
+{
+  "status": "deleted",
+  "document_id": "uuid"
+}
+```
+
+**Criterio de éxito:**
+- Status code: 200 o 404
+- Si 200: Confirmación de eliminación
+
+---
+
+### 4. Frontend Service Tests ✅
+
+**Test 4.1: backendService.ts compila**
+```bash
+npm run type-check
+```
+
+**Criterio de éxito:**
+- Sin errores de TypeScript
+- Todos los tipos correctos
+
+**Test 4.2: Unit tests pasan**
+```bash
+npm test services/__tests__/backendService.test.ts
+```
+
+**Criterio de éxito:**
+- 8/8 tests pasan
+- Sin errores
+
+**Test 4.3: BackendTestView se renderiza**
+```
+1. Abrir http://localhost:3000
+2. Click en "🧪 Backend Test" en sidebar
+3. Verificar que se muestra la vista
+```
+
+**Criterio de éxito:**
+- Vista se carga sin errores
+- Botones visibles
+- Input de test message funciona
+
+**Test 4.4: Run All Tests desde UI**
+```
+1. En BackendTestView
+2. Click "▶️ Run All Tests"
+3. Esperar resultados
+```
+
+**Criterio de éxito:**
+- Tests se ejecutan secuencialmente
+- Resultados se muestran (✅ o ❌)
+- JSON responses visibles
+- Sin crashes
+
+---
+
+## Escenarios de Error
+
+### Error 1: Backend no está corriendo
+**Síntoma:** Todos los tests fallan con "Failed to fetch"
+**Solución:** 
+```bash
+cd backend
+source ../elemplos_leyes_info/venv/bin/activate
+python -m uvicorn main:app --reload
+```
+
+### Error 2: CORS error
+**Síntoma:** "CORS policy blocked"
+**Solución:** Verificar que backend tiene CORS configurado para `http://localhost:3000`
+
+### Error 3: Mistral VPS caído
+**Síntoma:** Chat tests fallan con 503
+**Solución:** Esperado, no es crítico. RAG debe seguir funcionando.
+
+### Error 4: Qdrant sin datos
+**Síntoma:** Chat con RAG devuelve sources vacío
+**Solución:** Verificar que Qdrant tiene chunks indexados
+
+### Error 5: Variable de entorno incorrecta
+**Síntoma:** Requests van a URL incorrecta
+**Solución:** Verificar `.env` tiene `VITE_BACKEND_URL=http://localhost:8000`
+
+---
+
+## Checklist de Verificación Final
+
+### Backend
+- [ ] Backend responde en `http://localhost:8000`
+- [ ] `/health` devuelve status healthy
+- [ ] `/chat/health` devuelve status
+- [ ] `/upload/health` devuelve status
+- [ ] Logs del backend no muestran errores críticos
+
+### Frontend
+- [ ] Frontend corre sin errores de compilación
+- [ ] BackendTestView se renderiza correctamente
+- [ ] Al menos 5/7 tests pasan (Mistral puede fallar)
+- [ ] Upload de archivo funciona
+- [ ] No hay errores en consola del navegador
+
+### Integración
+- [ ] Chat sin RAG funciona (o falla con error claro)
+- [ ] Chat con RAG devuelve sources
+- [ ] Upload de TXT funciona
+- [ ] Health checks responden correctamente
+
+---
+
+## Criterios de Aceptación
+
+### Mínimos (Must Have)
+- ✅ Backend health check funciona
+- ✅ Chat health check funciona
+- ✅ Upload health check funciona
+- ✅ Upload de archivo TXT funciona
+- ✅ Chat con RAG devuelve sources (si Qdrant tiene datos)
+- ✅ BackendTestView se renderiza y ejecuta tests
+
+### Deseables (Should Have)
+- ✅ Chat sin RAG funciona (depende de Mistral)
+- ✅ Upload de PDF funciona
+- ✅ Upload de URL funciona
+- ✅ Streaming SSE funciona
+
+### Opcionales (Nice to Have)
+- ⏸️ Todos los tests pasan sin errores
+- ⏸️ Mistral VPS responde correctamente
+- ⏸️ Performance < 3s por request
+
+---
+
+## Resultado Esperado
+
+Al completar este spec, deberías tener:
+
+1. **Evidencia visual:** Screenshots de BackendTestView mostrando tests pasando
+2. **Logs:** Output del backend mostrando requests exitosos
+3. **Confirmación:** Al menos 5/7 tests funcionando correctamente
+4. **Documentación:** Cualquier issue encontrado documentado
+
+---
+
+## Próximos Pasos
+
+Si todos los tests pasan:
+- ✅ Marcar Fase 2 como completada
+- ➡️ Continuar con Fase 3: Migrar ChatView
+
+Si hay fallos:
+- 🔧 Debuggear y corregir
+- 📝 Documentar issues
+- 🔄 Re-ejecutar tests
+
+---
+
+**Creado:** 20 Noviembre 2025  
+**Sprint:** 7 - Fase 2  
+**Status:** Ready for Testing

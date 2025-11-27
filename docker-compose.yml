@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: opositaia-qdrant
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC API
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    restart: unless-stopped
+    networks:
+      - opositaia-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Ollama for Local LLM
+  ollama:
+    image: ollama/ollama:latest
+    container_name: opositaia-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - opositaia-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: opositaia-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Qdrant
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_COLLECTION_NAME=opositaia_documents
+      
+      # Ollama
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_EMBEDDING_MODEL=all-minilm
+      - OLLAMA_LLM_MODEL=tinyllama
+      
+      # Gemini (from .env)
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      
+      # BOE API
+      - BOE_BASE_URL=https://www.boe.es
+      
+      # FastAPI
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_RELOAD=true
+      
+      # Vector Settings
+      - VECTOR_DIMENSION=384
+      - CHUNK_SIZE=512
+      - CHUNK_OVERLAP=50
+      - TOP_K_RESULTS=5
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - opositaia-network
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+networks:
+  opositaia-network:
+    driver: bridge
+
+volumes:
+  qdrant_storage:
+    driver: local
+  ollama_data:
+    driver: local

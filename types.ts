@@ -13,6 +13,8 @@ export enum AppView {
   PROGRESS = 'PROGRESS',
   USER_GUIDE = 'USER_GUIDE',
   SETTINGS = 'SETTINGS',
+  VPS_TEST = 'VPS_TEST',
+  BACKEND_TEST = 'BACKEND_TEST',
 }
 
 export interface ChatMessage {
@@ -47,42 +49,42 @@ export interface PracticalCase {
 }
 
 export interface CaseAnswer {
-    [questionId: string]: {
-        selectedOptions: string[];
-        attempts: number;
-        showExplanation: boolean;
-    }
+  [questionId: string]: {
+    selectedOptions: string[];
+    attempts: number;
+    showExplanation: boolean;
+  };
 }
 
 export interface GroundingSource {
-    uri: string;
-    title: string;
+  uri: string;
+  title: string;
 }
 
 // Types for Mind Map
 export interface MindMapNode {
-    id: string;
-    text: string;
-    children: MindMapNode[];
+  id: string;
+  text: string;
+  children: MindMapNode[];
 }
 
 // Types for Study Plan
 export interface StudyPlanInput {
-    availability: string;
-    duration: 'semanal' | 'mensual' | 'trimestral';
-    includeTracking: boolean;
-    includeSuggestions: boolean;
+  availability: string;
+  duration: 'semanal' | 'mensual' | 'trimestral';
+  includeTracking: boolean;
+  includeSuggestions: boolean;
 }
 
 // Types for Mock Exam
 export interface MockExam {
-    title: string;
-    questions: PracticalCaseQuestion[];
+  title: string;
+  questions: PracticalCaseQuestion[];
 }
 
 // Types for Flashcards
 export interface Flashcard {
-    id: string;
-    front: string;
-    back: string;
+  id: string;
+  front: string;
+  back: string;
 }

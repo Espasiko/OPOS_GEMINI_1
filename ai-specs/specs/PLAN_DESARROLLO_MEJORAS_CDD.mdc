@@ -1,0 +1,814 @@
+# 🎯 PLAN DE DESARROLLO: 12 Mejoras OpositaIA
+## Context-Driven Development Approach
+
+**Fecha:** 25 Noviembre 2025  
+**Metodología:** Context-Driven Development  
+**Duración:** 8 semanas (2 meses)  
+**Objetivo:** Implementar 12 mejoras críticas para MVP
+
+---
+
+## 📋 ÍNDICE
+
+1. [Visión y Contexto](#visión-y-contexto)
+2. [Epics y Stories](#epics-y-stories)
+3. [Sprints](#sprints)
+4. [Definition of Done](#definition-of-done)
+5. [Métricas de Éxito](#métricas-de-éxito)
+
+---
+
+## 🎯 VISIÓN Y CONTEXTO
+
+### Problema Actual
+OpositaIA tiene funcionalidad core implementada pero falta:
+- UX mejorada (sidebar, vistas, chat contextual)
+- Personalización (modo progreso adaptativo)
+- Transparencia (tokens, costes)
+- Contexto compartido (RAG en todas las vistas)
+- Seguridad y auditoría
+
+### Objetivo
+Transformar OpositaIA de MVP funcional a producto listo para usuarios reales con:
+- UX profesional y fluida
+- Personalización basada en progreso
+- Transparencia total de costes
+- Seguridad auditada
+- Deploy en producción
+
+### Usuarios Objetivo
+- Opositores de Seguridad Social (España)
+- Edad: 25-45 años
+- Nivel técnico: Medio-bajo
+- Necesidad: Preparación eficiente para oposiciones
+
+---
+
+## 📚 EPICS Y STORIES
+
+### EPIC 1: UX Profesional 🎨
+**Objetivo:** Mejorar experiencia de usuario para retención  
+**Valor:** Alto - Impacto directo en satisfacción  
+**Esfuerzo:** 20 horas
+
+#### Story 1.1: Botón Cerrar Sidebar
+**Como** usuario  
+**Quiero** poder cerrar el sidebar  
+**Para** tener más espacio en pantalla al estudiar
+
+**Contexto:**
+- Usuarios en laptops pequeñas necesitan espacio
+- Sidebar ocupa 20% del ancho en todo momento
+- Competidores tienen esta funcionalidad
+
+**Criterios de Aceptación:**
+- [ ] Botón hamburguesa visible en header
+- [ ] Click cierra/abre sidebar con animación
+- [ ] Estado persiste en localStorage
+- [ ] Responsive: auto-cerrar en móvil
+- [ ] Atajos de teclado: Ctrl+B
+
+**Tareas Técnicas:**
+```typescript
+// App.tsx
+- Añadir estado sidebarOpen
+- Implementar toggle function
+- Persistir en localStorage
+- Añadir animación CSS
+
+// Sidebar.tsx
+- Añadir botón cerrar
+- Clase condicional hidden/visible
+```
+
+**Estimación:** 2 horas  
+**Prioridad:** 🔴 Crítica
+
+---
+
+#### Story 1.2: Vista Caso + Preguntas Simultánea
+**Como** opositor  
+**Quiero** ver el caso y las preguntas al mismo tiempo  
+**Para** no perder contexto mientras respondo
+
+**Contexto:**
+- Usuarios reportan frustración al hacer scroll
+- En exámenes reales tienen caso y preguntas visibles
+- Competencia: Ninguna academia tiene esto bien resuelto
+
+**Criterios de Aceptación:**
+- [ ] Layout 2 columnas: caso (izq) + preguntas (der)
+- [ ] Caso con scroll independiente
+- [ ] Preguntas con scroll independiente
+- [ ] Responsive: tabs en móvil
+- [ ] Botón "Ver caso" siempre visible
+
+**Tareas Técnicas:**
+```typescript
+// CaseGeneratorView.tsx
+- Refactor layout a grid 2 columnas
+- Implementar scroll independiente
+- Añadir tabs para móvil
+- Sticky header con título caso
+```
+
+**Estimación:** 4 horas  
+**Prioridad:** 🔴 Crítica
+
+---
+
+#### Story 1.3: Burbuja Chat Contextual
+**Como** usuario  
+**Quiero** hacer preguntas sobre el caso/test actual  
+**Para** resolver dudas sin perder mi progreso
+
+**Contexto:**
+- Usuarios abandonan casos para buscar en chat
+- Pierden contexto y progreso
+- Necesitan ayuda inmediata sin cambiar de vista
+
+**Criterios de Aceptación:**
+- [ ] Botón flotante en esquina inferior derecha
+- [ ] Click abre chat modal
+- [ ] Contexto automático del caso/test actual
+- [ ] Historial de conversación por caso
+- [ ] Cerrar con Esc o click fuera
+
+**Tareas Técnicas:**
+```typescript
+// components/ContextualChatBubble.tsx (nuevo)
+- Botón flotante con badge
+- Modal chat con contexto
+- Integración con RAG
+- Estado global con Context API
+
+// contexts/ChatContext.tsx (nuevo)
+- Estado conversaciones por vista
+- Función addMessage
+- Función clearContext
+```
+
+**Estimación:** 6 horas  
+**Prioridad:** 🔴 Crítica
+
+---
+
+### EPIC 2: Personalización Inteligente 🧠
+**Objetivo:** Adaptar dificultad según progreso del usuario  
+**Valor:** Alto - Diferenciador clave  
+**Esfuerzo:** 14 horas
+
+#### Story 2.1: Toggle Modo Progreso
+**Como** usuario  
+**Quiero** activar/desactivar el modo adaptativo  
+**Para** elegir entre práctica personalizada o examen estándar
+
+**Contexto:**
+- Usuarios en fase inicial: quieren modo fácil
+- Usuarios avanzados: quieren simulacro real
+- Necesidad de flexibilidad
+
+**Criterios de Aceptación:**
+- [ ] Toggle en SettingsView
+- [ ] Toggle en cada vista de generación
+- [ ] Estado persiste en BD por usuario
+- [ ] Tooltip explicativo
+- [ ] Indicador visual cuando está activo
+
+**Tareas Técnicas:**
+```typescript
+// components/SettingsView.tsx
+- Añadir sección "Personalización"
+- Toggle con label explicativo
+- Guardar en backend
+
+// backend/routers/user.py
+- Endpoint PUT /user/settings
+- Campo adaptive_mode en BD
+```
+
+**Estimación:** 3 horas  
+**Prioridad:** 🟠 Alta
+
+---
+
+#### Story 2.2: Algoritmo Adaptativo
+**Como** sistema  
+**Quiero** ajustar dificultad según historial  
+**Para** optimizar aprendizaje del usuario
+
+**Contexto:**
+- BD ya tiene answer_history y user_progress
+- Necesitamos lógica de decisión
+- Basado en % aciertos últimas 280 respuestas
+
+**Criterios de Aceptación:**
+- [ ] Calcula dificultad basada en historial
+- [ ] Fácil: <60% aciertos
+- [ ] Media: 60-80% aciertos
+- [ ] Difícil: >80% aciertos
+- [ ] Logging de decisiones
+
+**Tareas Técnicas:**
+```python
+# backend/agents/adaptive_difficulty.py (nuevo)
+class AdaptiveDifficulty:
+    def calculate_difficulty(user_id):
+        # Query últimas 20 respuestas
+        # Calcular % aciertos
+        # Retornar nivel
+        
+# backend/routers/ai_functions.py
+- Integrar en generate_practical_case
+- Integrar en generate_mock_exam
+- Pasar difficulty al prompt
+```
+
+**Estimación:** 5 horas  
+**Prioridad:** 🟠 Alta
+
+---
+
+### EPIC 3: Transparencia y Control 💰
+**Objetivo:** Mostrar tokens y costes en tiempo real  
+**Valor:** Medio-Alto - Confianza del usuario  
+**Esfuerzo:** 9 horas
+
+#### Story 3.1: Contador de Tokens
+**Como** usuario  
+**Quiero** ver cuántos tokens consumo  
+**Para** controlar mi uso y entender costes
+
+**Contexto:**
+- Usuarios con BYOK necesitan control
+- Transparencia genera confianza
+- Competencia no muestra esto
+
+**Criterios de Aceptación:**
+- [ ] Badge con tokens en cada respuesta
+- [ ] Acumulado por sesión en header
+- [ ] Desglose input/output
+- [ ] Histórico en Settings
+- [ ] Export CSV de uso
+
+**Tareas Técnicas:**
+```typescript
+// components/TokenCounter.tsx (nuevo)
+- Badge con icono y número
+- Tooltip con desglose
+- Animación al actualizar
+
+// backend/middleware/token_tracker.py (nuevo)
+- Interceptar responses
+- Contar tokens (tiktoken)
+- Guardar en BD
+
+// Tabla token_usage en PostgreSQL
+- user_id, provider, input_tokens, output_tokens, timestamp
+```
+
+**Estimación:** 6 horas  
+**Prioridad:** 🟠 Alta
+
+---
+
+#### Story 3.2: Calculadora de Costes
+**Como** usuario  
+**Quiero** ver el coste estimado de mi uso  
+**Para** decidir qué modelo usar
+
+**Contexto:**
+- Cada provider tiene precios diferentes
+- Usuarios necesitan comparar
+- BYOK: quieren optimizar gasto
+
+**Criterios de Aceptación:**
+- [ ] Coste estimado por respuesta
+- [ ] Coste acumulado por sesión
+- [ ] Comparativa entre providers
+- [ ] Alertas si supera umbral
+- [ ] Proyección mensual
+
+**Tareas Técnicas:**
+```typescript
+// utils/costCalculator.ts (nuevo)
+const PRICES = {
+  'groq-8b': { input: 0.05, output: 0.08 },
+  'gemini-pro': { input: 2, output: 12 },
+  // ...
+}
+
+function calculateCost(tokens, provider)
+
+// components/CostDisplay.tsx (nuevo)
+- Mostrar coste con símbolo €/$
+- Comparativa providers
+```
+
+**Estimación:** 3 horas  
+**Prioridad:** 🟡 Media
+
+---
+
+### EPIC 4: Contexto Compartido 🔗
+**Objetivo:** RAG y archivos disponibles en todas las vistas  
+**Valor:** Alto - Mejora calidad respuestas  
+**Esfuerzo:** 18 horas
+
+#### Story 4.1: RAG en Todas las Vistas
+**Como** usuario  
+**Quiero** que todas las funciones usen el RAG  
+**Para** obtener respuestas basadas en legislación real
+
+**Contexto:**
+- Actualmente solo chat usa RAG
+- Casos prácticos, tests, etc. no consultan leyes
+- Calidad de respuestas es menor
+
+**Criterios de Aceptación:**
+- [ ] CaseGeneratorView usa RAG
+- [ ] MockExamView usa RAG
+- [ ] MindMapView usa RAG
+- [ ] StudyPlanView usa RAG
+- [ ] Toggle "Usar RAG" en cada vista
+
+**Tareas Técnicas:**
+```python
+# backend/routers/ai_functions.py
+- Añadir parámetro use_rag a todos los endpoints
+- Integrar rag_agent_v2 en cada función
+- Combinar contexto RAG + prompt
+
+# Ejemplo: generate_practical_case
+if use_rag:
+    rag_context = rag_agent.query(topic)
+    prompt = f"{rag_context}\n\n{original_prompt}"
+```
+
+**Estimación:** 6 horas  
+**Prioridad:** 🟠 Alta
+
+---
+
+#### Story 4.2: Gestión de Documentos de Usuario
+**Como** usuario  
+**Quiero** subir mis propios documentos  
+**Para** que el sistema los use en mis respuestas
+
+**Contexto:**
+- Usuarios tienen apuntes propios
+- Quieren personalizar el RAG
+- Actualmente upload funciona pero no persiste
+
+**Criterios de Aceptación:**
+- [ ] Vista "Mis Documentos"
+- [ ] Lista de documentos subidos
+- [ ] Botón eliminar documento
+- [ ] Indicador "Indexado en RAG"
+- [ ] Filtro por tipo (PDF, TXT, URL)
+
+**Tareas Técnicas:**
+```python
+# backend/routers/upload.py
+- Modificar para guardar en BD
+- Tabla user_documents
+- Asociar chunks a user_id en Qdrant
+
+# components/MyDocumentsView.tsx (nuevo)
+- Lista documentos
+- Upload button
+- Delete button
+- Estado indexación
+```
+
+**Estimación:** 8 horas  
+**Prioridad:** 🟠 Alta
+
+---
+
+#### Story 4.3: Búsqueda Web Integrada
+**Como** sistema  
+**Quiero** buscar en web cuando RAG no tiene respuesta  
+**Para** proporcionar información actualizada
+
+**Contexto:**
+- RAG tiene leyes pero no jurisprudencia reciente
+- Usuarios preguntan sobre casos actuales
+- Brave Search API disponible
+
+**Criterios de Aceptación:**
+- [ ] Integración Brave Search API
+- [ ] Fallback automático si RAG score <0.7
+- [ ] Citar fuentes web
+- [ ] Cache de búsquedas
+- [ ] Rate limiting
+
+**Tareas Técnicas:**
+```python
+# backend/agents/web_search_agent.py (nuevo)
+class WebSearchAgent:
+    def search(query):
+        # Brave Search API
+        # Parse results
+        # Return formatted
+
+# backend/agents/orchestrator.py (nuevo)
+- Decidir RAG vs Web vs Ambos
+- Combinar resultados
+```
+
+**Estimación:** 4 horas  
+**Prioridad:** 🟡 Media
+
+---
+
+### EPIC 5: Seguridad y Producción 🔒
+**Objetivo:** Auditar, asegurar y desplegar  
+**Valor:** Crítico - Requisito para producción  
+**Esfuerzo:** 12 horas
+
+#### Story 5.1: Auditoría con SonarQube
+**Como** desarrollador  
+**Quiero** auditar el código automáticamente  
+**Para** detectar bugs y vulnerabilidades
+
+**Contexto:**
+- Código sin auditar
+- Necesario para producción
+- SonarQube gratis y completo
+
+**Criterios de Aceptación:**
+- [ ] SonarQube instalado (Docker)
+- [ ] Primer scan completado
+- [ ] Issues priorizados
+- [ ] GitHub Action configurada
+- [ ] Badge en README
+
+**Tareas Técnicas:**
+```bash
+# docker-compose.yml
+- Añadir servicio sonarqube
+
+# sonar-project.properties (nuevo)
+- Configurar proyecto
+- Exclusiones
+
+# .github/workflows/sonarqube.yml (nuevo)
+- Scan en cada PR
+```
+
+**Estimación:** 3 horas  
+**Prioridad:** 🔴 Crítica
+
+---
+
+#### Story 5.2: Reglas GDPR/LOPDGDD con Semgrep
+**Como** desarrollador  
+**Quiero** verificar compliance con GDPR  
+**Para** cumplir legislación española
+
+**Contexto:**
+- App maneja datos personales
+- LOPDGDD obligatorio en España
+- Semgrep permite reglas custom
+
+**Criterios de Aceptación:**
+- [ ] Semgrep instalado
+- [ ] Reglas GDPR aplicadas
+- [ ] Reglas LOPDGDD custom creadas
+- [ ] Scan en CI/CD
+- [ ] Reporte de compliance
+
+**Tareas Técnicas:**
+```yaml
+# .semgrep/lopdgdd.yml (nuevo)
+rules:
+  - id: lopdgdd-pii-without-consent
+    pattern: user.email
+    message: "Verificar consentimiento LOPDGDD"
+    
+  - id: lopdgdd-data-retention
+    pattern: DELETE FROM users
+    message: "Verificar período retención"
+
+# .github/workflows/semgrep.yml (nuevo)
+- Scan con reglas GDPR + LOPDGDD
+```
+
+**Estimación:** 4 horas  
+**Prioridad:** 🔴 Crítica
+
+---
+
+#### Story 5.3: Deploy a Vercel
+**Como** usuario  
+**Quiero** acceder a la app desde internet  
+**Para** usarla desde cualquier lugar
+
+**Contexto:**
+- App solo funciona en local
+- Vercel gratis para hobby
+- Frontend listo para deploy
+
+**Criterios de Aceptación:**
+- [ ] Deploy exitoso en Vercel
+- [ ] Variables de entorno configuradas
+- [ ] HTTPS funcionando
+- [ ] Custom domain (opcional)
+- [ ] Auto-deploy en push a main
+
+**Tareas Técnicas:**
+```bash
+# vercel.json ya existe
+- Verificar configuración
+
+# Vercel Dashboard
+- Conectar repo GitHub
+- Configurar env vars
+- Deploy
+
+# .github/workflows/deploy.yml (opcional)
+- Deploy automático
+```
+
+**Estimación:** 2 horas  
+**Prioridad:** 🟠 Alta
+
+---
+
+#### Story 5.4: Cloudflare Tunnel para Backend
+**Como** desarrollador  
+**Quiero** exponer backend de forma segura  
+**Para** que frontend en Vercel pueda conectar
+
+**Contexto:**
+- Backend en VPS local
+- Necesita HTTPS
+- Cloudflare Tunnel gratis
+
+**Criterios de Aceptación:**
+- [ ] Tunnel configurado
+- [ ] HTTPS funcionando
+- [ ] DDoS protection activa
+- [ ] Logs de acceso
+- [ ] Documentación
+
+**Tareas Técnicas:**
+```bash
+# Instalar cloudflared
+# Crear tunnel
+cloudflared tunnel create opositaia
+
+# Configurar DNS
+cloudflared tunnel route dns opositaia api.opositaia.com
+
+# Systemd service
+- Auto-start en boot
+```
+
+**Estimación:** 1 hora  
+**Prioridad:** 🟠 Alta
+
+---
+
+#### Story 5.5: Añadir Mistral API (BYOK)
+**Como** usuario  
+**Quiero** usar mi propia API key de Mistral  
+**Para** tener experiencia gratis
+
+**Contexto:**
+- Mistral API competitivo en precio
+- BYOK es diferenciador
+- Fácil de implementar
+
+**Criterios de Aceptación:**
+- [ ] Campo en Settings para Mistral API key
+- [ ] Guardar encriptado en BD
+- [ ] Provider "Mistral API" en selector
+- [ ] Validación de key
+- [ ] Instrucciones para obtener key
+
+**Tareas Técnicas:**
+```python
+# backend/agents/llm_providers.py
+class MistralAPIProvider:
+    def __init__(self, api_key):
+        self.client = MistralClient(api_key)
+
+# backend/routers/user.py
+- Endpoint POST /user/api-keys
+- Encriptar con Fernet
+
+# components/SettingsView.tsx
+- Sección "API Keys"
+- Input Mistral API key
+```
+
+**Estimación:** 2 horas  
+**Prioridad:** 🟡 Media
+
+---
+
+## 📅 SPRINTS
+
+### Sprint 1: UX Crítica (Semana 1-2)
+**Objetivo:** Mejorar UX para retención de usuarios  
+**Duración:** 2 semanas  
+**Esfuerzo:** 20 horas
+
+**Stories:**
+- ✅ Story 1.1: Botón cerrar sidebar (2h)
+- ✅ Story 1.2: Vista caso + preguntas (4h)
+- ✅ Story 1.3: Burbuja chat contextual (6h)
+- ✅ Story 2.1: Toggle modo progreso (3h)
+- ✅ Story 2.2: Algoritmo adaptativo (5h)
+
+**Definition of Done:**
+- [ ] Código revisado y mergeado
+- [ ] Tests unitarios pasando
+- [ ] Tests E2E pasando
+- [ ] Documentación actualizada
+- [ ] Deploy a staging
+
+**Demo:** Mostrar sidebar colapsable, vista caso mejorada, chat contextual
+
+---
+
+### Sprint 2: Transparencia (Semana 3-4)
+**Objetivo:** Transparencia de tokens y costes  
+**Duración:** 2 semanas  
+**Esfuerzo:** 18 horas
+
+**Stories:**
+- ✅ Story 3.1: Contador de tokens (6h)
+- ✅ Story 3.2: Calculadora de costes (3h)
+- ✅ Story 4.1: RAG en todas las vistas (6h)
+- ✅ Story 5.5: Mistral API BYOK (2h)
+
+**Definition of Done:**
+- [ ] Tokens visibles en todas las respuestas
+- [ ] Costes calculados correctamente
+- [ ] RAG funcionando en 4+ vistas
+- [ ] Mistral API integrado
+
+**Demo:** Mostrar contador tokens, comparativa costes, RAG en casos prácticos
+
+---
+
+### Sprint 3: Contexto Compartido (Semana 5-6)
+**Objetivo:** Documentos de usuario y búsqueda web  
+**Duración:** 2 semanas  
+**Esfuerzo:** 12 horas
+
+**Stories:**
+- ✅ Story 4.2: Gestión documentos usuario (8h)
+- ✅ Story 4.3: Búsqueda web integrada (4h)
+
+**Definition of Done:**
+- [ ] Vista "Mis Documentos" funcional
+- [ ] Upload y delete funcionando
+- [ ] Brave Search integrado
+- [ ] Fallback automático RAG→Web
+
+**Demo:** Subir documento, ver en RAG, búsqueda web automática
+
+---
+
+### Sprint 4: Seguridad y Deploy (Semana 7-8)
+**Objetivo:** Auditar, asegurar y desplegar a producción  
+**Duración:** 2 semanas  
+**Esfuerzo:** 12 horas
+
+**Stories:**
+- ✅ Story 5.1: Auditoría SonarQube (3h)
+- ✅ Story 5.2: Reglas GDPR/LOPDGDD (4h)
+- ✅ Story 5.3: Deploy Vercel (2h)
+- ✅ Story 5.4: Cloudflare Tunnel (1h)
+- ✅ Documentación final (2h)
+
+**Definition of Done:**
+- [ ] SonarQube sin issues críticos
+- [ ] Semgrep compliance 100%
+- [ ] Deploy producción exitoso
+- [ ] Cloudflare Tunnel funcionando
+- [ ] Documentación completa
+
+**Demo:** App en producción, auditoría pasando, HTTPS funcionando
+
+---
+
+## ✅ DEFINITION OF DONE (Global)
+
+### Por Story
+- [ ] Código implementado y funcionando
+- [ ] Tests unitarios escritos y pasando
+- [ ] Tests E2E actualizados
+- [ ] Code review completado
+- [ ] Sin warnings de linter
+- [ ] Documentación actualizada
+- [ ] Commit con mensaje descriptivo
+
+### Por Sprint
+- [ ] Todas las stories completadas
+- [ ] Demo preparada
+- [ ] Retrospectiva realizada
+- [ ] Deploy a staging exitoso
+- [ ] Métricas de éxito medidas
+- [ ] Feedback de usuarios recogido
+
+### Por Release
+- [ ] Todos los sprints completados
+- [ ] Auditoría de seguridad pasada
+- [ ] Performance optimizado
+- [ ] Deploy a producción exitoso
+- [ ] Documentación de usuario completa
+- [ ] Plan de soporte definido
+
+---
+
+## 📊 MÉTRICAS DE ÉXITO
+
+### UX (Sprint 1)
+- **Tiempo en app:** +30% (de 10min a 13min)
+- **Tasa rebote:** -20% (de 50% a 40%)
+- **Satisfacción:** >4.5/5 en encuesta
+
+### Transparencia (Sprint 2)
+- **Usuarios BYOK:** >20% adopción
+- **Confianza:** +40% en encuesta
+- **Retención:** +25% (de 40% a 50%)
+
+### Contexto (Sprint 3)
+- **Documentos subidos:** >50% usuarios
+- **Calidad respuestas:** +30% (medido por feedback)
+- **Uso RAG:** >80% de interacciones
+
+### Producción (Sprint 4)
+- **Uptime:** >99.5%
+- **Latencia:** <500ms p95
+- **Issues seguridad:** 0 críticos
+- **Compliance GDPR:** 100%
+
+---
+
+## 🎯 RIESGOS Y MITIGACIÓN
+
+### Riesgo 1: Indexación Qdrant no completa
+**Probabilidad:** Media  
+**Impacto:** Alto  
+**Mitigación:** Verificar diariamente, tener script de re-indexación
+
+### Riesgo 2: Costes API inesperados
+**Probabilidad:** Baja  
+**Impacto:** Medio  
+**Mitigación:** Rate limiting, alertas, BYOK
+
+### Riesgo 3: Problemas de performance
+**Probabilidad:** Media  
+**Impacto:** Alto  
+**Mitigación:** Caching, CDN, optimización queries
+
+### Riesgo 4: Issues de seguridad
+**Probabilidad:** Baja  
+**Impacto:** Crítico  
+**Mitigación:** Auditoría continua, Snyk, Semgrep
+
+---
+
+## 📝 NOTAS DE IMPLEMENTACIÓN
+
+### Context-Driven Development
+- **Contexto primero:** Entender problema antes de codificar
+- **Iteración rápida:** Sprints de 2 semanas
+- **Feedback continuo:** Demo al final de cada sprint
+- **Métricas reales:** Medir impacto de cada cambio
+- **Adaptación:** Ajustar plan según aprendizajes
+
+### Priorización
+- **Crítico:** Impacto alto + Esfuerzo bajo
+- **Alto:** Impacto alto + Esfuerzo medio
+- **Medio:** Impacto medio + Esfuerzo bajo
+- **Bajo:** Impacto bajo o Esfuerzo muy alto
+
+### Comunicación
+- **Daily:** Async en Slack/Discord
+- **Sprint Planning:** Inicio de cada sprint
+- **Sprint Review:** Demo al final
+- **Retrospectiva:** Qué mejorar
+
+---
+
+## ✅ CHECKLIST DE INICIO
+
+- [ ] Verificar indexación Qdrant completada
+- [ ] Crear branch `feature/sprint-1-ux`
+- [ ] Setup entorno de desarrollo
+- [ ] Revisar este spec con equipo
+- [ ] Estimar stories con equipo
+- [ ] Comenzar Story 1.1
+
+---
+
+**Documento creado:** 25 Noviembre 2025  
+**Próxima revisión:** Fin de Sprint 1 (2 semanas)  
+**Responsable:** Equipo OpositaIA
