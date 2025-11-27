@@ -1,0 +1,16 @@
+installation:
+  version: 6.0.0-alpha.12
+  installDate: '2025-11-24T16:18:25.161Z'
+  lastUpdated: '2025-11-24T16:18:25.161Z'
+modules:
+  - core
+  - bmb
+  - bmm
+  - cis
+ides:
+  - cursor
+  - windsurf
+  - antigravity
+  - kilo
+  - roo
+  - trae

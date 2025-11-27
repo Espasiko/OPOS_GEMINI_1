@@ -1,0 +1,5 @@
+{
+  "query": "duracion maxima incapacidad temporal prorroga",
+  "top_k": 5,
+  "layer_filter": 1
+}
