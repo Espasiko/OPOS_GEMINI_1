@@ -1,3 +1,50 @@
+  - (Recomendado) `llama-cpp-python` para usar modelos GGUF directamente
+  # Instalar llama-cpp-python (para inferencia con GGUF)
+  pip install llama-cpp-python
+    
+## Opción Rápida: Usar Modelo GGUF Pre-cuantizado (SIN fine-tuning)
+
+Si solo quieres probar inferencia local sin entrenar, usa el modelo GGUF directamente:
+
+```bash
+# 1. Descargar Mistral 7B Instruct Q4 GGUF (4.1GB)
+mkdir -p ~/mistral_models
+cd ~/mistral_models
+wget https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q4_K_M.gguf \
+   -O mistral-7b-instruct-q4.gguf
+
+# 2. Instalar llama-cpp-python
+pip install llama-cpp-python
+
+# 3. Probar inferencia
+python backend/agents/mistral_gguf_local.py
+```
+
+**Ventajas del enfoque GGUF**:
+- ✅ No necesita fine-tuning (listo para usar)
+- ✅ 4.1GB (vs 7GB Ollama formato)
+- ✅ Usa `llama-cpp-python` (más eficiente en CPU que Ollama)
+- ✅ Mismo rendimiento que Ollama pero menor overhead
+- ✅ Descarga directa desde Hugging Face (sin timeouts de Cloudflare R2)
+
+**Wrapper Python creado**: `backend/agents/mistral_gguf_local.py`
+
+```python
+from backend.agents.mistral_gguf_local import generate, chat
+
+# Uso simple
+response = generate("¿Qué es el recurso de casación?", max_tokens=150)
+print(response)
+
+# Formato chat (compatible con OpenAI/Gemini)
+response = chat([
+  {"role": "user", "content": "¿Qué es el recurso de casación?"}
+])
+print(response)
+```
+
+---
+
 Finetune LoRA (CPU) - Quick guide
 
 Objetivo: ejecutar un fine-tuning LoRA en CPU (muy lento pero gratuito). Este README contiene los pasos mínimos y recomendaciones.

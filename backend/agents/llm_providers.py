@@ -442,7 +442,7 @@ class MistralVPSProvider(LLMProvider):
     
     def __init__(self):
         self.model = 'mistral'
-        self.base_url = os.getenv('MISTRAL_URL', 'http://147.93.95.67:8080')
+        self.base_url = os.getenv('MISTRAL_URL', 'http://localhost:8080')
     
     async def generate_stream(
         self,

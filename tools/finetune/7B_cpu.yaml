@@ -1,5 +1,13 @@
 # Minimal example YAML for CPU LoRA fine-tuning using mistral-finetune
 # Edit the paths below to match your environment before running.
+#
+# ALTERNATIVA RÁPIDA (sin fine-tuning):
+# Si solo quieres inferencia local inmediata, usa GGUF pre-cuantizado:
+#   1. wget https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q4_K_M.gguf -O ~/mistral_models/mistral-7b-instruct-q4.gguf
+#   2. pip install llama-cpp-python
+#   3. python backend/agents/mistral_gguf_local.py
+#
+# Este archivo YAML es SOLO para entrenar LoRA desde cero (lento en CPU).
 
 model_id_or_path: "/home/espasiko/mistral_models/7B"  # path to downloaded base model
 run_dir: "/home/espasiko/mistral_runs/7B_cpu_lora"

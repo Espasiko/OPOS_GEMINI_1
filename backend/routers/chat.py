@@ -27,7 +27,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 # Configuration
 # Mistral directo (puerto 8080) - Nginx tiene problema con proxy /v1/
-MISTRAL_URL = os.getenv("MISTRAL_URL", "http://147.93.95.67:8080")
+MISTRAL_URL = os.getenv("MISTRAL_URL", "http://localhost:8080")
 MISTRAL_MODEL = os.getenv("MISTRAL_MODEL", "mistral")
 
 # Global RAG Agent instance (lazy loaded)
