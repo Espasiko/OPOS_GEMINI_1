@@ -1,0 +1,27 @@
+# Minimal example YAML for CPU LoRA fine-tuning using mistral-finetune
+# Edit the paths below to match your environment before running.
+
+model_id_or_path: "/home/espasiko/mistral_models/7B"  # path to downloaded base model
+run_dir: "/home/espasiko/mistral_runs/7B_cpu_lora"
+
+data:
+  instruct_data: "/home/espasiko/data/train.jsonl"
+  eval_instruct_data: "/home/espasiko/data/eval.jsonl"
+
+max_steps: 300
+seq_len: 512
+batch_size: 1
+device: cpu
+
+lora:
+  rank: 8
+  alpha: 32
+  save_adapters: True
+
+optim:
+  lr: 1e-4
+  weight_decay: 0.0
+
+save_every: 100
+ckpt_freq: 100
+log_freq: 10
