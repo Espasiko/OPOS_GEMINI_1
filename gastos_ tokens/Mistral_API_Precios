@@ -1,0 +1,489 @@
+Premier model2a1ffaf3-f171-460b-be1b-fc734aa776aa
+Mistral Medium 3
+65b17135-5113-443a-8a5d-d10ce5341b44Multimodal
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+d24971b4-d9f3-499b-a83d-79ce56450a0fAgentic
+State-of-the-art performance. Simplified enterprise deployments. Cost-efficient.
+
+Input (/M tokens)
+$0.4
+
+Output (/M tokens)
+$2
+
+mistral-medium-latest
+
+Premier model0a773b7c-15bb-40ed-98f5-622d85f90767
+Magistral Medium
+69179d5f-a651-4b7d-acff-237f2963366cReasoning
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Thinking model excelling in domain-specific, transparent, and multilingual reasoning.
+
+Input (/M tokens)
+$2
+
+Output (/M tokens)
+$5
+
+magistral-medium-latest
+
+Premier modelf48d338d-4d20-4352-9724-500295c897dd
+Devstral Medium
+a9ad3428-0efc-4f27-a157-14c551c79fd2Coding
+d24971b4-d9f3-499b-a83d-79ce56450a0fAgentic
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Enhanced model for advanced coding agents.
+
+Input (/M tokens)
+$0.4
+
+Output (/M tokens)
+$2
+
+devstral-medium-2507
+
+Premier model34dfc5a5-de95-4425-a4f5-38a4c2811fa3
+Codestral
+a9ad3428-0efc-4f27-a157-14c551c79fd2Coding
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Lightweight, fast, and proficient in over 80 programming languages.
+
+API
+Fine-tuning
+Input (/M tokens)
+$0.3
+
+Output (/M tokens)
+$0.9
+
+Training Cost (/M tokens)
+$3
+
+Storage Cost
+$2 / month per model
+
+Input (/M tokens)
+$0.2
+
+Output (/M tokens)
+$0.6
+
+codestral-latest
+
+Premier modelf7fbfc4b-1f1b-424e-b274-6b3849ba2f3e
+Document AI & OCR
+f4b624db-bf6c-4201-91c7-6ce77f80f0bfOCR
+65b17135-5113-443a-8a5d-d10ce5341b44Multimodal
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Introducing the world’s best document understanding API.
+
+OCR
+$1 / 1000 pages
+
+Annotations
+$3 / 1000 pages
+
+mistral-ocr-latest
+
+Premier model3d4966b7-8210-4d7c-87b8-71d5d43a8122
+Voxtral Mini Transcribe
+6434b0e1-e8cc-4d58-a945-822a595db9aeVoice
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+State-of-the-art transcription model
+
+Audio Input/min
+$0.002
+
+Available on
+/v1/audio/transcriptions
+voxtral-mini-latest
+
+Open modelca64bef5-7cb6-478f-a5d4-5a3ec7d75a10
+Mistral Small 3.2
+65b17135-5113-443a-8a5d-d10ce5341b44Multimodal
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+d24971b4-d9f3-499b-a83d-79ce56450a0fAgentic
+SOTA. Multimodal. Multilingual. Apache 2.0.
+
+API
+Fine-tuning
+Input (/M tokens)
+$0.1
+
+Output (/M tokens)
+$0.3
+
+Training Cost (/M tokens)
+$4
+
+Storage Cost
+$2 / month per model
+
+Input (/M tokens)
+$0.1
+
+Output (/M tokens)
+$0.3
+
+mistral-small-latest
+
+Premier model9c63fbee-af2f-423a-8fa0-ca2137560f4f
+Magistral Small
+69179d5f-a651-4b7d-acff-237f2963366cReasoning
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+Thinking model excelling in domain-specific, transparent, and multilingual reasoning.
+
+Input (/M tokens)
+$0.5
+
+Output (/M tokens)
+$1.5
+
+magistral-small-latest
+
+Open modelc0b2c725-8e59-4c3c-bfb1-b10088f8a86c
+Devstral Small
+a9ad3428-0efc-4f27-a157-14c551c79fd2Coding
+d24971b4-d9f3-499b-a83d-79ce56450a0fAgentic
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+The best open-source model for coding agents.
+
+Input (/M tokens)
+$0.1
+
+Output (/M tokens)
+$0.3
+
+devstral-small-2507
+
+Open model46930ac2-3c2f-488c-901f-ab54ec24ea7a
+Voxtral Small
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+6434b0e1-e8cc-4d58-a945-822a595db9aeVoice
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+State-of-the-art performance on speech and audio understanding.
+
+Input (per min / per M tok)
+$0.004 (audio) / $0.1 (text)
+
+Output (/M tokens)
+$0.3
+
+Available on
+/v1/chat/completions
+voxtral-small-latest
+
+Open modelc29ca011-87ff-45b0-8236-08d629812732
+Voxtral Mini
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+6434b0e1-e8cc-4d58-a945-822a595db9aeVoice
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Low-latency speech recognition for edge and devices.
+
+Input (per min / per M tok)
+$0.001 (audio) / $0.04 (text)
+
+Output (/M tokens)
+$0.04
+
+Available on
+/v1/chat/completions
+voxtral-mini-latest
+
+Open model455e9694-7b91-4767-b562-2fc2815d7341
+Classifier API model 8B
+765fb8dd-dc72-45e6-a4dd-18b4d4c214efClassifier APIs
+Fine-tune Ministral 8B for classification tasks, like moderation, sentiment analysis, fraud detection, and more.
+
+Training Cost (/M tokens)
+1$
+
+Storage Cost
+$2 / month per model
+
+Input (/M tokens)
+$0.1
+
+Output (/M tokens)
+$0.1
+
+Open modelbb3752bc-77d4-4201-86e4-d4dc11c3e9a8
+Classifier API model 3B
+765fb8dd-dc72-45e6-a4dd-18b4d4c214efClassifier APIs
+Fine-tune Ministral 3B for classification tasks, like moderation, sentiment analysis, fraud detection, and more.
+
+Training Cost (/M tokens)
+$1
+
+Storage Cost
+$2 / month per model
+
+Input (/M tokens)
+$0.04
+
+Output (/M tokens)
+$0.04
+
+Premier modele83c009b-ba7b-42e9-89fb-370f4a2350ef
+Mistral Moderation 24.11
+765fb8dd-dc72-45e6-a4dd-18b4d4c214efClassifier APIs
+A classifier service for text content moderation.
+
+Input (/M tokens)
+$0.1
+
+mistral-moderation-latest
+
+Premier model6791c85a-1556-4304-8f0c-b9998ed07fe9
+Codestral Embed
+a9ad3428-0efc-4f27-a157-14c551c79fd2Coding
+534a9917-53a2-4728-b21c-de206bc26d43Embedding
+State-of-the-art embedding model for code.
+
+Input (/M tokens)
+$0.15
+
+codestral-embed-2505
+
+Premier model18f46c85-43ec-40c2-883a-7ac9b9495f18
+Mistral Embed
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+534a9917-53a2-4728-b21c-de206bc26d43Embedding
+State-of-the-art model for extracting representation of text extracts.
+
+Input (/M tokens)
+$0.1
+
+mistral-embed
+
+d24971b4-d9f3-499b-a83d-79ce56450a0f
+Agent API
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Enhances AI with built-in tools for code execution, web search, image generation, persistent memory, and agentic orchestration.
+
+Price
+Model cost per M token + Tool call
+
+2a0aa841-9259-4d89-8f37-caf064acbe35
+Libraries
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Upload and manage documents, enabling agents to access your external data.
+
+OCR
+$3/1K pages
+
+Indexing
+$1/per M tokens
+
+Call
+$0.01 /per call
+
+a9ad3428-0efc-4f27-a157-14c551c79fd2
+Code execution
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Execute and interpret code snippets within the chat interface.
+
+Price
+$30 / 1000 calls
+
+ecdac1ed-522e-4a58-a3cc-23d03c40ba6e
+Web search
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Enhance your work, research, and learning with web search, complete with citations for accurate and up-to-date information.
+
+Price
+$30 / 1000 calls
+
+0b872505-b5d9-40a5-b0da-ecdedf43cb62
+Images
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Generate images based on user prompts and preferences.
+
+Price
+$100 / 1000 images
+
+6deb35df-15f8-4b23-ac23-092db548d14f
+Premium news
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Access to news articles via integrated news provider verification for enhanced information retrieval.
+
+Price
+$50 / 1000 calls
+
+66f140a3-3862-43a7-b7ab-a010db5947fc
+Data capture
+3e1c6d98-dab9-4311-a860-1eca14120895Tools
+Easily record and access API call data for debugging and continuous optimization.
+
+Price
+$0.04 /M tokens
+
+Premier model36b79fb8-85ba-4696-96cf-5c5c217fd0a9
+Mistral Large
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+d24971b4-d9f3-499b-a83d-79ce56450a0fAgentic
+65b17135-5113-443a-8a5d-d10ce5341b44Multimodal
+For complex tasks and sophisticated problems.
+
+API
+Fine-tuning
+Input (/M tokens)
+2$
+
+Output (/M tokens)
+$6
+
+Training Cost (/M tokens)
+$9
+
+Storage Cost
+$4 / month per model
+
+Input (/M tokens)
+$2
+
+Output (/M tokens)
+$6
+
+mistral-large-latest
+
+Open model7aebf4c1-f79a-4af2-93e6-c05c2a3d596d
+Pixtral Large
+65b17135-5113-443a-8a5d-d10ce5341b44Multimodal
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Vision-capable large model with frontier reasoning capabilities.
+
+Input (/M tokens)
+$2
+
+Output (/M tokens)
+$6
+
+pixtral-large-latest
+
+Open model7aebf4c1-f79a-4af2-93e6-c05c2a3d596d
+Pixtral 12B
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+65b17135-5113-443a-8a5d-d10ce5341b44Multimodal
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Vision-capable small model.
+
+API
+Fine-tuning
+Input (/M tokens)
+$0.15
+
+Output (/M tokens)
+$0.15
+
+Training Cost (/M tokens)
+$2
+
+Storage Cost
+$2
+
+Input (/M tokens)
+$0.15
+
+Output (/M tokens)
+$0.15
+
+pixtral-12b
+
+Open model44e33e3e-0fd8-43d7-957e-d2689d4c9313
+Mistral NeMo
+a9ad3428-0efc-4f27-a157-14c551c79fd2Coding
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+State-of-the-art Mistral model trained specifically for code tasks.
+
+API
+Fine-tuning
+Input (/M tokens)
+$0.15
+
+Output (/M tokens)
+$0.15
+
+Training Cost (/M tokens)
+$1
+
+Storage Cost
+$2 per month per model
+
+Input (/M tokens)
+$0.15
+
+Output (/M tokens)
+$0.15
+
+open-mistral-nemo
+
+Open model3463396a-596a-42f4-8d3f-a1b153d2361b
+Mistral 7B
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+A 7B transformer model, fast-deployed and easily customisable.
+
+Input (/M tokens)
+$0.25
+
+Output (/M tokens)
+$0.25
+
+open-mistral-7b
+
+Open modelbf49f0e3-8ed4-4b75-9b65-fd8349e8450a
+Mixtral 8x7B
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+A 7B sparse Mixture-of-Experts (SMoE). Uses 12.9B active parameters out of 45B total.
+
+Input (/M tokens)
+$0.7
+
+Output (/M tokens)
+$0.7
+
+open-mixtral-8x7b
+
+Open modelfbb679fe-e5df-44e2-adc4-c589c931e16f
+Mixtral 8x22B
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Mixtral 8x22B is currently the most performant open model. A 22B sparse Mixture-of-Experts (SMoE). Uses only 39B active parameters out of 141B.
+
+Input (/M tokens)
+$2
+
+Output (/M tokens)
+$6
+
+open-mixtral-8x22b
+
+Open modelda69e070-cddd-4271-85fc-e6d67311b8c4
+Ministral 8B 24.10
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Powerful model for on-device use cases.
+
+Input (/M tokens)
+$0.1
+
+Output (/M tokens)
+$0.1
+
+ministral-8b-latest
+
+Open modelaf7bbcdd-dc1a-432e-b020-0f1515b7ce54
+Ministral 3B 24.10
+3abddda1-b834-49cc-81f0-8285166869bbLightweight
+9201fe9b-6130-4cfd-8f50-ee8a757ce553Text-to-text
+Most efficient edge model.
+
+Input (/M tokens)
+$0.04
+
+Output (/M tokens)
+$0.04
+

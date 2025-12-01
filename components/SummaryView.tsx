@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { generateSummary } from '../services/backendService';
-import { getTextFromUrl } from '../services/geminiService';
+import { generateSummary, getTextFromUrl } from '../services/backendService';
 import { useAIProvider } from '../hooks/useAIProvider';
 import { formatSummaryWithKeyPoints } from '../utils/formatters';
 import { SummaryIcon } from './icons/SummaryIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
-import ErrorMessage from './ErrorMessage';
 
 // Sprint 10: Refactorizado con utilidades compartidas
 

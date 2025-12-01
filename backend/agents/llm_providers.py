@@ -437,6 +437,76 @@ class CohereProvider(LLMProvider):
         }
 
 
+class MistralAPIProvider(LLMProvider):
+    """Mistral AI API - Modelos potentes y baratos"""
+    
+    def __init__(self, model: str = 'mistral-small-latest'):
+        self.model = model
+        self.api_key = os.getenv('MISTRAL_API_KEY')
+        self.base_url = 'https://api.mistral.ai/v1'
+        
+        if not self.api_key:
+            logger.warning("MISTRAL_API_KEY not found in environment")
+    
+    async def generate_stream(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 2000
+    ) -> AsyncGenerator[str, None]:
+        """Genera respuesta usando Mistral API"""
+        
+        if not self.api_key:
+            raise ValueError("MISTRAL_API_KEY not configured")
+        
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            try:
+                async with client.stream(
+                    "POST",
+                    f"{self.base_url}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": self.model,
+                        "messages": messages,
+                        "stream": True,
+                        "temperature": temperature,
+                        "max_tokens": max_tokens
+                    }
+                ) as response:
+                    if response.status_code != 200:
+                        error_text = await response.aread()
+                        raise Exception(f"Mistral API error: {response.status_code} - {error_text}")
+                    
+                    async for line in response.aiter_lines():
+                        if line.startswith("data: "):
+                            chunk = line[6:]
+                            if chunk == "[DONE]":
+                                break
+                            
+                            try:
+                                data = json.loads(chunk)
+                                content = data.get('choices', [{}])[0].get('delta', {}).get('content', '')
+                                if content:
+                                    yield content
+                            except json.JSONDecodeError:
+                                continue
+            
+            except Exception as e:
+                raise Exception(f"Mistral API streaming error: {e}")
+    
+    def get_info(self) -> Dict[str, Any]:
+        return {
+            "provider": "mistral",
+            "model": self.model,
+            "speed": "fast",
+            "cost": "cheap",
+            "configured": bool(self.api_key)
+        }
+
+
 class MistralVPSProvider(LLMProvider):
     """Mistral en VPS - Fallback siempre disponible"""
     
@@ -509,6 +579,11 @@ PROVIDERS = {
     # 'gemini-flash': GeminiProvider('gemini-2.0-flash-exp'),  # Quota issues
     'gemini-pro': GeminiProvider('gemini-2.5-pro'),
     'gemini-3-pro': GeminiProvider('gemini-3-pro-preview'),
+    
+    # Mistral AI (Potente y barato) 🔮
+    'mistral-small': MistralAPIProvider('mistral-small-latest'),
+    'mistral-medium': MistralAPIProvider('mistral-medium-latest'),
+    'mistral-large': MistralAPIProvider('mistral-large-latest'),
     
     # Hugging Face (DESHABILITADO - API migrada) 🤗
     # 'hf-llama-70b': HuggingFaceProvider('meta-llama/Llama-3.1-70B-Instruct'),

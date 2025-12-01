@@ -30,7 +30,7 @@ interface CaseGeneratorViewProps {
 const QuestionView: React.FC<{
   question: PracticalCaseQuestion;
   answers: CaseAnswer[string];
-  onSelect: (questionId: string, optionId: string) => void;
+  onSelect: (questionId: string) => void;
 }> = ({ question, answers, onSelect }) => {
   const { selectedOptions = [], attempts = 0, showExplanation = false } = answers || {};
 
@@ -99,7 +99,7 @@ const QuestionView: React.FC<{
 
 /**
  * Muestra la vista del Generador de Casos Prácticos.
- * Gestiona la obtención de nuevos casos a través del `geminiService`, la interacción del
+ * Gestiona la obtención de nuevos casos a través del backend, la interacción del
  * usuario con las preguntas y la visualización del escenario y las explicaciones.
  * También se encarga de registrar los datos de progreso de las respuestas.
  * @param {CaseGeneratorViewProps} props Las propiedades para el componente, pasadas desde `App.tsx`.
@@ -153,22 +153,11 @@ const CaseGeneratorView: React.FC<CaseGeneratorViewProps> = ({
       provider,
     })
       .then(response => {
-        // Convertir respuesta del backend al formato PracticalCase
+        // El backend ya devuelve el formato correcto, usar directamente
         const newCase: PracticalCase = {
           topic: 'Seguridad Social',
           scenario: response.scenario,
-          questions: response.questions.map((q, idx) => ({
-            id: `q${idx + 1}`,
-            question: q.question,
-            options: [
-              { id: 'A', text: 'Opción A' },
-              { id: 'B', text: 'Opción B' },
-              { id: 'C', text: 'Opción C' },
-              { id: 'D', text: 'Opción D' },
-            ],
-            correct_option_id: 'A',
-            explanation: `Pregunta ${idx + 1} - ${q.points} puntos`,
-          })),
+          questions: response.questions, // ✅ Usar directamente sin mapeo innecesario
         };
         
         setCurrentCase(newCase);

@@ -75,7 +75,7 @@ class StudyPlanRequest(BaseModel):
 # HELPER FUNCTION
 # ============================================================================
 
-async def call_llm(provider_id: str, system_prompt: str, user_prompt: str) -> str:
+async def call_llm(provider_id: str, system_prompt: str, user_prompt: str, max_tokens: int = 3000) -> str:
     """Helper para llamar a cualquier LLM"""
     try:
         provider = get_provider(provider_id)
@@ -85,7 +85,7 @@ async def call_llm(provider_id: str, system_prompt: str, user_prompt: str) -> st
         ]
         
         response = ""
-        async for chunk in provider.generate_stream(messages, temperature=0.7, max_tokens=3000):
+        async for chunk in provider.generate_stream(messages, temperature=0.7, max_tokens=max_tokens):
             response += chunk
         
         return response
@@ -320,18 +320,22 @@ Incluye:
 
 @router.post("/mock-exam")
 async def generate_mock_exam(request: MockExamRequest):
-    """Genera un simulacro de examen"""
+    """Genera un simulacro de examen (en lotes si es necesario)"""
     
-    system_prompt = """Eres un experto examinador de oposiciones.
-Crea un simulacro de examen con preguntas tipo test difíciles y realistas.
+    # Si son más de 15 preguntas, generar en lotes
+    if request.num_questions > 15:
+        return await generate_mock_exam_batched(request)
+    
+    system_prompt = """Eres un experto examinador de oposiciones de Seguridad Social en España.
+Genera ÚNICAMENTE JSON válido. NO incluyas explicaciones, markdown, ni texto adicional.
 
-FORMATO JSON REQUERIDO:
+FORMATO EXACTO (copia esta estructura):
 {
-  "title": "Simulacro de Examen",
+  "title": "Simulacro de Examen - Seguridad Social",
   "questions": [
     {
       "id": "q1",
-      "question": "Pregunta del examen",
+      "question": "Texto de la pregunta",
       "options": [
         {"id": "a", "text": "Opción A"},
         {"id": "b", "text": "Opción B"},
@@ -339,33 +343,142 @@ FORMATO JSON REQUERIDO:
         {"id": "d", "text": "Opción D"}
       ],
       "correct_option_id": "a",
-      "explanation": "Explicación detallada"
+      "explanation": "Explicación con base legal"
     }
   ]
 }"""
     
     topics_str = ", ".join(request.topics)
-    user_prompt = f"""Crea un examen de {request.num_questions} preguntas.
-Temas: {topics_str}
-Responde SOLO con el JSON, sin texto adicional."""
-    
-    response_text = await call_llm(request.provider, system_prompt, user_prompt)
+    user_prompt = f"""Genera {request.num_questions} preguntas sobre: {topics_str}
+
+IMPORTANTE: Responde SOLO con JSON. Sin ```json, sin explicaciones, sin texto extra.
+Empieza directamente con {{ y termina con }}"""
     
     try:
+        # Usar más tokens para exámenes grandes
+        max_tokens = 4000 if request.num_questions > 10 else 3000
+        response_text = await call_llm(request.provider, system_prompt, user_prompt, max_tokens=max_tokens)
+        logger.info(f"Raw LLM response (first 500 chars): {response_text[:500]}")
+        
+        # Limpiar respuesta más agresivamente
         clean_text = response_text.strip()
-        if clean_text.startswith("```json"):
-            clean_text = clean_text[7:]
-        if clean_text.startswith("```"):
-            clean_text = clean_text[3:]
-        if clean_text.endswith("```"):
-            clean_text = clean_text[:-3]
+        
+        # Remover bloques de código markdown
+        if "```json" in clean_text:
+            clean_text = clean_text.split("```json")[1].split("```")[0]
+        elif "```" in clean_text:
+            parts = clean_text.split("```")
+            if len(parts) >= 3:
+                clean_text = parts[1]
+            else:
+                clean_text = parts[-1]
+        
         clean_text = clean_text.strip()
         
+        # Intentar encontrar el JSON si hay texto antes/después
+        if not clean_text.startswith("{"):
+            # Buscar el primer {
+            start_idx = clean_text.find("{")
+            if start_idx != -1:
+                clean_text = clean_text[start_idx:]
+            else:
+                logger.error(f"No JSON object found in response: {clean_text[:500]}")
+                raise ValueError("No JSON object found in LLM response")
+        
+        if not clean_text.endswith("}"):
+            # Buscar el último }
+            end_idx = clean_text.rfind("}")
+            if end_idx != -1:
+                clean_text = clean_text[:end_idx+1]
+            else:
+                logger.error(f"No closing brace found in response: {clean_text[:500]}")
+                raise ValueError("Incomplete JSON object in LLM response")
+        
+        logger.info(f"Cleaned text (first 500 chars): {clean_text[:500]}")
+        logger.info(f"Cleaned text (last 200 chars): {clean_text[-200:]}")
+        
         exam_data = json.loads(clean_text)
+        
+        # Validar estructura
+        if "questions" not in exam_data:
+            raise ValueError("Missing 'questions' field")
+        if not isinstance(exam_data["questions"], list):
+            raise ValueError("'questions' must be a list")
+        if len(exam_data["questions"]) == 0:
+            raise ValueError("No questions generated")
+        
+        # Validar cada pregunta
+        for i, q in enumerate(exam_data["questions"]):
+            if "id" not in q or "question" not in q or "options" not in q or "correct_option_id" not in q:
+                raise ValueError(f"Question {i} is missing required fields")
+        
+        logger.info(f"Successfully generated {len(exam_data['questions'])} questions")
         return exam_data
+        
     except json.JSONDecodeError as e:
-        logger.error(f"JSON parse error: {e}")
-        raise HTTPException(status_code=500, detail="Error parsing LLM response")
+        logger.error(f"JSON parse error: {e}\nCleaned text: {clean_text[:1000]}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error parsing LLM response. The model did not return valid JSON. Error: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Unexpected error in mock-exam: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating exam: {str(e)}")
+
+
+async def generate_mock_exam_batched(request: MockExamRequest):
+    """Genera examen en lotes optimizados (10-15 preguntas por lote)"""
+    # Determinar tamaño de lote según el proveedor
+    if "gemini" in request.provider.lower():
+        batch_size = 15  # Gemini puede manejar más
+    else:
+        batch_size = 10  # Groq/otros más conservador
+    
+    num_batches = (request.num_questions + batch_size - 1) // batch_size
+    
+    all_questions = []
+    topics_str = ", ".join(request.topics)
+    
+    logger.info(f"Generating {request.num_questions} questions in {num_batches} batches of ~{batch_size}")
+    
+    for batch_num in range(num_batches):
+        questions_in_batch = min(batch_size, request.num_questions - len(all_questions))
+        start_id = len(all_questions) + 1
+        
+        logger.info(f"Batch {batch_num + 1}/{num_batches}: Generating {questions_in_batch} questions (IDs {start_id}-{start_id + questions_in_batch - 1})")
+        
+        # Crear request para este lote
+        batch_request = MockExamRequest(
+            topics=request.topics,
+            num_questions=questions_in_batch,
+            provider=request.provider
+        )
+        
+        try:
+            # Generar lote
+            batch_result = await generate_mock_exam(batch_request)
+            
+            # Renumerar IDs para que sean únicos
+            for i, q in enumerate(batch_result["questions"]):
+                q["id"] = f"q{start_id + i}"
+            
+            all_questions.extend(batch_result["questions"])
+            logger.info(f"Batch {batch_num + 1}/{num_batches} completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Error in batch {batch_num + 1}: {e}")
+            # Si falla un lote, continuar con los demás
+            continue
+    
+    if not all_questions:
+        raise HTTPException(status_code=500, detail="Failed to generate any questions")
+    
+    logger.info(f"Successfully generated {len(all_questions)}/{request.num_questions} questions")
+    
+    return {
+        "title": f"Simulacro de Examen C1 - Seguridad Social ({len(all_questions)} preguntas)",
+        "questions": all_questions
+    }
 
 
 @router.post("/flashcards/export")
