@@ -85,6 +85,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView }) => {
 
   const footerNavItems = [
     {
+      view: AppView.USAGE_STATS,
+      label: 'Uso y Costes',
+      icon: <ChartBarIcon className="h-5 w-5" />,
+    },
+    {
       view: AppView.VPS_TEST,
       label: '🔌 VPS Test',
       icon: <SparkIcon className="h-5 w-5" />,

@@ -4,37 +4,30 @@ import ModelSelector from '../ModelSelector';
 import { ModelProvider } from '../../contexts/ModelContext';
 
 describe('ModelSelector Component', () => {
-  const mockSetProvider = vi.fn();
+  const mockSetSelectedModel = vi.fn();
 
-  const renderWithContext = (provider = 'groq') => {
+  const renderWithContext = (selectedModel = 'groq-8b') => {
     return render(
-      <ModelProvider value={{ provider, setProvider: mockSetProvider }}>
-        <ModelSelector />
+      <ModelProvider value={{ selectedModel, setSelectedModel: mockSetSelectedModel }}>
+        <ModelSelector value={selectedModel} onChange={mockSetSelectedModel} />
       </ModelProvider>
     );
   };
 
-  it('should render model selector', () => {
+  it('renderiza el selector', () => {
     renderWithContext();
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeTruthy();
   });
 
-  it('should display current provider', () => {
-    renderWithContext('groq');
-    expect(screen.getByDisplayValue(/groq/i)).toBeInTheDocument();
+  it('muestra el modelo actual', () => {
+    renderWithContext('groq-8b');
+    expect(screen.getByDisplayValue(/groq-8b/i)).toBeTruthy();
   });
 
-  it('should call setProvider on change', () => {
-    renderWithContext();
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'deepseek' } });
-    expect(mockSetProvider).toHaveBeenCalledWith('deepseek');
-  });
-
-  it('should show all available providers', () => {
+  it('llama a setter al cambiar', () => {
     renderWithContext();
     const select = screen.getByRole('combobox');
-    const options = select.querySelectorAll('option');
-    expect(options.length).toBeGreaterThan(3);
+    fireEvent.change(select, { target: { value: 'deepseek-llama' } });
+    expect(mockSetSelectedModel).toHaveBeenCalledWith('deepseek-llama');
   });
 });

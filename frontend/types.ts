@@ -15,6 +15,7 @@ export enum AppView {
   SETTINGS = 'SETTINGS',
   VPS_TEST = 'VPS_TEST',
   BACKEND_TEST = 'BACKEND_TEST',
+  USAGE_STATS = 'USAGE_STATS',
 }
 
 export interface ChatMessage {

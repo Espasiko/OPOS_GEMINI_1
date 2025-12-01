@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import ModelSelector from './components/ModelSelector';
 import { ModelProvider } from './contexts/ModelContext';
 import ChatView from './components/ChatView';
+import UsageStats from './components/UsageStats';
 import CaseGeneratorView from './components/CaseGeneratorView';
 import SearchGroundingView from './components/SearchGroundingView';
 import SyllabusView from './components/SyllabusView';
@@ -108,6 +109,8 @@ const App: React.FC = () => {
     switch (currentView) {
       case AppView.CHAT:
         return <ChatView />;
+      case AppView.USAGE_STATS:
+        return <UsageStats />;
       case AppView.CASE_GENERATOR:
         return (
           <CaseGeneratorView

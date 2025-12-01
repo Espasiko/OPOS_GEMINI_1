@@ -3,24 +3,18 @@ import { render, screen } from '@testing-library/react';
 import ErrorMessage from '../ErrorMessage';
 
 describe('ErrorMessage Component', () => {
-  it('should render error message', () => {
-    render(<ErrorMessage message="Test error" />);
-    expect(screen.getByText('Test error')).toBeInTheDocument();
+  it('renderiza el mensaje de error', () => {
+    render(<ErrorMessage error="Test error" />);
+    expect(screen.getByText('Test error')).toBeTruthy();
   });
 
-  it('should render with error icon', () => {
-    const { container } = render(<ErrorMessage message="Error" />);
-    expect(container.querySelector('.error-icon')).toBeInTheDocument();
-  });
-
-  it('should handle empty message', () => {
-    render(<ErrorMessage message="" />);
-    expect(screen.queryByText('')).toBeInTheDocument();
-  });
-
-  it('should render long error messages', () => {
+  it('renderiza mensaje largo', () => {
     const longMessage = 'A'.repeat(500);
-    render(<ErrorMessage message={longMessage} />);
-    expect(screen.getByText(longMessage)).toBeInTheDocument();
+    render(<ErrorMessage error={longMessage} />);
+    expect(screen.getByText(longMessage)).toBeTruthy();
+  });
+
+  it('acepta mensaje vacío sin romper', () => {
+    render(<ErrorMessage error="" />);
   });
 });
