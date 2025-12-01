@@ -329,7 +329,7 @@ function calculateCost(tokens, provider)
 - [ ] CaseGeneratorView usa RAG
 - [ ] MockExamView usa RAG
 - [ ] MindMapView usa RAG
-- [ ] StudyPlanView usa RAG
+- [ ] StudyPlanView usa RAG y
 - [ ] Toggle "Usar RAG" en cada vista
 
 **Tareas Técnicas:**
@@ -365,7 +365,7 @@ if use_rag:
 - [ ] Lista de documentos subidos
 - [ ] Botón eliminar documento
 - [ ] Indicador "Indexado en RAG"
-- [ ] Filtro por tipo (PDF, TXT, URL)
+- [ ] Filtro por tipo (PDF, TXT, DOC, URL)
 
 **Tareas Técnicas:**
 ```python
