@@ -243,7 +243,7 @@ async def chat_message(request: ChatRequest):
     try:
         # Consultar RAG
         if request.use_rag:
-            rag = RAGAgentV2()
+            rag = get_rag_agent()
             results = await rag.search_documents(
                 query=request.message,
                 top_k=request.top_k,

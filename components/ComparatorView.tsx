@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { compareLawVersions, getTextFromUrl } from '../services/geminiService';
+import { compareLawVersions, getTextFromUrl } from '../services/backendService';
 import { CompareIcon } from './icons/CompareIcon';
 import InputSourceSelector, { extractTextFromFile } from './InputSourceSelector';
 

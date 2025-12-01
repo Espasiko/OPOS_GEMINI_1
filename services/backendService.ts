@@ -665,3 +665,92 @@ export async function checkAIHealth(): Promise<{ status: string; providers_avail
     throw error;
   }
 }
+
+// ============================================================================
+// UTILITY FUNCTIONS (migrated from geminiService)
+// ============================================================================
+
+/**
+ * Get text content from a URL using CORS proxies
+ */
+export async function getTextFromUrl(url: string): Promise<string> {
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
+
+  for (const proxyUrl of proxies) {
+    // eslint-disable-next-line no-undef
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    try {
+      const response = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const textContent = await response.text();
+        if (textContent && textContent.trim().length > 0) {
+          return textContent;
+        }
+      }
+    } catch {
+      clearTimeout(timeoutId);
+      console.warn(`Proxy failed: ${proxyUrl}`);
+    }
+  }
+
+  throw new Error('No se pudo obtener el contenido de la URL.');
+}
+
+/**
+ * Search with RAG (formerly Grounding)
+ */
+export async function searchWithGrounding(
+  query: string,
+  untilDate?: string
+): Promise<{ text: string; sources: Array<{ uri: string; title: string }> }> {
+  const response = await sendChatMessage({
+    message: query + (untilDate ? ` (Información válida hasta ${untilDate})` : ''),
+    conversation_id: 'search-' + Date.now(),
+    use_rag: true,
+    provider: 'mistral-vps'
+  });
+
+  return {
+    text: response.response,
+    sources: response.sources.map(s => ({
+      uri: s.norma,
+      title: `${s.norma}${s.articulo ? ' - Art. ' + s.articulo : ''}`
+    }))
+  };
+}
+
+/**
+ * Compare two law versions
+ */
+export async function compareLawVersions(textA: string, textB: string): Promise<string> {
+  const response = await compareTexts({
+    text1: textA,
+    text2: textB,
+    provider: 'groq-70b'
+  });
+
+  // Format the response
+  let formatted = '';
+  if (response.similarities && response.similarities.length > 0) {
+    formatted += '<strong>Similitudes:</strong>\n';
+    response.similarities.forEach(s => formatted += `• ${s}\n`);
+    formatted += '\n';
+  }
+  if (response.differences && response.differences.length > 0) {
+    formatted += '<strong>Diferencias:</strong>\n';
+    response.differences.forEach(d => formatted += `• ${d}\n`);
+    formatted += '\n';
+  }
+  if (response.conclusion) {
+    formatted += `<strong>Conclusión:</strong>\n${response.conclusion}`;
+  }
+
+  return formatted;
+}

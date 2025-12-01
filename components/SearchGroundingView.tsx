@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { searchWithGrounding } from '../services/geminiService';
+import { searchWithGrounding } from '../services/backendService';
 import { GroundingSource } from '../types';
 import { SearchIcon } from './icons/SearchIcon';
 

@@ -1,0 +1,746 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang3082{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil Segoe UI Symbol;}{\f2\fnil Calibri;}{\f3\fnil\fcharset1 Cambria Math;}{\f4\fnil\fcharset0 Cambria Math;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}{\*\mmathPr\mmathFont3\mwrapIndent1440 }\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang10 REGLAS DE ORO: \par
+Estrategia \ldblquote a prueba de balas\rdblquote  para c\'f3digo perfecto, seguro y moderno en tu proyecto\par
+A continuaci\'f3n presento un plan integral, basado en el estado y estructura de tu repositorio, para asegurar robustez, seguridad, calidad y eficiencia, incluyendo c\'f3mo integrar trabajo con IA de forma segura y efectiva. Est\'e1 pensado para que tu desarrollador full\f1\_\f0 stack de IA lo siga como reglas operativas. Incluye fases, pr\'e1cticas concretas, ejemplos y criterios de \'e9xito.\par
+\par
+1) Objetivos y criterios de \'e9xito\par
+Robustez: cero errores en runtime en producci\'f3n y degradaci\'f3n controlada ante fallos de proveedores externos (LLMs, Qdrant, red, etc.).\par
+Seguridad: sin vulnerabilidades cr\'edticas (OWASP Top 10), cero secretos expuestos, cumplimiento GDPR y minimizaci\'f3n de datos.\par
+Calidad: cobertura de tests > 85% en core, e2e verdes; PRs con verificaci\'f3n autom\'e1tica.\par
+Observabilidad: trazabilidad extremo a extremo de cada petici\'f3n y cada llamada a IA (latencia, coste, prompts, outputs anonimizados).\par
+Eficiencia: tiempos P95 de API < 500 ms (excluyendo latencia LLM), colas/streams para operaciones largas.\par
+Mantenibilidad: arquitectura clara (docs/ARCHITECTURE.md), est\'e1ndares de c\'f3digo (ai-specs/specs/*), linters y type-safety.\par
+2) Fases de implementaci\'f3n\par
+Fase 1 \f2\emdash  Est\f0\'e1ndares, seguridad base y CI/CD\par
+Est\'e1ndares unificados:\par
+Adoptar y hacer cumplir los documentos en ai-specs/specs/base-standards.mdc y ai-specs/specs/opositaia-standards.mdc como \ldblquote fuente de verdad\rdblquote .\par
+A\'f1adir verificaci\'f3n en CI: lint, format, types, tests, SAST.\par
+Seguridad fundamental:\par
+Secret management: variables solo en .env.*, a\'f1adir validaci\'f3n de esquema (p. ej., Zod) en bootstrap.\par
+Rotaci\'f3n de claves y principle of least privilege (API keys, Qdrant, VPS).\par
+Headers de seguridad en backend (CSP, HSTS, X-Frame-Options, etc.).\par
+Hardening de dependencias:\par
+Auditor\'eda autom\'e1tica semanal (npm audit, pip-audit, dependabot).\par
+CI/CD:\par
+Pipelines con gates: no merge sin pasar lint/type/test/coverage/scan.\par
+Build reproducible con lockfiles.\par
+Resultados: PRs bloquean c\'f3digo inseguro o sin tests; ning\'fan secreto en repo; baseline de seguridad.\par
+\par
+Fase 2 \f2\emdash  Testing de calidad y contratos tipo\f1\_\f0 first\par
+Contratos tipo-first:\par
+Frontend/Backend: tipos compartidos en types.ts (o package com\'fan) y OpenAPI para Backend (FastAPI ya facilita).\par
+Validaci\'f3n de entrada/salida con Zod/Pydantic.\par
+Testing:\par
+Unit tests: >85% core (utils/, services/, backend/models/, routers/).\par
+Contract tests: validar que backend cumple OpenAPI y frontend los consume.\par
+Integration tests: flujos cr\'edticos (chat, RAG, auth).\par
+E2E: scripts ya presentes (test_e2e_completo.py, test_e2e_simple.py). Extender a escenarios de fallo y recuperaci\'f3n.\par
+Test de prompts y pipelines de IA:\par
+Fixtures de prompts versionados, tests de regresi\'f3n sobre outputs \ldblquote aceptables\rdblquote .\par
+Mock de proveedores para estabilidad de tests.\par
+Resultados: cobertura medible, contratos s\'f3lidos, regresi\'f3n controlada en IA.\par
+\par
+Fase 3 \f2\emdash  Observabilidad, coste y resiliencia de IA\par
+Telemetr\f0\'eda:\par
+Instrumentaci\'f3n OpenTelemetry (traces/spans) para backend y llamadas a LLM/Qdrant.\par
+Logs estructurados (JSON) con IDs de correlaci\'f3n por request.\par
+M\'e9tricas clave:\par
+LLM: latencia, coste por request, tokens, tasa de error por proveedor/modelo.\par
+RAG: tasa de \ldblquote no grounding\rdblquote , recall aproximado, latencia de b\'fasqueda.\par
+Resiliencia:\par
+Timeouts/circuit breakers/retries con backoff para LLM y Qdrant.\par
+Fallback de proveedores (providers.ts / services/geminiService.ts).\par
+Degradaci\'f3n elegante: respuestas m\'ednimas sin IA cuando sea posible.\par
+Cost control:\par
+Cuotas diarias por usuario y globales, presupuestos por entorno, alertas.\par
+Resultados: visibilidad total y control de costes con experiencia estable.\par
+\par
+Fase 4 \f2\emdash  Seguridad avanzada y cumplimiento\par
+GDPR/Legal:\par
+Minimizaci\f0\'f3n de datos, anonimizaci\'f3n/pseudonimizaci\'f3n antes de enviar a LLM.\par
+Retenci\'f3n definida y borrado programado (Right to be Forgotten).\par
+DPA con proveedores; regiones de datos; auditor\'edas.\par
+RAG seguro:\par
+Validaci\'f3n y limpieza de contenidos indexados (XSS, PII).\par
+Control de acceso a embeddings/documentos (multitenancy si aplica).\par
+Protecci\'f3n de prompts:\par
+Prompt hardening (instrucciones anti-prompt injection, delimitadores, sanitizaci\'f3n).\par
+Filtrado de salida (toxicity, PII leakage).\par
+Supply chain:\par
+Verificaci\'f3n de integridad de im\'e1genes Docker; SBOM; escaneo de contenedores.\par
+Resultados: cumplimiento legal y defensa en profundidad.\par
+\par
+Fase 5 \f2\emdash  Modernidad, rendimiento y DX\par
+Frontend:\par
+React con Suspense/streaming cuando aplique (p. ej., chat streaming), memoization y splitting.\par
+A11y: mantener y ampliar __tests__/accessibility.\par
+Backend:\par
+FastAPI con pydantic v2, uvicorn/gunicorn settings \f0\'f3ptimas.\par
+Async IO correcto para llamadas a red; pools/connection reuse.\par
+Infra:\par
+Blue/green deploys o canary; feature flags; rollbacks r\'e1pidos.\par
+Caching estrat\'e9gico (utils/cache.ts): results de RAG, resoluciones de modelos, feature flags.\par
+Developer Experience:\par
+Plantillas de PR, convenciones de commits, documentaci\'f3n viva (docs/).\par
+Resultados: UX fluida, despliegues seguros y desarrollo fluido.\par
+\par
+3) Reglas generales obligatorias para el desarrollador full\f1\_\f0 stack de IA\par
+Seguridad primero:\par
+Nunca hardcodees secretos. Valida process.env/os.environ con esquema al iniciar.\par
+Aplica \ldblquote least privilege\rdblquote  y rotaci\'f3n de credenciales.\par
+Sanitiza absolutamente toda la entrada (usuario y proveedores IA). Escapa HTML/Markdown.\par
+Tipado y validaci\'f3n:\par
+Todas las funciones p\'fablicas y endpoints tienen tipos estrictos. Valida inputs/outputs (Zod/Pydantic).\par
+Errores y resiliencia:\par
+Cada integraci\'f3n externa debe tener timeouts, retries con backoff, y circuit breakers.\par
+Nunca rompas UI por error de IA: mostrar fallback con mensaje claro.\par
+IA segura y controlada:\par
+Prompts versionados, testeados y con policies anti-prompt injection.\par
+No env\'edes PII a LLM sin anonimizar. Loggea solo metadatos no sensibles.\par
+Implementa evaluaci\'f3n autom\'e1tica de outputs sensibles (regex PII, toxicity).\par
+RAG confiable:\par
+Normaliza y limpia textos, controla encoding. Eval\'faa la calidad (recall/precision proxy).\par
+Limita K, filtra duplicados, y usa \ldblquote attribution\rdblquote  para grounding.\par
+Observabilidad y costes:\par
+Cada request tiene un traceId; mide latencias y tokens. Establece cuotas/alertas.\par
+C\'f3digo limpio y mantenible:\par
+Sigue los est\'e1ndares en ai-specs/specs/*. Prettier/ESLint/ruff/black activos.\par
+Funciones peque\'f1as, puras, testeables. No side effects sorpresa.\par
+Tests como contrato:\par
+Ning\'fan PR sin tests relevantes (unit/integration/contract/e2e).\par
+Snapshots y golden tests para prompts y renderizado.\par
+Migraciones y datos:\par
+Migraciones versionadas; rollback plan.\par
+Datos de prueba desensibilizados.\par
+Documentaci\'f3n:\par
+Actualiza docs/ con cada cambio arquitect\'f3nico. Comentarios sobre decisiones de dise\'f1o cr\'edticas.\par
+4) Mejores pr\'e1cticas concretas por \'e1rea\par
+4.1 Backend (FastAPI) seguro y robusto\par
+Input/Output validation con Pydantic (strict mode). Respuestas tipadas.\par
+Middlewares:\par
+CORS restringido, CSP v\'eda reverse proxy.\par
+Rate limiting por IP/usuario.\par
+Logging estructurado y correlation IDs.\par
+Seguridad:\par
+JWT firmados con rotaci\'f3n y expiraci\'f3n corta; scopes/roles.\par
+CSRF para endpoints stateful si corresponde.\par
+Errores:\par
+Manejo global con HTTPException y formatos uniformes.\par
+No exponer stack traces en prod.\par
+Ejemplo de patr\'f3n de resiliencia (pseudo-Python):\par
+@router.post("/chat")\par
+async def chat(req: ChatRequest, user=Depends(auth_guard)):\par
+    with span("chat_pipeline") as s:\par
+        try:\par
+            ctx = await build_context(req, user)\par
+            resp = await call_llm_with_fallback(\par
+                prompt=make_prompt(ctx),\par
+                timeout=8.0,\par
+                retries=2,\par
+                backoff=0.5,\par
+            )\par
+            return \{"ok": True, "message": resp\}\par
+        except ExternalTimeout:\par
+            return \{"ok": False, "message": "Servicio de IA temporalmente no disponible."\}\par
+\par
+Copy\par
+\par
+Insert\par
+\par
+4.2 Frontend (React/TS) moderno y seguro\par
+TypeScript estricto, props y estados tipados, hooks puros.\par
+Sanitizaci\'f3n XSS: siempre escapar HTML proveniente de IA; usa DOMPurify si renderizas HTML.\par
+Suspense/streaming para chat; handlers de error boundaries.\par
+A11y tests y roles/aria correctos.\par
+Ejemplo de manejo seguro de contenido IA:\par
+import DOMPurify from 'dompurify';\par
+const SafeAIContent = (\{ html \}: \{ html: string \}) => (\par
+  <div dangerouslySetInnerHTML=\{\{ __html: DOMPurify.sanitize(html, \{ USE_PROFILES: \{ html: true \} \}) \}\} />\par
+);\par
+\par
+Copy\par
+\par
+Insert\par
+\par
+4.3 RAG seguro y de alta calidad\par
+Pipeline:\par
+Limpieza/normalizaci\'f3n\par
+Split sem\'e1ntico con metadatos\par
+Embedding consistente (mismo modelo, versi\'f3n controlada)\par
+Qdrant con filtros y payloads\par
+Re-ranking opcional\par
+Evaluaci\'f3n continua:\par
+Conjuntos de queries can\'f3nicas; medir P@K, Recall@K aproximado.\par
+Alertas si baja la calidad.\par
+Seguridad:\par
+Filtrar PII al indexar y antes de enviar chunks a LLM.\par
+Control de acceso por colecci\'f3n o payload.\par
+4.4 Trabajo con IA: prompts, herramientas y evaluaci\'f3n\par
+Versionado de prompts:\par
+Estructura: system | developer | user; delimitadores claros; variables tipadas.\par
+Guardar en repo con IDs y metadatos (proveedor/modelo).\par
+Red Teaming:\par
+Bater\'eda de ataques de prompt injection, jailbreaking, datos sensibles.\par
+Tests autom\'e1ticos en CI con casos maliciosos.\par
+Herramientas/funciones:\par
+Define funciones con esquemas estrictos y valida outputs del LLM contra ellos.\par
+Evaluaci\'f3n autom\'e1tica:\par
+Heur\'edsticas + small models (clasificaci\'f3n) para bandera roja (PII, toxicidad).\par
+\ldblquote Golden answers\rdblquote  para queries frecuentes; score de similitud.\par
+Observabilidad:\par
+Logging de prompts y outputs con anonimizaci\'f3n; m\'e9tricas por promptId y modelo.\par
+5) Integraci\'f3n de CI/CD y calidad automatizada\par
+Pipeline recomendado:\par
+Lint + Type check (frontend/backend)\par
+Unit tests + coverage\par
+Integration tests\par
+Security scans (SAST, deps)\par
+E2E en entorno ef\'edmero\par
+Build artefactos + SBOM\par
+Deploy canary + validaci\'f3n smoke + auto\f1\_\f0 rollback si fallan checks\par
+Pol\'edticas:\par
+Branch protection: 2 reviews, status checks obligatorios.\par
+Commit convenci\'f3n (Conventional Commits) y CHANGELOG automatizado.\par
+6) Gesti\'f3n de secretos y configuraci\'f3n\par
+Solo .env.example en repo; .env fuera de VCS.\par
+Validaci\'f3n de configuraci\'f3n al arranque:\par
+// Node/TS\par
+import \{ z \} from 'zod';\par
+const Env = z.object(\{\par
+  OPENAI_API_KEY: z.string().min(1),\par
+  QDRANT_URL: z.string().url(),\par
+\}).parse(process.env);\par
+\par
+Copy\par
+\par
+Insert\par
+\par
+Rotaci\'f3n peri\'f3dica, segregaci\'f3n por entorno (dev/staging/prod) y permisos m\'ednimos.\par
+7) Observabilidad y control de costes\par
+Tracing distribuido con OpenTelemetry (backend, llamadas LLM, RAG).\par
+M\'e9tricas:\par
+p50/p90/p99 latencia API y LLM\par
+tokens por request y coste estimado\par
+tasa de timeouts y fallbacks\par
+calidad RAG (proxy)\par
+Alertas:\par
+Coste diario > umbral\par
+Error rate > umbral\par
+Bajas de calidad RAG\par
+8) Lista de verificaci\'f3n por PR (Definition of Done)\par
+Seguridad: sin secretos, inputs/outputs validados, sanitizaci\'f3n de contenido IA, headers/CSRF donde aplique.\par
+Calidad: tests pasan; cobertura no baja; snapshots actualizados; prompts versionados.\par
+Performance: sin queries sin \'edndice; sin N+1; sin renders innecesarios; uso de caching si procede.\par
+Observabilidad: logs/metrics/traces a\'f1adidos para nuevas rutas o integraciones.\par
+Docs: README/ARCHITECTURE o specs actualizadas si procede.\par
+9) Riesgos y \'e1reas a investigar en tu repo\par
+Revisar routers cr\'edticos en backend/routers/chat.py y manejo de streaming y fallbacks de proveedores.\par
+Validaci\'f3n fuerte de .env del backend (backend/.env.example vs runtime real).\par
+Sanitizaci\'f3n en componentes que muestran respuestas IA (components/ChatView.tsx, SearchGroundingView.tsx).\par
+Revisi\'f3n de RAG/Qdrant scripts (backend/setup_qdrant_collection.py, migrate_qdrant_*): limpieza/PII y control de acceso a colecciones.\par
+Consolidar providers de IA en utils/providers.ts y services/geminiService.ts con timeouts/circuit\f1\_\f0 breakers y m\'e9tricas.\par
+10) M\'e9tricas de aceptaci\'f3n para declarar el sistema \ldblquote a prueba de balas\rdblquote\par
+Seguridad:\par
+0 vulnerabilidades \ldblquote high/critical\rdblquote  en SAST/DAST/deps.\par
+Pentest interno sobre prompts y endpoints sin hallazgos cr\'edticos.\par
+Robustez:\par
+p95 API < 500 ms (sin LLM); p95 LLM < 4 s con fallback \f3\u8804?\f0  1.5 s.\par
+Tasa de error < 0.5%; degradaci\'f3n controlada ante ca\'eddas de proveedor IA.\par
+Calidad:\par
+85% cobertura en core; todos los e2e verdes.\par
+\par
+Contratos tipados sincronizados; sin roturas en builds semanales.\par
+Observabilidad:\par
+100% de requests con traceId; dashboards y alertas activos.\par
+Costes:\par
+Coste por sesi\'f3n dentro de presupuestos; alertas funcionando.\par
+11) Plantillas \'fatiles (ilustrativas)\par
+Circuit breaker con retry/backoff (TypeScript):\par
+import pRetry from 'p-retry';\par
+import CircuitBreaker from 'opossum';\par
+\par
+const callLLM = async (input: Prompt) => \{ /* ... */ \};\par
+\par
+const breaker = new CircuitBreaker(callLLM, \{ timeout: 8000, errorThresholdPercentage: 50, resetTimeout: 10000 \});\par
+\par
+export const safeLLMCall = (input: Prompt) =>\par
+  pRetry(() => breaker.fire(input), \{ retries: 2, factor: 2, minTimeout: 300 \});\par
+\par
+Copy\par
+\par
+Insert\par
+\par
+Filtro y anonimizaci\'f3n antes de IA (Python):\par
+PII_RE = re.compile(r'\\b(\\d\{8\}[A-Z]|[0-9]\{16\}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]\{2,\})\\b', re.I)\par
+def anonymize(text: str) -> str:\par
+    return PII_RE.sub("[REDACTED]", text)\par
+\par
+Copy\par
+\par
+Insert\par
+\par
+12) Asunciones y puntos a confirmar\par
+Autenticaci\'f3n/Autorizaci\'f3n: confirmar si todo el flujo de chat requiere sesi\'f3n/roles.\par
+Pol\'edtica de retenci\'f3n y borrado de logs/telemetr\'eda con datos sensibles.\par
+Estrategia de canary/rollback en VPS o plataforma usada (ver VPS_* docs).\par
+Modo de streaming actual del chat y sanitizaci\'f3n en frontend.\par
+Configuraci\'f3n de Qdrant (local vs cloud) y multitenancy/seguridad.\par
+13) Pr\'f3ximos pasos accionables (1-2 semanas)\par
+Activar validaci\'f3n de env + secret scanning + dependabot en CI.\par
+Implementar middlewares de seguridad en FastAPI y rate limiting.\par
+Unificar providers IA con timeouts/retries/fallback + m\'e9tricas.\par
+A\'f1adir sanitizaci\'f3n centralizada para respuestas IA en frontend.\par
+Incorporar trazas OpenTelemetry en llamadas IA y RAG.\par
+Aumentar cobertura de tests en servicios cr\'edticos y e2e de flujos principales.\par
+Versionar prompts y a\'f1adir test de regresi\'f3n + red teaming b\'e1sico.\par
+Aplicando esta estrategia por fases, con reglas claras y automatizadas en CI/CD, tu c\'f3digo converger\'e1 a un est\'e1ndar \ldblquote a prueba de balas\rdblquote : seguro, robusto, moderno y elegante, con IA integrada de forma controlada y medible.\par
+ademas aikido ha detectado esto: Using\f4  \f0 dangerouslySetInnerHTML\f4  \f0 in\f4  \f0 React\f4  \f0 can\f4  \f0 lead\f4  \f0 to\f4  \f0 XSS\f4  \f0 attacks\par
+\par
+We\f4  \f0 found\f4  \f0 4\f4  \f0 issues\f4 : \f0 last\f4  \f0 detected\f4  \f0 1\f4  \f0 minute\f4  \f0 ago\par
+\par
+New\par
+\par
+SAST\par
+\par
+TL\f4 ;\f0 DR\par
+\par
+Using\f4  \f0 dangerouslySetInnerHTML\f4  \f0 can\f4  \f0 allow\f4  \f0 attacks\f4  \f0 to\f4  \f0 insert\f4  \f0 HTML\f4  \f0 into\f4  \f0 your\f4  \f0 page\f4 , \f0 or\f4  \f0 even\f4  \f0 scripts\f4  \f0 if\f4  \f0 you\f4  \f0 don't\f4  \f0 have\f4  \f0 strict\f4  \f0 CSP\f4  \f0 rules\f4  \f0 set\f4  \f0 up\f4 . \f0 Worst\f4  \f0 case\f4 , \f0 it\f4  \f0 could\f4  \f0 be\f4  \f0 used\f4  \f0 as\f4  \f0 a\f4  \f0 way\f4  \f0 to\f4  \f0 start\f4  \f0 a\f4  \f0 social\f4  \f0 engineering\f4  \f0 attack\f4  \f0 or\f4  \f0 start\f4  \f0 an\f4  \f0 account\f4  \f0 takeover\f4  \f0 attack\f4 .\f0\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Avoid\f4  \f0 dangerouslySetInnerHTML\f4  \f0 usage\f4 . \f0 Ignore\f4  \f0 this\f4  \f0 issue\f4  \f0 only\f4  \f0 if\f4  \f0 the\f4  \f0 HTML\f4  \f0 content\f4  \f0 you\f4  \f0 feed\f4  \f0 into\f4  \f0 it\f4  \f0 is\f4  \f0 static\f4 . \f0 Defend\f4  \f0 in\f4  \f0 depth\f4  \f0 against\f4  \f0 XSS\f4  \f0 attacks\f4  \f0 by\f4  \f0 using\f4  \f0 a\f4  \f0 strict\f4  \f0 CSP\f4  \f0 policy\f4 . \f0 If\f4  \f0 you\f4  \f0 must\f4  \f0 use\f4  \f0 HTML\f4 , \f0 sanitize\f4  \f0 it\f4  \f0 with\f4  \f0 a\f4  \f0 library\f4  \f0 such\f4  \f0 as\f4  \f0 DOMPurify\f4 . \f0\par
+\par
+\par
+\par
+Subissues\par
+\par
+4\par
+\par
+Subissue\par
+\par
+frontend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+components\f4 /\f0 ChatView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 263\f4  \f0 in\f4  \f0 ChatView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 msg\f4 .\f0 text\f4 .\f0 replace\f4 (/\\\f0 n\f4 /\f0 g\f4 , \f0 '\f4 <\f0 br\f4  />\f0 '\f4 ) \}\}\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+components\f4 /\f0 ComparatorView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 137\f4  \f0 in\f4  \f0 ComparatorView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 comparison\f4 .\f0 replace\f4 (/\\\f0 n\f4 /\f0 g\f4 , \f0 '\f4 <\f0 br\f4  />\f0 '\f4 ) \}\}\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+components\f4 /\f0 SchemaView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 132\f4  \f0 in\f4  \f0 SchemaView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 parseSchemaToHtml\f4 (\f0 schema\f4 ) \}\}\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+components\f4 /\f0 SummaryView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 124\f4  \f0 in\f4  \f0 SummaryView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 summary\f4 .\f0 replace\f4 (/\\\f0 n\f4 /\f0 g\f4 , \f0 '\f4 <\f0 br\f4  />\f0 '\f4 ) \}\} \f0 y\f4  \f0 Using\f4  \f0 dangerouslySetInnerHTML\f4  \f0 in\f4  \f0 React\f4  \f0 can\f4  \f0 lead\f4  \f0 to\f4  \f0 XSS\f4  \f0 attacks\par
+\par
+We\f4  \f0 found\f4  \f0 4\f4  \f0 issues\f4 : \f0 last\f4  \f0 detected\f4  \f0 1\f4  \f0 minute\f4  \f0 ago\par
+\par
+New\par
+\par
+SAST\par
+\par
+TL\f4 ;\f0 DR\par
+\par
+Using\f4  \f0 dangerouslySetInnerHTML\f4  \f0 can\f4  \f0 allow\f4  \f0 attacks\f4  \f0 to\f4  \f0 insert\f4  \f0 HTML\f4  \f0 into\f4  \f0 your\f4  \f0 page\f4 , \f0 or\f4  \f0 even\f4  \f0 scripts\f4  \f0 if\f4  \f0 you\f4  \f0 don't\f4  \f0 have\f4  \f0 strict\f4  \f0 CSP\f4  \f0 rules\f4  \f0 set\f4  \f0 up\f4 . \f0 Worst\f4  \f0 case\f4 , \f0 it\f4  \f0 could\f4  \f0 be\f4  \f0 used\f4  \f0 as\f4  \f0 a\f4  \f0 way\f4  \f0 to\f4  \f0 start\f4  \f0 a\f4  \f0 social\f4  \f0 engineering\f4  \f0 attack\f4  \f0 or\f4  \f0 start\f4  \f0 an\f4  \f0 account\f4  \f0 takeover\f4  \f0 attack\f4 .\f0\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Avoid\f4  \f0 dangerouslySetInnerHTML\f4  \f0 usage\f4 . \f0 Ignore\f4  \f0 this\f4  \f0 issue\f4  \f0 only\f4  \f0 if\f4  \f0 the\f4  \f0 HTML\f4  \f0 content\f4  \f0 you\f4  \f0 feed\f4  \f0 into\f4  \f0 it\f4  \f0 is\f4  \f0 static\f4 . \f0 Defend\f4  \f0 in\f4  \f0 depth\f4  \f0 against\f4  \f0 XSS\f4  \f0 attacks\f4  \f0 by\f4  \f0 using\f4  \f0 a\f4  \f0 strict\f4  \f0 CSP\f4  \f0 policy\f4 . \f0 If\f4  \f0 you\f4  \f0 must\f4  \f0 use\f4  \f0 HTML\f4 , \f0 sanitize\f4  \f0 it\f4  \f0 with\f4  \f0 a\f4  \f0 library\f4  \f0 such\f4  \f0 as\f4  \f0 DOMPurify\f4 . \f0\par
+\par
+\par
+\par
+Subissues\par
+\par
+4\par
+\par
+Subissue\par
+\par
+frontend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+components\f4 /\f0 ChatView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 263\f4  \f0 in\f4  \f0 ChatView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 msg\f4 .\f0 text\f4 .\f0 replace\f4 (/\\\f0 n\f4 /\f0 g\f4 , \f0 '\f4 <\f0 br\f4  />\f0 '\f4 ) \}\}\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+components\f4 /\f0 ComparatorView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 137\f4  \f0 in\f4  \f0 ComparatorView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 comparison\f4 .\f0 replace\f4 (/\\\f0 n\f4 /\f0 g\f4 , \f0 '\f4 <\f0 br\f4  />\f0 '\f4 ) \}\}\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+components\f4 /\f0 SchemaView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 132\f4  \f0 in\f4  \f0 SchemaView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 parseSchemaToHtml\f4 (\f0 schema\f4 ) \}\}\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+components\f4 /\f0 SummaryView\f4 .\f0 tsx\par
+\par
+High\par
+\par
+Line\f4  \f0 124\f4  \f0 in\f4  \f0 SummaryView\f4 .\f0 tsx\par
+\par
+dangerouslySetInnerHTML\f4 =\{\{ __\f0 html\f4 : \f0 summary\f4 .\f0 replace\f4 (/\\\f0 n\f4 /\f0 g\f4 , \f0 '\f4 <\f0 br\f4  />\f0 '\f4 ) \}\} \f0 Remove\f4  \f0 deprecated\f4  \f0 `allow\f4 _\f0 redirects`\f4  \f0 argument\f4  \f0 from\f4  \f0 `TestClient`\par
+\par
+0\f4 .\f0 45\f4 .\f0 0\par
+\par
+Drop\f4  \f0 Python\f4  \f0 3\f4 .\f0 8\f4  \f0 support\par
+\par
+0\f4 .\f0 45\f4 .\f0 0\par
+\par
+Remove\f4  \f0 `ExceptionMiddleware`\f4  \f0 import\f4  \f0 proxy\f4  \f0 from\f4  \f0 `starlette\f4 .\f0 exceptions`\f4  \f0 module\par
+\par
+0\f4 .\f0 45\f4 .\f0 0\par
+\par
+Remove\f4  \f0 deprecated\f4  \f0 `WS\f4 _\f0 1004\f4 _\f0 NO\f4 _\f0 STATUS\f4 _\f0 RCVD`\f4  \f0 and\f4  \f0 `WS\f4 _\f0 1005\f4 _\f0 ABNORMAL\f4 _\f0 CLOSURE`\par
+\par
+0\f4 .\f0 46\f4 .\f0 0\par
+\par
+`MultiPartParser`\f4 : \f0 Rename\f4  \f0 `max\f4 _\f0 file\f4 _\f0 size`\f4  \f0 to\f4  \f0 `spool\f4 _\f0 max\f4 _\f0 size`\f4  \f0 By\f4  \f0 default\f4 , \f0 containers\f4  \f0 are\f4  \f0 run\f4  \f0 with\f4  \f0 root\f4  \f0 privileges\f4  \f0 and\f4  \f0 also\f4  \f0 run\f4  \f0 as\f4  \f0 the\f4  \f0 root\f4  \f0 user\f4  \f0 inside\f4  \f0 the\f4  \f0 container\f4 . \f0 Running\f4  \f0 the\f4  \f0 app\f4  \f0 as\f4  \f0 root\f4  \f0 gives\f4  \f0 a\f4  \f0 hacker\f4  \f0 who\f4  \f0 was\f4  \f0 able\f4  \f0 to\f4  \f0 hack\f4  \f0 the\f4  \f0 application\f4  \f0 instant\f4  \f0 root\f4  \f0 access\f4  \f0 to\f4  \f0 the\f4  \f0 Docker\f4  \f0 host\f4 , \f0 which\f4  \f0 could\f4  \f0 help\f4  \f0 them\f4  \f0 to\f4  \f0 escalate\f4  \f0 a\f4  \f0 hack\f4 .\f0\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Add\f4  \f0 'USER\f4  \f0 username'\f4  \f0 to\f4  \f0 the\f4  \f0 end\f4  \f0 of\f4  \f0 your\f4  \f0 file\f4 . \f0\par
+\par
+\par
+\par
+Subissues\par
+\par
+1\par
+\par
+Subissue\par
+\par
+backend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+backend\f4 /\f0 Dockerfile\par
+\par
+Medium\par
+\par
+Line\f4  \f0 1\f4  - \f0 29\f4  \f0 in\f4  \f0 Dockerfile\par
+\par
+\f4 # \f0 OpositaIA\f4  \f0 Backend\f4  \f0 Dockerfile\f4  \f0 FROM\f4  \f0 python\f4 :\f0 3\f4 .\f0 11\f4 -\f0 slim\f4   # \f0 Set\f4  \f0 working\f4  \f0 directory\f4  ...     \f0 CMD\f4  \f0 curl\f4  -\f0 f\f4  {\f0{\field{\*\fldinst{HYPERLINK http://localhost:8000/health }}{\fldrslt{http\f4 ://\f0 localhost\f4 :\f0 8000\f4 /\f0 health\ul0\cf0}}}}\f4\fs22  || \f0 exit\f4  \f0 1\f4   # \f0 Run\f4  \f0 the\f4  \f0 application\f4  \f0 CMD\f4  [\f0 "uvicorn"\f4 , \f0 "app\f4 .\f0 main\f4 :\f0 app"\f4 , \f0 "\f4 --\f0 host"\f4 , \f0 "0\f4 .\f0 0\f4 .\f0 0\f4 .\f0 0"\f4 , \f0 "\f4 --\f0 port"\f4 , \f0 "8000"\f4 ] \f0 If\f4  \f0 an\f4  \f0 attacker\f4  \f0 can\f4  \f0 control\f4  \f0 the\f4  \f0 URL\f4  \f0 input\f4  \f0 leading\f4  \f0 into\f4  \f0 this\f4  \f0 HTTP\f4  \f0 request\f4 , \f0 the\f4  \f0 attack\f4  \f0 might\f4  \f0 be\f4  \f0 able\f4  \f0 to\f4  \f0 perform\f4  \f0 an\f4  \f0 SSRF\f4  \f0 attack\f4 . \f0 This\f4  \f0 kind\f4  \f0 of\f4  \f0 attack\f4  \f0 is\f4  \f0 even\f4  \f0 more\f4  \f0 dangerous\f4  \f0 if\f4  \f0 the\f4  \f0 application\f4  \f0 returns\f4  \f0 the\f4  \f0 response\f4  \f0 of\f4  \f0 the\f4  \f0 request\f4  \f0 to\f4  \f0 the\f4  \f0 user\f4 . \f0 It\f4  \f0 could\f4  \f0 allow\f4  \f0 them\f4  \f0 to\f4  \f0 retrieve\f4  \f0 information\f4  \f0 from\f4  \f0 higher\f4  \f0 privileged\f4  \f0 services\f4  \f0 within\f4  \f0 the\f4  \f0 network\f4  (\f0 such\f4  \f0 as\f4  \f0 the\f4  \f0 metadata\f4  \f0 service\f4 , \f0 which\f4  \f0 is\f4  \f0 commonly\f4  \f0 available\f4  \f0 in\f4  \f0 cloud\f4  \f0 services\f4 , \f0 and\f4  \f0 could\f4  \f0 allow\f4  \f0 them\f4  \f0 to\f4  \f0 retrieve\f4  \f0 credentials\f4 ).\f0\par
+\par
+Show\f4  \f0 more\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+If\f4  \f0 possible\f4 , \f0 only\f4  \f0 allow\f4  \f0 requests\f4  \f0 to\f4  \f0 allowlisting\f4  \f0 domains\f4 . \f0 If\f4  \f0 not\f4 , \f0 consult\f4  \f0 the\f4  \f0 article\f4  \f0 linked\f4  \f0 above\f4  \f0 to\f4  \f0 learn\f4  \f0 about\f4  \f0 other\f4  \f0 mitigating\f4  \f0 techniques\f4  \f0 such\f4  \f0 as\f4  \f0 disabling\f4  \f0 redirects\f4 , \f0 blocking\f4  \f0 private\f4  \f0 IPs\f4  \f0 and\f4  \f0 making\f4  \f0 sure\f4  \f0 private\f4  \f0 services\f4  \f0 have\f4  \f0 internal\f4  \f0 authentication\f4 . \f0 If\f4  \f0 you\f4  \f0 return\f4  \f0 data\f4  \f0 coming\f4  \f0 from\f4  \f0 the\f4  \f0 request\f4  \f0 to\f4  \f0 the\f4  \f0 user\f4 , \f0 validate\f4  \f0 the\f4  \f0 data\f4  \f0 before\f4  \f0 returning\f4  \f0 it\f4  \f0 to\f4  \f0 make\f4  \f0 sure\f4  \f0 you\f4  \f0 don't\f4  \f0 return\f4  \f0 random\f4  \f0 data\f4 . \f0\par
+\par
+More\f4  \f0 information\par
+\par
+\par
+\par
+Show\f4  \f0 more\par
+\par
+Subissues\par
+\par
+4\par
+\par
+Subissue\par
+\par
+backend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+backend\f4 /\f0 agents\f4 /\f0 indexar\f4 _\f0 todas\f4 _\f0 las\f4 _\f0 leyes\f4 .\f0 py\par
+\par
+Medium\par
+\par
+Line\f4  \f0 267\f4  \f0 in\f4  \f0 indexar\f4 _\f0 todas\f4 _\f0 las\f4 _\f0 leyes\f4 .\f0 py\par
+\par
+response\f4  = \f0 requests\f4 .\f0 get\f4 (\f0 ley\f4 [\f0 'url'\f4 ], \f0 timeout\f4 =\f0 180\f4 )\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+backend\f4 /\f0 migrate\f4 _\f0 qdrant\f4 _\f0 to\f4 _\f0 cloud\f4 .\f0 py\par
+\par
+Medium\par
+\par
+Line\f4  \f0 44\f4  \f0 in\f4  \f0 migrate\f4 _\f0 qdrant\f4 _\f0 to\f4 _\f0 cloud\f4 .\f0 py\par
+\par
+f"\f4\{\f0 base\f4 _\f0 url\f4\}/\f0 collections\f4 /\{\f0 COLLECTION\f4 _\f0 NAME\f4\}\f0 "\f4 ,\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+comparar\f4 _\f0 qdrant\f4 _\f0 local\f4 _\f0 vs\f4 _\f0 cloud\f4 .\f0 py\par
+\par
+Medium\par
+\par
+Line\f4  \f0 35\f4  \f0 in\f4  \f0 comparar\f4 _\f0 qdrant\f4 _\f0 local\f4 _\f0 vs\f4 _\f0 cloud\f4 .\f0 py\par
+\par
+f"\f4\{\f0 base\f4 _\f0 url\f4\}/\f0 collections\f4 /\{\f0 COLLECTION\f4 _\f0 NAME\f4\}\f0 "\f4 ,\f0\par
+\par
+View\f4  \f0 code\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+comparar\f4 _\f0 qdrant\f4 _\f0 local\f4 _\f0 vs\f4 _\f0 cloud\f4 .\f0 py\par
+\par
+Medium\par
+\par
+Line\f4  \f0 72\f4  \f0 in\f4  \f0 comparar\f4 _\f0 qdrant\f4 _\f0 local\f4 _\f0 vs\f4 _\f0 cloud\f4 .\f0 py\par
+\par
+f"\f4\{\f0 base\f4 _\f0 url\f4\}/\f0 collections\f4 /\{\f0 COLLECTION\f4 _\f0 NAME\f4\}/\f0 points\f4 /\f0 scroll"\f4 , \f0 y\f4  \f0 We\f4  \f0 detected\f4  \f0 secret\f4  \f0 *****UGGU\f4  \f0 in\f4  \f0 the\f4  \f0 git\f4  \f0 history\f4  \f0 of\f4  \f0 the\f4  \f0 OPOS\f4 _\f0 GEMINI\f4 _\f0 1\f4  \f0 repository\f4 . \f0 The\f4  \f0 secret\f4  \f0 was\f4  \f0 found\f4  \f0 in\f4  \f0 backend\f4 /\f0 migrate\f4 _\f0 qdrant\f4 _\f0 simple\f4 .\f0 py@\f4  \f0 this\f4  \f0 commit\f4  ->\f0\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+If\f4  \f0 this\f4  \f0 API\f4  \f0 key\f4  \f0 is\f4  \f0 harmless\f4 , \f0 you\f4  \f0 can\f4  \f0 ignore\f4  \f0 this\f4  \f0 issue\f4 . \f0 If\f4  \f0 not\f4 , \f0 we\f4  \f0 would\f4  \f0 advise\f4  \f0 to\f4  \f0 move\f4  \f0 the\f4  \f0 secret\f4  \f0 out\f4  \f0 of\f4  \f0 the\f4  \f0 git\f4  \f0 repository\f4  \f0 by\f4  \f0 either\f4  \f0 injecting\f4  \f0 it\f4  \f0 via\f4  \f0 the\f4  \f0 environment\f4  \f0 or\f4  \f0 even\f4  \f0 better\f4 , \f0 by\f4  \f0 using\f4  \f0 a\f4  \f0 tool\f4  \f0 such\f4  \f0 as\f4  \f0 AWS\f4  \f0 Secrets\f4  \f0 Manager\f4  \f0 to\f4  \f0 inject\f4  \f0 the\f4  \f0 secrets\f4  \f0 at\f4  \f0 run\f4 -\f0 time\f4 . \f0 After\f4  \f0 that\f4 , \f0 it\f4  \f0 should\f4  \f0 be\f4  \f0 possible\f4  \f0 to\f4  \f0 invalidate\f4  \f0 the\f4  \f0 current\f4  \f0 secret\f4  \f0 and\f4  \f0 regenerate\f4  \f0 a\f4  \f0 new\f4  \f0 one\f4 .\f0\par
+\par
+Note\f4 : \f0 Exposed\f4  \f0 secrets\f4  \f0 need\f4  \f0 to\f4  \f0 be\f4  \f0 marked\f4  \f0 as\f4  \f0 resolved\f4  \f0 manually\f4 . \f0 This\f4  \f0 secret\f4  \f0 was\f4  \f0 not\f4  \f0 detected\f4  \f0 in\f4  \f0 the\f4  \f0 latest\f4  \f0 version\f4  \f0 of\f4  \f0 your\f4  \f0 app\f4 , \f0 but\f4  \f0 in\f4  \f0 the\f4  \f0 git\f4  \f0 history\f4  \f0 of\f4  \f0 your\f4  \f0 repository\f4 . \f0 That\f4  \f0 means\f4  \f0 it\f4  \f0 could\f4  \f0 still\f4  \f0 leak\f4  \f0 if\f4  \f0 someone\f4  \f0 has\f4  \f0 access\f4  \f0 to\f4  \f0 your\f4  \f0 source\f4  \f0 code\f4 .\f0\par
+\par
+Subissues\par
+\par
+1\par
+\par
+Subissue\par
+\par
+Author\par
+\par
+backend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+***************\f4 (...)\f0 ***************UGGU\par
+\par
+Medium\par
+\par
+Line\f4  \f0 17\f4  \f0 in\f4  \f0 backend\f4 /\f0 migrate\f4 _\f0 qdrant\f4 _\f0 simple\f4 .\f0 py\par
+\par
+View\f4  \f0 commit\par
+\par
+Downgraded\f4 : \f0 Secret\f4  \f0 located\f4  \f0 in\f4  \f0 deleted\f4  \f0 file\par
+\par
+Espasiko\f4  \f0 If\f4  \f0 this\f4  \f0 API\f4  \f0 key\f4  \f0 is\f4  \f0 harmless\f4 , \f0 you\f4  \f0 can\f4  \f0 ignore\f4  \f0 this\f4  \f0 issue\f4 . \f0 If\f4  \f0 not\f4 , \f0 we\f4  \f0 would\f4  \f0 advise\f4  \f0 to\f4  \f0 move\f4  \f0 the\f4  \f0 secret\f4  \f0 out\f4  \f0 of\f4  \f0 the\f4  \f0 git\f4  \f0 repository\f4  \f0 by\f4  \f0 either\f4  \f0 injecting\f4  \f0 it\f4  \f0 via\f4  \f0 the\f4  \f0 environment\f4  \f0 or\f4  \f0 even\f4  \f0 better\f4 , \f0 by\f4  \f0 using\f4  \f0 a\f4  \f0 tool\f4  \f0 such\f4  \f0 as\f4  \f0 AWS\f4  \f0 Secrets\f4  \f0 Manager\f4  \f0 to\f4  \f0 inject\f4  \f0 the\f4  \f0 secrets\f4  \f0 at\f4  \f0 run\f4 -\f0 time\f4 . \f0 After\f4  \f0 that\f4 , \f0 it\f4  \f0 should\f4  \f0 be\f4  \f0 possible\f4  \f0 to\f4  \f0 invalidate\f4  \f0 the\f4  \f0 current\f4  \f0 secret\f4  \f0 and\f4  \f0 regenerate\f4  \f0 a\f4  \f0 new\f4  \f0 one\f4 .\f0\par
+\par
+Note\f4 : \f0 Exposed\f4  \f0 secrets\f4  \f0 need\f4  \f0 to\f4  \f0 be\f4  \f0 marked\f4  \f0 as\f4  \f0 resolved\f4  \f0 manually\f4 . \f0 This\f4  \f0 secret\f4  \f0 was\f4  \f0 not\f4  \f0 detected\f4  \f0 in\f4  \f0 the\f4  \f0 latest\f4  \f0 version\f4  \f0 of\f4  \f0 your\f4  \f0 app\f4 , \f0 but\f4  \f0 in\f4  \f0 the\f4  \f0 git\f4  \f0 history\f4  \f0 of\f4  \f0 your\f4  \f0 repository\f4 . \f0 That\f4  \f0 means\f4  \f0 it\f4  \f0 could\f4  \f0 still\f4  \f0 leak\f4  \f0 if\f4  \f0 someone\f4  \f0 has\f4  \f0 access\f4  \f0 to\f4  \f0 your\f4  \f0 source\f4  \f0 code\f4 . \f0 If\f4  \f0 an\f4  \f0 attacker\f4  \f0 can\f4  \f0 control\f4  \f0 the\f4  \f0 input\f4  \f0 leading\f4  \f0 into\f4  \f0 the\f4  \f0 open\f4  \f0 function\f4 , \f0 they\f4  \f0 might\f4  \f0 be\f4  \f0 able\f4  \f0 to\f4  \f0 read\f4  \f0 sensitive\f4  \f0 files\f4  \f0 and\f4  \f0 launch\f4  \f0 further\f4  \f0 attacks\f4  \f0 with\f4  \f0 that\f4  \f0 information\f4 .\f0\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Ignore\f4  \f0 this\f4  \f0 issue\f4  \f0 only\f4  \f0 after\f4  \f0 you've\f4  \f0 verified\f4  \f0 or\f4  \f0 sanitized\f4  \f0 the\f4  \f0 input\f4  \f0 going\f4  \f0 into\f4  \f0 this\f4  \f0 function\f4 .   \f0\par
+\par
+\par
+\par
+Subissues\par
+\par
+1\par
+\par
+Subissue\par
+\par
+backend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+backend\f4 /\f0 agents\f4 /\f0 pdf\f4 _\f0 processor\f4 .\f0 py\par
+\par
+Medium\par
+\par
+Line\f4  \f0 38\f4  \f0 in\f4  \f0 pdf\f4 _\f0 processor\f4 .\f0 py\par
+\par
+with\f4  \f0 open\f4 (\f0 pdf\f4 _\f0 path\f4 , \f0 'rb'\f4 ) \f0 as\f4  \f0 file\f4 : \f0 y\f4  \f0 Affected\f4  \f0 versions\f4  \f0 of\f4  \f0 this\f4  \f0 package\f4  \f0 are\f4  \f0 vulnerable\f4  \f0 to\f4  \f0 Denial\f4  \f0 of\f4  \f0 Service\f4  (\f0 DoS\f4 ) \f0 attacks\f4  \f0 when\f4  \f0 processing\f4  \f0 requests\f4  \f0 with\f4  \f0 maliciously\f4  \f0 crafted\f4  \f0 input\f4 . \f0 Specifically\f4 , \f0 if\f4  \f0 a\f4  \f0 request\f4  \f0 includes\f4  \f0 junk\f4  \f0 data\f4  \f0 after\f4  \f0 the\f4  \f0 boundary\f4  \f0 in\f4  \f0 a\f4  \f0 multipart\f4  \f0 request\f4 , \f0 the\f4  \f0 server\f4  \f0 fails\f4  \f0 to\f4  \f0 handle\f4  \f0 it\f4  \f0 correctly\f4 . \f0 This\f4  \f0 causes\f4  \f0 resource\f4  \f0 exhaustion\f4 , \f0 resulting\f4  \f0 in\f4  \f0 the\f4  \f0 server\f4  \f0 becoming\f4  \f0 unresponsive\f4  \f0 and\f4  \f0 unable\f4  \f0 to\f4  \f0 process\f4  \f0 further\f4  \f0 requests\f4 .\f0\par
+\par
+Does\f4  \f0 this\f4  \f0 affect\f4  \f0 me\f4 ?\f0\par
+\par
+You\f4  \f0 are\f4  \f0 affected\f4  \f0 if\f4  \f0 you\f4  \f0 are\f4  \f0 using\f4  \f0 a\f4  \f0 version\f4  \f0 that\f4  \f0 falls\f4  \f0 within\f4  \f0 the\f4  \f0 vulnerable\f4  \f0 range\f4 .\f0\par
+\par
+How\f4  \f0 are\f4  \f0 you\f4  \f0 using\f4  \f0 it\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Upgrade\f4  \f0 the\f4  \f0 `python\f4 -\f0 multipart`\f4  \f0 library\f4  \f0 to\f4  \f0 the\f4  \f0 patch\f4  \f0 version\f4 . \f0\par
+\par
+\par
+\par
+Subissues\par
+\par
+1\par
+\par
+Subissue\par
+\par
+Fix\par
+\par
+backend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+AIKIDO\f4 -\f0 2024\f4 -\f0 10493\f4  | \f0 CVE\f4 -\f0 2024\f4 -\f0 53981\par
+\par
+Low\par
+\par
+backend\f4 /\f0 requirements\f4 .\f0 txt\par
+\par
+View\f4  \f0 reachability\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Only\f4  \f0 impacts\f4  \f0 performance\f4 , \f0 not\f4  \f0 security\par
+\par
+0\f4 .\f0 0\f4 .\f0 9\f4  => \f0 0\f4 .\f0 0\f4 .\f0 18\f4  \f0 y\f4  \f0 ck\par
+\par
+Low\par
+\par
+\par
+\par
+1\f4  \f0 hr\par
+\par
+PY\par
+\par
+python\f4 -\f0 jose\par
+\par
+Sensitive\f4  \f0 information\f4  \f0 exposed\f4  \f0 in\f4  \f0 error\f4  \f0 messages\par
+\par
+Low\par
+\par
+\par
+\par
+30\f4  \f0 min\par
+\par
+We\f4  \f0 have\f4  \f0 no\f4  \f0 more\f4  \f0 issues\f4  \f0 to\f4  \f0 show\par
+\par
+\par
+\par
+20\par
+\par
+Low\f4  \f0 Risk\par
+\par
+pypdf\par
+\par
+Affected\f4  \f0 by\f4  \f0 1\f4  \f0 CVE\f4 : \f0 last\f4  \f0 detected\f4  \f0 18\f4  \f0 minutes\f4  \f0 ago\par
+\par
+New\par
+\par
+Dependency\par
+\par
+TL\f4 ;\f0 DR\par
+\par
+Affected\f4  \f0 versions\f4  \f0 of\f4  \f0 this\f4  \f0 package\f4  \f0 are\f4  \f0 vulnerable\f4  \f0 to\f4  \f0 denial\f4  \f0 of\f4  \f0 service\f4  \f0 due\f4  \f0 to\f4  \f0 full\f4  \f0 decompression\f4  \f0 of\f4  \f0 nested\f4  \f0 `FlateDecode`\f4  \f0 streams\f4 , \f0 allowing\f4  \f0 a\f4  \f0 small\f4  \f0 malicious\f4  \f0 PDF\f4  \f0 to\f4  \f0 expand\f4  \f0 to\f4  \f0 over\f4  \f0 1\f4  \f0 PB\f4  \f0 and\f4  \f0 exhaust\f4  \f0 system\f4  \f0 resources\f4 .\f0\par
+\par
+Does\f4  \f0 this\f4  \f0 affect\f4  \f0 me\f4 ?\f0\par
+\par
+You\f4  \f0 are\f4  \f0 affected\f4  \f0 if\f4  \f0 you\f4  \f0 are\f4  \f0 using\f4  \f0 a\f4  \f0 version\f4  \f0 that\f4  \f0 falls\f4  \f0 within\f4  \f0 the\f4  \f0 vulnerable\f4  \f0 range\f4 .\f0\par
+\par
+How\f4  \f0 are\f4  \f0 you\f4  \f0 using\f4  \f0 it\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Upgrade\f4  \f0 the\f4  \f0 `pypdf`\f4  \f0 library\f4  \f0 to\f4  \f0 the\f4  \f0 patch\f4  \f0 version\f4 . \f0\par
+\par
+Affected\f4  \f0 versions\f4  \f0 of\f4  \f0 this\f4  \f0 package\f4  \f0 are\f4  \f0 vulnerable\f4  \f0 to\f4  \f0 sensitive\f4  \f0 information\f4  \f0 leakage\f4  \f0 through\f4  \f0 JWKError\f4  \f0 exceptions\f4 . \f0 When\f4  \f0 an\f4  \f0 invalid\f4  \f0 algorithm\f4  \f0 is\f4  \f0 provided\f4 , \f0 error\f4  \f0 messages\f4  \f0 may\f4  \f0 disclose\f4  \f0 key\f4  \f0 data\f4 . \f0 An\f4  \f0 attacker\f4  \f0 can\f4  \f0 exploit\f4  \f0 this\f4  \f0 by\f4  \f0 submitting\f4  \f0 malformed\f4  \f0 key\f4  \f0 data\f4 , \f0 forcing\f4  \f0 exceptions\f4  \f0 that\f4  \f0 reveal\f4  \f0 sensitive\f4  \f0 information\f4 . \f0 It\f4  \f0 could\f4  \f0 allow\f4  \f0 the\f4  \f0 attacker\f4  \f0 to\f4  \f0 gather\f4  \f0 cryptographic\f4  \f0 material\f4 , \f0 potentially\f4  \f0 leading\f4  \f0 to\f4  \f0 signature\f4  \f0 forgery\f4  \f0 or\f4  \f0 unauthorized\f4  \f0 access\f4 .\f0\par
+\par
+Show\f4  \f0 more\par
+\par
+Does\f4  \f0 this\f4  \f0 affect\f4  \f0 me\f4 ?\f0\par
+\par
+You\f4  \f0 are\f4  \f0 affected\f4  \f0 if\f4  \f0 you\f4  \f0 are\f4  \f0 using\f4  \f0 a\f4  \f0 version\f4  \f0 that\f4  \f0 falls\f4  \f0 within\f4  \f0 the\f4  \f0 vulnerable\f4  \f0 range\f4 .\f0\par
+\par
+How\f4  \f0 are\f4  \f0 you\f4  \f0 using\f4  \f0 it\par
+\par
+How\f4  \f0 do\f4  \f0 I\f4  \f0 fix\f4  \f0 it\f4 ?\f0\par
+\par
+\par
+\par
+Upgrade\f4  \f0 the\f4  \f0 `python\f4 -\f0 jose`\f4  \f0 library\f4  \f0 to\f4  \f0 a\f4  \f0 patch\f4  \f0 version\f4 . \f0\par
+\par
+\par
+\par
+Subissues\par
+\par
+1\par
+\par
+Subissue\par
+\par
+Fix\par
+\par
+backend\par
+\par
+OPOS\f4 _\f0 GEMINI\f4 _\f0 1\par
+\par
+AIKIDO\f4 -\f0 2025\f4 -\f0 10337\par
+\par
+Low\par
+\par
+backend\f4 /\f0 requirements\f4 .\f0 txt\par
+\par
+View\f4  \f0 reachability\f4  \f0 analysis\par
+\par
+Downgraded\f4 : \f0 Service\f4  \f0 not\f4  \f0 internet\f4 -\f0 connected\par
+\par
+3\f4 .\f0 3\f4 .\f0 0\f4  => \f0 3\f4 .\f0 5\f4 .\f0 0\par
+\par
+2\f4  \f0 ignored\f4  \f0 items\par
+\lang10\par
+}
+ 

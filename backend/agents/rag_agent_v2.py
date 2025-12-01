@@ -21,26 +21,39 @@ class RAGAgentV2:
     
     def __init__(
         self,
-        qdrant_url: str = "http://localhost:6333",
-        collection_name: str = "opositaia_leyes_seguridad_social",
-        embedding_model: str = "PlanTL-GOB-ES/RoBERTalex",
+        qdrant_url: Optional[str] = None,
+        collection_name: Optional[str] = None,
+        embedding_model: Optional[str] = None,
         api_key: Optional[str] = None
     ):
-        self.qdrant_url = qdrant_url
-        self.collection_name = collection_name
-        self.embedding_model = embedding_model
+        # Leer desde variables de entorno si no se proporcionan
+        self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
+        self.collection_name = collection_name or os.getenv("COLLECTION_NAME", "opositaia_leyes_seguridad_social")
+        self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "PlanTL-GOB-ES/RoBERTalex")
+        api_key = api_key or os.getenv("QDRANT_API_KEY")
+        
+        logger.info(f"Initializing RAG Agent V2")
+        logger.info(f"  Qdrant URL: {self.qdrant_url}")
+        logger.info(f"  Collection: {self.collection_name}")
+        logger.info(f"  Embedding Model: {self.embedding_model}")
         
         # Initialize Qdrant client
-        if api_key:
-            self.qdrant_client = QdrantClient(url=qdrant_url, api_key=api_key)
-        else:
-            self.qdrant_client = QdrantClient(url=qdrant_url)
+        try:
+            if api_key:
+                self.qdrant_client = QdrantClient(url=self.qdrant_url, api_key=api_key, timeout=30)
+                logger.info("  Connected to Qdrant Cloud with API key")
+            else:
+                self.qdrant_client = QdrantClient(url=self.qdrant_url, timeout=30)
+                logger.info("  Connected to Qdrant (local)")
+        except Exception as e:
+            logger.error(f"Failed to connect to Qdrant: {e}")
+            raise
         
         # Initialize RoBERTalex
-        logger.info(f"Loading embedding model: {embedding_model}")
-        self.model = SentenceTransformer(embedding_model)
+        logger.info(f"Loading embedding model: {self.embedding_model}")
+        self.model = SentenceTransformer(self.embedding_model)
         
-        logger.info(f"RAG Agent V2 initialized with collection: {collection_name}")
+        logger.info(f"✅ RAG Agent V2 initialized successfully")
     
     def generate_embedding(self, text: str) -> List[float]:
         """Genera embedding usando RoBERTalex"""

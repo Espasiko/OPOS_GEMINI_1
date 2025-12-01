@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { generateMockExam } from '../services/geminiService';
-import { MockExam, PracticalCaseQuestion, CaseAnswer } from '../types';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MockExam, CaseAnswer } from '../types';
 import { ProgressData } from '../App';
 import { SparkIcon } from './icons/SparkIcon';
-import { ExamIcon } from './icons/ExamIcon';
+import { useModel } from '../contexts/ModelContext';
+
 
 const syllabusTopics = [
   'Incapacidad Temporal',
@@ -19,9 +19,10 @@ const syllabusTopics = [
 
 type ExamStage = 'config' | 'generating' | 'in_progress' | 'results';
 
-const MockExamView: React.FC<{ addProgressData: (data: ProgressData[]) => void }> = ({
+const MockExamView: React.FC<{ addProgressData: () => void }> = ({
   addProgressData,
 }) => {
+  const { selectedModel } = useModel();
   const [stage, setStage] = useState<ExamStage>('config');
   const [exam, setExam] = useState<MockExam | null>(null);
   const [answers, setAnswers] = useState<CaseAnswer>({});
@@ -41,7 +42,7 @@ const MockExamView: React.FC<{ addProgressData: (data: ProgressData[]) => void }
     } else if (stage === 'in_progress' && timeLeft === 0) {
       handleFinishExam();
     }
-  }, [stage, timeLeft]);
+  }, [stage, timeLeft, handleFinishExam]);
 
   const handleTopicToggle = (topic: string) => {
     setSelectedTopics(prev =>
@@ -57,17 +58,37 @@ const MockExamView: React.FC<{ addProgressData: (data: ProgressData[]) => void }
     setStage('generating');
     setError(null);
     try {
-      const newExam = await generateMockExam(selectedTopics, questionCount);
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+      const response = await fetch(`${BACKEND_URL}/ai/mock-exam`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          topics: selectedTopics,
+          num_questions: questionCount,
+          provider: selectedModel || 'deepseek'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Error: ${response.statusText}`);
+      }
+
+      const newExam = await response.json();
       setExam(newExam);
       const initialAnswers: CaseAnswer = {};
-      newExam.questions.forEach(q => {
+      newExam.questions.forEach((q: { id: string }) => {
         initialAnswers[q.id] = { selectedOptions: [], attempts: 1, showExplanation: false };
       });
       setAnswers(initialAnswers);
       setTimeLeft(questionCount * 90); // 90 seconds per question
       setStage('in_progress');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMessage);
       setStage('config');
     }
   };
@@ -82,8 +103,9 @@ const MockExamView: React.FC<{ addProgressData: (data: ProgressData[]) => void }
     }));
   };
 
-  const handleFinishExam = () => {
-    const progress: ProgressData[] = exam!.questions.map(q => {
+  const handleFinishExam = useCallback(() => {
+    if (!exam) return;
+    const progress: ProgressData[] = exam.questions.map(q => {
       const answer = answers[q.id];
       const isCorrect = answer?.selectedOptions[0] === q.correct_option_id;
       return {
@@ -95,7 +117,7 @@ const MockExamView: React.FC<{ addProgressData: (data: ProgressData[]) => void }
     });
     addProgressData(progress);
     setStage('results');
-  };
+  }, [exam, answers, selectedTopics, addProgressData]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -126,9 +148,12 @@ const MockExamView: React.FC<{ addProgressData: (data: ProgressData[]) => void }
                 value={questionCount}
                 onChange={e => setQuestionCount(Number(e.target.value))}
                 min="5"
-                max="50"
+                max="75"
                 className="w-full p-2 border rounded-md dark:bg-slate-800 dark:border-slate-700"
               />
+              <p className="text-sm text-slate-500 mt-1">
+                Simulacros de hasta 75 preguntas (como los exámenes reales C1)
+              </p>
             </div>
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-2">Temas a incluir:</h3>

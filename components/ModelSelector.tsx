@@ -98,6 +98,17 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ value, onChange }) => {
                   </option>
                 ))}
             </optgroup>
+            <optgroup label="🔮 Mistral AI">
+              {providers
+                .filter((p) => p.provider === 'mistral')
+                .map((p) => (
+                  <option key={p.id} value={p.id} disabled={!p.configured}>
+                    {SPEED_EMOJI[p.speed as keyof typeof SPEED_EMOJI]}{' '}
+                    {COST_EMOJI[p.cost as keyof typeof COST_EMOJI]} {p.model}
+                    {!p.configured && ' (No configurado)'}
+                  </option>
+                ))}
+            </optgroup>
             <optgroup label="🤗 Hugging Face">
               {providers
                 .filter((p) => p.provider === 'huggingface')
