@@ -374,9 +374,137 @@ async def get_providers():
     }
 
 @router.get("/usage/summary")
-async def usage_summary():
-    """Resumen agregado de uso (file fallback si DB no disponible)."""
-    return usage_logger.summary()
+async def usage_summary(
+    from_ts: Optional[str] = None,
+    to_ts: Optional[str] = None,
+    user_id: Optional[str] = None,
+    provider: Optional[str] = None,
+):
+    """Resumen agregado de uso con filtros (file fallback si DB no disponible).
+
+    Si la DB está disponible, se agrupa en SQL para eficiencia.
+    Si no, se usa el archivo JSONL del logger y se filtra en memoria.
+    """
+    def parse_dt(s: Optional[str]) -> Optional[datetime]:
+        if not s:
+            return None
+        try:
+            return datetime.fromisoformat(s)
+        except Exception:
+            return None
+
+    from_dt = parse_dt(from_ts)
+    to_dt = parse_dt(to_ts)
+
+    # Intentar DB resumen
+    try:
+        with db.get_cursor() as cur:
+            where = []
+            params = []
+            if from_dt is not None:
+                where.append("created_at >= %s")
+                params.append(from_dt)
+            if to_dt is not None:
+                where.append("created_at <= %s")
+                params.append(to_dt)
+            if user_id:
+                where.append("user_id = %s")
+                params.append(user_id)
+            if provider:
+                where.append("provider_id = %s")
+                params.append(provider)
+            where_sql = (" WHERE " + " AND ".join(where)) if where else ""
+
+            # Totales
+            cur.execute(
+                f"""
+                SELECT COUNT(*) AS requests,
+                       COALESCE(SUM(total_tokens), 0) AS tokens,
+                       COALESCE(SUM(total_cost_eur), 0) AS cost
+                FROM usage_logs
+                {where_sql}
+                """,
+                params,
+            )
+            total_row = cur.fetchone()
+
+            # Por proveedor
+            cur.execute(
+                f"""
+                SELECT provider_id,
+                       COUNT(*) AS requests,
+                       COALESCE(SUM(total_tokens), 0) AS tokens,
+                       COALESCE(SUM(total_cost_eur), 0) AS cost
+                FROM usage_logs
+                {where_sql}
+                GROUP BY provider_id
+                ORDER BY cost DESC
+                """,
+                params,
+            )
+            by_provider = {}
+            for pid, req, tok, cst in cur.fetchall():
+                by_provider[pid] = {
+                    'requests': int(req),
+                    'tokens': int(tok),
+                    'cost': float(cst),
+                }
+
+            return {
+                'totalRequests': int(total_row[0] or 0),
+                'totalTokens': int(total_row[1] or 0),
+                'totalCost': float(total_row[2] or 0.0),
+                'byProvider': by_provider,
+            }
+    except Exception as e:
+        logger.warning(f"Summary DB aggregation failed, using file fallback: {e}")
+
+    # Fallback a archivo JSONL
+    summary = {
+        'totalRequests': 0,
+        'totalTokens': 0,
+        'totalCost': 0.0,
+        'byProvider': {},
+    }
+    try:
+        log_path = getattr(usage_logger, 'log_path', None)
+        if not log_path or not os.path.exists(log_path):
+            return summary
+        with open(log_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+
+                created_at = rec.get('created_at')
+                if created_at and (from_dt or to_dt):
+                    try:
+                        cdt = datetime.fromisoformat(created_at)
+                        if from_dt and cdt < from_dt:
+                            continue
+                        if to_dt and cdt > to_dt:
+                            continue
+                    except Exception:
+                        pass
+                if user_id and rec.get('user_id') != user_id:
+                    continue
+                if provider and rec.get('provider_id') != provider:
+                    continue
+
+                summary['totalRequests'] += 1
+                summary['totalTokens'] += rec.get('total_tokens', 0)
+                summary['totalCost'] += rec.get('total_cost_eur', 0.0)
+                p = rec.get('provider_id')
+                if p not in summary['byProvider']:
+                    summary['byProvider'][p] = {'requests': 0, 'tokens': 0, 'cost': 0.0}
+                summary['byProvider'][p]['requests'] += 1
+                summary['byProvider'][p]['tokens'] += rec.get('total_tokens', 0)
+                summary['byProvider'][p]['cost'] += rec.get('total_cost_eur', 0.0)
+    except Exception as e:
+        logger.error(f"Error reading usage log file for summary: {e}")
+
+    return summary
 
 
 @router.get("/usage/export")
