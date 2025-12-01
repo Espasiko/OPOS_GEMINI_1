@@ -437,6 +437,78 @@ class CohereProvider(LLMProvider):
         }
 
 
+class MistralAgentProvider(LLMProvider):
+    """Mistral AI Agent - Medium con web access y code generation"""
+    
+    def __init__(self, agent_id: str = None):
+        self.api_key = os.getenv('MISTRAL_API_KEY')
+        self.agent_id = agent_id or os.getenv('AGENTE_ID')
+        self.base_url = 'https://api.mistral.ai/v1'
+        
+        if not self.api_key:
+            logger.warning("MISTRAL_API_KEY not found in environment")
+        if not self.agent_id:
+            logger.warning("AGENTE_ID not found in environment")
+    
+    async def generate_stream(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 2000
+    ) -> AsyncGenerator[str, None]:
+        """Genera respuesta usando Mistral Agent API"""
+        
+        if not self.api_key or not self.agent_id:
+            raise ValueError("MISTRAL_API_KEY and AGENTE_ID must be configured")
+        
+        # Agregar system prompt si no existe (el agente necesita instrucciones)
+        if not any(msg.get('role') == 'system' for msg in messages):
+            messages.insert(0, {
+                "role": "system",
+                "content": "Eres un asistente experto en derecho español de Seguridad Social. Responde de forma precisa citando siempre fuentes legales oficiales."
+            })
+        
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            try:
+                response = await client.post(
+                    f"{self.base_url}/agents/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "agent_id": self.agent_id,
+                        "messages": messages,
+                        "temperature": temperature,
+                        "max_tokens": max_tokens
+                    }
+                )
+                
+                if response.status_code != 200:
+                    error_text = response.text
+                    raise Exception(f"Mistral Agent API error: {response.status_code} - {error_text}")
+                
+                result = response.json()
+                if result.get('choices'):
+                    content = result['choices'][0]['message'].get('content', '')
+                    yield content
+                    
+            except Exception as e:
+                logger.error(f"Mistral Agent error: {e}")
+                raise
+    
+    def get_info(self) -> Dict[str, Any]:
+        return {
+            "name": "Agent Medium",
+            "provider": "mistral-agent",
+            "model": "mistral-medium",
+            "speed": "medium",
+            "cost": "€0.10/M",
+            "features": ["web-access", "code-generation"],
+            "configured": bool(self.api_key and self.agent_id)
+        }
+
+
 class MistralVPSProvider(LLMProvider):
     """Mistral en VPS - Fallback siempre disponible"""
     
@@ -518,6 +590,9 @@ PROVIDERS = {
     # Cohere (Producción) 🔷
     'cohere-command-r': CohereProvider('command-r-08-2024'),
     'cohere-command-r-plus': CohereProvider('command-r-plus-08-2024'),
+    
+    # Mistral AI 🟣
+    'mistral-agent': MistralAgentProvider(),  # Agent Medium con web + code
     
     # Mistral VPS (Fallback siempre disponible) 🐌
     'mistral-vps': MistralVPSProvider()

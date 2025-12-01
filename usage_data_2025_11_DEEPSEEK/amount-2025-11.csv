@@ -1,0 +1,13 @@
+﻿user_id,utc_date,model,api_key_name,api_key,type,price,amount
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-25,deepseek-chat,Va o no,sk-950b3***********************a861,output_tokens,0.00000042,4796
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-25,deepseek-chat,Va o no,sk-950b3***********************a861,request_count,,11
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-25,deepseek-chat,Va o no,sk-950b3***********************a861,input_cache_hit_tokens,0.000000028,2368
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-25,deepseek-chat,Va o no,sk-950b3***********************a861,input_cache_miss_tokens,0.00000028,7654
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-29,deepseek-chat,Va o no,sk-950b3***********************a861,output_tokens,0.00000042,15296
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-29,deepseek-chat,Va o no,sk-950b3***********************a861,request_count,,8
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-29,deepseek-chat,Va o no,sk-950b3***********************a861,input_cache_hit_tokens,0.000000028,768
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-29,deepseek-chat,Va o no,sk-950b3***********************a861,input_cache_miss_tokens,0.00000028,1128
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-30,deepseek-chat,Va o no,sk-950b3***********************a861,output_tokens,0.00000042,5874
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-30,deepseek-chat,Va o no,sk-950b3***********************a861,request_count,,4
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-30,deepseek-chat,Va o no,sk-950b3***********************a861,input_cache_hit_tokens,0.000000028,896
+651b9593-cda5-4ecc-8532-8e764337ad47,2025-11-30,deepseek-chat,Va o no,sk-950b3***********************a861,input_cache_miss_tokens,0.00000028,316

@@ -3,7 +3,7 @@ Chat Router - Streaming chat with Mistral + RAG
 Sprint 7 - Fase 1
 Sprint 11 - Tracking PostgreSQL
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import AsyncGenerator, Optional
@@ -19,6 +19,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from agents.rag_agent_v2 import RAGAgentV2
 from agents.llm_providers import get_provider, list_providers
+from services.token_counter import token_counter
+from services.usage_logger import usage_logger
 from database.db import db
 
 logger = logging.getLogger(__name__)
@@ -66,7 +68,7 @@ class Source(BaseModel):
 
 
 @router.post("/stream")
-async def chat_stream(request: ChatRequest):
+async def chat_stream(request: ChatRequest, raw_request: Request):
     """
     Chat con streaming usando Mistral + RAG
     
@@ -79,6 +81,9 @@ async def chat_stream(request: ChatRequest):
     async def generate() -> AsyncGenerator[str, None]:
         context = ""
         sources = []
+        start_time = time.time()
+        input_messages = []
+        output_accumulator = []
         
         try:
             # 1. Consultar RAG si use_rag=True
@@ -193,6 +198,7 @@ IMPORTANTE: Responde basándote PRINCIPALMENTE en las leyes oficiales del contex
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ]
+                input_messages = messages
                 
                 async for content in provider.generate_stream(messages, temperature=0.7, max_tokens=2000):
                     # Enviar en formato SSE compatible con frontend
@@ -202,6 +208,7 @@ IMPORTANTE: Responde basándote PRINCIPALMENTE en las leyes oficiales del contex
                         }]
                     }
                     yield f"data: {json.dumps(chunk_data)}\n\n"
+                    output_accumulator.append(content)
                 
             except Exception as e:
                 error_msg = f"Provider {request.provider} error: {str(e)}"
@@ -213,6 +220,43 @@ IMPORTANTE: Responde basándote PRINCIPALMENTE en las leyes oficiales del contex
             if sources:
                 yield f"data: {json.dumps({'sources': sources})}\n\n"
             
+            # 5. Tracking tokens y costos
+            try:
+                input_tokens = token_counter.count_messages_tokens([
+                    {"role": m["role"], "content": m["content"]} for m in input_messages
+                ])
+                output_text = "".join(output_accumulator)
+                output_tokens = token_counter.count_tokens(output_text)
+                usage = token_counter.calculate_cost(request.provider, input_tokens, output_tokens)
+
+                duration_ms = int((time.time() - start_time) * 1000)
+                usage_logger.log({
+                    'user_id': request.user_id or 'anonymous',
+                    'session_id': raw_request.headers.get('X-Session-ID', 'no-session'),
+                    'provider_id': request.provider,
+                    'model_name': provider.get_info().get('model'),
+                    'input_tokens': usage['input_tokens'],
+                    'output_tokens': usage['output_tokens'],
+                    'total_tokens': usage['total_tokens'],
+                    'input_cost_eur': usage['input_cost_eur'],
+                    'output_cost_eur': usage['output_cost_eur'],
+                    'total_cost_eur': usage['total_cost_eur'],
+                    'endpoint': '/chat/stream',
+                    'request_type': 'chat',
+                    'request_duration_ms': duration_ms,
+                    'success': True
+                })
+                # Enviar línea final con metadata de uso
+                usage_chunk = {
+                    'usage': {
+                        'total_tokens': usage['total_tokens'],
+                        'total_cost_eur': usage['total_cost_eur']
+                    }
+                }
+                yield f"data: {json.dumps(usage_chunk)}\n\n"
+            except Exception as te:
+                logger.error(f"Usage tracking failed: {te}")
+
             # Señal de finalización
             yield "data: [DONE]\n\n"
             
@@ -327,6 +371,11 @@ async def get_providers():
     return {
         "providers": list_providers()
     }
+
+@router.get("/usage/summary")
+async def usage_summary():
+    """Resumen agregado de uso (file fallback si DB no disponible)."""
+    return usage_logger.summary()
 
 
 @router.get("/health")

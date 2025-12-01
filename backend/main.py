@@ -30,6 +30,7 @@ except Exception as e:
 
 # Import routers
 from routers import rag, rag_v2, chat, upload, ai_functions, user
+from services.usage_logger import usage_logger  # ensure module imported for side effects
 from database.db import db
 
 

@@ -1,0 +1,15 @@
+request_id,created_at,status_code,time_to_first_token,time_to_completion,model,api_key_id,project_id,input_tokens,input_non_cached_tokens,input_cached_tokens,input_audio_seconds,output_tokens
+req_01kb8535prenksa1ejxa4zthpe,1764431599320,200,0.026492,5.206915,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb8527tgfj9smqbhpc1qj3r7,1764431568720,200,0.025938,0.492365,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,276,276,0,0,168
+req_01kb7tsa28etq8awdk3yxg5n7f,1764420790344,200,0.100654,5.009482,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7trv59evp95sj6wyngxwhc,1764420775081,200,0.027265,5.186327,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7tree4e9m8qj0qks4v5ter,1764420762052,200,0.038928,5.228519,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7tqt4kfbttvbe55sbxm4se,1764420741267,200,0.067559,5.29631,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7tqbmbe1v99z9cz8qz65vc,1764420726411,200,0.066579,5.563966,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7tpxe0fahsdxk07t53jwvr,1764420711872,200,0.088569,4.9806989999999995,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7tpfy6e9et6gqk78dxnqe4,1764420698054,200,0.027714,5.330545,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7tnzf0fzjbppz7d63x4bdm,1764420681184,200,0.086596,5.027491,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb7pm6ztf1wrmnd3t5kg6851,1764416429050,200,0.068776,5.031144,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb5zhbsxe3arrxzkpwkns3gc,1764358663997,200,0.044209,5.040167,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb5vm1n4epv8ntgagp49s9fg,1764354557604,200,0.06649,4.595034,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
+req_01kb5vkdhrensv0kjeh5ec006d,1764354537016,200,0.068494,5.510915,llama-3.3-70b-versatile,key_01jztfae9jef9s9vd2tcx5b3te,project_01jtk93y47fxav4kga8s7wpfzy,297,297,0,0,3000
