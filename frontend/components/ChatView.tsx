@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { sendChatMessageStream } from '../services/backendService';
 import { useModel } from '../contexts/ModelContext';
 import { ChatMessage, Conversation } from '../types';

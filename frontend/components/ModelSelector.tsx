@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getProviders } from '../services/backendService';
 
 interface Provider {
@@ -112,17 +112,17 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ value, onChange }) => {
             <optgroup label="🔷 Cohere">
               {providers
                 .filter((p) => p.provider === 'cohere')
-                            <optgroup label="🤖 Mistral Agent (Web + Code)">
-                              {providers
-                                .filter((p) => p.provider === 'mistral-agent')
-                                .map((p) => (
-                                  <option key={p.id} value={p.id} disabled={!p.configured}>
-                                    {SPEED_EMOJI[p.speed as keyof typeof SPEED_EMOJI]}{' '}
-                                    {COST_EMOJI[p.cost as keyof typeof COST_EMOJI]} {p.model}
-                                    {!p.configured && ' (No configurado)'}
-                                  </option>
-                                ))}
-                            </optgroup>
+                .map((p) => (
+                  <option key={p.id} value={p.id} disabled={!p.configured}>
+                    {SPEED_EMOJI[p.speed as keyof typeof SPEED_EMOJI]}{' '}
+                    {COST_EMOJI[p.cost as keyof typeof COST_EMOJI]} {p.model}
+                    {!p.configured && ' (No configurado)'}
+                  </option>
+                ))}
+            </optgroup>
+            <optgroup label="🤖 Mistral Agent (Web + Code)">
+              {providers
+                .filter((p) => p.provider === 'mistral-agent')
                 .map((p) => (
                   <option key={p.id} value={p.id} disabled={!p.configured}>
                     {SPEED_EMOJI[p.speed as keyof typeof SPEED_EMOJI]}{' '}

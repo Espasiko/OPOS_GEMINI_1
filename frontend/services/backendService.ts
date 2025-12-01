@@ -5,7 +5,7 @@
  * Handles chat, upload, and RAG operations
  */
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = (import.meta as any).env?.VITE_BACKEND_URL || 'http://localhost:8000';
 
 // ============================================================================
 // TYPES
