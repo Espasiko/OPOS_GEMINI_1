@@ -4,7 +4,7 @@ Sprint 7 - Fase 1
 Sprint 11 - Tracking PostgreSQL
 """
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel
 from typing import AsyncGenerator, Optional
 import httpx
@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import time
+from datetime import datetime
 
 # Import RAG Agent V2 and LLM Providers
 import sys
@@ -376,6 +377,175 @@ async def get_providers():
 async def usage_summary():
     """Resumen agregado de uso (file fallback si DB no disponible)."""
     return usage_logger.summary()
+
+
+@router.get("/usage/export")
+async def usage_export(
+    from_ts: Optional[str] = None,
+    to_ts: Optional[str] = None,
+    user_id: Optional[str] = None,
+    provider: Optional[str] = None,
+):
+    """
+    Exporta el uso como CSV desde la tabla `usage_logs`.
+    Filtros opcionales: `from_ts`, `to_ts` (ISO-8601), `user_id`, `provider`.
+    Si la base de datos no está disponible, hace fallback a los logs JSONL.
+    """
+
+    def parse_dt(s: Optional[str]) -> Optional[datetime]:
+        if not s:
+            return None
+        try:
+            return datetime.fromisoformat(s)
+        except Exception:
+            return None
+
+    from_dt = parse_dt(from_ts)
+    to_dt = parse_dt(to_ts)
+
+    async def generate_csv_db():
+        # Cabecera CSV
+        headers = [
+            "created_at","user_id","session_id","provider_id","model_name",
+            "input_tokens","output_tokens","total_tokens",
+            "input_cost_eur","output_cost_eur","total_cost_eur",
+            "endpoint","request_type","request_duration_ms","success","error_message",
+        ]
+        yield ",".join(headers) + "\n"
+
+        where = []
+        params = []
+        if from_dt is not None:
+            where.append("created_at >= %s")
+            params.append(from_dt)
+        if to_dt is not None:
+            where.append("created_at <= %s")
+            params.append(to_dt)
+        if user_id:
+            where.append("user_id = %s")
+            params.append(user_id)
+        if provider:
+            where.append("provider_id = %s")
+            params.append(provider)
+        where_sql = (" WHERE " + " AND ".join(where)) if where else ""
+
+        query = f"""
+            SELECT created_at, user_id, session_id, provider_id, model_name,
+                   input_tokens, output_tokens, total_tokens,
+                   input_cost_eur, output_cost_eur, total_cost_eur,
+                   endpoint, request_type, request_duration_ms, success, error_message
+            FROM usage_logs
+            {where_sql}
+            ORDER BY created_at DESC
+        """
+
+        with db.get_cursor() as cur:
+            cur.execute(query, params)
+            for row in cur.fetchall():
+                # Convertir a strings y escapar comas/barras
+                out = []
+                for val in row:
+                    if val is None:
+                        out.append("")
+                    else:
+                        s = str(val)
+                        if ',' in s or '\n' in s or '"' in s:
+                            s = '"' + s.replace('"', '""') + '"'
+                        out.append(s)
+                yield ",".join(out) + "\n"
+
+    async def generate_csv_file():
+        # Fallback leyendo el JSONL del usage_logger
+        headers = [
+            "created_at","user_id","session_id","provider_id","model_name",
+            "input_tokens","output_tokens","total_tokens",
+            "input_cost_eur","output_cost_eur","total_cost_eur",
+            "endpoint","request_type","request_duration_ms","success","error_message",
+        ]
+        yield ",".join(headers) + "\n"
+
+        try:
+            # Acceder al path del JSONL del usage_logger
+            log_path = getattr(usage_logger, 'log_path', None)
+            if not log_path or not os.path.exists(log_path):
+                return
+            with open(log_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    try:
+                        rec = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+
+                    # Filtros básicos
+                    created_at = rec.get('created_at')
+                    # El fallback de archivo no garantiza created_at; saltar filtro temporal si no existe
+                    if from_dt and created_at:
+                        try:
+                            cdt = datetime.fromisoformat(created_at)
+                            if cdt < from_dt:
+                                continue
+                        except Exception:
+                            pass
+                    if to_dt and created_at:
+                        try:
+                            cdt = datetime.fromisoformat(created_at)
+                            if cdt > to_dt:
+                                continue
+                        except Exception:
+                            pass
+                    if user_id and rec.get('user_id') != user_id:
+                        continue
+                    if provider and rec.get('provider_id') != provider:
+                        continue
+
+                    row = [
+                        rec.get('created_at', ''),
+                        rec.get('user_id', ''),
+                        rec.get('session_id', ''),
+                        rec.get('provider_id', ''),
+                        rec.get('model_name', ''),
+                        rec.get('input_tokens', 0),
+                        rec.get('output_tokens', 0),
+                        rec.get('total_tokens', 0),
+                        rec.get('input_cost_eur', 0.0),
+                        rec.get('output_cost_eur', 0.0),
+                        rec.get('total_cost_eur', 0.0),
+                        rec.get('endpoint', ''),
+                        rec.get('request_type', ''),
+                        rec.get('request_duration_ms', ''),
+                        rec.get('success', ''),
+                        rec.get('error_message', ''),
+                    ]
+                    out = []
+                    for val in row:
+                        s = str(val) if val is not None else ""
+                        if ',' in s or '\n' in s or '"' in s:
+                            s = '"' + s.replace('"', '""') + '"'
+                        out.append(s)
+                    yield ",".join(out) + "\n"
+        except Exception as e:
+            logger.error(f"Failed to export from file fallback: {e}")
+
+    # Intentar DB; si falla, fallback a archivo
+    try:
+        gen = generate_csv_db()
+        return StreamingResponse(
+            gen,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": "attachment; filename=usage_export.csv"
+            }
+        )
+    except Exception as e:
+        logger.warning(f"DB export failed, using file fallback: {e}")
+        gen = generate_csv_file()
+        return StreamingResponse(
+            gen,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": "attachment; filename=usage_export.csv"
+            }
+        )
 
 
 @router.get("/health")
