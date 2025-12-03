@@ -470,6 +470,7 @@ class MistralAgentProvider(LLMProvider):
         
         async with httpx.AsyncClient(timeout=120.0) as client:
             try:
+                # Mistral Agents API NO acepta temperature ni max_tokens cuando usas agent_id
                 response = await client.post(
                     f"{self.base_url}/agents/completions",
                     headers={
@@ -478,9 +479,8 @@ class MistralAgentProvider(LLMProvider):
                     },
                     json={
                         "agent_id": self.agent_id,
-                        "messages": messages,
-                        "temperature": temperature,
-                        "max_tokens": max_tokens
+                        "messages": messages
+                        # NO temperature, NO max_tokens con agents
                     }
                 )
                 

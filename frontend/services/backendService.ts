@@ -262,7 +262,10 @@ export async function* sendChatMessageStream(
             if (parsed.error) {
               throw new Error(parsed.error);
             }
-            if (parsed.sources) {
+            if (parsed.usage) {
+              // Usage metadata from backend (tokens + cost)
+              yield JSON.stringify(parsed); // Forward as-is for ChatView to parse
+            } else if (parsed.sources) {
               // Sources are sent at the end
               yield JSON.stringify({ type: 'sources', data: parsed.sources });
             } else if (parsed.choices) {
