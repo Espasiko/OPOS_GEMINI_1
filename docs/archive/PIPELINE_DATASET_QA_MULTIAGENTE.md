@@ -41,7 +41,7 @@ dataset_generator/
 
 ```
 1. EXTRACCIÓN
-   PDFs → Texto limpio
+   PDFs → Texto limpio o XML o json desde la api de boe
    (PyPDF2 + pdfplumber)
 
 2. GENERACIÓN (Multi-agente)

@@ -1,0 +1,45 @@
+{
+  "timestamp": "2025-12-01 19:45:29",
+  "mistral_agent": {
+    "success": false,
+    "error": "{\"detail\":\"Unauthorized\"}"
+  },
+  "claude": {
+    "success": true,
+    "duration": 12.011777639389038,
+    "tokens": {
+      "input": 121,
+      "output": 650
+    },
+    "cost": 0.010113,
+    "content": "```json\n{\n  \"pregunta\": {\n    \"enunciado\": \"Según el artículo 205 de la Ley General de la Seguridad Social, ¿cuál es la edad ordinaria de jubilación establecida de forma general a partir del año 2027?\",\n    \"opciones\": {\n      \"a\": \"65 años en todos los casos\",\n      \"b\": \"67 años, independientemente del período de cotización acreditado\",\n      \"c\": \"65 años con al menos 38 años y 6 meses cotizados, o 67 años en caso contrario\",\n      \"d\": \"66 años con al menos 35 años cotizados, o 67 años en caso contrario\"\n    },\n    \"respuesta_correcta\": \"c\",\n    \"explicacion\": {\n      \"texto\": \"El artículo 205 de la LGSS establece un sistema de edad ordinaria de jubilación que alcanzará su configuración definitiva en 2027. A partir de ese año, la edad ordinaria será de 65 años cuando se acrediten al menos 38 años y 6 meses de cotización. En caso de no alcanzar dicho período de cotización, la edad ordinaria será de 67 años. Este sistema se implantó de forma progresiva desde la reforma de 2013 (Ley 27/2011), aumentando gradualmente tanto la edad como los años de cotización requeridos para jubilarse a los 65 años.\",\n      \"articulo_aplicable\": \"Artículo 205 LGSS - Edad de jubilación\",\n      \"normativa_relacionada\": \"Ley 27/2011, de 1 de agosto, sobre actualización, adecuación y modernización del sistema de Seguridad Social\"\n    },\n    \"fuentes_oficiales\": {\n      \"boe_lgss\": \"https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724\",\n      \"boe_articulo_205\": \"https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724#a205\",\n      \"inss_jubilacion\": \"https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10963\",\n      \"inss_requisitos\": \"https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10938/28393\"\n    }\n  }\n}\n```",
+    "urls": [
+      "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724",
+      "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724#a205",
+      "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10963",
+      "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10938/28393"
+    ],
+    "url_results": [
+      {
+        "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724",
+        "status": "✅ VÁLIDA",
+        "code": 200
+      },
+      {
+        "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724#a205",
+        "status": "✅ VÁLIDA",
+        "code": 200
+      },
+      {
+        "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10963",
+        "status": "⚠️ BLOQUEADA",
+        "code": 403
+      },
+      {
+        "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10938/28393",
+        "status": "⚠️ BLOQUEADA",
+        "code": 403
+      }
+    ]
+  }
+}

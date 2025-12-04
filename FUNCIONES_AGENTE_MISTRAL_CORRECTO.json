@@ -1,0 +1,73 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "buscar_rag",
+      "description": "Busca información relevante en la base de datos vectorial de legislación española (Qdrant). Utiliza esta función SIEMPRE que necesites información legal específica, citar artículos, verificar datos normativos o generar preguntas de examen. La base de datos contiene: Constitución Española, LGSS, LISOS, LPRL, Estatuto de los Trabajadores, Ley 39/2015, Ley 40/2015 y reglamentos relacionados.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "La consulta de búsqueda semántica. Debe ser específica y clara. Ejemplos: 'prestación por desempleo requisitos', 'infracciones muy graves LISOS', 'artículo 267 LGSS', 'cotización autónomos'. Usa términos legales precisos cuando sea posible."
+          },
+          "top_k": {
+            "type": "integer",
+            "description": "Número de resultados a devolver. Valores recomendados: 5 para consultas específicas, 10-15 para temas amplios, 20 para búsquedas exhaustivas. Por defecto: 5. Máximo: 20.",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "verificar_url",
+      "description": "Verifica si una URL del Boletín Oficial del Estado (BOE) es válida, accesible y contiene el contenido esperado. CRÍTICO: Esta función extrae y devuelve el TÍTULO REAL del documento para que puedas verificar que corresponde con una ley real (NO resoluciones de ayuntamientos, nombramientos de funcionarios, convocatorias, etc.). Si citas un artículo específico, DEBES proporcionar el parámetro articulo_citado para verificar que existe. SIEMPRE usa esta función ANTES de proporcionar cualquier URL del BOE.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "La URL completa del BOE a verificar. Debe comenzar con 'https://www.boe.es/'. Ejemplos válidos: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724' (LGSS), 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-10566' (Ley 39/2015)."
+          },
+          "articulo_citado": {
+            "type": "string",
+            "description": "OBLIGATORIO si citas un artículo específico. Número del artículo que estás citando. La función verificará que ese artículo existe en el documento. Ejemplos: '205', '267.1', '23.1.a'. Si el artículo no existe, la URL se considera INVÁLIDA para tu cita."
+          },
+          "ley_esperada": {
+            "type": "string",
+            "description": "RECOMENDADO. Nombre de la ley que esperas encontrar. Ejemplos: 'LGSS', 'LISOS', 'Ley 39/2015', 'Constitución', 'Estatuto de los Trabajadores'. La función comparará el título real del documento con este valor y te avisará si NO coincide (ej: si esperabas LGSS pero es una resolución de ayuntamiento)."
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "generar_pregunta_test",
+      "description": "Genera UNA pregunta con UNA respuesta correcta verificada para dataset de finetuning. Devuelve SOLO: pregunta + respuesta correcta + ley + artículos relevantes. SIN opciones múltiples (A,B,C,D), SIN resúmenes, SIN explicaciones largas. La ley y artículos deben ser verificados en BOE.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "tema": {
+            "type": "string",
+            "description": "El tema sobre el que generar la pregunta. Ejemplos: 'prestación por desempleo', 'jubilación', 'incapacidad permanente'."
+          },
+          "dificultad": {
+            "type": "string",
+            "enum": ["basica", "intermedia", "avanzada", "truco"],
+            "description": "Nivel de dificultad de la pregunta."
+          }
+        },
+        "required": ["tema"]
+      }
+    }
+  }
+]

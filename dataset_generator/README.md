@@ -2,13 +2,39 @@
 
 Sistema multi-agente profesional para generar datasets de alta calidad desde documentos legales.
 
-## 📋 Características
+## 🚀 NUEVO: Pipeline con Ollama Local
+
+Ahora puedes generar el dataset completo usando **Mistral local** con Ollama:
+- ✅ **Coste $0** - Sin límites de API
+- ✅ **Privacidad total** - Datos no salen de tu máquina
+- ✅ **Control completo** - Ajusta todo como quieras
+
+### Quick Start con Ollama:
+
+```bash
+# 1. Configurar (solo primera vez)
+chmod +x setup_ollama.sh
+./setup_ollama.sh
+
+# 2. Analizar duplicados (opcional pero recomendado)
+python analyze_duplicates.py
+
+# 3. Generar dataset
+python pipeline_ollama_local.py
+```
+
+**Ver documentación completa**: `../RESUMEN_PIPELINE_OLLAMA_COMPLETO.md`
+
+---
+
+## 📋 Características (Pipeline Original)
 
 - **Generación automática** de Q&A desde textos/PDFs
 - **Clasificación de riesgo** automática (Alto/Medio/Bajo)
 - **Verificación multi-agente** para asegurar calidad
 - **Revisión humana selectiva** (solo contenido crítico)
-- **Modelos híbridos** (Groq para básico, Claude para complejo)
+- **Modelos híbridos** (Groq para básico, Mistral Small para complejo)
+- **Verificación automática de URLs** (detecta URLs inventadas)
 - **Metadata completa** con trazabilidad total
 - **Formato JSONL estándar** con 25 campos
 - **Exportación lista para fine-tuning**
@@ -16,9 +42,9 @@ Sistema multi-agente profesional para generar datasets de alta calidad desde doc
 ## 🏗️ Arquitectura
 
 ```
-Documentos → Extracción → Generación → Verificación → Curación → Dataset Final
-                ↓            ↓            ↓            ↓           ↓
-              .txt       Groq/Claude   Agente 2    Humano      JSONL
+Documentos → Extracción → Generación → Verificación → URLs → Curación → Dataset Final
+                ↓            ↓            ↓            ↓       ↓           ↓
+              .txt      Groq/Mistral  Agente 2    Verif.  Humano      JSONL
 ```
 
 ## 📦 Instalación
@@ -34,10 +60,15 @@ pip install -r requirements.txt
 2. Añade tus API keys:
    ```
    GROQ_API_KEY=tu_key_aqui
-   ANTHROPIC_API_KEY=tu_key_aqui  # opcional
+   MISTRAL_API_KEY=tu_key_aqui
    QDRANT_URL=tu_url_qdrant
    QDRANT_API_KEY=tu_key_qdrant
    ```
+   
+   **Obtener API keys:**
+   - Groq: https://console.groq.com/ (gratis)
+   - Mistral: https://console.mistral.ai/ (€5 gratis) ✅ **RECOMENDADO**
+   - Claude: https://console.anthropic.com/ (opcional, más caro)
 
 ## 🚀 Uso Rápido
 
@@ -51,8 +82,11 @@ python generate_qa.py --input data_txt/ --output output/qa_raw.json
 # 3. Verificar calidad
 python verify_qa.py --input output/qa_raw.json --output output/qa_verified.json
 
-# 4. Exportar para fine-tuning
-python export_dataset.py --input output/qa_verified.json --output output/dataset_final.jsonl
+# 4. Verificar URLs (NUEVO)
+python url_verifier.py output/qa_verified.jsonl -o output/qa_url_verified.jsonl
+
+# 5. Exportar para fine-tuning
+python export_dataset.py --input output/qa_url_verified.jsonl --output output/dataset_final.jsonl
 ```
 
 ## 📊 Estructura de Carpetas
@@ -78,8 +112,11 @@ dataset_generator/
 ## 💰 Costes Estimados
 
 - 10,000 Q&A con Groq: ~$5-7
-- 10,000 Q&A híbrido (Groq + Claude): ~$15
-- 10,000 Q&A solo Claude: ~$50-60
+- 10,000 Q&A híbrido (Groq + Mistral Small): ~$6.27 ✅ **RECOMENDADO**
+- 10,000 Q&A híbrido (Groq + Claude): ~$151
+- 10,000 Q&A solo Claude: ~$151
+
+**Con €10 de Mistral puedes generar 15,948 Q&A** 🚀
 
 
 ## 📋 Esquema de Metadata

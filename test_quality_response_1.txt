@@ -1,0 +1,8 @@
+TEST 1: Artículo 205.1.a LGSS
+================================================================================
+
+content='' tool_calls=[ToolCall(function=FunctionCall(name='web_search', arguments='{"query": "artículo 205.1.a Ley General de la Seguridad Social BOE"}'), id='A4if9vqgd', type=None, index=0)] prefix=False role='assistant'
+
+================================================================================
+RESPUESTA RAW:
+id='542af87659db4e968ad5faf7082afa28' object='chat.completion' model='magistral-medium-latest' usage=UsageInfo(prompt_tokens=3209, completion_tokens=27, total_tokens=3236, prompt_audio_seconds=Unset()) created=1764676342 choices=[ChatCompletionChoice(index=0, message=AssistantMessage(content='', tool_calls=[ToolCall(function=FunctionCall(name='web_search', arguments='{"query": "artículo 205.1.a Ley General de la Seguridad Social BOE"}'), id='A4if9vqgd', type=None, index=0)], prefix=False, role='assistant'), finish_reason='tool_calls')]

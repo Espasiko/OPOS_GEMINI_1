@@ -74,3 +74,14 @@ backend/backend/
 !GEMINI.md
 !CLAUDE.md
 !codex.md
+
+# Tool configurations
+.kiro/
+
+# Dataset outputs
+dataset_output/
+dataset_output_seguro/
+
+# Script caches
+scripts/maintenance/__pycache__/
+scripts/tests/__pycache__/

@@ -1,0 +1,314 @@
+{
+  "functions": [
+    {
+      "name": "buscar_rag_qdrant",
+      "description": "Busca contexto legal relevante en la base de datos vectorial Qdrant con leyes indexadas de Seguridad Social. Usa embeddings BGE-M3 para búsqueda semántica. SIEMPRE úsala ANTES de generar Q&A para obtener contexto preciso.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Consulta en lenguaje natural sobre el tema legal. Ej: 'edad de jubilación 2024', 'base reguladora cálculo', 'incapacidad permanente requisitos'"
+          },
+          "top_k": {
+            "type": "integer",
+            "description": "Número de resultados a devolver (1-10). Por defecto 5.",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 10
+          },
+          "score_threshold": {
+            "type": "number",
+            "description": "Umbral mínimo de similitud (0.0-1.0). Solo devuelve resultados con score >= threshold. Por defecto 0.7.",
+            "default": 0.7,
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "filter_ley": {
+            "type": "string",
+            "description": "Filtrar por ley específica. Valores: 'LGSS', 'RD_IMV', 'RD_COTIZACION', etc. Opcional.",
+            "enum": ["LGSS", "RD_IMV", "RD_COTIZACION", "RD_JUBILACION", "LEY_EMPLEO"]
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "buscar_boe_oficial",
+      "description": "Busca y extrae texto oficial del BOE (www.boe.es). Usa la API de BOE del proyecto. OBLIGATORIO para verificar artículos y normativa. Devuelve texto completo, URL oficial y metadatos.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "tipo_busqueda": {
+            "type": "string",
+            "description": "Tipo de búsqueda a realizar",
+            "enum": ["articulo_especifico", "busqueda_texto", "por_identificador"],
+            "default": "articulo_especifico"
+          },
+          "identificador_boe": {
+            "type": "string",
+            "description": "ID del BOE. Ej: 'BOE-A-2015-11724' para LGSS. Usar con tipo 'por_identificador'."
+          },
+          "articulo": {
+            "type": "string",
+            "description": "Número de artículo a buscar. Ej: '205', '205.1.a', '173'. Usar con tipo 'articulo_especifico'."
+          },
+          "ley": {
+            "type": "string",
+            "description": "Nombre de la ley. Ej: 'Ley General de la Seguridad Social', 'LGSS'. Usar con tipo 'articulo_especifico'."
+          },
+          "texto_busqueda": {
+            "type": "string",
+            "description": "Texto libre a buscar en BOE. Ej: 'edad jubilación 2024'. Usar con tipo 'busqueda_texto'."
+          },
+          "fecha_desde": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha inicio búsqueda (YYYY-MM-DD). Opcional."
+          },
+          "fecha_hasta": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha fin búsqueda (YYYY-MM-DD). Opcional."
+          }
+        },
+        "required": ["tipo_busqueda"]
+      }
+    },
+    {
+      "name": "verificar_url_boe",
+      "description": "Verifica si una URL del BOE es válida, accesible y contiene el contenido esperado. Extrae metadatos y valida que la URL corresponde al artículo mencionado. USAR SIEMPRE antes de aprobar una Q&A con URL.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL completa del BOE a verificar. Ej: 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724'"
+          },
+          "articulo_esperado": {
+            "type": "string",
+            "description": "Artículo que debería contener la URL. Ej: '205.1.a'. Opcional pero recomendado."
+          },
+          "verificar_contenido": {
+            "type": "boolean",
+            "description": "Si true, extrae y verifica el contenido del artículo. Por defecto true.",
+            "default": true
+          }
+        },
+        "required": ["url"]
+      }
+    },
+    {
+      "name": "calcular_prestacion_ss",
+      "description": "Calcula prestaciones de Seguridad Social (jubilación, incapacidad, desempleo) según normativa vigente. Ejecuta código Python con fórmulas oficiales. Devuelve resultado, código ejecutado y explicación paso a paso.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "tipo_prestacion": {
+            "type": "string",
+            "description": "Tipo de prestación a calcular",
+            "enum": ["base_reguladora_jubilacion", "pension_jubilacion", "incapacidad_permanente", "desempleo", "imv"]
+          },
+          "bases_cotizacion": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Array con bases de cotización mensuales. Ej: [2000, 2100, 2050, ...]"
+          },
+          "num_meses": {
+            "type": "integer",
+            "description": "Número de meses a considerar. Normalmente 24 o 25 según año.",
+            "minimum": 1,
+            "maximum": 300
+          },
+          "años_cotizados": {
+            "type": "number",
+            "description": "Años totales cotizados. Puede tener decimales. Ej: 35.5"
+          },
+          "edad_jubilacion": {
+            "type": "integer",
+            "description": "Edad a la que se jubila. Ej: 65, 66, 67",
+            "minimum": 60,
+            "maximum": 70
+          },
+          "año_calculo": {
+            "type": "integer",
+            "description": "Año para el que se hace el cálculo. Afecta a coeficientes. Ej: 2024",
+            "minimum": 2020,
+            "maximum": 2030
+          },
+          "parametros_adicionales": {
+            "type": "object",
+            "description": "Parámetros adicionales según tipo de prestación. Ej: {\"grado_incapacidad\": \"total\", \"tiene_hijos\": true}",
+            "additionalProperties": true
+          }
+        },
+        "required": ["tipo_prestacion"]
+      }
+    },
+    {
+      "name": "generar_qa_legal",
+      "description": "Genera una pregunta-respuesta tipo test de oposición basada en contexto legal. Crea pregunta + 4 opciones + explicación + referencias legales. USAR DESPUÉS de obtener contexto con buscar_rag_qdrant.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "contexto_legal": {
+            "type": "string",
+            "description": "Texto legal del que generar la Q&A. Puede venir de RAG o BOE."
+          },
+          "tema": {
+            "type": "string",
+            "description": "Tema específico. Ej: 'jubilación', 'incapacidad', 'desempleo', 'IMV', 'cotización'"
+          },
+          "dificultad": {
+            "type": "string",
+            "description": "Nivel de dificultad de la pregunta",
+            "enum": ["simple", "medio", "complejo"],
+            "default": "medio"
+          },
+          "tipo_pregunta": {
+            "type": "string",
+            "description": "Tipo de pregunta a generar",
+            "enum": ["conceptual", "calculo", "aplicacion_practica", "jurisprudencia"],
+            "default": "conceptual"
+          },
+          "articulos_referencia": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Artículos legales a referenciar. Ej: ['art. 205.1.a LGSS', 'art. 173 LGSS']"
+          },
+          "incluir_calculo": {
+            "type": "boolean",
+            "description": "Si true, incluye cálculo numérico en la pregunta. Por defecto false.",
+            "default": false
+          }
+        },
+        "required": ["contexto_legal", "tema"]
+      }
+    },
+    {
+      "name": "verificar_qa_completa",
+      "description": "Verifica exhaustivamente una Q&A: valida referencias legales en BOE, ejecuta cálculos si los hay, comprueba URLs, asigna score de confianza. Devuelve JSON con verified, confidence, issues, corrections, recommendation.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "description": "Texto completo de la pregunta a verificar"
+          },
+          "respuesta_correcta": {
+            "type": "string",
+            "description": "Respuesta marcada como correcta"
+          },
+          "opciones": {
+            "type": "object",
+            "description": "Objeto con las 4 opciones. Ej: {\"a\": \"texto\", \"b\": \"texto\", \"c\": \"texto\", \"d\": \"texto\"}",
+            "properties": {
+              "a": {"type": "string"},
+              "b": {"type": "string"},
+              "c": {"type": "string"},
+              "d": {"type": "string"}
+            }
+          },
+          "explicacion": {
+            "type": "string",
+            "description": "Explicación de la respuesta correcta"
+          },
+          "referencias_legales": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array con referencias legales mencionadas. Ej: ['art. 205.1.a LGSS', 'RD 20/2020']"
+          },
+          "url_fuente": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL del BOE si se menciona. Opcional."
+          },
+          "verificar_calculo": {
+            "type": "boolean",
+            "description": "Si true, verifica cálculos numéricos. Por defecto true si detecta números.",
+            "default": true
+          },
+          "verificar_vigencia": {
+            "type": "boolean",
+            "description": "Si true, verifica que la normativa esté vigente. Por defecto true.",
+            "default": true
+          }
+        },
+        "required": ["pregunta", "respuesta_correcta"]
+      }
+    },
+    {
+      "name": "clasificar_qa_tema",
+      "description": "Clasifica una Q&A por tema, subtema, dificultad y tipo. Útil ANTES de fine-tuning para organizar el dataset. Devuelve taxonomía completa y metadatos.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "description": "Texto de la pregunta a clasificar"
+          },
+          "respuesta": {
+            "type": "string",
+            "description": "Texto de la respuesta"
+          },
+          "explicacion": {
+            "type": "string",
+            "description": "Explicación de la respuesta. Opcional."
+          }
+        },
+        "required": ["pregunta", "respuesta"]
+      }
+    },
+    {
+      "name": "extraer_articulos_texto",
+      "description": "Extrae todas las referencias a artículos legales de un texto. Identifica ley, artículo, apartado. Útil para detectar qué verificar en BOE.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "texto": {
+            "type": "string",
+            "description": "Texto del que extraer referencias legales"
+          },
+          "formato_salida": {
+            "type": "string",
+            "description": "Formato de las referencias extraídas",
+            "enum": ["estructurado", "lista_simple"],
+            "default": "estructurado"
+          }
+        },
+        "required": ["texto"]
+      }
+    },
+    {
+      "name": "obtener_normativa_vigente",
+      "description": "Obtiene la versión vigente de una normativa en una fecha específica. Detecta modificaciones, derogaciones y texto consolidado. Usa API BOE.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "identificador_norma": {
+            "type": "string",
+            "description": "Identificador de la norma. Ej: 'BOE-A-2015-11724', 'RDLeg 8/2015'"
+          },
+          "fecha_vigencia": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha para la que se quiere la versión vigente (YYYY-MM-DD). Por defecto hoy."
+          },
+          "incluir_modificaciones": {
+            "type": "boolean",
+            "description": "Si true, incluye historial de modificaciones. Por defecto true.",
+            "default": true
+          }
+        },
+        "required": ["identificador_norma"]
+      }
+    }
+  ]
+}

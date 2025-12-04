@@ -36,6 +36,8 @@ def main():
                        help="Saltar extracción (si ya tienes .txt)")
     parser.add_argument("--skip-verify", action="store_true",
                        help="Saltar verificación")
+    parser.add_argument("--skip-url-check", action="store_true",
+                       help="Saltar verificación de URLs")
     
     args = parser.parse_args()
     
@@ -82,7 +84,27 @@ def main():
     else:
         final_qa = qa_raw_path
     
-    # PASO 4: Exportación
+    # PASO 4: Verificación de URLs (nuevo)
+    if not args.skip_url_check:
+        qa_url_verified_path = output_dir / "qa_url_verified.jsonl"
+        # Convertir a JSONL si es necesario
+        if str(final_qa).endswith('.json'):
+            import json
+            with open(final_qa, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            temp_jsonl = output_dir / "temp.jsonl"
+            with open(temp_jsonl, 'w', encoding='utf-8') as f:
+                for item in data:
+                    f.write(json.dumps(item, ensure_ascii=False) + '\n')
+            final_qa = temp_jsonl
+        
+        run_command(
+            ["python", "url_verifier.py", str(final_qa), "-o", str(qa_url_verified_path)],
+            "Verificando URLs en Q&A"
+        )
+        final_qa = qa_url_verified_path
+    
+    # PASO 5: Exportación
     dataset_path = output_dir / "dataset_final.jsonl"
     run_command(
         ["python", "export_dataset.py", "--input", str(final_qa), "--output", str(dataset_path), "--split"],
