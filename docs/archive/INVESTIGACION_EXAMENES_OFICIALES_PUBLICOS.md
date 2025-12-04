@@ -276,6 +276,38 @@ Legal: 100% seguro
 ---
 
 **Creado**: 1 Diciembre 2025  
-**Conclusión**: Los exámenes oficiales completos NO están disponibles públicamente.  
-**Solución**: Generar Q&A con IA desde legislación oficial (85%) + extraer de fuentes públicas (10%) + revisión humana (5%)
+**Actualizado**: 2 Diciembre 2025  
+
+---
+
+## 🔄 ACTUALIZACIÓN 2 DICIEMBRE 2025
+
+### ¡HALLAZGO IMPORTANTE!
+
+Tras revisar los materiales disponibles en `elemplos_leyes_info/de_mi_hija/`, se encontró:
+
+**EXÁMENES OFICIALES REALES (bajados_academia/):**
+- 12+ exámenes oficiales C1 SS (2022-2025) con respuestas
+- Gestión Libre y Promoción Interna
+- Exámenes extraordinarios
+
+**SIMULACROS DE ACADEMIA (tests cortes/):**
+- 7+ simulacros de Las Cortes con respuestas
+- Cuadernillos de preguntas oficiales
+
+**MATERIAL POR PRESTACIONES:**
+- IT, IP, Jubilación, Muerte y Supervivencia
+- Encuadramiento, Cotización
+- Casos prácticos resueltos
+
+**Ver documento completo**: `INVENTARIO_MATERIALES_OPOSICIONES_SS.md`
+
+### Nueva Estimación:
+- **~2,700 Q&A reales** de exámenes y simulacros
+- **~1,500 Q&A** generables desde esquemas
+- **~6,000 Q&A** generables desde Qdrant
+- **Total: 10,000+ Q&A** de alta calidad
+
+### Conclusión Actualizada:
+**SÍ tenemos acceso a exámenes oficiales reales** a través de materiales de academia. Esto cambia completamente la estrategia del dataset, permitiendo un enfoque basado en material real de máxima calidad.
 

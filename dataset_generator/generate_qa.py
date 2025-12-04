@@ -30,6 +30,11 @@ class QAGenerator:
         # Inicializar clientes
         self.groq_client = groq.Groq(api_key=os.getenv("GROQ_API_KEY"))
         
+        # Usar Mistral en vez de Claude
+        mistral_key = os.getenv("MISTRAL_API_KEY")
+        self.mistral_key = mistral_key
+        
+        # Mantener compatibilidad con Claude si está configurado
         anthropic_key = os.getenv("ANTHROPIC_API_KEY")
         self.anthropic_client = anthropic.Anthropic(api_key=anthropic_key) if anthropic_key else None
         
@@ -179,13 +184,13 @@ Formato JSON:
             console.print(f"[red]Error con Groq: {e}[/red]")
             return []
     
-    def generate_with_claude(self, chunk: str, num_questions: int = 2) -> List[Dict]:
-        """Genera Q&A complejos usando Claude."""
-        if not self.anthropic_client:
-            console.print("[yellow]Claude no configurado, usando Groq[/yellow]")
+    def generate_with_mistral(self, chunk: str, num_questions: int = 2) -> List[Dict]:
+        """Genera Q&A complejos usando Mistral Small."""
+        if not self.mistral_key:
+            console.print("[yellow]Mistral no configurado, usando Groq[/yellow]")
             return self.generate_with_groq(chunk, num_questions)
         
-        model_config = self.config["models"]["generator_complex"]
+        import requests
         
         prompt = f"""Eres un experto en Seguridad Social española especializado en casos prácticos de oposiciones.
 
@@ -212,14 +217,25 @@ Formato JSON:
 ]"""
         
         try:
-            response = self.anthropic_client.messages.create(
-                model=model_config["model"],
-                max_tokens=model_config["max_tokens"],
-                temperature=model_config["temperature"],
-                messages=[{"role": "user", "content": prompt}]
+            response = requests.post(
+                "https://api.mistral.ai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.mistral_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "mistral-small-latest",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.7,
+                    "max_tokens": 2000
+                }
             )
             
-            content = response.content[0].text
+            if response.status_code != 200:
+                console.print(f"[red]Error Mistral API: {response.status_code}[/red]")
+                return self.generate_with_groq(chunk, num_questions)
+            
+            content = response.json()["choices"][0]["message"]["content"]
             
             # Extraer JSON
             if "```json" in content:
@@ -231,16 +247,21 @@ Formato JSON:
             return qa_pairs if isinstance(qa_pairs, list) else [qa_pairs]
             
         except Exception as e:
-            console.print(f"[red]Error con Claude: {e}[/red]")
-            return []
+            console.print(f"[red]Error con Mistral: {e}[/red]")
+            return self.generate_with_groq(chunk, num_questions)
+    
+    def generate_with_claude(self, chunk: str, num_questions: int = 2) -> List[Dict]:
+        """Genera Q&A complejos usando Claude (legacy, usa Mistral por defecto)."""
+        console.print("[yellow]Redirigiendo a Mistral Small (más económico)[/yellow]")
+        return self.generate_with_mistral(chunk, num_questions)
     
     def generate_from_chunk(self, chunk: str, source: str) -> List[Dict]:
         """Genera Q&A desde un chunk, eligiendo el modelo apropiado."""
         complexity = self.classify_complexity(chunk)
         
         if complexity == "complex":
-            console.print(f"[blue]→ Usando Claude (complejo)[/blue]")
-            qa_pairs = self.generate_with_claude(chunk, num_questions=2)
+            console.print(f"[blue]→ Usando Mistral Small (complejo)[/blue]")
+            qa_pairs = self.generate_with_mistral(chunk, num_questions=2)
         else:
             console.print(f"[cyan]→ Usando Groq (simple)[/cyan]")
             qa_pairs = self.generate_with_groq(chunk, num_questions=3)

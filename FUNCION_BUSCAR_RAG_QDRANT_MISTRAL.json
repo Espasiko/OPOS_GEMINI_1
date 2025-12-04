@@ -1,0 +1,27 @@
+{
+  "type": "function",
+  "function": {
+    "name": "buscar_rag_qdrant",
+    "description": "Busca contexto legal relevante en la base de conocimiento Qdrant de OpositAIA. Usa esta herramienta para encontrar artículos de leyes, temarios y contenido legal sobre Seguridad Social española.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Consulta en lenguaje natural sobre legislación de Seguridad Social. Ejemplo: 'edad jubilación ordinaria', 'requisitos incapacidad permanente', 'cálculo base reguladora'"
+        },
+        "top_k": {
+          "type": "integer",
+          "description": "Número de resultados a devolver (entre 1 y 10). Por defecto 5.",
+          "default": 5
+        },
+        "filter_ley": {
+          "type": "string",
+          "description": "Filtrar resultados por ley específica. Valores posibles: LGSS, RD_IMV, Constitución, Ley_39_2015, EBEP",
+          "enum": ["LGSS", "RD_IMV", "Constitución", "Ley_39_2015", "EBEP"]
+        }
+      },
+      "required": ["query"]
+    }
+  }
+}

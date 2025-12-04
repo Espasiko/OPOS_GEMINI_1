@@ -7,8 +7,8 @@
       "max_tokens": 500
     },
     "generator_complex": {
-      "provider": "anthropic",
-      "model": "claude-3-5-sonnet-20241022",
+      "provider": "mistral",
+      "model": "mistral-large-2",
       "temperature": 0.2,
       "max_tokens": 800
     },

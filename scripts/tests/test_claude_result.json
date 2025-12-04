@@ -1,0 +1,19 @@
+{
+  "model": "Claude 4.5 Sonnet",
+  "duration": 16.7436261177063,
+  "tokens": {
+    "input": 136,
+    "output": 981,
+    "total": 1117
+  },
+  "cost": 0.015123000000000003,
+  "cost_10k": 151.23000000000002,
+  "qa_possible_with_5eur": 330,
+  "content": "```json\n{\n  \"pregunta\": {\n    \"id\": \"LGSS_ART205_001\",\n    \"enunciado\": \"Según el artículo 205 de la Ley General de la Seguridad Social, ¿cuál es la edad ordinaria de jubilación establecida para el año 2027 y siguientes?\",\n    \"opciones\": [\n      {\n        \"id\": \"a\",\n        \"texto\": \"65 años en todos los casos\"\n      },\n      {\n        \"id\": \"b\",\n        \"texto\": \"67 años, o 65 años cuando se acrediten 38 años y 6 meses de cotización\"\n      },\n      {\n        \"id\": \"c\",\n        \"texto\": \"67 años en todos los casos, sin excepciones\"\n      },\n      {\n        \"id\": \"d\",\n        \"texto\": \"66 años, o 64 años con 37 años de cotización\"\n      }\n    ],\n    \"respuesta_correcta\": \"b\",\n    \"explicacion\": {\n      \"detalle\": \"El artículo 205 de la LGSS establece un período transitorio de aplicación gradual de la edad de jubilación. A partir del año 2027, la edad ordinaria de jubilación quedará fijada en 67 años. No obstante, se podrá acceder a la jubilación a los 65 años cuando el trabajador acredite al menos 38 años y 6 meses de cotización efectiva (excluyendo el período de pagas extraordinarias). Este período transitorio comenzó en 2013 con 65 años y ha ido incrementándose progresivamente hasta alcanzar los 67 años. La norma busca adaptar el sistema de pensiones al aumento de la esperanza de vida, manteniendo una vía alternativa para quienes hayan cotizado durante un período más prolongado.\",\n      \"articulo_aplicable\": \"Artículo 205 LGSS - Real Decreto Legislativo 8/2015, de 30 de octubre\",\n      \"normativa_relacionada\": [\n        \"Artículo 205.1.a) LGSS - Edad ordinaria de jubilación\",\n        \"Disposición Transitoria vigésima LGSS - Aplicación gradual\",\n        \"Artículo 208 LGSS - Jubilación anticipada\"\n      ]\n    },\n    \"fuentes_oficiales\": [\n      {\n        \"nombre\": \"BOE - Ley General de la Seguridad Social (texto consolidado)\",\n        \"url\": \"https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724\"\n      },\n      {\n        \"nombre\": \"Seguridad Social - Jubilación: Edad\",\n        \"url\": \"https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10963/28393/28396\"\n      },\n      {\n        \"nombre\": \"INSS - Información sobre pensión de jubilación\",\n        \"url\": \"https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/44539/31190\"\n      },\n      {\n        \"nombre\": \"BOE - Artículo 205 LGSS (acceso directo)\",\n        \"url\": \"https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724&p=20230328&tn=1#a205\"\n      }\n    ],\n    \"metadatos\": {\n      \"dificultad\": \"media\",\n      \"tema\": \"Seguridad Social - Jubilación\",\n      \"subtema\": \"Edad ordinaria de jubilación\",\n      \"normativa\": \"LGSS\",\n      \"fecha_actualizacion\": \"2024\"\n    }\n  }\n}\n```",
+  "urls_found": [
+    "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724",
+    "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/PrestacionesPensionesTrabajadores/10963/28393/28396",
+    "https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/44539/31190",
+    "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724&p=20230328&tn=1#a205"
+  ]
+}
