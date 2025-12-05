@@ -1,190 +1,242 @@
-# Setup Guide - OpositaIA
+# Guía de Configuración de Servicios - OpositaIA
 
-## 🚀 Quick Start
+## 📦 Servicios Necesarios
 
-### 1. Prerequisites
+### 1. **Docker** (Qdrant + PostgreSQL)
 
-- **Node.js**: v20.0.0 or higher (v24.11.1 LTS recommended)
-  - Download: https://nodejs.org/
-  - Check version: `node --version`
+#### Instalación de Docker:
+- **Windows**: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- **Linux**: `sudo apt install docker.io docker-compose`
 
-- **npm**: v10.0.0 or higher (comes with Node.js)
-  - Check version: `npm --version`
-
-### 2. Install Dependencies
-
+#### Iniciar Servicios:
 ```bash
-npm install
+# Desde la raíz del proyecto
+docker-compose up -d
+
+# Verificar estado
+docker ps
 ```
 
-This will install all required packages including:
+Deberías ver:
+- `opositaia-qdrant` (puerto 6333) - Vector Database
+- `opositaia-postgres` (puerto 5432) - Base de datos relacional
 
-- React 19.2.0
-- Google Gemini AI SDK
-- Vite (build tool)
-- TypeScript
-
-### 3. Configure API Key
-
-#### Get your Google Gemini API Key:
-
-1. Go to: https://aistudio.google.com/app/apikey
-2. Sign in with your Google account
-3. Click **"Create API Key"**
-4. Copy the generated key
-
-#### Add API Key to your project:
-
-1. Copy the example environment file:
-
-   ```bash
-   copy .env.example .env
-   ```
-
-2. Open `.env` file and replace `your_api_key_here` with your actual API key:
-
-   ```
-   VITE_API_KEY=AIzaSyC...your_actual_key_here
-   ```
-
-3. Save the file
-
-**⚠️ IMPORTANT**: Never commit your `.env` file to Git! It's already in `.gitignore`.
-
-### 4. Run the Development Server
-
+#### Comandos Útiles:
 ```bash
-npm run dev
+# Ver logs
+docker logs opositaia-qdrant
+docker logs opositaia-postgres
+
+# Reiniciar servicios
+docker restart opositaia-qdrant
+docker restart opositaia-postgres
+
+# Detener servicios
+docker-compose down
+
+# Eliminar todo (¡cuidado! borra datos)
+docker-compose down -v
 ```
 
-The application will be available at:
+---
 
-- **Local**: http://localhost:3000/
-- **Network**: http://[your-ip]:3000/
+### 2. **Qdrant** (Vector Database)
 
-### 5. Build for Production
+**Estado Actual**: Usando **Qdrant Cloud** (configurado en `backend/.env.backend`)
 
+```env
+QDRANT_URL=https://b554ceb5-2169-4064-9ce7-83c8cd44cf84.europe-west3-0.gcp.cloud.qdrant.io
+QDRANT_API_KEY=eyJhbGci...
+```
+
+#### Opción Local (Backup):
+Si quieres usar Qdrant local en Docker:
+
+1. Comenta la URL de Qdrant Cloud en `.env.backend`
+2. Descomenta la URL local:
+```env
+# QDRANT_URL=https://... (comentar)
+QDRANT_URL=http://localhost:6333
+```
+
+3. Asegúrate de que el container está corriendo:
 ```bash
-npm run build
+docker ps | grep qdrant
 ```
 
-This creates an optimized production build in the `dist/` folder.
+---
 
-To preview the production build:
+### 3. **PostgreSQL** (Base de Datos)
 
+**Configuración Actual** (en `backend/.env.backend`):
+```env
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=opositaia
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/opositaia
+```
+
+#### Acceder a PostgreSQL:
 ```bash
-npm run preview
+# Conectar con psql
+docker exec -it opositaia-postgres psql -U postgres -d opositaia
+
+# Ver tablas
+\dt
+
+# Salir
+\q
 ```
 
-## 🔧 Troubleshooting
+---
 
-### Error: "VITE_API_KEY environment variable not set"
+### 4. **WSL + Ollama** (Opcional - LLM Local)
 
-**Solution**: Make sure you have:
+**Estado**: Ollama instalado en WSL (puerto 11434)
 
-1. Created a `.env` file in the root directory
-2. Added your API key: `VITE_API_KEY=your_key_here`
-3. Restarted the dev server (`npm run dev`)
+#### Verificar Ollama:
+```bash
+# En WSL
+ollama list
 
-### Error: "Unsupported engine"
-
-**Solution**: Update Node.js to v20+ or v24.11.1 LTS
-
-- Download: https://nodejs.org/
-
-### Port 3000 already in use
-
-**Solution**:
-
-- Stop other processes using port 3000
-- Or change the port in `vite.config.ts`
-
-### API Key not working
-
-**Solution**:
-
-1. Verify your API key is correct
-2. Check if the API key has the necessary permissions
-3. Ensure you're not exceeding API rate limits
-4. Visit: https://aistudio.google.com/app/apikey to check your key status
-
-## 📚 Project Structure
-
-```
-/
-├── components/          # React UI components
-├── services/
-│   └── geminiService.ts # Gemini API integration
-├── docs/               # Documentation
-│   ├── AI_AGENTS.md    # AI agent definitions
-│   ├── ARCHITECTURE.md # System architecture
-│   └── DATA_MODEL.md   # Data structures
-├── ai-specs/           # AI development standards
-├── .env                # Your API key (DO NOT COMMIT)
-├── .env.example        # Template for .env
-├── package.json        # Dependencies
-└── vite.config.ts      # Vite configuration
+# Verificar servicio
+curl http://localhost:11434/api/tags
 ```
 
-## 🎯 Next Steps
+#### Modelos Disponibles:
+- `mistral` - Modelo local para generación de Q&A
 
-1. **Read the documentation**:
-   - `AI_SPECS_QUICKSTART.md` - AI Specs workflow
-   - `docs/AI_AGENTS.md` - AI agent configurations
-   - `README.md` - Project overview
+#### Usar Ollama desde Backend:
+El backend ya está configurado para usar Ollama:
+```env
+OLLAMA_URL=http://localhost:11434
+```
 
-2. **Try the features**:
-   - Chat with the AI tutor
-   - Generate practical cases
-   - Create mind maps
-   - Take mock exams
+---
 
-3. **Develop new features**:
-   ```
-   Kiro, planifica una nueva feature: [your idea]
-   ```
+## 🔧 Configuración Completa
 
-## 🆘 Need Help?
+### **Paso 1: Iniciar Docker**
+```bash
+docker-compose up -d
+```
 
-- Check `AI_SPECS_QUICKSTART.md` for development workflow
-- Review `docs/AI_AGENTS.md` for AI integration patterns
-- Ask Kiro: "Explain how to [do something] in OpositaIA"
+### **Paso 2: Verificar Servicios**
+```bash
+# Qdrant
+curl http://localhost:6333/collections
 
-## 📝 Environment Variables Reference
+# PostgreSQL
+docker exec -it opositaia-postgres pg_isready
 
-| Variable       | Required | Description                                                       |
-| -------------- | -------- | ----------------------------------------------------------------- |
-| `VITE_API_KEY` | ✅ Yes   | Google Gemini API key from https://aistudio.google.com/app/apikey |
+# Ollama (si está en WSL)
+curl http://localhost:11434/api/tags
+```
 
-## 🔐 Security Notes
+### **Paso 3: Configurar Backend**
+```bash
+cd backend
+cp .env.backend.example .env.backend
+# Edita .env.backend con tus API keys
+```
 
-- **Never commit** your `.env` file
-- **Never share** your API key publicly
-- **Rotate your key** if it's accidentally exposed
-- Use **environment-specific** keys for development/production
+### **Paso 4: Configurar Frontend**
+```bash
+cd frontend
+cp .env.example .env
+# Edita .env con tu API key de Google Gemini
+```
 
-## 📦 Dependencies
+---
 
-### Production Dependencies
+## 🚨 Solución de Problemas
 
-- `react` ^19.2.0 - UI framework
-- `react-dom` ^19.2.0 - React DOM renderer
-- `@google/genai` ^1.29.0 - Google Gemini AI SDK
-- `html-to-image` ^1.11.13 - Export mind maps as images
+### **Qdrant "unhealthy"**
+```bash
+docker restart opositaia-qdrant
+docker logs opositaia-qdrant --tail 50
+```
 
-### Development Dependencies
+### **PostgreSQL no arranca**
+```bash
+docker logs opositaia-postgres
+# Si hay error de permisos en volumen:
+docker-compose down -v
+docker-compose up -d
+```
 
-- `typescript` ~5.8.2 - Type safety
-- `vite` ^6.2.0 - Build tool
-- `@vitejs/plugin-react` ^5.0.0 - React plugin for Vite
-- `@types/node` ^22.14.0 - Node.js type definitions
+### **Ollama no responde (WSL)**
+```bash
+# En WSL
+sudo systemctl restart ollama
+# O reiniciar el servicio manualmente
+ollama serve
+```
 
-## 🌐 Browser Support
+### **Puerto ocupado**
+```bash
+# Ver qué proceso usa el puerto
+# Windows:
+netstat -ano | findstr :6333
+netstat -ano | findstr :5432
 
-- Chrome/Edge: Latest 2 versions
-- Firefox: Latest 2 versions
-- Safari: Latest 2 versions
+# Linux/WSL:
+sudo lsof -i :6333
+sudo lsof -i :5432
+```
 
-## 📄 License
+---
 
-See LICENSE file for details.
+## 📊 Resumen de Puertos
+
+| Servicio | Puerto | Protocolo | Ubicación |
+|----------|--------|-----------|-----------|
+| Frontend (Vite) | 3000 | HTTP | `frontend/` |
+| Backend (FastAPI) | 8000 | HTTP | `backend/` |
+| Qdrant | 6333 | HTTP | Docker |
+| PostgreSQL | 5432 | TCP | Docker |
+| Ollama | 11434 | HTTP | WSL |
+
+---
+
+## 🔐 Variables de Entorno Críticas
+
+### **Backend** (`backend/.env.backend`):
+```env
+# APIs Externas
+GROQ_API_KEY=...
+DEEPSEEK_API_KEY=...
+GEMINI_API_KEY=...
+CLAUDE_API_KEY=...
+
+# Qdrant (Cloud o Local)
+QDRANT_URL=https://...
+QDRANT_API_KEY=...
+
+# PostgreSQL
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/opositaia
+```
+
+### **Frontend** (`frontend/.env`):
+```env
+# Google Gemini
+VITE_API_KEY=...
+
+# Backend URL
+VITE_VPS_API_URL=http://localhost:8000
+```
+
+---
+
+## ✅ Checklist de Verificación
+
+- [ ] Docker Desktop instalado y corriendo
+- [ ] `docker-compose up -d` ejecutado sin errores
+- [ ] Qdrant accesible en `http://localhost:6333`
+- [ ] PostgreSQL accesible en `localhost:5432`
+- [ ] Backend `.env.backend` configurado con API keys
+- [ ] Frontend `.env` configurado con `VITE_API_KEY`
+- [ ] Backend corriendo en `http://localhost:8000`
+- [ ] Frontend corriendo en `http://localhost:3000`

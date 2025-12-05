@@ -21,22 +21,27 @@ services:
       timeout: 10s
       retries: 3
 
-  # Ollama for Local LLM
-  ollama:
-    image: ollama/ollama:latest
-    container_name: opositaia-ollama
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: opositaia-postgres
     ports:
-      - "11434:11434"
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=opositaia
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
-      - ./ollama_data:/root/.ollama
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - opositaia-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
       timeout: 10s
       retries: 3
+
 
   # FastAPI Backend
   backend:
@@ -46,43 +51,31 @@ services:
     container_name: opositaia-backend
     ports:
       - "8000:8000"
+    env_file:
+      - backend/.env.backend
     environment:
-      # Qdrant
+      # Qdrant (local en Docker)
       - QDRANT_URL=http://qdrant:6333
       - QDRANT_COLLECTION_NAME=opositaia_documents
       
-      # Ollama
-      - OLLAMA_URL=http://ollama:11434
-      - OLLAMA_EMBEDDING_MODEL=all-minilm
-      - OLLAMA_LLM_MODEL=tinyllama
-      
-      # Gemini (from .env)
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      
-      # BOE API
-      - BOE_BASE_URL=https://www.boe.es
+      # Ollama (en WSL, accesible desde Docker Desktop vía host.docker.internal)
+      - OLLAMA_URL=http://host.docker.internal:11434
       
       # FastAPI
       - API_HOST=0.0.0.0
       - API_PORT=8000
-      - API_RELOAD=true
-      
-      # Vector Settings
-      - VECTOR_DIMENSION=384
-      - CHUNK_SIZE=512
-      - CHUNK_OVERLAP=50
-      - TOP_K_RESULTS=5
+      - API_RELOAD=false
     depends_on:
       qdrant:
         condition: service_healthy
-      ollama:
+      postgres:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - opositaia-network
     volumes:
       - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 networks:
   opositaia-network:
@@ -91,5 +84,6 @@ networks:
 volumes:
   qdrant_storage:
     driver: local
-  ollama_data:
+  postgres_data:
     driver: local
+

@@ -8,113 +8,244 @@
 
 ## 1. Descripción General
 
-OpositaIA es una aplicación web de página única (SPA) construida con React y TypeScript, diseñada como un asistente de estudio integral para opositores al Cuerpo Administrativo de la Administración de la Seguridad Social en España. La aplicación utiliza la API de Google Gemini para ofrecer un conjunto de herramientas inteligentes que ayudan a los usuarios a comprender la legislación, practicar con casos realistas y organizar su estudio de manera eficiente.
+OpositaIA es una aplicación web full-stack diseñada como un asistente de estudio integral para opositores al Cuerpo Administrativo de la Administración de la Seguridad Social en España.
 
-El objetivo principal es proporcionar una ventaja competitiva al opositor, combinando la potencia de los modelos de IA generativa con las necesidades específicas del temario y el formato del examen.
-
----
-
-## 2. Características Principales
-
-La aplicación se organiza en torno a un panel de navegación lateral que da acceso a las siguientes herramientas:
-
-- **Chat Explicativo:** Un tutor IA disponible 24/7 para resolver dudas sobre legislación, explicar conceptos y analizar textos legales.
-- **Generador de Casos Prácticos:** Crea supuestos prácticos complejos y realistas con 5 preguntas tipo test, imitando el formato del examen oficial. Utiliza el modo de pensamiento avanzado de Gemini 2.5 Pro.
-- **Simulacros de Examen:** Permite al usuario configurar y realizar exámenes completos sobre temas específicos del temario, con control de tiempo y una revisión final detallada.
-- **Búsqueda Actualizada:** Realiza búsquedas en la web utilizando `Google Search grounding` para proporcionar respuestas actualizadas y citar fuentes fiables.
-- **Temario Oficial:** Un índice interactivo del temario oficial con enlaces directos a la legislación clave en el BOE.
-- **Mapas Mentales:** Genera mapas mentales interactivos y visuales sobre cualquier tema legal para facilitar la memorización y la estructuración de ideas.
-- **Esquemas:** Crea esquemas jerárquicos y detallados en formato Markdown.
-- **Resúmenes:** Sintetiza textos largos (pegados, subidos desde archivo PDF/TXT o desde una URL) en resúmenes concisos.
-- **Comparador de Leyes:** Analiza dos versiones de un texto legal y resalta las modificaciones, adiciones y eliminaciones.
-- **Tarjetas y Memes:** Una herramienta de estudio lúdica que genera flashcards interactivas y un meme visual relacionado con un tema para reforzar el aprendizaje.
-- **Plan de Estudios:** Crea planes de estudio personalizados (semanales, mensuales, etc.) basados en la disponibilidad del usuario.
-- **Mi Progreso:** Monitoriza el rendimiento del usuario en los casos práctácticos y simulacros, mostrando estadísticas de aciertos y fallos.
+**Arquitectura:**
+- **Frontend**: React 19 + TypeScript + Vite (carpeta `frontend/`)
+- **Backend**: FastAPI + Python (carpeta `backend/`)
+- **Base de Datos**: Qdrant (Vector DB) + PostgreSQL
+- **IA**: Google Gemini, Groq, DeepSeek, Claude, Mistral
 
 ---
 
-## 3. Estructura del Proyecto
-
-El proyecto sigue una estructura modular y organizada, separando la lógica de la presentación y los servicios.
+## 2. Estructura del Proyecto
 
 ```
 /
-├── components/
-│   ├── ... (Componentes de la interfaz de usuario)
-├── docs/
-│   ├── AI_AGENTS.md           (Especificación de los prompts y modelos de IA)
-│   ├── ARCHITECTURE.md        (Visión general de la arquitectura)
-│   └── DATA_MODEL.md          (Descripción del modelo de datos y tipos)
-├── services/
-│   └── geminiService.ts       (Centraliza todas las llamadas a la API de Gemini)
-├── App.tsx                    (Componente principal, gestiona el estado y las vistas)
-├── index.html                 (Punto de entrada HTML)
-├── index.tsx                  (Renderiza la aplicación React en el DOM)
-├── metadata.json              (Metadatos de la aplicación)
-├── types.ts                   (Definiciones de tipos de TypeScript)
-└── README.md                  (Este archivo)
+├── frontend/                  # Aplicación React
+│   ├── components/           # Componentes UI
+│   ├── services/             # Servicios API
+│   ├── contexts/             # React Contexts
+│   ├── hooks/                # Custom Hooks
+│   ├── utils/                # Utilidades
+│   ├── package.json          # Dependencias frontend
+│   └── vite.config.ts        # Configuración Vite
+├── backend/                   # API FastAPI
+│   ├── main.py               # Punto de entrada
+│   ├── routers/              # Endpoints API
+│   ├── services/             # Lógica de negocio
+│   └── .env.backend          # Variables de entorno
+├── dataset_generator/         # Scripts generación Q&A
+├── scripts/                   # Scripts mantenimiento
+│   ├── maintenance/          # Scripts de mantenimiento
+│   └── tests/                # Scripts de prueba
+├── docs/                      # Documentación
+│   ├── AI_AGENTS.md          # Especificación prompts IA
+│   ├── ARCHITECTURE.md       # Arquitectura del sistema
+│   └── DATA_MODEL.md         # Modelo de datos
+└── docker-compose.yml         # Servicios Docker
 ```
 
 ---
 
-## 4. Arquitectura y Documentación (AI Specs)
+## 3. Instalación y Configuración
 
-Este proyecto sigue una estrategia de **"AI Spec Driven Development"**. La documentación no es solo para humanos, sino que está estructurada para que los asistentes de IA puedan entender el contexto del proyecto, su arquitectura y sus objetivos. Esto permite una colaboración más eficiente y precisa.
+### **Requisitos Previos:**
 
-La documentación principal se encuentra en la carpeta `/docs`:
+- **Node.js** 18+ (para el frontend)
+- **Python** 3.10+ (para el backend)
+- **Docker** (para Qdrant y PostgreSQL)
+- **WSL** (opcional, para Ollama local)
 
-- **[Arquitectura del Sistema](./docs/ARCHITECTURE.md):** Una visión de alto nivel de la aplicación, su flujo de datos y dependencias.
-- **[Definición de Agentes de IA](./docs/AI_AGENTS.md):** El documento más importante. Detalla cada llamada a la API de Gemini, explicando el "agente" o "personalidad" que se le pide al modelo, la configuración específica, el modelo utilizado y la justificación de esa elección.
-- **[Modelo de Datos](./docs/DATA_MODEL.md):** Una explicación clara de las estructuras de datos y tipos definidos en `types.ts`.
+### **Paso 1: Clonar el Repositorio**
+
+```bash
+git clone https://github.com/tu-usuario/OPOS_GEMINI_1.git
+cd OPOS_GEMINI_1
+```
+
+### **Paso 2: Configurar Backend**
+
+```bash
+cd backend
+
+# Crear entorno virtual
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Configurar variables de entorno
+cp .env.backend.example .env.backend
+# Edita .env.backend con tus API keys
+```
+
+### **Paso 3: Iniciar Servicios Docker**
+
+```bash
+# Desde la raíz del proyecto
+docker-compose up -d
+
+# Verificar que Qdrant y PostgreSQL están corriendo
+docker ps
+```
+
+Deberías ver:
+- `opositaia-qdrant` (puerto 6333)
+- `opositaia-postgres` (puerto 5432)
+
+### **Paso 4: Configurar Frontend**
+
+```bash
+cd frontend
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Edita .env con tu API key de Google Gemini
+```
+
+### **Paso 5: Iniciar la Aplicación**
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+source venv/bin/activate
+uvicorn main:app --reload --port 8000
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+La aplicación estará disponible en:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
 
 ---
 
-## 5. Despliegue y Desarrollo Local
+## 4. Servicios y Puertos
 
-Dado que la aplicación no utiliza un _bundler_ (como Vite o Webpack), el despliegue en un entorno local es muy sencillo y solo requiere un servidor web estático.
-
-**Pasos:**
-
-1.  **Obtén el código:** Clona o descarga todos los archivos del proyecto en una carpeta local.
-
-2.  **Inicia un servidor web local:** No puedes abrir `index.html` directamente en el navegador (`file:///...`) debido a las políticas de seguridad (CORS) que bloquean las importaciones de módulos. Necesitas servir los archivos a través de un servidor.
-    - **Opción A (Recomendada con Node.js):** Usa `live-server`, un paquete de `npm` que crea un servidor de desarrollo con recarga automática.
-
-      ```bash
-      # Instala live-server globalmente (solo la primera vez)
-      npm install -g live-server
-
-      # Desde la carpeta raíz del proyecto, inicia el servidor
-      live-server
-      ```
-
-      Se abrirá automáticamente una pestaña en tu navegador en `http://127.0.0.1:8080`.
-
-    - **Opción B (Alternativa con Python):** Si tienes Python instalado.
-
-      ```bash
-      # Desde la carpeta raíz del proyecto (para Python 3)
-      python -m http.server
-
-      # O para Python 2
-      # python -m SimpleHTTPServer
-      ```
-
-      Abre tu navegador y ve a `http://localhost:8000`.
-
-3.  **¡Listo!** La aplicación ya está funcionando en tu máquina local. La clave de API de Gemini es gestionada por el entorno de desarrollo y no requiere configuración manual en un fichero `.env`.
+| Servicio | Puerto | Ubicación | Estado |
+|----------|--------|-----------|--------|
+| Frontend (Vite) | 3000 | `frontend/` | ✅ |
+| Backend (FastAPI) | 8000 | `backend/` | ✅ |
+| Qdrant | 6333 | Docker | ✅ |
+| PostgreSQL | 5432 | Docker | ✅ |
+| Ollama (opcional) | 11434 | WSL | ⚠️ |
 
 ---
 
-## 6. Modelos de IA y Agentes
+## 5. Características Principales
 
-Se ha realizado una selección estratégica de modelos para optimizar el coste y la calidad según la tarea.
+- **Chat Explicativo**: Tutor IA 24/7 para resolver dudas legales
+- **Generador de Casos Prácticos**: Supuestos complejos con 5 preguntas tipo test
+- **Simulacros de Examen**: Exámenes completos con control de tiempo
+- **Búsqueda Actualizada**: Google Search grounding para respuestas actualizadas
+- **Mapas Mentales**: Visualización interactiva de conceptos
+- **Esquemas y Resúmenes**: Generación automática de material de estudio
+- **Comparador de Leyes**: Análisis de diferencias entre versiones legales
+- **Tarjetas y Memes**: Flashcards interactivas con contenido visual
+- **Plan de Estudios**: Planificación personalizada
+- **Mi Progreso**: Estadísticas de rendimiento
 
-| Característica                                     | Modelo de IA Utilizado    | Agente / System Instruction / Justificación                                                                                                                                                                 |
-| -------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Generador de Casos/Exámenes**                    | `gemini-2.5-pro`          | **Agente:** "Experto examinador". Se necesita la máxima capacidad de razonamiento (`thinkingBudget`) y seguimiento de instrucciones complejas (esquema JSON) para crear escenarios legales de alta calidad. |
-| **Chat Explicativo**                               | `gemini-2.5-flash`        | **Agente:** "Tutor experto en legislación". Optimizado para conversaciones rápidas y de baja latencia. Su rendimiento es excelente para responder preguntas directas.                                       |
-| **Búsqueda Actualizada**                           | `gemini-2.5-flash`        | **Agente:** Neutro. La tarea principal es procesar la información de la herramienta `googleSearch`, donde la velocidad es clave.                                                                            |
-| **Mapas, Esquemas, Planes, Resúmenes, Comparador** | `gemini-2.5-pro`          | **Agente:** "Tutor experto/analista". Tareas creativas que se benefician de una mayor capacidad para estructurar información y generar contenido bien organizado.                                           |
-| **Flashcards (texto)**                             | `gemini-2.5-pro`          | **Agente:** "Generador de material de estudio". Crea preguntas y respuestas concisas y un prompt creativo para el meme.                                                                                     |
-| **Generación de Memes (imagen)**                   | `imagen-4.0-generate-001` | Modelo de generación de imágenes de alta calidad para crear contenido visual atractivo a partir de un prompt de texto.                                                                                      |
+---
+
+## 6. Desarrollo
+
+### **Scripts Disponibles (Frontend)**
+
+```bash
+cd frontend
+
+npm run dev          # Servidor de desarrollo
+npm run build        # Build de producción
+npm run preview      # Preview del build
+npm run test         # Ejecutar tests
+npm run lint         # Linter
+npm run format       # Formatear código
+```
+
+### **Scripts Disponibles (Backend)**
+
+```bash
+cd backend
+
+# Iniciar servidor
+uvicorn main:app --reload
+
+# Tests
+pytest
+
+# Linter
+black .
+flake8 .
+```
+
+---
+
+## 7. Despliegue
+
+### **Frontend (Vercel)**
+
+1. Conecta tu repositorio a Vercel
+2. **Importante**: Configura el "Root Directory" como `frontend`
+3. Las variables de entorno se configuran en el panel de Vercel
+
+### **Backend (VPS/Railway/Render)**
+
+1. Asegúrate de que `.env.backend` tiene todas las API keys
+2. Configura las variables de entorno en tu plataforma
+3. El backend se conecta a Qdrant Cloud (ya configurado en `.env.backend`)
+
+---
+
+## 8. Documentación Adicional
+
+- **[Arquitectura del Sistema](./docs/ARCHITECTURE.md)**: Visión de alto nivel
+- **[Definición de Agentes de IA](./docs/AI_AGENTS.md)**: Configuración de prompts
+- **[Modelo de Datos](./docs/DATA_MODEL.md)**: Estructuras de datos
+
+---
+
+## 9. Solución de Problemas
+
+### **Frontend no compila**
+
+```bash
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### **Backend no encuentra Qdrant**
+
+```bash
+# Verificar que Docker está corriendo
+docker ps
+
+# Reiniciar Qdrant
+docker restart opositaia-qdrant
+
+# Ver logs
+docker logs opositaia-qdrant
+```
+
+### **Error de CORS**
+
+Verifica que `CORS_ORIGINS` en `backend/.env.backend` incluye tu URL del frontend:
+```
+CORS_ORIGINS=http://localhost:3000,https://tu-dominio.com
+```
+
+---
+
+## 10. Licencia
+
+MIT License - Ver [LICENSE](./LICENSE) para más detalles.
