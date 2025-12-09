@@ -86,7 +86,7 @@ Every Gemini API interaction MUST be documented in `/docs/AI_AGENTS.md`:
 
 OpositaIA has established patterns:
 
-- Service layer: `services/geminiService.ts`
+- Service layer: `frontend/services/backendService.ts` (multi-provider router)
 - Component structure: `components/[Feature].tsx`
 - Type definitions: `types.ts`
 - State management: `App.tsx`

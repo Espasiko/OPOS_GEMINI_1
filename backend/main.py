@@ -29,7 +29,7 @@ except Exception as e:
     logger.error(f"❌ Error loading .env.backend: {e}")
 
 # Import routers
-from routers import rag, rag_v2, chat, upload, ai_functions, user
+from routers import rag, rag_v2, chat, upload, ai_functions, user, boe
 from database.db import db
 
 
@@ -83,6 +83,7 @@ app.include_router(chat.router)  # Sprint 7: Chat with Mistral + RAG
 app.include_router(upload.router)  # Sprint 7: File/URL upload
 app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
 app.include_router(user.router)  # Sprint 11: User management
+app.include_router(boe.router)  # API oficial datos abiertos BOE
 
 # Root endpoint
 @app.get("/")

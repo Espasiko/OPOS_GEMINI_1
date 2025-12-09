@@ -5,16 +5,50 @@ node_modules/
 dist/
 build/
 
-# Environment variables
+# Environment variables - CRÍTICO
 .env
+.env.*
+!.env.example
+!.env.*.example
 .env.local
 .env.backend
+backend/.env.backend
+backend/.env
+frontend/.env
+frontend/.env.local
 
 # Credentials (NEVER COMMIT)
 .credentials.local
 .credentials
 credentials.txt
 passwords.txt
+**/api_keys.txt
+**/tokens.txt
+**/*key*.txt
+**/*secret*.txt
+**/*token*.txt
+
+# CARPETAS CON DATOS SENSIBLES
+backend/data/
+dataset_output/
+dataset_output_seguro/
+pdf-forge-exports/
+gastos_tokens/
+logs/
+qdrant_storage/
+basura/
+__tests__/
+tests/
+ejemplos_leyes_info/
+elemplos_leyes_info/
+mcp-server/
+
+# ARCHIVOS CON API KEYS DETECTADOS
+scripts/tests/test_mistral_chat_verificacion.py
+scripts/tests/test_mistral_agent_tools.py  
+scripts/tests/test_mistral_agent_respuestas_completas.py
+scripts/tests/test_mistral_agent_quality_check.py
+scripts/tests/test_mistral_vs_claude.py
 
 # IDE
 .vscode/

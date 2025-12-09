@@ -1,6 +1,6 @@
 # Definición de Agentes de IA en OpositaIA
 
-Este documento es la "fuente de la verdad" para todas las interacciones con la API de Google Gemini. Describe la "personalidad" (agente), el modelo, la configuración y la justificación de cada función definida en `services/geminiService.ts`.
+Este documento sigue siendo la "fuente de la verdad" de las llamadas a modelos, pero ahora las invocaciones se hacen vía el router multi-proveedor del backend (`frontend/services/backendService.ts` + FastAPI), no con `geminiService.ts` (el wrapper se eliminó). Aquí solo se documentan roles, modelos y esquemas de salida.
 
 ---
 

@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
 import logging
 
-from agents import get_rag_agent
+from agents.rag_agent_v2 import get_rag_agent_v2
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ async def search_documents(request: RAGSearchRequest):
     - `metadata`: Información sobre la búsqueda
     """
     try:
-        rag_agent = get_rag_agent()
+        rag_agent = get_rag_agent_v2()
         
         result = await rag_agent.search_and_answer(
             query=request.query,
