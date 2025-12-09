@@ -967,3 +967,66 @@ Script de conversión que valida, filtra y exporta a JSONL sin necesidad de hace
 Config de Unsloth (CPU‑only, 4‑bit, QLoRA) que te permitirá entrenar tu propio “profesor‑asistente” en 15‑20 h sin GPU.
 Cualquier duda (por ejemplo, cambiar el modelo base, ajustar la cantidad de LoRA, o integrar el endpoint de FastAPI) solo avísame y te paso los bloques de código que falten. ¡A por esos 5 000 Q&A de calidad suprema! 🚀
 La IA no conocse nuestro proyecto, no coinciden nombres , herramientas o codigo, pero la estrategia es buena !!!!
+mejores practicas/evaluacion: 
+### ¿Sigue tu estrategia de implementación las **mejores prácticas** para crear y afinar un modelo de preguntas‑respuesta jurídico?  
+
+En términos generales **sí** – el flujo que tienes (Generador → Crítico → Reward → Refinador → Conversión → Fine‑tuning) incorpora los principios que la comunidad de *Data‑Centric AI* y de *LLM‑Ops* considera de referencia.  
+A continuación te detallo **qué está bien hecho** y, de forma paralela, **qué pequeños ajustes** pueden llevarlo de “bueno” a “excelente”.
+
+---
+
+## 1️⃣ Lo que ya cumple con las mejores prácticas  
+
+| Área | Buenas decisiones que ya tienes |
+|------|---------------------------------|
+| **Arquitectura modular (agentic)** | Separas generación, validación y formato en *agentes* independientes. Esto permite **trazabilidad**, **re‑ejecución selectiva** y *swap* de modelos sin romper el pipeline. |
+| **RAG + BOE‑API** | La base de conocimiento proviene directamente de la API oficial del Boletín Oficial del Estado (datos de dominio público, sin riesgo de copyright). Indexas con Qdrant + embeddings especializados (`bge‑small‑es‑v1.5` o `bge‑m3‑spa‑law‑qa`).  <br>➡️ Evita alucinaciones y garantiza citaciones exactas. |
+| **Chain‑of‑Thought (CoT)** | Exiges que el generador entregue un razonamiento paso a paso antes de la respuesta. En exámenes de oposiciones eso es esencial y, además, el CoT sirve como “super‑etiqueta” que mejora el fine‑tuning. |
+| **Dataset centrado en calidad (LIMA)** | Apuntas a *5 000 Q&A* con validación múltiple (crítico + reward) en lugar de miles de pares ruidosos. Reduce costos y mejora la capacidad de generalización del modelo. |
+| **Uso de LoRA / QLoRA + 4‑bit** | Con `unsloth` entrenas Mixtral‑8x7B‑Instruct en **CPU‑only** sin superar los 8 GB de RAM. La combinación de LoRA + 4‑bit es la práctica recomendada para fine‑tuning de modelos > 7 B en hardware limitado. |
+| **Batch API + descuentos** | Aprovechas los “batch discounts” de Mistral/Anthropic y el plan gratuito de DeepSeek.  Reduces el coste de generación en **≈ 50 %** frente a llamadas puntuales. |
+| **Versionado y reproducibilidad** | - `unsloth_config.yaml` contiene seed, epochs y LR. <br>- Los checkpoints se guardan cada `save_steps`. <br>- El script de conversión usa `pydantic` → schema estable. |
+| **Separación de datos** | (Implícito) tienes `train.jsonl` y `val.jsonl`.  Eso permite monitorizar *over‑fitting* y calcular métricas de validación en cada epoch. |
+| **Infraestructura ligera** | FastAPI + Qdrant es la combinación recomendada para RAG en producción: bajo consumo, **ASGI** y facilidad de despliegue en un VPS de 8 GB. |
+| **Uso de varios modelos para diferentes roles** | DeepSeek (generación masiva, bajo coste), Mistral (crítico, batch), Claude (re‑visión de los casos críticos) y Nemotron‑Reward (puntuación automática).  Se sigue la filosofía *“teacher‑critic‑student”*. |
+
+---
+
+## 2️⃣ Áreas de mejora (pequeños ajustes para convertir “bueno” en “óptimo”)  
+
+| # | Tema | Qué ajustar / añadir | Por qué es importante |
+|---|------|----------------------|-----------------------|
+| **1** | **Gestión de tokens y límites de API** | - Añade en todos los prompts `max_tokens` (ej. 800 para DeepSeek, 200 para Mistral, 128 para Gemini). <br>- Usa `stop=["```"]` o `stop=["\n}"]` para forzar el cierre del JSON. | Evita que el modelo devuelva texto extra que rompa el parser y reduce el número de *re‑tries* costosos. |
+| **2** | **Control de tasa (rate‑limit) y reintentos** | - Envuelve cada llamada a la API en una función con **exponential back‑off** (ej. `tenacity` o `retry` decorator). <br>- Limita la concurrencia a `max_concurrent_requests = 5‑10` según el proveedor. | Impide errores 429, garantiza que el batch completo se complete sin interrupciones y ahorra crédito. |
+| **3** | **Logging estructurado** | - Usa `logging` con formato JSON (`%(asctime)s %(levelname)s %(message)s`). <br>- Registra: request_id, modelo, tokens_in, tokens_out, tiempo, status, error (si lo hay). | Facilita auditorías, análisis de costes y depuración post‑mortem. |
+| **4** | **Dataset versioning** | - Adoptar **DVC** o **Git‑LFS** para versionar `train.jsonl`, `val.jsonl` y los archivos de salida (`raw_qa.json`, `critic_output.json`, etc.). <br>- Incluye un archivo `dvc.yaml` con los pipelines. | Permite reproducir exactamente cualquier versión del dataset y rastrear qué cambios en prompts o filtros dieron mejora. |
+| **5** | **Control de duplicados y diversidad** | - Añade al script `convert_to_jsonl.py` una fase de **hash** (`hashlib.sha256(question.encode())`) y descarta duplicados. <br>- Usa `sentence‑transformers` para medir similitud entre preguntas y, si `cosine > 0.93`, marcar como duplicado. | Garantiza que la distribución temàtica no se sesgue y maximiza la cobertura de la normativa. |
+| **6** | **Equilibrio de tipos y dificultad** | - Después de la generación, genera un **report** con `pandas` que cuente `type` y `difficulty`. <br>- Si alguna categoría está bajo el **10 %**, vuelve a lanzar el generador con un **prompt “tipo X”** explícito. | Evita que el dataset quede desequilibrado (p.ej., 80 % “literal” y muy poco “trampa”).  Mejora la capacidad del modelo para responder a diferentes estilos de pregunta. |
+| **7** | **Validación humana + active learning** | - Usa **Label Studio** o **Argilla** para una muestra aleatoria (p.ej., 2 % = 100 ítems). <br>- Exporta los ítems con score bajo (< 0.4) y re‑etiquétalos. <br>- Re‑entrena (few extra epochs) con los nuevos ejemplos. | El “human‑in
+evaluacion final del modelo fnetuneado: ## Cómo medir (semi‑)automáticamente la veracidad de un LLM afinado para el ámbito legal y asegurarse de que no “alucine”
+
+> **Objetivo**: Obtener un proceso reproducible que, antes de usar el modelo en la preparación de oposiciones, permita cuantificar cuán fiel es a la realidad (hechos, normas, jurisprudencia) y detectar/corregir alucinaciones.  
+> **Enfoque**: combinar métricas automáticas con revisión humana estructurada y reforzar el modelo con datos y arquitectura que favorezcan la generación *grounded* (basada en fuentes verificables).
+
+---  
+
+## 1. Conceptos clave  
+
+| Término | Qué significa en este contexto |
+|---------|--------------------------------|
+| **Alucinación** | El modelo genera información que no está respaldada por ninguna fuente real (inventar artículos, citar URLs inexistentes, etc.). |
+| **Grounded generation** | Salida del modelo que incluye referencias a documentos, bases de datos o URLs que pueden ser recuperadas y verificadas. |
+| **Fact‑checking** | Proceso de validar cada aserción contra una fuente fiable. En la práctica se traduce en “claim extraction → retrieval → entailment”. |
+| **Semi‑automático** | Parte del proceso se ejecuta con scripts y modelos automáticos; la decisión final (p.ej., marcar un error) la revisa un humano. |
+
+---  
+
+## 2. Métricas automáticas de veracidad
+
+| Métrica | Qué mide | Cómo obtenerla |
+|---------|----------|----------------|
+| **Exact Match (EM) de respuestas** | Coincidencia exacta con la respuesta esperada (texto + citas). | Comparar la salida del modelo con un *gold‑standard* preparado con antelación (p.ej., preguntas de oposiciones con sus respuestas oficiales). |
+| **F1 de tokens** | Medida de similitud parcial (útil cuando la respuesta puede variar en redacción). | Usar herramientas como `datasets.load_metric("squad")`. |
+| **FactCC / FactScore** | Evaluación de veracidad a nivel de cada oración mediante un modelo entrenado para detectar “facts”. | Implementar el modelo de FactCC (disponible en HuggingFace) sobre cada oración generada. |
+| **FEVER‑style accuracy** | Verifica si cada afirmación es *SUPPORTED*, *REFUTED* o *NOT ENOUGH INFO* usando un modelo de NLI. | 1) Extraer claims → 2) Recuperar documentos → 3) Aplicar un modelo NLI (p.ej., `roberta-large-mnli`). |
+| **Citation Recall / Precision** | Cuán bien
