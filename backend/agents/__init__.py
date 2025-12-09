@@ -2,6 +2,6 @@
 Multi-Agent System for OpositAIA
 """
 
-from .rag_agent import RAGAgent, get_rag_agent
+from .rag_agent_v2 import RAGAgentV2, get_rag_agent_v2
 
-__all__ = ["RAGAgent", "get_rag_agent"]
+__all__ = ["RAGAgentV2", "get_rag_agent_v2"]

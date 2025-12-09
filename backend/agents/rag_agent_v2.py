@@ -24,18 +24,22 @@ class RAGAgentV2:
         qdrant_url: Optional[str] = None,
         collection_name: Optional[str] = None,
         embedding_model: Optional[str] = None,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        use_local_embeddings: Optional[bool] = None,
     ):
         # Leer desde variables de entorno si no se proporcionan
         self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
         self.collection_name = collection_name or os.getenv("COLLECTION_NAME", "opositaia_leyes_seguridad_social")
-        self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "PlanTL-GOB-ES/RoBERTalex")
+        # Modelo abierto para embeddings multilingües (evita repositorios gated)
+        self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+        self.use_local_embeddings = use_local_embeddings if use_local_embeddings is not None else True
         api_key = api_key or os.getenv("QDRANT_API_KEY")
         
-        logger.info(f"Initializing RAG Agent V2")
+        logger.info("Initializing RAG Agent V2")
         logger.info(f"  Qdrant URL: {self.qdrant_url}")
         logger.info(f"  Collection: {self.collection_name}")
         logger.info(f"  Embedding Model: {self.embedding_model}")
+        logger.info(f"  Local embeddings: {self.use_local_embeddings}")
         
         # Initialize Qdrant client
         try:
@@ -49,16 +53,39 @@ class RAGAgentV2:
             logger.error(f"Failed to connect to Qdrant: {e}")
             raise
         
-        # Initialize RoBERTalex
-        logger.info(f"Loading embedding model: {self.embedding_model}")
-        self.model = SentenceTransformer(self.embedding_model)
+        # Initialize embedding model (local) si procede
+        if self.use_local_embeddings:
+            logger.info(f"Loading embedding model: {self.embedding_model}")
+            self.model = SentenceTransformer(self.embedding_model)
+        else:
+            self.model = None
         
-        logger.info(f"✅ RAG Agent V2 initialized successfully")
+        logger.info("✅ RAG Agent V2 initialized successfully")
     
     def generate_embedding(self, text: str) -> List[float]:
-        """Genera embedding usando RoBERTalex"""
-        embedding = self.model.encode([text], convert_to_numpy=True)[0]
-        return embedding.tolist()
+        """Genera embedding usando bge-m3-spa-law-qa local o endpoint externo"""
+        if self.use_local_embeddings and self.model:
+            embedding = self.model.encode([text], convert_to_numpy=True)[0]
+            return embedding.tolist()
+        else:
+            # Usar endpoint externo (ejemplo Ollama)
+            import httpx
+            ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
+            try:
+                with httpx.Client(timeout=30.0) as client:
+                    response = client.post(
+                        f"{ollama_url}/api/embeddings",
+                        json={
+                            "model": self.embedding_model,
+                            "prompt": text
+                        }
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                    return data.get("embedding", [])
+            except Exception as e:
+                logger.error(f"Error generating embedding via Ollama: {e}")
+                return []
     
     async def search_documents(
         self,

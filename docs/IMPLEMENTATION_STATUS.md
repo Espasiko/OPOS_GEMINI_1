@@ -242,8 +242,7 @@ backend/
   - Response aggregation
 
 - [ ] **Integrate with Frontend**
-  - Update `services/geminiService.ts`
-  - Connect to backend API
+  - Ensure `frontend/services/backendService.ts` points to backend API
   - Handle multi-agent responses
 
 ### Phase 7: Fine-tuning (Optional, Week 7+)

@@ -217,8 +217,11 @@ docker ps
 # Desde Windows
 curl http://localhost:6333/collections
 
-# Desde WSL
-curl http://localhost:6333/collections
+# Desde WSL (Conexión Bridge)
+curl http://host.docker.internal:6333/collections
+
+# Ver logs del contenedor real
+docker logs opositaia-qdrant
 ```
 
 ---

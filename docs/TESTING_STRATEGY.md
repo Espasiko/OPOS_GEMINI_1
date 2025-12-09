@@ -35,7 +35,7 @@ This document defines the comprehensive testing strategy for OpositaIA, followin
 
 ### What to Test
 
-#### Services (`services/geminiService.ts`)
+#### Services (`frontend/services/backendService.ts`)
 
 - ✅ API key validation
 - ✅ Model selection logic
@@ -63,12 +63,12 @@ This document defines the comprehensive testing strategy for OpositaIA, followin
 ### Example Unit Test Structure
 
 ```typescript
-// services/__tests__/geminiService.test.ts
+// services/__tests__/backendService.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generatePracticalCase } from '../geminiService';
+import { sendChatMessage } from '../backendService';
 
-describe('geminiService', () => {
-  describe('generatePracticalCase', () => {
+describe('backendService', () => {
+  describe('sendChatMessage', () => {
     it('should generate a valid practical case', async () => {
       // Arrange
       const mockResponse = {
