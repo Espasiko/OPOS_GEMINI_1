@@ -72,7 +72,9 @@ Para restaurar en portátil:
 "@
 
 git commit -m $CommitMessage
-$pushResult = git push origin $BackupBranch
+
+Write-Host "🔗 Enviando al repositorio..." -ForegroundColor Cyan
+git push origin $BackupBranch
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "✅ Migración completada exitosamente!" -ForegroundColor Green
