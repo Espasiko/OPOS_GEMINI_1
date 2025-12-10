@@ -89,24 +89,22 @@ class BOEIndexer:
         logger.info(f"Processing Law: {boe_id}")
         
         try:
-            # We assume get_metadatos returns a dict and get_texto_consolidado returns text/xml
+            # Metadatos generales de la norma
             metadatos = self.boe_client.get_metadatos(boe_id)
-            # Fetch text (consolidated XML usually)
-            # Note: get_texto_consolidado might return a large string
-            # In a real impl, we might stream or chunk this.
-            # For now, we fetch it (assuming memory holds it)
-            # If get_texto_consolidado isn't available, we use helpers from previous findings
+
+            # Texto consolidado completo (XML) → fuente principal para artículos
             if hasattr(self.boe_client, 'get_texto_consolidado'):
-                 texto_xml = self.boe_client.get_texto_consolidado(boe_id)
+                texto_xml = self.boe_client.get_texto_consolidado(boe_id)
             else:
-                 logger.warning(f"get_texto_consolidado not found in client, skipping text processing for {boe_id}")
-                 texto_xml = ""
-                 
+                logger.warning(f"get_texto_consolidado not found in client, skipping full-text fetch for {boe_id}")
+                texto_xml = ""
+
         except Exception as e:
             logger.error(f"Failed to fetch data for {boe_id}: {e}")
             return
 
-        law_title = metadatos.get('data', {}).get('titulo', 'Desconocido')
+        data_meta = metadatos.get('data', {}) if isinstance(metadatos, dict) else {}
+        law_title = data_meta.get('titulo', 'Desconocido')
         logger.info(f"Law Title: {law_title}")
 
         # --- LAYER 1: DOCUMENT / SOURCE ---
@@ -118,14 +116,91 @@ class BOEIndexer:
             payload={
                 "boe_id": boe_id,
                 "title": law_title,
-                "type": "Ley",
-                "date": metadatos.get('data', {}).get('fecha_publicacion'),
-                "url": metadatos.get('data', {}).get('url_html_consolidada')
+                "type": data_meta.get('rango') or "Ley",
+                "date": data_meta.get('fecha_publicacion'),
+                "url": data_meta.get('url_html_consolidada') or data_meta.get('url_html'),
+                "estado": data_meta.get('estado') or data_meta.get('estado_consolidacion'),
+                "norma": data_meta.get('identificador') or data_meta.get('titulo_corto') or law_title,
+                "departamento": data_meta.get('departamento'),
+                "ambito": data_meta.get('ambito_geografico'),
+                "numero_oficial": data_meta.get('numero_oficial'),
+                "materia": data_meta.get('materia'),
+                "fecha_entrada_en_vigor": data_meta.get('fecha_entrada_en_vigor'),
+                "fecha_ultima_modificacion": data_meta.get('fecha_ultima_modificacion'),
+                "fecha_derogacion": data_meta.get('fecha_derogacion'),
+                "version_eli": data_meta.get('eli')
             }
         )
-        
-        # Placeholder for full XML parsing
-        logger.info(f"indexed source layer for {boe_id}. (Parsing logic would go here for other layers)")
+
+        logger.info(f"indexed source layer for {boe_id}. Now indexing article-level articles from full XML (layer=1)...")
+
+        # --- LAYER 1: ARTÍCULOS DESDE XML COMPLETO ---
+        total_chunks = 0
+
+        if texto_xml:
+            articles = self._extract_articles_from_xml(texto_xml)
+        else:
+            articles = []
+
+        for art_idx, art in enumerate(articles):
+            art_text = art.get("text") or ""
+            if not art_text.strip():
+                continue
+
+            # Chunking aproximado por longitud de caracteres (proxy 512 tokens ~ 1500-2000 chars)
+            chunks = self._chunk_text(art_text, max_chars=1800, overlap_chars=200)
+            if not chunks:
+                continue
+
+            articulo_num = art.get("articulo_num")
+            titulo_bloque = art.get("articulo_titulo") or art.get("titulo_norma") or ""
+
+            for chunk_idx, chunk_text in enumerate(chunks):
+                # ID determinista por norma + artículo + chunk
+                base_id = f"{boe_id}-art-{articulo_num or art_idx}-{chunk_idx}"
+                point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, base_id))
+
+                payload = {
+                    "boe_id": boe_id,
+                    "block_id": art.get("block_id"),  # opcional, por si se quiere mapear a índice
+                    "chunk_index": chunk_idx,
+                    "title": law_title,
+                    "block_title": titulo_bloque,
+                    "type": data_meta.get('rango') or "Ley",
+                    "date": data_meta.get('fecha_publicacion'),
+                    "url": data_meta.get('url_html_consolidada') or data_meta.get('url_html'),
+                    "estado": data_meta.get('estado') or data_meta.get('estado_consolidacion'),
+                    "norma": data_meta.get('identificador') or data_meta.get('titulo_corto') or law_title,
+                    "departamento": data_meta.get('departamento'),
+                    "ambito": data_meta.get('ambito_geografico'),
+                    "numero_oficial": data_meta.get('numero_oficial'),
+                    "materia": data_meta.get('materia'),
+                    "fecha_entrada_en_vigor": data_meta.get('fecha_entrada_en_vigor'),
+                    "fecha_ultima_modificacion": data_meta.get('fecha_ultima_modificacion'),
+                    "fecha_derogacion": data_meta.get('fecha_derogacion'),
+                    "version_eli": data_meta.get('eli'),
+                    # Campos derivados de la estructura del artículo
+                    "articulo_num": art.get("articulo_num"),
+                    "articulo_titulo": art.get("articulo_titulo"),
+                    "titulo_norma": art.get("titulo_norma"),
+                    "capitulo": art.get("capitulo"),
+                    "seccion": art.get("seccion"),
+                    "subseccion": art.get("subseccion"),
+                    "disposicion": art.get("disposicion"),
+                    "modificaciones": art.get("modificaciones"),
+                    "notas": art.get("notas"),
+                }
+
+                self._index_item(
+                    id=point_id,
+                    text=chunk_text,
+                    layer="1",
+                    payload=payload,
+                )
+
+                total_chunks += 1
+
+        logger.info(f"Indexed {total_chunks} article-level chunks for {boe_id} (layer=1) from full XML")
 
     def _index_item(self, id: str, text: str, layer: str, payload: Dict[str, Any]):
         """Helper to vectorize and upsert a single item"""
@@ -136,7 +211,7 @@ class BOEIndexer:
         payload["text"] = text[0:1000] # Store snippet in payload, not full text if huge
         payload["layer"] = layer
         payload["timestamp"] = datetime.now().isoformat()
-
+          
         self.client.upsert(
             collection_name=COLLECTION_NAME,
             points=[
@@ -148,11 +223,188 @@ class BOEIndexer:
             ]
         )
 
+    def _clean_xml_to_text(self, xml_content: str) -> str:
+        """Very simple XML to text cleaner: strips tags and normalizes whitespace."""
+        import re
+
+        if not xml_content:
+            return ""
+
+        # Remove XML/HTML tags
+        text = re.sub(r"<[^>]+>", " ", xml_content)
+        # Collapse whitespace
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
+
+    def _extract_articles_from_xml(self, xml_content: str) -> List[Dict[str, Any]]:
+        """Extrae artículos (<articulo>) del XML consolidado de una norma.
+
+        Para cada artículo localiza número, rúbrica y contexto jerárquico
+        reutilizando la lógica de _extract_block_structure.
+        """
+        import xml.etree.ElementTree as ET
+
+        articles: List[Dict[str, Any]] = []
+        if not xml_content:
+            return articles
+
+        try:
+            root = ET.fromstring(xml_content)
+        except ET.ParseError:
+            return articles
+
+        # Recorremos todos los nodos <articulo>/<artículo>
+        for art_el in root.iter():
+            tag_lower = art_el.tag.lower()
+            if not (tag_lower.endswith("articulo") or tag_lower.endswith("artículo")):
+                continue
+
+            # Serializar solo este artículo a XML independiente
+            art_xml = ET.tostring(art_el, encoding="unicode")
+
+            # Estructura legal best-effort
+            struct = self._extract_block_structure(art_xml)
+
+            # Texto plano del artículo
+            art_text = self._clean_xml_to_text(art_xml)
+            if not art_text.strip():
+                continue
+
+            # Asegurar campos clave
+            num = struct.get("articulo_num") or art_el.attrib.get("num") or art_el.attrib.get("n")
+            struct["articulo_num"] = num
+            struct["text"] = art_text
+
+            articles.append(struct)
+
+        return articles
+
+    def _extract_block_structure(self, xml_content: str) -> Dict[str, Any]:
+        """Extrae, de forma best-effort, la estructura legal de un bloque XML del BOE.
+
+        Intenta localizar información típica: artículo, título, capítulo, secciones,
+        disposiciones, notas y referencias de modificación.
+        """
+        import xml.etree.ElementTree as ET
+
+        result: Dict[str, Any] = {}
+        if not xml_content:
+            return result
+
+        try:
+            root = ET.fromstring(xml_content)
+        except ET.ParseError:
+            return result
+
+        # Helpers
+        def find_first_by_tag_endswith(node: ET.Element, suffixes) -> Optional[ET.Element]:
+            if isinstance(suffixes, str):
+                suffixes_local = (suffixes,)
+            else:
+                suffixes_local = tuple(suffixes)
+            for el in node.iter():
+                if any(el.tag.lower().endswith(suf) for suf in suffixes_local):
+                    return el
+            return None
+
+        def clean_text(el: Optional[ET.Element]) -> Optional[str]:
+            if el is None:
+                return None
+            text_parts = [el.text or ""]
+            for child in el:
+                if child.text:
+                    text_parts.append(child.text)
+                if child.tail:
+                    text_parts.append(child.tail)
+            text = " ".join(text_parts).strip()
+            return text or None
+
+        # Artículo principal
+        articulo_el = find_first_by_tag_endswith(root, ["articulo", "artículo"])
+        if articulo_el is not None:
+            num = articulo_el.attrib.get("num") or articulo_el.attrib.get("n")
+            if num:
+                result["articulo_num"] = num
+
+            # Título/rúbrica del artículo
+            rubrica_el = find_first_by_tag_endswith(articulo_el, ["rubrica", "rúbrica", "titulo", "título"])
+            if rubrica_el is not None:
+                result["articulo_titulo"] = clean_text(rubrica_el)
+
+        # Título / Capítulo / Sección
+        titulo_el = find_first_by_tag_endswith(root, ["titulo", "título"])
+        if titulo_el is not None:
+            result["titulo_norma"] = clean_text(titulo_el)
+
+        capitulo_el = find_first_by_tag_endswith(root, ["capitulo", "capítulo"])
+        if capitulo_el is not None:
+            result["capitulo"] = clean_text(capitulo_el)
+
+        seccion_el = find_first_by_tag_endswith(root, ["seccion", "sección"])
+        if seccion_el is not None:
+            result["seccion"] = clean_text(seccion_el)
+
+        subseccion_el = find_first_by_tag_endswith(root, ["subseccion", "subsección"])
+        if subseccion_el is not None:
+            result["subseccion"] = clean_text(subseccion_el)
+
+        # Disposiciones adicionales/transitorias/etc.
+        disp_el = find_first_by_tag_endswith(root, ["disposicion", "disposición"])
+        if disp_el is not None:
+            result["disposicion"] = clean_text(disp_el)
+
+        # Notas y modificaciones
+        notas = []
+        modificaciones = []
+        for el in root.iter():
+            tag_lower = el.tag.lower()
+            if tag_lower.endswith("nota") or tag_lower.endswith("notas"):
+                txt = clean_text(el)
+                if txt:
+                    notas.append(txt)
+            if "modifica" in tag_lower or "modificacion" in tag_lower or "modificación" in tag_lower:
+                txt = clean_text(el)
+                if txt:
+                    modificaciones.append(txt)
+
+        if notas:
+            result["notas"] = notas
+        if modificaciones:
+            result["modificaciones"] = modificaciones
+
+        return result
+
+    def _chunk_text(self, text: str, max_chars: int = 1800, overlap_chars: int = 200) -> List[str]:
+        """Simple character-based chunking as proxy for token-based 512/50 strategy."""
+        if not text:
+            return []
+
+        if max_chars <= 0:
+            return [text]
+
+        chunks: List[str] = []
+        start = 0
+        length = len(text)
+
+        while start < length:
+            end = min(start + max_chars, length)
+            chunk = text[start:end].strip()
+            if chunk:
+                chunks.append(chunk)
+
+            if end == length:
+                break
+
+            # Move start forward with overlap
+            start = max(0, end - overlap_chars)
+
+        return chunks
+
 if __name__ == "__main__":
     indexer = BOEIndexer()
     indexer.ensure_collection()
     
-    # 13 Leyes Prioritarias (Criticas + Altas + Medias)
+    # 17 Leyes prioritarias (13 principales + 4 faltantes del temario oficial)
     CATALOGO_LEYES = [
         {"id": "BOE-A-2015-11724", "nombre": "LGSS"},
         {"id": "BOE-A-1996-3981", "nombre": "RD 84/1996 Afiliación"},
@@ -166,7 +418,12 @@ if __name__ == "__main__":
         {"id": "BOE-A-1995-19848", "nombre": "RD 1300/1995 IP"},
         {"id": "BOE-A-2021-9155",  "nombre": "Ley IMV"},
         {"id": "BOE-A-2018-16673", "nombre": "LOPDGDD"},
-        {"id": "BOE-A-2006-21990", "nombre": "Ley Dependencia"}
+        {"id": "BOE-A-2006-21990", "nombre": "Ley Dependencia"},
+        # 4 leyes faltantes del temario oficial (LEYES_FALTANTES_TEMARIO_OFICIAL.md)
+        {"id": "BOE-A-2014-13517", "nombre": "Ley 34/2014 Liquidación cuotas SS"},
+        {"id": "BOE-A-1985-12666", "nombre": "LO 6/1985 LOPJ"},
+        {"id": "BOE-A-1979-23709", "nombre": "LO 2/1979 LOTC"},
+        {"id": "BOE-A-1985-11672", "nombre": "LO 5/1985 LOREG"}
     ]
     
     print(f"🚀 Iniciando ingesta masiva de {len(CATALOGO_LEYES)} leyes...")
@@ -184,3 +441,19 @@ if __name__ == "__main__":
             continue
 
     logger.info("Indexing Job Complete.")
+
+    # Resumen final de la colección en Qdrant
+    try:
+        info = indexer.client.get_collection(COLLECTION_NAME)
+        points = info.points_count
+        vector_size = VECTOR_SIZE
+        # Estimación muy aproximada de tamaño: puntos * vector_size * 4 bytes (float32) → MB
+        estimated_mb = (points * vector_size * 4) / (1024 * 1024)
+        print("\n" + "=" * 80)
+        print(f"📊 RESUMEN COLECCIÓN QDRANT: {COLLECTION_NAME}")
+        print(f"   Puntos totales: {points:,}")
+        print(f"   Dimensión vector: {vector_size}")
+        print(f"   Tamaño estimado (solo vectores densos): {estimated_mb:,.2f} MB")
+        print("=" * 80)
+    except Exception as e:
+        logger.error(f"Error obteniendo estadísticas de Qdrant: {e}")
