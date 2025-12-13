@@ -1,8 +1,0 @@
-TEST 2: Verificación de URL y contenido
-================================================================================
-
-content='' tool_calls=[ToolCall(function=FunctionCall(name='web_search', arguments='{"query": "artículo 205.1.a LGSS BOE 2024"}'), id='RngdD6LaV', type=None, index=0)] prefix=False role='assistant'
-
-================================================================================
-RESPUESTA RAW:
-id='8aa1583f3d324add91caaff71126ac0e' object='chat.completion' model='magistral-medium-latest' usage=UsageInfo(prompt_tokens=3281, completion_tokens=28, total_tokens=3309, prompt_audio_seconds=Unset()) created=1764676342 choices=[ChatCompletionChoice(index=0, message=AssistantMessage(content='', tool_calls=[ToolCall(function=FunctionCall(name='web_search', arguments='{"query": "artículo 205.1.a LGSS BOE 2024"}'), id='RngdD6LaV', type=None, index=0)], prefix=False, role='assistant'), finish_reason='tool_calls')]

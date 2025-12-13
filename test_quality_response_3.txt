@@ -1,8 +1,0 @@
-TEST 3: Información sobre IMV
-================================================================================
-
-content='' tool_calls=[ToolCall(function=FunctionCall(name='web_search', arguments='{"query": "Real Decreto Ingreso Mínimo Vital BOE", "end_date": "2024-10-10", "start_date": "2020-01-01"}'), id='IKc5Q3aJz', type=None, index=0)] prefix=False role='assistant'
-
-================================================================================
-RESPUESTA RAW:
-id='70a4d0d9db004809aa12fc6aef690535' object='chat.completion' model='magistral-medium-latest' usage=UsageInfo(prompt_tokens=3188, completion_tokens=52, total_tokens=3240, prompt_audio_seconds=Unset()) created=1764676344 choices=[ChatCompletionChoice(index=0, message=AssistantMessage(content='', tool_calls=[ToolCall(function=FunctionCall(name='web_search', arguments='{"query": "Real Decreto Ingreso Mínimo Vital BOE", "end_date": "2024-10-10", "start_date": "2020-01-01"}'), id='IKc5Q3aJz', type=None, index=0)], prefix=False, role='assistant'), finish_reason='tool_calls')]

@@ -20,8 +20,11 @@ class Database:
                     port=os.getenv("POSTGRES_PORT", "5432"),
                     database=os.getenv("POSTGRES_DB", "opositaia"),
                     user=os.getenv("POSTGRES_USER", "postgres"),
-                    password=os.getenv("POSTGRES_PASSWORD", "postgres")
+                    password=os.getenv("POSTGRES_PASSWORD") or "postgres"
                 )
+                if not os.getenv("POSTGRES_PASSWORD"):
+                    logger.warning("⚠️ POSTGRES_PASSWORD not set in environment, using default 'postgres'")
+                
                 logger.info("✅ Database connection pool created")
             except Exception as e:
                 logger.error(f"❌ Error creating connection pool: {e}")

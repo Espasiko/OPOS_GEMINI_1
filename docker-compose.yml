@@ -55,9 +55,18 @@ services:
     env_file:
       - backend/.env.backend
     environment:
+      # PostgreSQL (local en Docker)
+      - POSTGRES_HOST=opositaia-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=opositaia
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      
       # Qdrant (local en Docker)
-      - QDRANT_URL=http://qdrant:6333
-      - QDRANT_COLLECTION_NAME=opositaia_documents
+      - QDRANT_HOST=opositaia-qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_URL=http://opositaia-qdrant:6333
+      - QDRANT_COLLECTION_NAME=opositaia_knowledge
       
       # Ollama (en WSL, accesible desde Docker Desktop vía host.docker.internal)
       - OLLAMA_URL=http://host.docker.internal:11434
@@ -67,10 +76,8 @@ services:
       - API_PORT=8000
       - API_RELOAD=false
     depends_on:
-      qdrant:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
+      - qdrant
+      - postgres
     restart: unless-stopped
     networks:
       - opositaia-network

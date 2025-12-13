@@ -1,7 +1,7 @@
 # 🚀 MEGA PLAN ACTUALIZADO - RAG + FINE-TUNING COMPLETO
-**Fecha:** 7 de diciembre de 2025  
-**Versión:** 2.0 - INTEGRADO CON TODA LA DOCUMENTACIÓN  
-**Estado:** 📋 LISTO PARA EJECUTAR
+**Fecha:** 11 de diciembre de 2025  
+**Versión:** 2.1 - POST-INGESTA SMART CHUNKING  
+**Estado:** 🟢 EN EJECUCIÓN - FASE DE CONSOLIDACIÓN
 
 ---
 
@@ -9,7 +9,7 @@
 
 Después de leer **TODOS** los documentos en `docs/` y `docs/archive/`, este es el plan DEFINITIVO que integra:
 
-✅ RAG_BEST_PRACTICES_NOV2025.md - Best practices estado del arte  
+✅ ACTUALIZACION_DOCS_11_DIC_2025.md - Estado actual real (Smart Chunking)  
 ✅ MULTI_AGENT_ARCHITECTURE.md - Arquitectura multi-agente  
 ✅ RAG_INTEGRATION_PLAN.md - Plan de integración completo  
 ✅ EMBEDDINGS_FINETUNING_RESEARCH.md - Investigación embeddings  
@@ -179,7 +179,7 @@ TOTAL: $15.20 USD (vs $500+ agencias)
 1. **Query Expansion** ⭐⭐⭐⭐⭐
    - Generar 2-3 variaciones de la pregunta
    - +30-50% recall
-   - Coste: $0 (Groq gratis)
+   - Coste: $0 (Groq NO es gratis!!!)
 
 2. **Corrective RAG (CRAG)** ⭐⭐⭐⭐⭐
    - Evaluar calidad de docs recuperados

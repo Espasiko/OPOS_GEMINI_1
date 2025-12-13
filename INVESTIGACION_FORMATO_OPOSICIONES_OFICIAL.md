@@ -1,6 +1,6 @@
 # ✅ INVESTIGACIÓN COMPLETADA: Formato Oficial de Oposiciones AGE
 
-**Fecha:** 8 de diciembre de 2025  
+**Fecha:** 12 de diciembre de 2025  
 **Estado:** ✅ INFORMACIÓN OFICIAL VERIFICADA
 
 ---
