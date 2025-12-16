@@ -1,11 +1,12 @@
-# 🎉 MEMORIA DE SESIÓN - 15 Diciembre 2025
+# 🎉 MEMORIA DE SESIÓN - 15-16 Diciembre 2025
 **IDE:** Kiro  
-**Estado:** ✅ ÉXITO TOTAL - MCP OPOSITAIA FUNCIONANDO
+**Estado:** ✅ ÉXITO TOTAL - MCP OPOSITAIA FUNCIONANDO + GITHUB SINCRONIZADO
 
 ---
 
-## 🏆 LOGRO PRINCIPAL
+## 🏆 LOGROS PRINCIPALES
 
+### 15 Diciembre: MCP Server Operativo
 **MCP Server de Opositaia integrado y funcionando en Kiro**
 
 El servidor MCP permite acceder al RAG de Seguridad Social española directamente desde Kiro con las siguientes herramientas:
@@ -38,15 +39,20 @@ El servidor MCP permite acceder al RAG de Seguridad Social española directament
 
 **¡17,403 chunks de conocimiento legal indexados y accesibles!**
 
+### 16 Diciembre: Sincronización GitHub + Limpieza
+- ✅ **Push completo a GitHub** - Commit `edb76cf`
+- ✅ **Limpieza de ficheros sospechosos** - Eliminados artefactos de command injection
+- ✅ **Power opositaia-rag** creado en `powers/`
+
 ---
 
 ## 🔧 TRABAJO REALIZADO
 
 ### 1. Corrección del MCP Server (`mcp-server/src/index.ts`)
 - ✅ Eliminado código duplicado y corrupto
-- ✅ Configurado modelo **pablosi/bge-m3-spa-law-qa-trained-2** para embeddings
-- ✅ Eliminadas referencias a OpenAI, Cohere, Gemini (no usados)
-- ✅ Configurado Mistral como fallback
+- ✅ Configurado modelo **pablosi/bge-m3-spa-law-qa-trained-2** para embeddings (1024 dims)
+- ✅ Eliminadas referencias a OpenAI, Cohere, Gemini (NO usados)
+- ✅ Configurado Mistral como fallback para embeddings
 - ✅ Añadida herramienta `list_collections`
 
 ### 2. Corrección de TypeScript (`mcp-server/tsconfig.json`)
@@ -65,6 +71,16 @@ El servidor MCP permite acceder al RAG de Seguridad Social española directament
 - ✅ Ruta WSL correcta para Windows
 - ✅ Variables de entorno inyectadas
 
+### 5. Sincronización GitHub (16-dic)
+- ✅ Commit: `fix(mcp): rewrite MCP server with pablosi embeddings, cleanup old files, add powers`
+- ✅ Hash: `edb76cf` (anterior: `f124827`)
+- ✅ 14 ficheros cambiados, 1021 insertions, 1532 deletions
+
+### 6. Limpieza de Seguridad (16-dic)
+- ✅ Eliminado `l --terminate UbuntuDistro` (artefacto de command injection)
+- ✅ Eliminado `l.localhostUbuntuDistrohomespasOPOS_GEMINI_1" ; git branch -v` (artefacto)
+- ⚠️ **NO eran virus npm** - Solo errores de parsing de rutas WSL por algún IDE
+
 ---
 
 ## 📊 ESTADO DEL RAG
@@ -75,26 +91,63 @@ El servidor MCP permite acceder al RAG de Seguridad Social española directament
 | leyes_espana | 1,067 | 🟢 GREEN |
 | **TOTAL** | **18,470** | ✅ |
 
+**Modelo embeddings:** `pablosi/bge-m3-spa-law-qa-trained-2` (HuggingFace, 1024 dims)
+
+---
+
+## 📁 ARCHIVOS MODIFICADOS/CREADOS
+
+### Modificados:
+- `mcp-server/src/index.ts` - Reescrito completamente (756 líneas cambiadas)
+- `mcp-server/tsconfig.json` - Corregido moduleResolution
+- `mcp-server/package.json` - Dependencias actualizadas
+- `test_rag_mistral.py` - Tests actualizados
+- `FUNCION_BUSCAR_RAG_QDRANT_MISTRAL.json` - Actualizado
+- `MEGA_PLAN_ACTUALIZADO_COMPLETO.md` - Actualizado con MCP
+
+### Creados:
+- `mcp-server/.env` - Variables de entorno (NO en git)
+- `powers/opositaia-rag/POWER.md` - Documentación del power
+- `powers/opositaia-rag/mcp-config.json` - Config del power
+- `MEMORIA_15_12_KIRO.md` - Este fichero
+
+### Eliminados:
+- `PLAN_REORGANIZACION_ROOT_10_DIC_2025.md` - Obsoleto
+- `SESION_COMPLETA_08_DIC_2025_FINAL.md` - Obsoleto
+- `migrate_to_laptop.ps1` - Obsoleto
+- `restore_from_backup.ps1` - Obsoleto
+- `l --terminate UbuntuDistro` - Artefacto basura
+- `l.localhost...` - Artefacto basura
+
 ---
 
 ## 🚀 PRÓXIMOS PASOS
 
-1. **Probar búsqueda semántica** con `search_rag`
+1. **Probar búsqueda semántica** con `search_rag` en Kiro
 2. **Verificar calidad** de resultados del RAG
 3. **Integrar con frontend** React existente
-4. **Documentar workflows** de uso en Kiro
+4. **Continuar Sprint 3** del MEGA_PLAN (generación dataset)
 
 ---
 
-## 📁 ARCHIVOS MODIFICADOS
+## 🔑 CONFIGURACIÓN IMPORTANTE
 
-- `mcp-server/src/index.ts` - Reescrito completamente
-- `mcp-server/tsconfig.json` - Corregido moduleResolution
-- `mcp-server/.env` - Creado con tokens correctos
-- `~/.kiro/settings/mcp.json` - Configurado servidor opositaia
+### Modelo de Embeddings (CRÍTICO)
+```
+SIEMPRE usar: pablosi/bge-m3-spa-law-qa-trained-2
+NO usar: OpenAI, Gemini, Cohere (no configurados)
+Fallback: Mistral embeddings
+```
+
+### Qdrant Cloud
+```
+URL: https://b554ceb5-2169-4064-9ce7-83c8cd44cf84.europe-west3-0.gcp.cloud.qdrant.io
+Colección principal: opositaia_knowledge
+```
 
 ---
 
-**Fecha:** 15 de Diciembre de 2025  
-**Duración:** ~1 hora  
-**Resultado:** 🎯 MCP 100% OPERATIVO
+**Fecha inicio:** 15 de Diciembre de 2025  
+**Última actualización:** 16 de Diciembre de 2025  
+**Duración total:** ~2 horas  
+**Resultado:** 🎯 MCP 100% OPERATIVO + GITHUB SINCRONIZADO

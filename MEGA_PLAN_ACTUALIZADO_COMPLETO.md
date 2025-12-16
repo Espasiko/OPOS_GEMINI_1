@@ -5,9 +5,12 @@
 
 ---
 
-## 🎉 ACTUALIZACIÓN 15-DIC-2025: MCP OPOSITAIA EN KIRO
+## 🎉 ACTUALIZACIÓN 15-16 DIC 2025: MCP OPOSITAIA EN KIRO + GITHUB SYNC
 
-**¡HITO COMPLETADO!** El servidor MCP de Opositaia está 100% funcional en Kiro:
+**¡HITOS COMPLETADOS!**
+
+### 15-dic: MCP Server Operativo
+El servidor MCP de Opositaia está 100% funcional en Kiro:
 
 | Colección | Chunks Indexados | Estado |
 |-----------|------------------|--------|
@@ -24,6 +27,13 @@
 - `ingest_new_law` - Ingestar nuevas leyes
 
 **Modelo de embeddings:** `pablosi/bge-m3-spa-law-qa-trained-2` (1024 dims)
+⚠️ **IMPORTANTE:** NO usar OpenAI/Gemini para embeddings - solo pablosi o Mistral fallback
+
+### 16-dic: GitHub Sincronizado + Limpieza
+- ✅ Push completo: commit `edb76cf` (anterior: `f124827`)
+- ✅ Power `opositaia-rag` creado en `powers/`
+- ✅ Limpieza de ficheros basura (artefactos de command injection)
+- ✅ 14 ficheros cambiados, 1021 insertions, 1532 deletions
 
 Ver detalles en: `MEMORIA_15_12_KIRO.md`
 
