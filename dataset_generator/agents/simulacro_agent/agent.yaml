@@ -1,0 +1,92 @@
+# Agente Generador de Simulacros - OpositaIA
+# Fecha: 16 Diciembre 2025
+# Versión: 1.0
+
+name: simulacro_agent
+description: |
+  Agente que genera simulacros y tests de oposiciones usando el MCP de OpositaIA.
+  Puede consultar el RAG de Qdrant, responder preguntas legales, y generar
+  simulacros completos de 112 preguntas o tests de 80 preguntas.
+
+version: "1.0.0"
+author: OpositaIA
+
+# Configuración del MCP
+mcp:
+  server_name: opositaia
+  tools:
+    - search_rag          # Búsqueda semántica en leyes SS
+    - list_collections    # Listar colecciones Qdrant
+    - verify_boe          # Verificar vigencia en BOE
+    - get_law_summary     # Resumen de leyes
+
+# Modelo de embeddings
+embeddings:
+  model: pablosi/bge-m3-spa-law-qa-trained-2
+  dimensions: 1024
+  provider: huggingface
+
+# Configuración de generación
+generation:
+  # Simulacro completo oficial
+  simulacro:
+    total_preguntas: 112
+    parte_1:
+      nombre: "Test de Conocimientos Generales"
+      preguntas: 25
+      puntos_max: 50
+    parte_2:
+      nombre: "Supuestos Prácticos"
+      preguntas: 87
+      puntos_max: 50
+    formato: "BOE-A-2024-11403"
+    duracion_minutos: 90
+    penalizacion: -0.25
+  
+  # Test rápido
+  test:
+    total_preguntas: 80
+    duracion_minutos: 60
+    mezclar_respuestas: true
+    
+# Datasets de origen
+datasets:
+  principal: "../DATASET_FINAL_300_SS_AGE.jsonl"
+  backup:
+    - "../dataset_output/qa_baja_cobertura_500_PREMIUM_FINAL_20251208.jsonl"
+    - "../dataset_output/qa_completo_unificado_CORREGIDO_20251208.jsonl"
+
+# Temas del temario oficial
+temas:
+  seguridad_social:
+    - "Tema 1: Campo de Aplicación"
+    - "Tema 2: Inscripción, Afiliación, Altas y Bajas"
+    - "Tema 3: Cotización"
+    - "Tema 4: Acción Protectora"
+    - "Tema 5: Incapacidad Temporal"
+    - "Tema 6: Maternidad, Paternidad y Riesgo"
+    - "Tema 7: Incapacidad Permanente"
+    - "Tema 8: Jubilación"
+    - "Tema 9: Desempleo"
+    - "Tema 10: Muerte y Supervivencia"
+    - "Tema 11: Prestaciones Familiares"
+    - "Tema 12: Prestaciones No Contributivas"
+  
+  administracion_general:
+    - "Constitución Española"
+    - "Derecho Administrativo"
+    - "Función Pública"
+    - "Presupuestos Generales del Estado"
+    - "Procedimiento Administrativo"
+
+# Output
+output:
+  directory: "../dataset_output"
+  simulacro_prefix: "SIMULACRO_GENERADO"
+  test_prefix: "TEST_GENERADO"
+  format: "json"
+
+# Logging
+logging:
+  level: INFO
+  file: "simulacro_agent.log"
