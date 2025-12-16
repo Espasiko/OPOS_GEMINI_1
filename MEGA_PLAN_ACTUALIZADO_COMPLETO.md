@@ -1,7 +1,31 @@
 # 🚀 MEGA PLAN ACTUALIZADO - RAG + FINE-TUNING COMPLETO
-**Fecha:** 11 de diciembre de 2025  
-**Versión:** 2.1 - POST-INGESTA SMART CHUNKING  
-**Estado:** 🟢 EN EJECUCIÓN - FASE DE CONSOLIDACIÓN
+**Fecha:** 15 de diciembre de 2025  
+**Versión:** 2.2 - MCP KIRO INTEGRADO  
+**Estado:** 🟢 EN EJECUCIÓN - MCP OPERATIVO
+
+---
+
+## 🎉 ACTUALIZACIÓN 15-DIC-2025: MCP OPOSITAIA EN KIRO
+
+**¡HITO COMPLETADO!** El servidor MCP de Opositaia está 100% funcional en Kiro:
+
+| Colección | Chunks Indexados | Estado |
+|-----------|------------------|--------|
+| opositaia_knowledge | 17,403 | 🟢 GREEN |
+| leyes_espana | 1,067 | 🟢 GREEN |
+| **TOTAL** | **18,470** | ✅ OPERATIVO |
+
+**Herramientas MCP disponibles:**
+- `search_rag` - Búsqueda semántica en leyes SS
+- `list_collections` - Listar colecciones Qdrant
+- `verify_boe` - Verificar vigencia en BOE
+- `search_jurisprudence` - Buscar jurisprudencia
+- `get_law_summary` - Resumen de leyes
+- `ingest_new_law` - Ingestar nuevas leyes
+
+**Modelo de embeddings:** `pablosi/bge-m3-spa-law-qa-trained-2` (1024 dims)
+
+Ver detalles en: `MEMORIA_15_12_KIRO.md`
 
 ---
 

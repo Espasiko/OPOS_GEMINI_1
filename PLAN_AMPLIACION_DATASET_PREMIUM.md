@@ -54,7 +54,7 @@ Ampliar el dataset actual (801 registros) con **250 registros premium adicionale
 **Script:** `generar_simulacros_examen.py` (por crear)
 
 **Características:**
-- Formato oficial de oposiciones AGE
+- Formato oficial de oposiciones AGE y SSSS
 - 10 preguntas por bloque
 - 4 opciones por pregunta
 - Tiempo estimado por bloque

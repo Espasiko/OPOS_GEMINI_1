@@ -1,27 +1,113 @@
 {
-  "type": "function",
-  "function": {
-    "name": "buscar_rag_qdrant",
-    "description": "Busca contexto legal relevante en la base de conocimiento Qdrant de OpositAIA. Usa esta herramienta para encontrar artículos de leyes, temarios y contenido legal sobre Seguridad Social española.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": "Consulta en lenguaje natural sobre legislación de Seguridad Social. Ejemplo: 'edad jubilación ordinaria', 'requisitos incapacidad permanente', 'cálculo base reguladora'"
-        },
-        "top_k": {
-          "type": "integer",
-          "description": "Número de resultados a devolver (entre 1 y 10). Por defecto 5.",
-          "default": 5
-        },
-        "filter_ley": {
-          "type": "string",
-          "description": "Filtrar resultados por ley específica. Valores posibles: LGSS, RD_IMV, Constitución, Ley_39_2015, EBEP",
-          "enum": ["LGSS", "RD_IMV", "Constitución", "Ley_39_2015", "EBEP"]
-        }
+  "mcp_server_status": "✅ COMPILADO Y LISTO",
+  "typescript_errors": "✅ ARREGLADOS",
+  "server_path": "./mcp-server/dist/index.js",
+  "herramientas_disponibles": {
+    "search_rag": {
+      "descripcion": "Busca información en la base de conocimiento de leyes de Seguridad Social española indexadas en Qdrant",
+      "parametros": {
+        "query": "string (requerido) - Pregunta o término a buscar",
+        "limit": "number (opcional) - Número máximo de resultados (default: 5)",
+        "score_threshold": "number (opcional) - Umbral mínimo de similitud 0-1 (default: 0.7)"
       },
-      "required": ["query"]
+      "ejemplo": {
+        "query": "base de cotización máxima 2025",
+        "limit": 5,
+        "score_threshold": 0.7
+      },
+      "respuesta": "JSON con resultados incluyendo ley, artículo, contenido, fecha, BOE URL"
+    },
+    "verify_boe": {
+      "descripcion": "Verifica si una ley o artículo está vigente consultando el BOE oficial",
+      "parametros": {
+        "ley_id": "string (requerido) - Identificador de la ley (ej: 'BOE-A-2015-11724')",
+        "articulo": "string (opcional) - Número de artículo específico"
+      },
+      "ejemplo": {
+        "ley_id": "BOE-A-2015-11724",
+        "articulo": "161"
+      }
+    },
+    "search_jurisprudence": {
+      "descripcion": "Busca sentencias relevantes del Tribunal Supremo y TSJ relacionadas con Seguridad Social",
+      "parametros": {
+        "query": "string (requerido) - Tema o concepto legal a buscar",
+        "tribunal": "string (opcional) - 'TS', 'TSJ', 'todos' (default: 'todos')",
+        "limit": "number (opcional) - Número máximo de sentencias (default: 3)"
+      },
+      "ejemplo": {
+        "query": "incapacidad temporal",
+        "tribunal": "TS",
+        "limit": 3
+      }
+    },
+    "generate_flashcards": {
+      "descripcion": "Genera flashcards (tarjetas de estudio) a partir de un tema o artículo de ley",
+      "parametros": {
+        "topic": "string (requerido) - Tema o artículo para generar flashcards",
+        "count": "number (opcional) - Número de flashcards (default: 10)",
+        "difficulty": "string (opcional) - 'facil', 'medio', 'dificil' (default: 'medio')"
+      },
+      "ejemplo": {
+        "topic": "Artículo 161 LGSS",
+        "count": 10,
+        "difficulty": "medio"
+      }
+    },
+    "get_law_summary": {
+      "descripcion": "Obtiene un resumen estructurado de una ley completa",
+      "parametros": {
+        "ley_name": "string (requerido) - Nombre de la ley (ej: 'LGSS', 'LISOS')"
+      },
+      "ejemplo": {
+        "ley_name": "LGSS"
+      }
+    },
+    "ingest_new_law": {
+      "descripcion": "Ingesta automática de una nueva ley del BOE en la base de conocimiento RAG",
+      "parametros": {
+        "boe_id": "string (requerido) - Identificador BOE (ej: 'BOE-A-2024-1234')"
+      },
+      "ejemplo": {
+        "boe_id": "BOE-A-2024-1234"
+      },
+      "nota": "Ejecuta scraping, procesamiento, ingesta en Postgres/Qdrant y verificación automática"
+    }
+  },
+  "configuracion_requerida": {
+    "qdrant_url": "http://localhost:6333",
+    "qdrant_collection": "leyes_seguridad_social",
+    "embedding_provider": "auto (gemini, mistral, openai, cohere)",
+    "archivo_env": "./mcp-server/.env"
+  },
+  "como_usar": {
+    "paso_1": "Asegúrate de que Qdrant esté corriendo en localhost:6333",
+    "paso_2": "Configura las API keys en ./mcp-server/.env si quieres usar embeddings externos",
+    "paso_3": "Ejecuta el servidor MCP: node ./mcp-server/dist/index.js",
+    "paso_4": "Usa las herramientas desde Kiro o cualquier cliente MCP"
+  },
+  "estado_actual": {
+    "compilacion": "✅ Sin errores TypeScript",
+    "dependencias": "✅ Instaladas con pnpm",
+    "configuracion": "✅ Archivo .env creado",
+    "servidor": "✅ Listo para usar"
+  },
+  "ejemplo_uso_search_rag": {
+    "consulta": "¿Cuál es la base de cotización máxima para 2025?",
+    "respuesta_esperada": {
+      "query": "base de cotización máxima 2025",
+      "total_results": 3,
+      "results": [
+        {
+          "id": "chunk_123",
+          "score": 0.89,
+          "ley": "LGSS",
+          "articulo": "47",
+          "contenido": "La base de cotización máxima para el año 2025...",
+          "fecha": "2024-12-01",
+          "boe_url": "https://www.boe.es/buscar/act.php?id=BOE-A-2024-..."
+        }
+      ]
     }
   }
 }

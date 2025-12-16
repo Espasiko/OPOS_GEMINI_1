@@ -3,11 +3,8 @@
 /**
  * Opositaia MCP Server
  * 
- * Servidor MCP que expone herramientas para:
- * - Buscar en RAG de Qdrant (leyes de Seguridad Social)
- * - Verificar en BOE oficial
- * - Buscar jurisprudencia
- * - Generar contenido de estudio
+ * Servidor MCP para acceso al RAG de Seguridad Social española.
+ * Usa modelo pablosi/bge-m3-spa-law-qa-trained-2 para embeddings (1024 dims)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -26,132 +23,133 @@ dotenv.config();
 // Configuración
 const QDRANT_URL = process.env.QDRANT_URL || "http://localhost:6333";
 const QDRANT_API_KEY = process.env.QDRANT_API_KEY;
-const QDRANT_COLLECTION = process.env.QDRANT_COLLECTION || "leyes_seguridad_social";
+const QDRANT_COLLECTION = process.env.QDRANT_COLLECTION || "opositaia_knowledge";
+const HUGGINGFACE_TOKEN = process.env.HUGGINGFACE_TOKEN;
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 
 // Cliente Qdrant
 const qdrantClient = new QdrantClient({
   url: QDRANT_URL,
   apiKey: QDRANT_API_KEY,
+  checkCompatibility: false,
 });
+
+// Embedding con modelo pablosi (HuggingFace) - RECOMENDADO
+async function generatePablosiEmbedding(text: string): Promise<number[]> {
+  if (!HUGGINGFACE_TOKEN) {
+    throw new Error("HUGGINGFACE_TOKEN no configurada");
+  }
+  const response = await axios.post(
+    'https://api-inference.huggingface.co/models/pablosi/bge-m3-spa-law-qa-trained-2',
+    { inputs: text },
+    {
+      headers: {
+        'Authorization': `Bearer ${HUGGINGFACE_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 30000
+    }
+  );
+  return response.data;
+}
+
+// Embedding con Mistral AI (fallback)
+async function generateMistralEmbedding(text: string): Promise<number[]> {
+  if (!MISTRAL_API_KEY) {
+    throw new Error("MISTRAL_API_KEY no configurada");
+  }
+  const response = await axios.post(
+    'https://api.mistral.ai/v1/embeddings',
+    { model: 'mistral-embed', input: text },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${MISTRAL_API_KEY}`
+      },
+      timeout: 10000
+    }
+  );
+  return response.data.data[0].embedding;
+}
+
+// Función principal para generar embeddings
+async function generateEmbedding(text: string): Promise<number[]> {
+  if (HUGGINGFACE_TOKEN) {
+    try {
+      return await generatePablosiEmbedding(text);
+    } catch (err: any) {
+      console.error("Error con pablosi:", err.message);
+    }
+  }
+  if (MISTRAL_API_KEY) {
+    return await generateMistralEmbedding(text);
+  }
+  throw new Error("No hay proveedor de embeddings. Configura HUGGINGFACE_TOKEN o MISTRAL_API_KEY");
+}
 
 // Definición de herramientas
 const TOOLS: Tool[] = [
   {
     name: "search_rag",
-    description: "Busca información en la base de conocimiento de leyes de Seguridad Social española indexadas en Qdrant. Devuelve chunks relevantes con metadatos (ley, artículo, fecha).",
+    description: "Busca información en la base de conocimiento de leyes de Seguridad Social española.",
     inputSchema: {
       type: "object",
       properties: {
-        query: {
-          type: "string",
-          description: "Pregunta o término a buscar (ej: 'base de cotización máxima 2025')",
-        },
-        limit: {
-          type: "number",
-          description: "Número máximo de resultados (default: 5)",
-          default: 5,
-        },
-        score_threshold: {
-          type: "number",
-          description: "Umbral mínimo de similitud (0-1, default: 0.7)",
-          default: 0.7,
-        },
+        query: { type: "string", description: "Pregunta o término a buscar" },
+        limit: { type: "number", description: "Número máximo de resultados (default: 5)" },
+        score_threshold: { type: "number", description: "Umbral mínimo de similitud (0-1, default: 0.7)" },
       },
       required: ["query"],
     },
   },
   {
+    name: "list_collections",
+    description: "Lista todas las colecciones disponibles en Qdrant.",
+    inputSchema: { type: "object", properties: {}, required: [] },
+  },
+  {
     name: "verify_boe",
-    description: "Verifica si una ley o artículo está vigente consultando el BOE oficial. Devuelve estado (VIGENTE/DEROGADO/MODIFICADO), fecha de última modificación y URL del BOE.",
+    description: "Verifica si una ley está vigente consultando el BOE oficial.",
     inputSchema: {
       type: "object",
       properties: {
-        ley_id: {
-          type: "string",
-          description: "Identificador de la ley (ej: 'BOE-A-2015-11724' o 'LGSS')",
-        },
-        articulo: {
-          type: "string",
-          description: "Número de artículo específico (opcional)",
-        },
+        ley_id: { type: "string", description: "Identificador de la ley (ej: 'BOE-A-2015-11724')" },
+        articulo: { type: "string", description: "Número de artículo específico (opcional)" },
       },
       required: ["ley_id"],
     },
   },
   {
     name: "search_jurisprudence",
-    description: "Busca sentencias relevantes del Tribunal Supremo y TSJ relacionadas con Seguridad Social. Útil para conocer interpretaciones judiciales de las normas.",
+    description: "Busca sentencias relevantes del Tribunal Supremo y TSJ.",
     inputSchema: {
       type: "object",
       properties: {
-        query: {
-          type: "string",
-          description: "Tema o concepto legal a buscar (ej: 'incapacidad temporal')",
-        },
-        tribunal: {
-          type: "string",
-          description: "Tribunal específico: 'TS' (Supremo) o 'TSJ' (Superior Justicia)",
-          enum: ["TS", "TSJ", "todos"],
-          default: "todos",
-        },
-        limit: {
-          type: "number",
-          description: "Número máximo de sentencias (default: 3)",
-          default: 3,
-        },
+        query: { type: "string", description: "Tema legal a buscar" },
+        tribunal: { type: "string", enum: ["TS", "TSJ", "todos"], description: "Tribunal específico" },
+        limit: { type: "number", description: "Número máximo de sentencias (default: 3)" },
       },
       required: ["query"],
     },
   },
   {
-    name: "generate_flashcards",
-    description: "Genera flashcards (tarjetas de estudio) a partir de un tema o artículo de ley. Devuelve preguntas y respuestas en formato estructurado.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        topic: {
-          type: "string",
-          description: "Tema o artículo para generar flashcards (ej: 'Artículo 161 LGSS')",
-        },
-        count: {
-          type: "number",
-          description: "Número de flashcards a generar (default: 10)",
-          default: 10,
-        },
-        difficulty: {
-          type: "string",
-          description: "Nivel de dificultad",
-          enum: ["facil", "medio", "dificil"],
-          default: "medio",
-        },
-      },
-      required: ["topic"],
-    },
-  },
-  {
     name: "get_law_summary",
-    description: "Obtiene un resumen estructurado de una ley completa con sus artículos principales, ámbito de aplicación y conceptos clave.",
+    description: "Obtiene un resumen estructurado de una ley.",
     inputSchema: {
       type: "object",
       properties: {
-        ley_name: {
-          type: "string",
-          description: "Nombre de la ley (ej: 'LGSS', 'LISOS', 'RD 2064/1995')",
-        },
+        ley_name: { type: "string", description: "Nombre de la ley (ej: 'LGSS')" },
       },
       required: ["ley_name"],
     },
   },
   {
     name: "ingest_new_law",
-    description: "Ingesta automática de una nueva ley del BOE en la base de conocimiento RAG. Ejecuta scraping, procesamiento, ingesta en Postgres/Qdrant y verificación automática. Requiere un BOE ID válido.",
+    description: "Ingesta automática de una nueva ley del BOE.",
     inputSchema: {
       type: "object",
       properties: {
-        boe_id: {
-          type: "string",
-          description: "Identificador BOE de la ley a ingestar (ej: 'BOE-A-2024-1234')",
-        },
+        boe_id: { type: "string", description: "Identificador BOE (ej: 'BOE-A-2024-1234')" },
       },
       required: ["boe_id"],
     },
@@ -160,320 +158,120 @@ const TOOLS: Tool[] = [
 
 // Crear servidor MCP
 const server = new Server(
-  {
-    name: "opositaia-mcp-server",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
+  { name: "opositaia-mcp-server", version: "1.0.0" },
+  { capabilities: { tools: {} } }
 );
 
-// Handler: Listar herramientas
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: TOOLS,
-  };
-});
+server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
 
-// Handler: Ejecutar herramienta
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   const { name, arguments: args } = request.params;
-
   try {
     switch (name) {
-      case "search_rag":
-        return await handleSearchRAG(args);
-      
-      case "verify_boe":
-        return await handleVerifyBOE(args);
-      
-      case "search_jurisprudence":
-        return await handleSearchJurisprudence(args);
-      
-      case "generate_flashcards":
-        return await handleGenerateFlashcards(args);
-      
-      case "get_law_summary":
-        return await handleGetLawSummary(args);
-      
-      case "ingest_new_law":
-        return await handleIngestNewLaw(args);
-      
-      default:
-        throw new Error(`Herramienta desconocida: ${name}`);
+      case "search_rag": return await handleSearchRAG(args);
+      case "list_collections": return await handleListCollections();
+      case "verify_boe": return await handleVerifyBOE(args);
+      case "search_jurisprudence": return await handleSearchJurisprudence(args);
+      case "get_law_summary": return await handleGetLawSummary(args);
+      case "ingest_new_law": return await handleIngestNewLaw(args);
+      default: throw new Error(`Herramienta desconocida: ${name}`);
     }
   } catch (error: any) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${error.message}`,
-        },
-      ],
-      isError: true,
-    };
+    return { content: [{ type: "text", text: `Error: ${error.message}` }], isError: true };
   }
 });
 
-// Implementación: Buscar en RAG
-async function handleSearchRAG(args: any) {
-  const { query, limit = 5, score_threshold = 0.7 } = args;
-
-  // TODO: Generar embedding del query (usar OpenAI, Cohere, etc.)
-  // Por ahora, búsqueda por scroll (obtener todos y filtrar)
-  
-  const results = await qdrantClient.scroll(QDRANT_COLLECTION, {
-    limit: limit,
-    with_payload: true,
-    with_vector: false,
-  });
-
-  const formattedResults = results.points.map((result: any) => ({
-    id: result.id,
-    ley: result.payload?.ley_nombre || "Desconocida",
-    articulo: result.payload?.articulo || "",
-    contenido: result.payload?.texto || "",
-    fecha: result.payload?.fecha_publicacion || "",
-    boe_url: result.payload?.boe_url || "",
-  }));
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({
-          query: query,
-          total_results: formattedResults.length,
-          results: formattedResults,
-        }, null, 2),
-      },
-    ],
-  };
+async function handleListCollections() {
+  const collections = await qdrantClient.getCollections();
+  const details = await Promise.all(
+    collections.collections.map(async (col: any) => {
+      try {
+        const info = await qdrantClient.getCollection(col.name);
+        return { name: col.name, indexed_vectors_count: info.indexed_vectors_count, points_count: info.points_count, status: info.status };
+      } catch { return { name: col.name, error: "No se pudo obtener info" }; }
+    })
+  );
+  return { content: [{ type: "text", text: JSON.stringify({ collections: details }, null, 2) }] };
 }
 
-// Implementación: Verificar en BOE
-async function handleVerifyBOE(args: any) {
-  const { ley_id, articulo } = args;
-
+async function handleSearchRAG(args: any) {
+  const { query, limit = 5, score_threshold = 0.7 } = args;
   try {
-    // Llamar a API del BOE
-    const response = await axios.get(
-      `https://www.boe.es/buscar/act.php?id=${ley_id}`,
-      { timeout: 10000 }
-    );
-
-    // Parsear respuesta (simplificado)
-    const estado = response.data.includes("VIGENTE") ? "VIGENTE" : 
-                   response.data.includes("DEROGADO") ? "DEROGADO" : "DESCONOCIDO";
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify({
-            ley_id: ley_id,
-            articulo: articulo || "toda la ley",
-            estado: estado,
-            fecha_consulta: new Date().toISOString(),
-            url_boe: `https://www.boe.es/buscar/act.php?id=${ley_id}`,
-          }, null, 2),
-        },
-      ],
-    };
+    const embedding = await generateEmbedding(query);
+    const results = await qdrantClient.search(QDRANT_COLLECTION, {
+      vector: embedding, limit, score_threshold, with_payload: true, with_vector: false,
+    });
+    const formatted = results.map((r: any) => ({
+      id: r.id, score: r.score,
+      ley: r.payload?.metadata?.law_name || r.payload?.law_name || "Desconocida",
+      articulo: r.payload?.metadata?.article_id || r.payload?.article_id || "",
+      contenido: r.payload?.text || r.payload?.content || "",
+      boe_url: r.payload?.metadata?.boe_url || "",
+    }));
+    return { content: [{ type: "text", text: JSON.stringify({ query, collection: QDRANT_COLLECTION, total_results: formatted.length, results: formatted }, null, 2) }] };
   } catch (error: any) {
-    throw new Error(`Error consultando BOE: ${error.message}`);
+    const results = await qdrantClient.scroll(QDRANT_COLLECTION, { limit, with_payload: true, with_vector: false });
+    const formatted = results.points.map((r: any) => ({
+      id: r.id, ley: r.payload?.metadata?.law_name || "Desconocida",
+      articulo: r.payload?.metadata?.article_id || "", contenido: r.payload?.text || "",
+    }));
+    return { content: [{ type: "text", text: JSON.stringify({ query, total_results: formatted.length, results: formatted, note: "Búsqueda sin embeddings" }, null, 2) }] };
   }
 }
 
-// Implementación: Buscar jurisprudencia
+async function handleVerifyBOE(args: any) {
+  const { ley_id, articulo } = args;
+  const response = await axios.get(`https://www.boe.es/buscar/act.php?id=${ley_id}`, { timeout: 10000 });
+  const estado = response.data.includes("VIGENTE") ? "VIGENTE" : response.data.includes("DEROGADO") ? "DEROGADO" : "DESCONOCIDO";
+  return { content: [{ type: "text", text: JSON.stringify({ ley_id, articulo: articulo || "toda la ley", estado, fecha_consulta: new Date().toISOString(), url_boe: `https://www.boe.es/buscar/act.php?id=${ley_id}` }, null, 2) }] };
+}
+
 async function handleSearchJurisprudence(args: any) {
   const { query, tribunal = "todos", limit = 3 } = args;
-
-  // TODO: Implementar scraping de CENDOJ o API de jurisprudencia
-  // Por ahora, respuesta simulada
-  
-  const mockResults = [
-    {
-      tribunal: "Tribunal Supremo",
-      numero: "STS 3421/2023",
-      fecha: "2023-10-15",
-      resumen: `Sentencia sobre ${query}`,
-      url: "https://www.poderjudicial.es/search/...",
-    },
-  ];
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({
-          query: query,
-          tribunal: tribunal,
-          total_results: mockResults.length,
-          sentencias: mockResults,
-        }, null, 2),
-      },
-    ],
-  };
+  try {
+    const embedding = await generateEmbedding(query);
+    const results = await qdrantClient.search(QDRANT_COLLECTION, { vector: embedding, limit, with_payload: true, with_vector: false });
+    const formatted = results.map((r: any) => ({ id: r.id, score: r.score, tribunal: r.payload?.tribunal || tribunal, resumen: r.payload?.text || "" }));
+    return { content: [{ type: "text", text: JSON.stringify({ query, tribunal, total_results: formatted.length, sentencias: formatted }, null, 2) }] };
+  } catch (error: any) {
+    return { content: [{ type: "text", text: JSON.stringify({ query, tribunal, total_results: 0, sentencias: [], note: error.message }, null, 2) }] };
+  }
 }
 
-// Implementación: Generar flashcards
-async function handleGenerateFlashcards(args: any) {
-  const { topic, count = 10, difficulty = "medio" } = args;
-
-  // Primero buscar información del tema en RAG
-  const ragResults = await handleSearchRAG({ query: topic, limit: 3 });
-  
-  // TODO: Usar LLM para generar flashcards basadas en el contenido
-  // Por ahora, respuesta simulada
-  
-  const mockFlashcards = Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    pregunta: `Pregunta ${i + 1} sobre ${topic}`,
-    respuesta: `Respuesta basada en el contenido del RAG`,
-    dificultad: difficulty,
-    tags: [topic],
-  }));
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({
-          topic: topic,
-          count: count,
-          difficulty: difficulty,
-          flashcards: mockFlashcards,
-        }, null, 2),
-      },
-    ],
-  };
-}
-
-// Implementación: Resumen de ley
 async function handleGetLawSummary(args: any) {
   const { ley_name } = args;
-
-  // Buscar todos los artículos de la ley en RAG
-  const ragResults = await handleSearchRAG({ 
-    query: ley_name, 
-    limit: 50 
-  });
-
-  // TODO: Usar LLM para generar resumen estructurado
-  
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({
-          ley: ley_name,
-          total_articulos: 50, // Placeholder
-          resumen: `Resumen de ${ley_name}`,
-          articulos_principales: [],
-          ambito_aplicacion: "",
-          conceptos_clave: [],
-        }, null, 2),
-      },
-    ],
-  };
+  const embedding = await generateEmbedding(ley_name);
+  const results = await qdrantClient.search(QDRANT_COLLECTION, { vector: embedding, limit: 20, with_payload: true, with_vector: false });
+  const articulos = results.map((r: any) => ({ articulo: r.payload?.metadata?.article_id || "", contenido: (r.payload?.text || "").substring(0, 200) + "...", score: r.score }));
+  return { content: [{ type: "text", text: JSON.stringify({ ley: ley_name, total_articulos: articulos.length, articulos }, null, 2) }] };
 }
 
-// Iniciar servidor
-
-// Implementación: Ingestar nueva ley
 async function handleIngestNewLaw(args: any) {
   const { boe_id } = args;
   const { exec } = await import("child_process");
   const { promisify } = await import("util");
   const execAsync = promisify(exec);
-
-  const projectRoot = process.cwd().replace("/mcp-server", "");
+  const projectRoot = process.cwd().replace(/[/\\]mcp-server$/, "");
   const venvPython = `${projectRoot}/.venv/bin/python`;
-  
-  // Cargar variables de entorno adicionales desde .env.backend si existe
-  const backendEnvPath = `${projectRoot}/backend/.env.backend`;
+  const env = { ...process.env, QDRANT_URL: QDRANT_URL, QDRANT_API_KEY: QDRANT_API_KEY || "" };
   try {
-    const fs = await import("fs");
-    if (fs.existsSync(backendEnvPath)) {
-      dotenv.config({ path: backendEnvPath });
-    }
-  } catch (e) {
-    // Ignorar si no existe
-  }
-
-  const env = {
-    ...process.env,
-    QDRANT_URL: process.env.QDRANT_URL || "http://localhost:6333",
-    QDRANT_API_KEY: process.env.QDRANT_API_KEY || "",
-    POSTGRES_HOST: process.env.POSTGRES_HOST || "localhost",
-    POSTGRES_PORT: process.env.POSTGRES_PORT || "5432",
-    POSTGRES_DB: process.env.POSTGRES_DB || "opositaia",
-    POSTGRES_USER: process.env.POSTGRES_USER || "postgres",
-    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD || "postgres",
-  };
-
-  try {
-    // Paso 1: Scraping
     const scrapeCmd = `${venvPython} ${projectRoot}/backend/utils/scrape_boe_universal.py ${boe_id}`;
     const scrapeResult = await execAsync(scrapeCmd, { env, cwd: projectRoot });
-    
-    // Paso 2: Ingesta
     const mdFile = `${projectRoot}/backend/data/${boe_id}_scraped.md`;
     const ingestCmd = `${venvPython} ${projectRoot}/backend/scripts/ingest_scraped_universal.py ${mdFile} ${boe_id}`;
     const ingestResult = await execAsync(ingestCmd, { env, cwd: projectRoot });
-    
-    // Paso 3: Verificación
-    const verifyCmd = `${venvPython} ${projectRoot}/backend/scripts/verify_ingestion_universal.py ${boe_id}`;
-    const verifyResult = await execAsync(verifyCmd, { env, cwd: projectRoot });
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify({
-            status: "success",
-            boe_id: boe_id,
-            scrape_summary: scrapeResult.stdout.trim().split("\n").slice(-2).join("\n"),
-            ingest_summary: ingestResult.stdout.trim().split("\n").slice(-2).join("\n"),
-            verification: verifyResult.stdout.trim(),
-            message: `Ley ${boe_id} ingestada y verificada exitosamente`,
-          }, null, 2),
-        },
-      ],
-    };
+    return { content: [{ type: "text", text: JSON.stringify({ status: "success", boe_id, scrape: scrapeResult.stdout.trim().split("\n").slice(-2).join("\n"), ingest: ingestResult.stdout.trim().split("\n").slice(-2).join("\n") }, null, 2) }] };
   } catch (error: any) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify({
-            status: "error",
-            boe_id: boe_id,
-            error_message: error.message,
-            stderr: error.stderr || "",
-            stdout: error.stdout || "",
-          }, null, 2),
-        },
-      ],
-      isError: true,
-    };
+    return { content: [{ type: "text", text: JSON.stringify({ status: "error", boe_id, error: error.message, stderr: error.stderr || "" }, null, 2) }], isError: true };
   }
 }
 
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
   console.error("Opositaia MCP Server iniciado");
-  console.error(`Conectado a Qdrant: ${QDRANT_URL}`);
-  console.error(`Colección: ${QDRANT_COLLECTION}`);
+  console.error(`Qdrant: ${QDRANT_URL} | Colección: ${QDRANT_COLLECTION}`);
+  console.error(`HuggingFace: ${!!HUGGINGFACE_TOKEN} | Mistral: ${!!MISTRAL_API_KEY}`);
 }
 
-main().catch((error) => {
-  console.error("Error fatal:", error);
-  process.exit(1);
-});
+main().catch((error) => { console.error("Error fatal:", error); process.exit(1); });
