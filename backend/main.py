@@ -29,7 +29,7 @@ except Exception as e:
     logger.error(f"❌ Error loading .env.backend: {e}")
 
 # Import routers
-from routers import rag, rag_v2, chat, upload, ai_functions, user, boe
+from routers import rag, rag_v2, chat, upload, ai_functions, user, boe, mcp_gateway, contenido_reutilizable, agent_factory
 from database.db import db
 
 
@@ -84,6 +84,9 @@ app.include_router(upload.router)  # Sprint 7: File/URL upload
 app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
 app.include_router(user.router)  # Sprint 11: User management
 app.include_router(boe.router)  # API oficial datos abiertos BOE
+app.include_router(mcp_gateway.router)  # MCP Gateway para otras IAs
+app.include_router(contenido_reutilizable.router)  # Estrategia COSM
+app.include_router(agent_factory.router)  # Factoría de Agentes con MCP
 
 # Root endpoint
 @app.get("/")
@@ -99,7 +102,10 @@ async def root():
             "RAG search (v1 & v2)",
             "Chat with Mistral + RAG",
             "File upload and processing",
-            "URL content extraction"
+            "URL content extraction",
+            "MCP Gateway (for other AIs)",
+            "COSM Content Strategy (94% cost savings)",
+            "Agent Factory (simulacros, casos, flashcards, mapas mentales)"
         ],
         "docs": "/docs"
     }
