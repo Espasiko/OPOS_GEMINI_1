@@ -20,7 +20,9 @@ Este documento analiza:
 - **DeepSeek** (deepseek-chat) - ✅ Funcionando
 - **Cohere** (command-r-plus) - ✅ Funcionando
 - **Mistral VPS** (modelo local) - ✅ Funcionando
-
+mas modelos mistral - funcionando con api, 
+cohere- funcionando con api
+mistral-latest en 16gb portatil: funcionando mediante ollame
 ### Proveedores con Problemas ❌
 - **Gemini 3 Pro** - ❌ Error 429: Quota exceeded (free tier agotado)
 - **Gemini 2.5 Pro** - ⚠️ Error parsing JSON (respuestas mal formateadas)
@@ -107,7 +109,7 @@ Con caché (50% hit rate):
 
 ---
 
-### 2.3 Mistral API (NO implementado actualmente)
+### 2.3 Mistral API (Sí, ya implementado actualmente)
 
 **Precios Mistral** (según archivo de precios):
 

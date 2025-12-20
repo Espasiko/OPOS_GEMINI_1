@@ -22,7 +22,7 @@ class RAGSearchRequest(BaseModel):
     """Request model for RAG search"""
     query: str = Field(..., min_length=3, max_length=1000, description="User query")
     top_k: int = Field(5, ge=1, le=20, description="Number of results")
-    min_score: float = Field(0.7, ge=0.0, le=1.0, description="Minimum similarity score")
+    min_score: float = Field(0.1, ge=0.0, le=1.0, description="Minimum similarity score")
     tema_filter: Optional[int] = Field(None, description="Filter by topic ID")
 
 
@@ -82,7 +82,7 @@ async def search_documents(request: RAGSearchRequest):
             query=request.query,
             top_k=request.top_k,
             min_score=request.min_score,
-            tema_filter=request.tema_filter
+            layer_filter=request.tema_filter  # tema_filter maps to layer_filter
         )
         
         return result

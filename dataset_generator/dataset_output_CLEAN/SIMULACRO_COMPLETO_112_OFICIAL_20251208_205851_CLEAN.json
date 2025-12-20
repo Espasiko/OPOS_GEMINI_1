@@ -1,0 +1,545 @@
+{
+  "metadata": {
+    "titulo": "SIMULACRO COMPLETO OFICIAL - Cuerpo Administrativo AGE",
+    "subtitulo": "112 Preguntas - Formato Oficial BOE-A-2024-11403",
+    "fecha_generacion": "2025-12-08T20:58:51.250760",
+    "total_preguntas": 36,
+    "duracion_estimada_minutos": 90,
+    "instrucciones": "Responda todas las preguntas. Cada respuesta incorrecta penaliza -0.25 puntos. No consulte normativa durante el simulacro.",
+    "formato_oficial": "BOE-A-2024-11403 - Resolución de 25 de mayo de 2024"
+  },
+  "parte_1": {
+    "nombre": "Test de Conocimientos Generales",
+    "preguntas": 25,
+    "puntos_max": 50,
+    "minimo_aprobar": 25,
+    "descripcion": "Preguntas sobre temario general: Constitución, Derecho Administrativo, Función Pública"
+  },
+  "parte_2": {
+    "nombre": "Supuestos Prácticos",
+    "preguntas": 11,
+    "puntos_max": 50,
+    "minimo_aprobar": 25,
+    "descripcion": "Casos prácticos sobre Seguridad Social y aplicación de normativa"
+  },
+  "preguntas": [
+    {
+      "numero": 1,
+      "parte": 1,
+      "pregunta": "¿Qué plazo tiene el trabajador para impugnar una modificación sustancial de condiciones?",
+      "opciones": {
+        "a": "10 días hábiles",
+        "b": "15 días hábiles",
+        "c": "30 días naturales",
+        "d": "20 días hábiles"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Modificación Sustancial",
+      "dificultad": "media"
+    },
+    {
+      "numero": 2,
+      "parte": 1,
+      "pregunta": "¿Cuántos días de vacaciones anuales retribuidas tiene derecho un trabajador?",
+      "opciones": {
+        "a": "22 días laborables",
+        "b": "30 días naturales",
+        "c": "30 días laborables o calendario según convenio",
+        "d": "25 días hábiles"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Jornada y Descansos",
+      "dificultad": "media"
+    },
+    {
+      "numero": 3,
+      "parte": 1,
+      "pregunta": "¿Puede el trabajador rescindir su contrato con derecho a indemnización si no acepta la modificación sustancial?",
+      "opciones": {
+        "a": "No, debe aceptarla obligatoriamente",
+        "b": "Sí, pero sin indemnización",
+        "c": "Sí, con indemnización de 20 días por año trabajado",
+        "d": "Solo si la modificación afecta al salario"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Modificación Sustancial",
+      "dificultad": "media"
+    },
+    {
+      "numero": 4,
+      "parte": 1,
+      "pregunta": "Durante la suspensión del contrato por IT, ¿se mantiene la obligación de cotizar?",
+      "opciones": {
+        "a": "Sí, la empresa sigue cotizando",
+        "b": "No, ni empresa ni trabajador cotizan",
+        "c": "Solo cotiza el trabajador",
+        "d": "Depende de la duración de la IT"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "media"
+    },
+    {
+      "numero": 5,
+      "parte": 1,
+      "pregunta": "¿Quién elabora los Presupuestos Generales del Estado?",
+      "opciones": {
+        "a": "El Congreso de los Diputados",
+        "b": "El Tribunal de Cuentas",
+        "c": "El Senado",
+        "d": "El Gobierno"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "facil"
+    },
+    {
+      "numero": 6,
+      "parte": 1,
+      "pregunta": "¿Qué ley regula la elaboración y ejecución de los Presupuestos Generales del Estado?",
+      "opciones": {
+        "a": "La Constitución únicamente",
+        "b": "La Ley de Régimen Jurídico del Sector Público",
+        "c": "El Código Civil",
+        "d": "La Ley General Presupuestaria (Ley 47/2003)"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "media"
+    },
+    {
+      "numero": 7,
+      "parte": 1,
+      "pregunta": "¿Qué causas justifican una modificación sustancial de condiciones de trabajo?",
+      "opciones": {
+        "a": "Causas económicas, técnicas, organizativas o de producción",
+        "b": "Cualquier decisión empresarial",
+        "c": "Solo causas económicas",
+        "d": "Solo si hay pérdidas empresariales"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Modificación Sustancial",
+      "dificultad": "media"
+    },
+    {
+      "numero": 8,
+      "parte": 1,
+      "pregunta": "¿Cuáles son las principales causas de suspensión del contrato de trabajo?",
+      "opciones": {
+        "a": "IT, maternidad/paternidad, excedencia, causas económicas, fuerza mayor",
+        "b": "Solo IT y maternidad",
+        "c": "Solo despido y jubilación",
+        "d": "Únicamente acuerdo entre las partes"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "media"
+    },
+    {
+      "numero": 9,
+      "parte": 1,
+      "pregunta": "¿Cuál es el descanso semanal mínimo?",
+      "opciones": {
+        "a": "1 día",
+        "b": "1 día y medio ininterrumpido",
+        "c": "2 días",
+        "d": "Depende del convenio"
+      },
+      "respuesta_correcta": "b",
+      "tema": "Jornada y Descansos",
+      "dificultad": "media"
+    },
+    {
+      "numero": 10,
+      "parte": 1,
+      "pregunta": "¿Los funcionarios públicos están incluidos en el Régimen General?",
+      "opciones": {
+        "a": "Sí, todos los funcionarios desde 2011",
+        "b": "Solo los funcionarios interinos",
+        "c": "No, tienen su propio régimen de clases pasivas",
+        "d": "Solo si tienen contrato laboral además"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Campo de Aplicación",
+      "dificultad": "media"
+    },
+    {
+      "numero": 11,
+      "parte": 1,
+      "pregunta": "¿Cuánto dura la excedencia por cuidado de hijos?",
+      "opciones": {
+        "a": "1 año",
+        "b": "2 años",
+        "c": "No más de 3 años desde el nacimiento/adopción",
+        "d": "5 años"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "facil"
+    },
+    {
+      "numero": 12,
+      "parte": 1,
+      "pregunta": "¿Están excluidos los trabajadores del servicio doméstico del Régimen General?",
+      "opciones": {
+        "a": "No, están incluidos desde 2012 en Sistema Especial",
+        "b": "Sí, tienen un régimen especial propio",
+        "c": "Solo si trabajan menos de 60 horas mensuales",
+        "d": "Depende del salario que perciban"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Campo de Aplicación",
+      "dificultad": "media"
+    },
+    {
+      "numero": 13,
+      "parte": 1,
+      "pregunta": "¿Cuándo se considera que una modificación sustancial tiene carácter colectivo?",
+      "opciones": {
+        "a": "Cuando afecta a más de 5 trabajadores",
+        "b": "Cuando afecta a toda la plantilla",
+        "c": "Según umbrales del art. 41.2 ET (10 en empresas <100, 10% en 100-300, 30 en >300)",
+        "d": "Cuando afecta al 50% de la plantilla"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Modificación Sustancial",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 14,
+      "parte": 1,
+      "pregunta": "¿Cuántas horas extraordinarias se pueden realizar como máximo al año?",
+      "opciones": {
+        "a": "Sin límite",
+        "b": "60 horas anuales",
+        "c": "80 horas anuales",
+        "d": "100 horas anuales"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Jornada y Descansos",
+      "dificultad": "media"
+    },
+    {
+      "numero": 15,
+      "parte": 1,
+      "pregunta": "¿Qué se entiende por 'asimilación al alta' en la Seguridad Social?",
+      "opciones": {
+        "a": "Estar dado de alta sin trabajar efectivamente",
+        "b": "Alta voluntaria en la Seguridad Social",
+        "c": "Situaciones equiparadas al alta que generan derechos",
+        "d": "Alta provisional hasta regularización administrativa"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Campo de Aplicación",
+      "dificultad": "media"
+    },
+    {
+      "numero": 16,
+      "parte": 1,
+      "pregunta": "¿Qué se considera modificación sustancial de condiciones de trabajo según el Estatuto de los Trabajadores?",
+      "opciones": {
+        "a": "Cualquier cambio en las condiciones laborales",
+        "b": "Cambios en jornada, horario, salario, sistema de trabajo, funciones",
+        "c": "Solo cambios en el salario",
+        "d": "Solo cambios que afecten a más del 50% de la plantilla"
+      },
+      "respuesta_correcta": "b",
+      "tema": "Modificación Sustancial",
+      "dificultad": "media"
+    },
+    {
+      "numero": 17,
+      "parte": 1,
+      "pregunta": "¿Los trabajadores extranjeros están incluidos en el campo de aplicación del Régimen General?",
+      "opciones": {
+        "a": "Sí, si trabajan legalmente en España",
+        "b": "Solo los de la Unión Europea",
+        "c": "No, solo trabajadores españoles",
+        "d": "Solo con permiso de residencia permanente"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Campo de Aplicación",
+      "dificultad": "facil"
+    },
+    {
+      "numero": 18,
+      "parte": 1,
+      "pregunta": "¿Qué Cámara examina y aprueba primero los Presupuestos Generales del Estado?",
+      "opciones": {
+        "a": "El Senado",
+        "b": "Ambas simultáneamente",
+        "c": "El Congreso de los Diputados",
+        "d": "El Tribunal Constitucional"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "media"
+    },
+    {
+      "numero": 19,
+      "parte": 1,
+      "pregunta": "¿Qué trabajadores están incluidos en el campo de aplicación del Régimen General de la Seguridad Social?",
+      "opciones": {
+        "a": "Solo trabajadores españoles con contrato indefinido",
+        "b": "Todos los trabajadores sin distinción de régimen",
+        "c": "Solo trabajadores del sector privado",
+        "d": "Trabajadores por cuenta ajena mayores de 16 años"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Campo de Aplicación",
+      "dificultad": "facil"
+    },
+    {
+      "numero": 20,
+      "parte": 1,
+      "pregunta": "¿Pueden [ACADEMIA] aumentar los gastos o reducir los ingresos propuestos por el Gobierno?",
+      "opciones": {
+        "a": "Solo con conformidad del Gobierno",
+        "b": "No, deben aprobarlos tal cual",
+        "c": "Sí, libremente",
+        "d": "Solo el Senado puede hacerlo"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 21,
+      "parte": 1,
+      "pregunta": "¿Cuál es la jornada máxima ordinaria de trabajo en España?",
+      "opciones": {
+        "a": "40 horas semanales de promedio anual",
+        "b": "35 horas semanales",
+        "c": "45 horas semanales",
+        "d": "Sin límite si hay acuerdo"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Jornada y Descansos",
+      "dificultad": "facil"
+    },
+    {
+      "numero": 22,
+      "parte": 1,
+      "pregunta": "¿Qué ocurre si los Presupuestos no se aprueban antes del 1 de enero?",
+      "opciones": {
+        "a": "Se paraliza la Administración",
+        "b": "El Gobierno puede gastar libremente",
+        "c": "Se prorrogan automáticamente los del año anterior",
+        "d": "Se convocan elecciones"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "media"
+    },
+    {
+      "numero": 23,
+      "parte": 1,
+      "pregunta": "¿Qué diferencia hay entre excedencia forzosa y voluntaria?",
+      "opciones": {
+        "a": "No hay diferencia",
+        "b": "La forzosa es por cargo público/sindical con reserva de puesto; la voluntaria es sin reserva",
+        "c": "La forzosa dura más tiempo",
+        "d": "La voluntaria requiere autorización empresarial"
+      },
+      "respuesta_correcta": "b",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 24,
+      "parte": 1,
+      "pregunta": "¿Qué es la excedencia voluntaria y cuánto tiempo de antigüedad se requiere?",
+      "opciones": {
+        "a": "Derecho sin requisitos",
+        "b": "Requiere 2 años de antigüedad",
+        "c": "Solo para funcionarios",
+        "d": "Derecho tras 1 año de antigüedad, duración entre 4 meses y 5 años"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "media"
+    },
+    {
+      "numero": 25,
+      "parte": 1,
+      "pregunta": "¿Cuál es el descanso mínimo entre jornadas?",
+      "opciones": {
+        "a": "8 horas",
+        "b": "12 horas",
+        "c": "10 horas",
+        "d": "14 horas"
+      },
+      "respuesta_correcta": "b",
+      "tema": "Jornada y Descansos",
+      "dificultad": "facil"
+    },
+    {
+      "numero": 26,
+      "parte": 2,
+      "pregunta": "¿Es correcto lo que dice la empresa? ¿Debe estar María en alta en la Seguridad Social?",
+      "opciones": {
+        "a": "Opción B",
+        "b": "Opción A",
+        "c": "Opción C",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "b",
+      "tema": "Campo de Aplicación",
+      "dificultad": "media"
+    },
+    {
+      "numero": 27,
+      "parte": 2,
+      "pregunta": "¿En qué régimen o regímenes cotizará Juan?",
+      "opciones": {
+        "a": "Opción A",
+        "b": "Opción B",
+        "c": "Opción C",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Campo de Aplicación",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 28,
+      "parte": 2,
+      "pregunta": "¿Qué opciones tiene Laura? ¿Puede negarse al cambio de horario?",
+      "opciones": {
+        "a": "Opción D",
+        "b": "Opción B",
+        "c": "Opción C",
+        "d": "Opción A"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Modificación Sustancial",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 29,
+      "parte": 2,
+      "pregunta": "¿Tiene Pedro derecho a la excedencia voluntaria? ¿Qué condiciones debe cumplir?",
+      "opciones": {
+        "a": "Opción D",
+        "b": "Opción B",
+        "c": "Opción C",
+        "d": "Opción A"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "media"
+    },
+    {
+      "numero": 30,
+      "parte": 2,
+      "pregunta": "¿Puede la empresa implementar el cambio inmediatamente? ¿Qué procedimiento debe seguir?",
+      "opciones": {
+        "a": "Opción B",
+        "b": "Opción A",
+        "c": "Opción C",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "b",
+      "tema": "Modificación Sustancial",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 31,
+      "parte": 2,
+      "pregunta": "¿Puede Ana negarse? ¿Se respeta el descanso mínimo entre jornadas?",
+      "opciones": {
+        "a": "Opción A",
+        "b": "Opción B",
+        "c": "Opción C",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "a",
+      "tema": "Jornada y Descansos",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 32,
+      "parte": 2,
+      "pregunta": "¿Es legal que Pedro haga 156 horas extras al año?",
+      "opciones": {
+        "a": "Opción C",
+        "b": "Opción B",
+        "c": "Opción A",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Jornada y Descansos",
+      "dificultad": "media"
+    },
+    {
+      "numero": 33,
+      "parte": 2,
+      "pregunta": "¿Puede la empresa despedir a María mientras está de baja por IT?",
+      "opciones": {
+        "a": "Opción D",
+        "b": "Opción B",
+        "c": "Opción C",
+        "d": "Opción A"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Suspensión y Excedencias",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 34,
+      "parte": 2,
+      "pregunta": "¿Es esto una modificación sustancial o movilidad funcional? ¿Qué derechos tiene Pedro?",
+      "opciones": {
+        "a": "Opción C",
+        "b": "Opción B",
+        "c": "Opción A",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Modificación Sustancial",
+      "dificultad": "alta"
+    },
+    {
+      "numero": 35,
+      "parte": 2,
+      "pregunta": "¿Qué ocurrirá si llega el 1 de enero sin Presupuestos aprobados? ¿Puede funcionar la Administración?",
+      "opciones": {
+        "a": "Opción C",
+        "b": "Opción B",
+        "c": "Opción A",
+        "d": "Opción D"
+      },
+      "respuesta_correcta": "c",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "media"
+    },
+    {
+      "numero": 36,
+      "parte": 2,
+      "pregunta": "¿Pueden tramitarse estas enmiendas sin el consentimiento del Gobierno?",
+      "opciones": {
+        "a": "Opción D",
+        "b": "Opción B",
+        "c": "Opción C",
+        "d": "Opción A"
+      },
+      "respuesta_correcta": "d",
+      "tema": "Presupuestos Generales del Estado",
+      "dificultad": "alta"
+    }
+  ],
+  "estadisticas": {
+    "distribucion_respuestas": {
+      "opcion_a": 9,
+      "opcion_b": 6,
+      "opcion_c": 12,
+      "opcion_d": 9
+    },
+    "porcentajes_respuestas": {
+      "opcion_a": 25.0,
+      "opcion_b": 16.7,
+      "opcion_c": 33.3,
+      "opcion_d": 25.0
+    }
+  }
+}

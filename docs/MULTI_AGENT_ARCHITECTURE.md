@@ -43,7 +43,7 @@
 
 ## 🧠 Modelos Pre-entrenados GRATIS (Open Source)
 
-### 1. **Embeddings: littlejohn-ai/bge-m3-spa-law-qa** ⭐ RECOMENDADO
+### 1. **Embeddings: pablosi/bge-m3-spa-law-qa** ⭐ RECOMENDADO
 
 **Características**:
 - ✅ **Especializado en legislación española** (BOE)
@@ -68,7 +68,7 @@ cosine_mrr@10:      69.5%
 # Opción 1: HuggingFace (Python)
 pip install sentence-transformers
 from sentence_transformers import SentenceTransformer
-model = SentenceTransformer("littlejohn-ai/bge-m3-spa-law-qa")
+model = SentenceTransformepablosi ("littlejohn-ai/bge-m3-spa-law-qa")
 
 # Opción 2: Ollama (más fácil)
 ollama pull bge-m3
@@ -244,7 +244,7 @@ CREATE TABLE mind_maps (
 **Responsabilidad**: Buscar información en documentos BOE
 
 **Tecnologías**:
-- **Embeddings**: `littlejohn-ai/bge-m3-spa-law-qa`
+- **Embeddings**: `pablosi/bge-m3-spa-law-qa`
 - **Vector DB**: Qdrant
 - **LLM**: Gemini 2.0 Flash (gratis)
 
@@ -303,7 +303,7 @@ Recomendaciones:
 **Responsabilidad**: Generar preguntas y evaluar respuestas
 
 **Tecnologías**:
-- **LLM**: Gemini 2.0 Flash
+- **LLM**: Gemini 2.0 Flash, mistral hf, groq modelos
 - **RAG**: Para contexto BOE
 - **DB**: PostgreSQL (guardar historial)
 

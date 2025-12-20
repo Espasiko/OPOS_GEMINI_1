@@ -168,7 +168,7 @@ Proceso:
 
 **NO hacer fine-tuning inicialmente** porque:
 
-1. ✅ **bge-m3-spa-law-qa ya está fine-tuned para leyes españolas**
+1. ✅ **[bge-m3-spa-law-qa](https://huggingface.co/pablosi/bge-m3-trained) ya está fine-tuned para leyes españolas**
    - Entrenado específicamente para Q&A legal
    - Entiende terminología jurídica
    - Calidad probada

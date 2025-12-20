@@ -1,0 +1,594 @@
+{
+  "metadata": {
+    "titulo": "SIMULACRO MINI 5 - Cuerpo Administrativo AGE",
+    "subtitulo": "40 Preguntas - Formato Oficial BOE-A-2024-11403",
+    "fecha_generacion": "2025-12-08",
+    "total_preguntas": 40,
+    "duracion_estimada_minutos": 60,
+    "instrucciones": "Responda todas las preguntas. Cada respuesta incorrecta penaliza -0.25 puntos. No consulte normativa durante el simulacro."
+  },
+  "parte_1": {
+    "nombre": "Test de Conocimientos Generales",
+    "preguntas": 30,
+    "puntos_max": 50,
+    "minimo_aprobar": 25,
+    "preguntas_data": [
+      {
+        "numero": 1,
+        "pregunta": "¿Qué trabajadores están incluidos en el campo de aplicación del Régimen General de la Seguridad Social?",
+        "opciones": {
+          "a": "Solo trabajadores españoles con contrato indefinido",
+          "b": "Trabajadores por cuenta ajena mayores de 16 años",
+          "c": "Solo trabajadores del sector privado",
+          "d": "Todos los trabajadores sin distinción de régimen"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Campo de Aplicación",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 2,
+        "pregunta": "¿Los funcionarios públicos están incluidos en el Régimen General?",
+        "opciones": {
+          "a": "Sí, todos los funcionarios desde 2011",
+          "b": "No, tienen su propio régimen de clases pasivas",
+          "c": "Solo los funcionarios interinos",
+          "d": "Solo si tienen contrato laboral además"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Campo de Aplicación",
+        "dificultad": "media"
+      },
+      {
+        "numero": 3,
+        "pregunta": "¿Qué se entiende por 'asimilación al alta' en la Seguridad Social?",
+        "opciones": {
+          "a": "Estar dado de alta sin trabajar efectivamente",
+          "b": "Situaciones equiparadas al alta que generan derechos",
+          "c": "Alta voluntaria en la Seguridad Social",
+          "d": "Alta provisional hasta regularización administrativa"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Campo de Aplicación",
+        "dificultad": "media"
+      },
+      {
+        "numero": 4,
+        "pregunta": "¿Los trabajadores extranjeros están incluidos en el campo de aplicación del Régimen General?",
+        "opciones": {
+          "a": "No, solo trabajadores españoles",
+          "b": "Solo los de la Unión Europea",
+          "c": "Sí, si trabajan legalmente en España",
+          "d": "Solo con permiso de residencia permanente"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Campo de Aplicación",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 5,
+        "pregunta": "¿Están excluidos los trabajadores del servicio doméstico del Régimen General?",
+        "opciones": {
+          "a": "Sí, tienen un régimen especial propio",
+          "b": "No, están incluidos desde 2012 en Sistema Especial",
+          "c": "Solo si trabajan menos de 60 horas mensuales",
+          "d": "Depende del salario que perciban"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Campo de Aplicación",
+        "dificultad": "media"
+      },
+      {
+        "numero": 6,
+        "pregunta": "¿Cuál es la jornada máxima ordinaria de trabajo en España?",
+        "opciones": {
+          "a": "35 horas semanales",
+          "b": "40 horas semanales de promedio anual",
+          "c": "45 horas semanales",
+          "d": "Sin límite si hay acuerdo"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Jornada y Descansos",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 7,
+        "pregunta": "¿Cuántas horas extraordinarias se pueden realizar como máximo al año?",
+        "opciones": {
+          "a": "Sin límite",
+          "b": "60 horas anuales",
+          "c": "80 horas anuales",
+          "d": "100 horas anuales"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Jornada y Descansos",
+        "dificultad": "media"
+      },
+      {
+        "numero": 8,
+        "pregunta": "¿Cuál es el descanso mínimo entre jornadas?",
+        "opciones": {
+          "a": "8 horas",
+          "b": "10 horas",
+          "c": "12 horas",
+          "d": "14 horas"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Jornada y Descansos",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 9,
+        "pregunta": "¿Cuál es el descanso semanal mínimo?",
+        "opciones": {
+          "a": "1 día",
+          "b": "1 día y medio ininterrumpido",
+          "c": "2 días",
+          "d": "Depende del convenio"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Jornada y Descansos",
+        "dificultad": "media"
+      },
+      {
+        "numero": 10,
+        "pregunta": "¿Cuántos días de vacaciones anuales retribuidas tiene derecho un trabajador?",
+        "opciones": {
+          "a": "22 días laborables",
+          "b": "30 días naturales",
+          "c": "30 días laborables o calendario según convenio",
+          "d": "25 días hábiles"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Jornada y Descansos",
+        "dificultad": "media"
+      },
+      {
+        "numero": 11,
+        "pregunta": "¿Qué se considera modificación sustancial de condiciones de trabajo según el Estatuto de los Trabajadores?",
+        "opciones": {
+          "a": "Cualquier cambio en las condiciones laborales",
+          "b": "Cambios en jornada, horario, salario, sistema de trabajo, funciones",
+          "c": "Solo cambios en el salario",
+          "d": "Solo cambios que afecten a más del 50% de la plantilla"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Modificación Sustancial",
+        "dificultad": "media"
+      },
+      {
+        "numero": 12,
+        "pregunta": "¿Qué plazo tiene el trabajador para impugnar una modificación sustancial de condiciones?",
+        "opciones": {
+          "a": "10 días hábiles",
+          "b": "15 días hábiles",
+          "c": "20 días hábiles",
+          "d": "30 días naturales"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Modificación Sustancial",
+        "dificultad": "media"
+      },
+      {
+        "numero": 13,
+        "pregunta": "¿Puede el trabajador rescindir su contrato con derecho a indemnización si no acepta la modificación sustancial?",
+        "opciones": {
+          "a": "No, debe aceptarla obligatoriamente",
+          "b": "Sí, con indemnización de 20 días por año trabajado",
+          "c": "Sí, pero sin indemnización",
+          "d": "Solo si la modificación afecta al salario"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Modificación Sustancial",
+        "dificultad": "media"
+      },
+      {
+        "numero": 14,
+        "pregunta": "¿Qué causas justifican una modificación sustancial de condiciones de trabajo?",
+        "opciones": {
+          "a": "Cualquier decisión empresarial",
+          "b": "Causas económicas, técnicas, organizativas o de producción",
+          "c": "Solo causas económicas",
+          "d": "Solo si hay pérdidas empresariales"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Modificación Sustancial",
+        "dificultad": "media"
+      },
+      {
+        "numero": 15,
+        "pregunta": "¿Cuándo se considera que una modificación sustancial tiene carácter colectivo?",
+        "opciones": {
+          "a": "Cuando afecta a más de 5 trabajadores",
+          "b": "Cuando afecta a toda la plantilla",
+          "c": "Según umbrales del art. 41.2 ET (10 en empresas <100, 10% en 100-300, 30 en >300)",
+          "d": "Cuando afecta al 50% de la plantilla"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Modificación Sustancial",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 16,
+        "pregunta": "Según la Constitución Española, ¿cuál es la forma política del Estado español?",
+        "opciones": {
+          "a": "República parlamentaria",
+          "b": "Monarquía parlamentaria",
+          "c": "Estado federal",
+          "d": "Monarquía constitucional"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Constitución",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 17,
+        "pregunta": "¿Cuál es el plazo máximo para resolver un procedimiento administrativo cuando no se establezca plazo específico?",
+        "opciones": {
+          "a": "Un mes",
+          "b": "Dos meses",
+          "c": "Tres meses",
+          "d": "Seis meses"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Procedimiento Administrativo",
+        "dificultad": "media"
+      },
+      {
+        "numero": 18,
+        "pregunta": "¿Qué órgano tiene la competencia para declarar la inconstitucionalidad de una ley?",
+        "opciones": {
+          "a": "El Tribunal Supremo",
+          "b": "El Tribunal Constitucional",
+          "c": "El Consejo de Estado",
+          "d": "[ACADEMIA] Generales"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Constitución",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 19,
+        "pregunta": "¿Cuál es el principio que rige la actuación de las Administraciones Públicas según la Ley 40/2015?",
+        "opciones": {
+          "a": "Principio de eficacia únicamente",
+          "b": "Principio de legalidad, eficacia, jerarquía, descentralización, desconcentración y coordinación",
+          "c": "Principio de jerarquía únicamente",
+          "d": "Principio de coordinación únicamente"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Régimen Jurídico",
+        "dificultad": "media"
+      },
+      {
+        "numero": 20,
+        "pregunta": "¿Qué recurso administrativo tiene carácter potestativo?",
+        "opciones": {
+          "a": "Recurso de alzada",
+          "b": "Recurso de reposición",
+          "c": "Recurso extraordinario de revisión",
+          "d": "Todos los recursos administrativos"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Recursos Administrativos",
+        "dificultad": "media"
+      },
+      {
+        "numero": 21,
+        "pregunta": "¿Cuál es la edad mínima para ser funcionario de carrera?",
+        "opciones": {
+          "a": "16 años",
+          "b": "18 años",
+          "c": "21 años",
+          "d": "25 años"
+        },
+        "respuesta_correcta": "a",
+        "tema": "Función Pública",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 22,
+        "pregunta": "¿Qué sistema de selección es obligatorio para el acceso a la función pública?",
+        "opciones": {
+          "a": "Concurso",
+          "b": "Oposición",
+          "c": "Concurso-oposición",
+          "d": "Cualquiera que garantice los principios constitucionales"
+        },
+        "respuesta_correcta": "d",
+        "tema": "Función Pública",
+        "dificultad": "media"
+      },
+      {
+        "numero": 23,
+        "pregunta": "¿Cuál es el plazo de prescripción de las faltas disciplinarias muy graves?",
+        "opciones": {
+          "a": "6 meses",
+          "b": "1 año",
+          "c": "2 años",
+          "d": "3 años"
+        },
+        "respuesta_correcta": "d",
+        "tema": "Función Pública",
+        "dificultad": "media"
+      },
+      {
+        "numero": 24,
+        "pregunta": "¿Qué derecho fundamental reconoce el artículo 16 de la Constitución?",
+        "opciones": {
+          "a": "Libertad de expresión",
+          "b": "Libertad ideológica, religiosa y de culto",
+          "c": "Derecho a la educación",
+          "d": "Derecho al trabajo"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Derechos Fundamentales",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 25,
+        "pregunta": "¿Cuántos miembros componen el Tribunal Constitucional?",
+        "opciones": {
+          "a": "9 magistrados",
+          "b": "12 magistrados",
+          "c": "15 magistrados",
+          "d": "21 magistrados"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Tribunal Constitucional",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 26,
+        "pregunta": "¿Cuál es el plazo para interponer recurso contencioso-administrativo contra actos administrativos?",
+        "opciones": {
+          "a": "1 mes",
+          "b": "2 meses",
+          "c": "3 meses",
+          "d": "6 meses"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Jurisdicción Contencioso-Administrativa",
+        "dificultad": "media"
+      },
+      {
+        "numero": 27,
+        "pregunta": "¿Qué principio rige la organización territorial del Estado según la Constitución?",
+        "opciones": {
+          "a": "Principio federal",
+          "b": "Principio de autonomía",
+          "c": "Principio de unidad y autonomía",
+          "d": "Principio confederal"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Organización Territorial",
+        "dificultad": "media"
+      },
+      {
+        "numero": 28,
+        "pregunta": "¿Cuál es el órgano superior de consulta del Gobierno?",
+        "opciones": {
+          "a": "El Tribunal Supremo",
+          "b": "El Consejo de Estado",
+          "c": "El Tribunal de Cuentas",
+          "d": "El Defensor del Pueblo"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Consejo de Estado",
+        "dificultad": "facil"
+      },
+      {
+        "numero": 29,
+        "pregunta": "¿Qué mayoría se requiere en el Congreso para aprobar una moción de censura?",
+        "opciones": {
+          "a": "Mayoría simple",
+          "b": "Mayoría absoluta",
+          "c": "Mayoría de dos tercios",
+          "d": "Mayoría de tres quintos"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Gobierno y Cortes",
+        "dificultad": "media"
+      },
+      {
+        "numero": 30,
+        "pregunta": "¿Cuál es el principio básico de la contratación pública?",
+        "opciones": {
+          "a": "Libertad de pactos",
+          "b": "Publicidad, concurrencia, transparencia, confidencialidad, igualdad y no discriminación",
+          "c": "Economía de mercado",
+          "d": "Autonomía de la voluntad"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Contratación Pública",
+        "dificultad": "media"
+      }
+    ]
+  },
+  "parte_2": {
+    "nombre": "Supuestos Prácticos",
+    "preguntas": 10,
+    "puntos_max": 50,
+    "minimo_aprobar": 25,
+    "preguntas_data": [
+      {
+        "numero": 31,
+        "pregunta": "María es una trabajadora española de 25 años que trabaja en una empresa de Madrid con contrato temporal de 6 meses. Su empresa le dice que por ser contrato temporal no tiene que darla de alta en la Seguridad Social hasta que no tenga un contrato indefinido. ¿Es correcto lo que dice la empresa?",
+        "opciones": {
+          "a": "Sí es correcto, los contratos temporales no requieren alta en SS",
+          "b": "No es correcto. María debe estar en alta desde el primer día de trabajo",
+          "c": "Solo si trabaja más de 3 meses",
+          "d": "Depende de si cotiza voluntariamente"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Campo de Aplicación",
+        "dificultad": "media"
+      },
+      {
+        "numero": 32,
+        "pregunta": "Juan es funcionario de carrera del Ayuntamiento de Barcelona. Le ofrecen un trabajo adicional los fines de semana en una empresa privada con contrato laboral. ¿En qué régimen o regímenes cotizará Juan?",
+        "opciones": {
+          "a": "Solo en el régimen de clases pasivas",
+          "b": "Solo en el Régimen General",
+          "c": "En el régimen de clases pasivas por su trabajo de funcionario y en el Régimen General por su trabajo en la empresa privada",
+          "d": "En un régimen especial de pluriactividad"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Campo de Aplicación",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 33,
+        "pregunta": "Pedro trabaja en una empresa con jornada de 40 horas semanales. Su jefe le pide que haga 3 horas extras cada semana durante todo el año (156 horas extras anuales). ¿Es legal que Pedro haga 156 horas extras al año?",
+        "opciones": {
+          "a": "Sí, si la empresa lo autoriza",
+          "b": "No es legal. Supera el límite de 80 horas extraordinarias anuales",
+          "c": "Solo si hay acuerdo con los representantes",
+          "d": "Depende del convenio colectivo"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Jornada y Descansos",
+        "dificultad": "media"
+      },
+      {
+        "numero": 34,
+        "pregunta": "Ana trabaja en un hospital en turno de noche. Termina su turno a las 7:00 AM y le piden que vuelva a las 15:00 del mismo día (8 horas después) para cubrir una baja. ¿Puede Ana negarse?",
+        "opciones": {
+          "a": "No puede negarse, es obligatorio",
+          "b": "Sí puede negarse. No se respeta el descanso mínimo de 12 horas entre jornadas",
+          "c": "Puede negarse solo si hay otro trabajador disponible",
+          "d": "En servicios esenciales no aplica el descanso mínimo"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Jornada y Descansos",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 35,
+        "pregunta": "Laura trabaja en una empresa de Madrid con horario de 9:00 a 18:00. La empresa le comunica que por reorganización productiva debe cambiar su horario a 14:00 a 23:00. Laura tiene dos hijos pequeños. ¿Qué opciones tiene Laura?",
+        "opciones": {
+          "a": "No puede negarse, debe aceptar el cambio",
+          "b": "Puede aceptar, impugnar judicialmente en 20 días, o rescindir con indemnización de 20 días/año",
+          "c": "Solo puede negarse si tiene hijos menores de 3 años",
+          "d": "Puede negarse pero sin derecho a indemnización"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Modificación Sustancial",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 36,
+        "pregunta": "Una empresa de 250 trabajadores decide cambiar el sistema de turnos de 80 trabajadores por causas organizativas. ¿Qué procedimiento debe seguir?",
+        "opciones": {
+          "a": "Puede implementarlo inmediatamente",
+          "b": "Debe abrir período de consultas de máximo 15 días con los representantes",
+          "c": "Solo necesita comunicarlo con 7 días de antelación",
+          "d": "Requiere autorización de la Inspección de Trabajo"
+        },
+        "respuesta_correcta": "b",
+        "tema": "Modificación Sustancial",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 37,
+        "pregunta": "Un ciudadano presenta una solicitud el 10 de enero. El 15 de febrero recibe requerimiento de subsanación con plazo de 10 días. Subsana el 1 de marzo. Si el procedimiento tiene plazo de 3 meses, ¿cuándo caduca?",
+        "opciones": {
+          "a": "10 de abril (3 meses desde solicitud)",
+          "b": "1 de junio (3 meses desde subsanación)",
+          "c": "11 de abril (3 meses desde solicitud más tiempo de subsanación)",
+          "d": "15 de mayo (3 meses desde requerimiento)"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Procedimiento Administrativo",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 38,
+        "pregunta": "Un funcionario comete una falta muy grave el 1 de enero de 2024. ¿Hasta cuándo puede iniciarse el expediente disciplinario?",
+        "opciones": {
+          "a": "Hasta el 1 de julio de 2024 (6 meses)",
+          "b": "Hasta el 1 de enero de 2025 (1 año)",
+          "c": "Hasta el 1 de enero de 2026 (2 años)",
+          "d": "Hasta el 1 de enero de 2027 (3 años)"
+        },
+        "respuesta_correcta": "d",
+        "tema": "Función Pública",
+        "dificultad": "media"
+      },
+      {
+        "numero": 39,
+        "pregunta": "Una Administración no resuelve en plazo un procedimiento de 3 meses. El interesado entiende desestimada su solicitud por silencio. ¿Cuánto tiempo tiene para recurrir?",
+        "opciones": {
+          "a": "1 mes desde que venció el plazo",
+          "b": "3 meses desde que venció el plazo",
+          "c": "6 meses desde que venció el plazo",
+          "d": "No hay plazo, puede recurrir en cualquier momento"
+        },
+        "respuesta_correcta": "c",
+        "tema": "Silencio Administrativo",
+        "dificultad": "alta"
+      },
+      {
+        "numero": 40,
+        "pregunta": "Un contrato menor de suministros tiene un valor de 18.000€ (IVA excluido). ¿Qué procedimiento de adjudicación debe seguirse?",
+        "opciones": {
+          "a": "Procedimiento abierto",
+          "b": "Procedimiento restringido",
+          "c": "Procedimiento negociado",
+          "d": "Adjudicación directa previa solicitud de al menos 3 ofertas"
+        },
+        "respuesta_correcta": "d",
+        "tema": "Contratación Pública",
+        "dificultad": "media"
+      }
+    ]
+  },
+  "instrucciones_calificacion": {
+    "formula": "Puntos = (Aciertos × Puntos_Max) / Total_Preguntas - (Errores × Puntos_Max) / (Total_Preguntas × 4)",
+    "ejemplo_parte_1": {
+      "aciertos": 24,
+      "errores": 6,
+      "calculo": "(24 × 50) / 30 - (6 × 50) / (30 × 4) = 40 - 2.5 = 37.5 puntos"
+    },
+    "ejemplo_parte_2": {
+      "aciertos": 8,
+      "errores": 2,
+      "calculo": "(8 × 50) / 10 - (2 × 50) / (10 × 4) = 40 - 2.5 = 37.5 puntos"
+    },
+    "total_ejemplo": "37.5 + 37.5 = 75 puntos ✅ APROBADO"
+  },
+  "distribucion_respuestas": {
+    "opcion_a": 8,
+    "opcion_b": 12,
+    "opcion_c": 11,
+    "opcion_d": 9,
+    "nota": "Distribución equilibrada de respuestas correctas"
+  },
+  "distribucion_dificultad": {
+    "facil": 8,
+    "media": 24,
+    "alta": 8,
+    "nota": "Dificultad progresiva: 20% fácil, 60% media, 20% difícil"
+  },
+  "distribucion_temas": {
+    "campo_aplicacion": 7,
+    "jornada_descansos": 6,
+    "modificacion_sustancial": 8,
+    "constitucion": 5,
+    "procedimiento_administrativo": 4,
+    "funcion_publica": 4,
+    "otros": 6,
+    "nota": "Cobertura amplia de todos los temas del temario oficial"
+  },
+  "referencias_normativas": {
+    "principales": [
+      "Constitución Española 1978",
+      "Real Decreto Legislativo 8/2015 (LGSS)",
+      "Real Decreto Legislativo 2/2015 (ET)",
+      "Ley 39/2015 (Procedimiento Administrativo Común)",
+      "Ley 40/2015 (Régimen Jurídico del Sector Público)",
+      "Real Decreto Legislativo 5/2015 (EBEP)"
+    ],
+    "nota": "Todas las preguntas están basadas en normativa oficial vigente"
+  }
+}

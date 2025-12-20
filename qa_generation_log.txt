@@ -1,0 +1,77 @@
+
+============================================================
+GENERACIÓN DE 10 Q&A CON VARIEDAD DE TIPOS
+============================================================
+✅ Groq API Key: gsk_zrh4SY...
+
+────────────────────────────────────────────────────────────
+[1/10] Tipo: TEST | Tema: incapacidad temporal duración
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[2/10] Tipo: TEST | Tema: jubilación ordinaria requisitos
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[3/10] Tipo: TEST | Tema: prestación desempleo cuantía
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[4/10] Tipo: TEST | Tema: recurso de alzada plazo
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[5/10] Tipo: COMPARACION | Tema: diferencia entre incapacidad permanente parcial y total
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[6/10] Tipo: COMPARACION | Tema: moción de censura vs cuestión de confianza
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[7/10] Tipo: PROCEDIMIENTO | Tema: pasos para solicitar pensión de jubilación
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[8/10] Tipo: PROCEDIMIENTO | Tema: tramitación recurso de alzada
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[9/10] Tipo: RAZONAMIENTO | Tema: caso práctico incapacidad temporal que supera 365 días
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+────────────────────────────────────────────────────────────
+[10/10] Tipo: RELACION | Tema: relación entre LGSS y Constitución en derechos sociales
+────────────────────────────────────────────────────────────
+   1️⃣ Consultando RAG...
+❌ Error consultando RAG: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /mcp/search_rag (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+   ⚠️  Sin resultados RAG, saltando...
+
+❌ No se generaron Q&A

@@ -438,7 +438,7 @@ client.agents.upload_document(
 - No puedes ver qué chunks se crearon
 - Black box
 
-❌ **Sin API programática (aún)**
+❌ **Sin API programática (aún)** SIIIn tiene api programatica revisalo!!!!!
 - Solo desde web UI
 - No puedes automatizar subida
 - No puedes actualizar vía código

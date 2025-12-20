@@ -99,7 +99,7 @@
 ### IMPORTANTE!!! Recursos disponibles:
 
 **RAM**: 7.7 GB total
-- RoBERTalex: 420 MB modelo + 2-3 GB inferencia
+- RoBERTalex: 420 MB modelo + 2-3 GB inferencia 
 - **Veredicto**: ✅ Puede correr localmente (lento sin GPU)
 - **Mejor**: Usar HuggingFace API
 

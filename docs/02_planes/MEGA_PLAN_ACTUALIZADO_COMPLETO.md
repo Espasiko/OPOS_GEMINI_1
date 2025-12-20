@@ -1,6 +1,6 @@
 # 🚀 MEGA PLAN ACTUALIZADO - RAG + FINE-TUNING COMPLETO
 **Fecha:** 15 de diciembre de 2025  
-**Versión:** 2.2 - MCP KIRO INTEGRADO  
+**Versión:** 2.2 - MCP INTEGRADO  
 **Estado:** 🟢 EN EJECUCIÓN - MCP OPERATIVO
 
 ---
@@ -10,7 +10,7 @@
 **¡HITOS COMPLETADOS!**
 
 ### 15-dic: MCP Server Operativo
-El servidor MCP de Opositaia está 100% funcional en Kiro:
+El servidor MCP de Opositaia está 100% funcional en la IDEro Kiro comprueba en la IDE antigravity!
 
 | Colección | Chunks Indexados | Estado |
 |-----------|------------------|--------|

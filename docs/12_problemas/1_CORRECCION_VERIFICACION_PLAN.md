@@ -63,10 +63,6 @@ grep -i "constitución\|CE" dataset_output/qa_completo_unificado_CORREGIDO_20251
 ### 3. Formato Real de Exámenes Oficiales
 
 **NECESITO VERIFICAR EN LOS PDFs:**
-- ❓ Número de preguntas por examen
-- ❓ Penalización real por error
-- ❓ Tiempo de examen
-- ❓ Formato de preguntas
 
 **NO PUEDO INVENTAR - Debo leer los PDFs reales**
 

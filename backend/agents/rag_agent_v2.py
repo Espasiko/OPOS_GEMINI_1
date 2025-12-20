@@ -29,9 +29,9 @@ class RAGAgentV2:
     ):
         # Leer desde variables de entorno si no se proporcionan
         self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
-        self.collection_name = collection_name or os.getenv("COLLECTION_NAME", "opositaia_leyes_seguridad_social")
-        # Modelo abierto para embeddings multilingües (evita repositorios gated)
-        self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+        self.collection_name = collection_name or os.getenv("COLLECTION_NAME", "opositaia_knowledge")
+        # Modelo pablosi para embeddings especializados en legislación española
+        self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "pablosi/bge-m3-spa-law-qa-trained-2")
         self.use_local_embeddings = use_local_embeddings if use_local_embeddings is not None else True
         api_key = api_key or os.getenv("QDRANT_API_KEY")
         
@@ -124,7 +124,8 @@ class RAGAgentV2:
                 collection_name=self.collection_name,
                 query=query_embedding,
                 limit=top_k * 2 if apply_reranking else top_k,
-                query_filter=search_filter
+                query_filter=search_filter,
+                using="dense"  # Named vector for opositaia_knowledge collection
             ).points
             
             # 4. Filtrar por min_score
@@ -298,8 +299,8 @@ def get_rag_agent_v2() -> RAGAgentV2:
     if _rag_agent_v2_instance is None:
         _rag_agent_v2_instance = RAGAgentV2(
             qdrant_url=os.getenv("QDRANT_URL", "http://localhost:6333"),
-            collection_name=os.getenv("QDRANT_COLLECTION", "opositaia_leyes_seguridad_social"),
-            embedding_model=os.getenv("EMBEDDING_MODEL", "PlanTL-GOB-ES/RoBERTalex"),
+            collection_name=os.getenv("COLLECTION_NAME", "opositaia_knowledge"),  # Changed from QDRANT_COLLECTION
+            embedding_model=os.getenv("EMBEDDING_MODEL", "pablosi/bge-m3-spa-law-qa-trained-2"),
             api_key=os.getenv("QDRANT_API_KEY")
         )
     return _rag_agent_v2_instance

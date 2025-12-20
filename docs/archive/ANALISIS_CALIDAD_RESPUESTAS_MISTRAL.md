@@ -219,9 +219,9 @@ Pipeline de Generación:
   6. Revisión humana si score < 90%
   
 Umbrales:
-  - Score >= 95%: APROBAR automáticamente
-  - Score 80-94%: REVISAR manualmente
-  - Score < 80%: RECHAZAR automáticamente
+  - Score >= 98%: APROBAR automáticamente
+  - Score 90-98%: REVISAR manualmente
+  - Score < 90%: RECHAZAR automáticamente
 ```
 
 ---
