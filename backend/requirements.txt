@@ -49,3 +49,6 @@ genanki==0.13.0
 
 # Monitoring
 prometheus-client==0.21.0
+
+# Expansion: Multi-Model & Reranking
+cohere==5.11.0

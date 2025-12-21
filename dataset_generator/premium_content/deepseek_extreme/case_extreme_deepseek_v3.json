@@ -1,0 +1,186 @@
+{
+  "topic": "Jubilación en Clases Pasivas vs Régimen General: Cómputo Recíproco",
+  "scenario": "María López, nacida en 1955, tiene 68 años en 2023. Su historial laboral es: 1980-1995 como funcionaria en Administración del Estado (Clases Pasivas, 15 años cotizados); 1995-2005 en sector privado (Régimen General, 10 años cotizados); 2005-2010 de vuelta como funcionaria (Clases Pasivas, 5 años cotizados); 2010-2020 trabajando simultáneamente como funcionaria interina (Clases Pasivas) y en empresa privada (Régimen General), cotizando en ambos regímenes durante 10 años. Hay períodos sin cotizar entre transiciones. Acumula 20 años en Clases Pasivas y 20 en Régimen General, con 10 años de superposición. Busca jubilarse usando el cómputo recíproco para cumplir requisitos y optimizar su pensión.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué es el cómputo recíproco en el contexto de la jubilación?",
+      "options": [
+        "Sumar períodos de cotización en diferentes regímenes para cumplir requisitos",
+        "Calcular la pensión solo con el último régimen",
+        "Un sistema para jubilarse anticipadamente",
+        "Un acuerdo internacional para pensiones"
+      ],
+      "correct_option_id": "A",
+      "explanation": "El cómputo recíproco permite sumar tiempos de cotización en regímenes diferentes de la Seguridad Social (como Clases Pasivas y Régimen General) para acceder a derechos como la jubilación, según la normativa vigente."
+    },
+    {
+      "id": "q2",
+      "question": "¿Cuál es la edad mínima de jubilación ordinaria en el Régimen General en 2023?",
+      "options": [
+        "65 años",
+        "66 años",
+        "67 años",
+        "Depende de los años cotizados"
+      ],
+      "correct_option_id": "B",
+      "explanation": "En 2023, la edad ordinaria de jubilación en el Régimen General es 66 años, aunque puede reducirse con 38,5 años o más de cotización, conforme a la Ley 27/2011."
+    },
+    {
+      "id": "q3",
+      "question": "¿Y en Clases Pasivas?",
+      "options": [
+        "65 años",
+        "66 años",
+        "67 años",
+        "60 años"
+      ],
+      "correct_option_id": "A",
+      "explanation": "En Clases Pasivas, la edad ordinaria de jubilación es 65 años, establecida en la Ley 24/1987 de Clases Pasivas del Estado, sin reducción por años de servicio."
+    },
+    {
+      "id": "q4",
+      "question": "¿Cuántos años de cotización se necesitan para acceder a la jubilación en el Régimen General?",
+      "options": [
+        "15 años",
+        "20 años",
+        "25 años",
+        "30 años"
+      ],
+      "correct_option_id": "A",
+      "explanation": "Se requieren al menos 15 años de cotización, con un mínimo de 2 años dentro de los 15 años anteriores a la solicitud, según el artículo 205 de la Ley General de la Seguridad Social."
+    },
+    {
+      "id": "q5",
+      "question": "¿Y en Clases Pasivas?",
+      "options": [
+        "15 años",
+        "20 años",
+        "25 años",
+        "30 años"
+      ],
+      "correct_option_id": "A",
+      "explanation": "En Clases Pasivas, también se exigen 15 años de servicio activo para tener derecho a la pensión de jubilación, de acuerdo con la normativa específica del régimen."
+    },
+    {
+      "id": "q6",
+      "question": "En el caso de María, ¿puede sumar los períodos de Clases Pasivas y Régimen General para cumplir los 15 años de cotización?",
+      "options": [
+        "Sí, siempre",
+        "No, nunca",
+        "Sí, mediante el cómputo recíproco",
+        "Solo si son consecutivos"
+      ],
+      "correct_option_id": "C",
+      "explanation": "Sí, mediante el cómputo recíproco regulado por el Real Decreto Legislativo 1/1994 y normativa de Clases Pasivas, que permite sumar períodos cotizados en ambos regímenes para alcanzar el mínimo requerido."
+    },
+    {
+      "id": "q7",
+      "question": "¿Cómo se calcula la base reguladora en el Régimen General para la jubilación?",
+      "options": [
+        "Con las bases de cotización de los últimos 15 años",
+        "Con las bases de los últimos 10 años",
+        "Con las bases de toda la vida laboral",
+        "Con un porcentaje fijo"
+      ],
+      "correct_option_id": "A",
+      "explanation": "En el Régimen General, la base reguladora se calcula dividiendo la suma de las bases de cotización de los últimos 15 años (180 meses) entre 210, según el artículo 210 de la Ley General de la Seguridad Social."
+    },
+    {
+      "id": "q8",
+      "question": "¿Y en Clases Pasivas?",
+      "options": [
+        "Con el último sueldo",
+        "Con el promedio de los últimos años",
+        "Con una fórmula basada en años de servicio y sueldo",
+        "Con las bases de cotización del Régimen General"
+      ],
+      "correct_option_id": "C",
+      "explanation": "En Clases Pasivas, la pensión se calcula con una fórmula que considera el sueldo regulador (promedio de los últimos años) y los años de servicio, aplicando porcentajes según la normativa de Clases Pasivas."
+    },
+    {
+      "id": "q9",
+      "question": "En el período superpuesto de 2010 a 2020, ¿cómo se tratan las cotizaciones simultáneas para el cómputo recíproco?",
+      "options": [
+        "Se suman ambas para el cómputo",
+        "Solo cuenta la de mayor cuantía",
+        "Se promedian",
+        "No se permiten cotizaciones simultáneas"
+      ],
+      "correct_option_id": "A",
+      "explanation": "Para el cómputo recíproco, se pueden sumar los períodos de cotización en ambos regímenes, incluso si son simultáneos, aunque para el cálculo de la pensión se evitan duplicidades mediante normas específicas."
+    },
+    {
+      "id": "q10",
+      "question": "¿Qué normativa regula principalmente el cómputo recíproco entre Clases Pasivas y Régimen General?",
+      "options": [
+        "Ley General de la Seguridad Social",
+        "Real Decreto Legislativo 1/1994",
+        "Ley de Clases Pasivas",
+        "Todas las anteriores"
+      ],
+      "correct_option_id": "D",
+      "explanation": "El cómputo recíproco está regulado por múltiples normativas, incluyendo la Ley General de la Seguridad Social, el Real Decreto Legislativo 1/1994 que la consolida, y la Ley 24/1987 de Clases Pasivas, que establecen los mecanismos de coordinación."
+    },
+    {
+      "id": "q11",
+      "question": "Para solicitar el cómputo recíproco, ¿a qué organismo debe dirigirse María inicialmente?",
+      "options": [
+        "Al INSS",
+        "A la Tesorería General de la Seguridad Social",
+        "Al Ministerio de Hacienda",
+        "Depende del régimen bajo el cual solicite la jubilación"
+      ],
+      "correct_option_id": "D",
+      "explanation": "Debe dirigirse al organismo correspondiente al régimen bajo el cual solicite la jubilación: al INSS si es por el Régimen General, o al Ministerio de Hacienda (Dirección General de Costes de Personal y Pensiones Públicas) si es por Clases Pasivas."
+    },
+    {
+      "id": "q12",
+      "question": "¿Cómo afectan las lagunas de cotización (períodos sin cotizar) al cómputo recíproco?",
+      "options": [
+        "Anulan el cómputo",
+        "No se tienen en cuenta, solo se suman períodos cotizados",
+        "Se consideran como períodos cotizados",
+        "Disminuyen la pensión proporcionalmente"
+      ],
+      "correct_option_id": "B",
+      "explanation": "En el cómputo recíproco, solo se computan los períodos efectivamente cotizados en cada régimen; las lagunas o períodos sin cotizar no se suman, pero tampoco invalidan el cómputo de los períodos válidos."
+    },
+    {
+      "id": "q13",
+      "question": "En el caso de María, si tiene 20 años en cada régimen, pero con 10 años superpuestos, ¿cuál es el total de años cotizados para el cómputo recíproco?",
+      "options": [
+        "40 años",
+        "30 años",
+        "35 años",
+        "Depende de cómo se calcule para evitar duplicidades"
+      ],
+      "correct_option_id": "D",
+      "explanation": "El total no es una simple suma (40 años), ya que los períodos superpuestos no se computan duplicados. Se deben sumar los períodos únicos de cotización, por lo que el total puede ser menor, típicamente alrededor de 30 años (20+20-10 superpuestos), ajustado por normas específicas."
+    },
+    {
+      "id": "q14",
+      "question": "¿Qué ocurre con la edad de jubilación si María solicita el cómputo recíproco?",
+      "options": [
+        "Debe cumplir la edad del régimen en el que se jubile",
+        "Se aplica la edad más baja entre los regímenes",
+        "Se aplica una edad media ponderada",
+        "No hay requisito de edad al usar cómputo recíproco"
+      ],
+      "correct_option_id": "A",
+      "explanation": "Para acceder a la jubilación, María debe cumplir los requisitos de edad del régimen bajo el cual solicita la pensión (65 años en Clases Pasivas o 66 en Régimen General en 2023), independientemente del cómputo recíproco de cotizaciones."
+    },
+    {
+      "id": "q15",
+      "question": "Un aspecto extremo: si María trabajó simultáneamente en ambos regímenes de 2010 a 2020, ¿cómo se calcula su pensión final?",
+      "options": [
+        "Se calcula por separado en cada régimen y se suman las pensiones",
+        "Se elige el régimen con mayor pensión y se ignora el otro",
+        "Se aplica una fórmula combinada que evita duplicidades",
+        "No está permitido y debe optar por un solo régimen"
+      ],
+      "correct_option_id": "C",
+      "explanation": "En casos de cotización simultánea, se aplican normas de coordinación para calcular una pensión global, combinando los períodos y evitando duplicidades. No se suman dos pensiones completas; en su lugar, se integran los períodos en un cálculo único basado en la normativa aplicable."
+    }
+  ]
+}

@@ -1,0 +1,426 @@
+{
+  "questions": [
+    {
+      "correct_option_id": "d",
+      "explanation": "El plazo de prescripción para las sanciones impuestas por infracciones en materia de seguridad y salud en el trabajo es de 5 años, según la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+      "id": "1",
+      "options": [
+        {
+          "id": "a",
+          "text": "1 año",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "2 años",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "3 años",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "5 años",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo de prescripción para las sanciones impuestas por infracciones en materia de seguridad y salud en el trabajo?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El criterio para graduar la sanción en función de la gravedad de la infracción y del daño causado es la gravedad de la infracción y el daño causado, según la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+      "id": "2",
+      "options": [
+        {
+          "id": "a",
+          "text": "La gravedad de la infracción y el daño causado",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La reincidencia en la comisión de infracciones",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La naturaleza de la infracción",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La situación económica de la empresa",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el criterio para graduar la sanción en función de la gravedad de la infracción y del daño causado?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El procedimiento para recurrir una sanción impuesta por la Inspección de Trabajo y Seguridad Social es el recurso de alzada ante el Tribunal Superior de Justicia de la Comunidad Autónoma, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "3",
+      "options": [
+        {
+          "id": "a",
+          "text": "Recurso de alzada ante el Tribunal Superior de Justicia de la Comunidad Autónoma",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Recurso de casación ante el Tribunal Supremo",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Recurso de revisión ante la Inspección de Trabajo y Seguridad Social",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Recurso de amparo ante el Tribunal Constitucional",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para recurrir una sanción impuesta por la Inspección de Trabajo y Seguridad Social?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "El plazo para interponer un recurso de alzada contra una sanción impuesta por la Inspección de Trabajo y Seguridad Social es de 1 año, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "4",
+      "options": [
+        {
+          "id": "a",
+          "text": "1 mes",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "2 meses",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "3 meses",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "1 año",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para interponer un recurso de alzada contra una sanción impuesta por la Inspección de Trabajo y Seguridad Social?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "El efecto de la prescripción de una sanción impuesta por la Inspección de Trabajo y Seguridad Social es que la sanción se considera extinguida, según la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+      "id": "5",
+      "options": [
+        {
+          "id": "a",
+          "text": "La sanción se considera nula",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La sanción se reduce en un 50%",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La sanción se considera extinguida",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "La sanción se considera suspendida",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la prescripción de una sanción impuesta por la Inspección de Trabajo y Seguridad Social?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "El criterio para determinar la reincidencia en la comisión de infracciones es la comisión de una infracción dentro del plazo de 5 años desde la comisión de la infracción anterior, según la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+      "id": "6",
+      "options": [
+        {
+          "id": "a",
+          "text": "La comisión de una infracción dentro del plazo de 1 año desde la comisión de la infracción anterior",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La comisión de una infracción dentro del plazo de 2 años desde la comisión de la infracción anterior",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La comisión de una infracción dentro del plazo de 3 años desde la comisión de la infracción anterior",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La comisión de una infracción dentro del plazo de 5 años desde la comisión de la infracción anterior",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el criterio para determinar la reincidencia en la comisión de infracciones?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El procedimiento para aplicar la graduación de la sanción en función de la gravedad de la infracción y del daño causado es que la Inspección de Trabajo y Seguridad Social debe valorar la gravedad de la infracción y el daño causado, según la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+      "id": "7",
+      "options": [
+        {
+          "id": "a",
+          "text": "La Inspección de Trabajo y Seguridad Social debe valorar la gravedad de la infracción y el daño causado",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La Inspección de Trabajo y Seguridad Social debe consultar con la empresa sancionada",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La Inspección de Trabajo y Seguridad Social debe solicitar la opinión de un experto",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La Inspección de Trabajo y Seguridad Social debe aplicar una fórmula matemática",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para aplicar la graduación de la sanción en función de la gravedad de la infracción y del daño causado?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "El efecto de la reincidencia en la comisión de infracciones sobre la sanción es que la sanción se aumenta en un 50%, según la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+      "id": "8",
+      "options": [
+        {
+          "id": "a",
+          "text": "La sanción se reduce en un 50%",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La sanción se aumenta en un 50%",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La sanción se considera nula",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La sanción se considera suspendida",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la reincidencia en la comisión de infracciones sobre la sanción?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "El plazo para que la Inspección de Trabajo y Seguridad Social notifique la sanción a la empresa es de 6 meses, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "9",
+      "options": [
+        {
+          "id": "a",
+          "text": "1 mes",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "2 meses",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "3 meses",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "6 meses",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para que la Inspección de Trabajo y Seguridad Social notifique la sanción a la empresa?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El efecto de la notificación de la sanción a la empresa es que la sanción se considera firme, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "10",
+      "options": [
+        {
+          "id": "a",
+          "text": "La sanción se considera firme",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La sanción se considera provisional",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La sanción se considera anulada",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La sanción se considera suspendida",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la notificación de la sanción a la empresa?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El procedimiento para que la empresa pague la sanción es que la empresa debe pagar la sanción dentro del plazo de 1 mes desde la notificación, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "11",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe pagar la sanción dentro del plazo de 1 mes desde la notificación",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa debe pagar la sanción dentro del plazo de 2 meses desde la notificación",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe pagar la sanción dentro del plazo de 3 meses desde la notificación",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa debe pagar la sanción dentro del plazo de 6 meses desde la notificación",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para que la empresa pague la sanción?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "El efecto de no pagar la sanción dentro del plazo establecido es que la sanción se considera firme y se procede a su ejecución, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "12",
+      "options": [
+        {
+          "id": "a",
+          "text": "La sanción se considera anulada",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La sanción se considera suspendida",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La sanción se aumenta en un 50%",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La sanción se considera firme y se procede a su ejecución",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el efecto de no pagar la sanción dentro del plazo establecido?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El procedimiento para solicitar la suspensión de la sanción es que la empresa debe solicitar la suspensión de la sanción dentro del plazo de 1 mes desde la notificación, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "13",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe solicitar la suspensión de la sanción dentro del plazo de 1 mes desde la notificación",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa debe solicitar la suspensión de la sanción dentro del plazo de 2 meses desde la notificación",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe solicitar la suspensión de la sanción dentro del plazo de 3 meses desde la notificación",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa debe solicitar la suspensión de la sanción dentro del plazo de 6 meses desde la notificación",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para solicitar la suspensión de la sanción?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "El efecto de la suspensión de la sanción es que la sanción se considera suspendida temporalmente, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "14",
+      "options": [
+        {
+          "id": "a",
+          "text": "La sanción se considera anulada",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La sanción se considera firme",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La sanción se considera suspendida temporalmente",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "La sanción se considera suspendida definitivamente",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la suspensión de la sanción?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El procedimiento para solicitar la revocación de la sanción es que la empresa debe solicitar la revocación de la sanción dentro del plazo de 1 mes desde la notificación, según la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común.",
+      "id": "15",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe solicitar la revocación de la sanción dentro del plazo de 1 mes desde la notificación",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa debe solicitar la revocación de la sanción dentro del plazo de 2 meses desde la notificación",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe solicitar la revocación de la sanción dentro del plazo de 3 meses desde la notificación",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa debe solicitar la revocación de la sanción dentro del plazo de 6 meses desde la notificación",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para solicitar la revocación de la sanción?"
+    }
+  ],
+  "scenario": "En el año 2020, la empresa 'Industrias López, S.A.' (ILSA) fue sancionada por la Inspección de Trabajo y Seguridad Social con una multa de 100.000 euros por infracciones graves en materia de seguridad y salud en el trabajo. La sanción se basó en la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales, y en el Real Decreto 39/1997, de 17 de enero, por el que se aprueba el Reglamento de los Servicios de Prevención. La empresa recurrió la sanción ante el Tribunal Superior de Justicia de la Comunidad Autónoma, alegando que la Inspección de Trabajo y Seguridad Social no había seguido el procedimiento establecido en la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común. Mientras tanto, en el año 2022, la empresa 'Industrias López, S.A.' (ILSA) volvió a ser sancionada por la Inspección de Trabajo y Seguridad Social con una multa de 150.000 euros por infracciones muy graves en materia de seguridad y salud en el trabajo. La empresa recurrió nuevamente la sanción, alegando que la Inspección de Trabajo y Seguridad Social no había tenido en cuenta la graduación de la sanción en función de la gravedad de la infracción y del daño causado. La empresa también alegó que la sanción era desproporcionada en relación con la infracción cometida. En el año 2023, la empresa 'Industrias López, S.A.' (ILSA) fue sancionada por tercera vez por la Inspección de Trabajo y Seguridad Social con una multa de 200.000 euros por infracciones muy graves en materia de seguridad y salud en el trabajo. La empresa recurrió la sanción, alegando que la Inspección de Trabajo y Seguridad Social no había aplicado correctamente la prescripción de las sanciones y que, por lo tanto, la sanción estaba prescrita. La empresa también alegó que la reincidencia en la comisión de infracciones no había sido debidamente acreditada.",
+  "topic": "Sanciones LISOS: Graduación, Reincidencia y Prescripción"
+}

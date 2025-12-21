@@ -1,0 +1,186 @@
+{
+  "topic": "ERTE y Mecanismo RED: Exoneraciones y Prohibición de Despido",
+  "scenario": "TecnoInnov S.A., una empresa de software con 200 empleados, enfrenta una crisis financiera en 2023 debido a la pérdida de un cliente clave. En marzo de 2023, solicita un ERTE por fuerza mayor, alegando causas económicas, y obtiene la autorización. Simultáneamente, en abril de 2023, inicia un Mecanismo RED para la digitalización de sus procesos, lo que implica cambios organizativos. La empresa aplica exoneraciones en las cotizaciones a la Seguridad Social para los empleados afectados por el RED. Durante el período del ERTE, despiden a varios empleados, alegando causas disciplinarias. Además, tras finalizar el RED, la empresa intenta despedir a empleados que se negaron a la formación digital. Los sindicatos presentan recursos, y hay conflictos sobre la duración de las exoneraciones y la prohibición de despido.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué característica define un ERTE por fuerza mayor?",
+      "options": [
+        "Requiere acuerdo con los sindicatos",
+        "Se basa en causas económicas, técnicas, organizativas o de producción",
+        "Se aplica por eventos imprevisibles e inevitables",
+        "Permite despidos inmediatos"
+      ],
+      "correct_option_id": "C",
+      "explanation": "El ERTE por fuerza mayor se caracteriza por eventos imprevisibles e inevitables que imposibilitan temporalmente el trabajo, como desastres naturales o crisis sanitarias."
+    },
+    {
+      "id": "q2",
+      "question": "¿Cuál es el objetivo principal del Mecanismo RED?",
+      "options": [
+        "Reducir costes laborales durante crisis",
+        "Facilitar la adaptación de trabajadores a la digitalización",
+        "Sustituir empleados por tecnología",
+        "Permitir despidos colectivos"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El Mecanismo RED (Regulación de Empleo para la Digitalización) tiene como objetivo apoyar a empresas en procesos de digitalización, con medidas como exoneraciones y formación."
+    },
+    {
+      "id": "q3",
+      "question": "¿Qué tipo de exoneraciones se aplican en el Mecanismo RED?",
+      "options": [
+        "Exoneración total de impuestos",
+        "Reducción de cotizaciones a la Seguridad Social",
+        "Exención del pago de salarios",
+        "Bonificaciones en contratación"
+      ],
+      "correct_option_id": "B",
+      "explanation": "Durante la aplicación del Mecanismo RED, las empresas pueden beneficiarse de exoneraciones en las cotizaciones a la Seguridad Social para los empleados afectados, sujeto a condiciones."
+    },
+    {
+      "id": "q4",
+      "question": "Durante un ERTE por fuerza mayor, ¿está prohibido despedir a los empleados afectados?",
+      "options": [
+        "Sí, durante todo el período del ERTE",
+        "No, se pueden despedir por causas justificadas",
+        "Solo se prohíbe durante los primeros 6 meses",
+        "Depende del acuerdo con los sindicatos"
+      ],
+      "correct_option_id": "A",
+      "explanation": "En un ERTE por fuerza mayor, la empresa tiene prohibido despedir a los empleados incluidos en el expediente durante el período de suspensión o reducción de jornada, salvo causas muy graves."
+    },
+    {
+      "id": "q5",
+      "question": "¿Puede una empresa aplicar simultáneamente un ERTE y un Mecanismo RED?",
+      "options": [
+        "No, son mutuamente excluyentes",
+        "Sí, pero con autorización expresa",
+        "Solo si son para diferentes grupos de empleados",
+        "Sí, es común en casos de crisis y digitalización"
+      ],
+      "correct_option_id": "D",
+      "explanation": "Una empresa puede solicitar un ERTE por causas económicas y, paralelamente, un Mecanismo RED para la digitalización, siempre que se ajusten a la normativa y no se solapen medidas contradictorias."
+    },
+    {
+      "id": "q6",
+      "question": "Si una empresa despide a un empleado durante un ERTE por fuerza mayor sin causa justificada, ¿qué consecuencia puede enfrentar?",
+      "options": [
+        "Multa administrativa",
+        "Nulidad del despido y readmisión",
+        "Solo una sanción económica",
+        "Pérdida de exoneraciones"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El despido durante un ERTE por fuerza mayor, sin causa disciplinaria grave, se considera nulo, y el trabajador tiene derecho a la readmisión con salarios de tramitación."
+    },
+    {
+      "id": "q7",
+      "question": "¿Cuál es la duración máxima de las exoneraciones en el Mecanismo RED?",
+      "options": [
+        "6 meses",
+        "1 año",
+        "2 años",
+        "Hasta que finalice el proceso de digitalización"
+      ],
+      "correct_option_id": "B",
+      "explanation": "Las exoneraciones en el Mecanismo RED suelen tener una duración máxima de un año, prorrogable en función del plan de digitalización."
+    },
+    {
+      "id": "q8",
+      "question": "¿Qué requisito es esencial para solicitar un Mecanismo RED?",
+      "options": [
+        "Presentar un plan de digitalización",
+        "Tener pérdidas económicas",
+        "Acuerdo con todos los empleados",
+        "Reducción del 20% de la plantilla"
+      ],
+      "correct_option_id": "A",
+      "explanation": "Para acceder al Mecanismo RED, la empresa debe presentar un plan de digitalización que justifique los cambios organizativos y las medidas laborales."
+    },
+    {
+      "id": "q9",
+      "question": "Durante un Mecanismo RED, ¿qué derecho tienen los empleados que se niegan a la formación digital?",
+      "options": [
+        "Ser despedidos sin indemnización",
+        "Mantener su puesto sin cambios",
+        "Ser recolocados en otro puesto",
+        "Recibir una compensación económica"
+      ],
+      "correct_option_id": "C",
+      "explanation": "Si un empleado se niega a la formación en un RED, la empresa debe intentar su recolocación en otro puesto compatible, y solo en último caso podría haber despido objetivo."
+    },
+    {
+      "id": "q10",
+      "question": "En el escenario, si un empleado está incluido tanto en el ERTE como en el RED, ¿qué medidas se aplican?",
+      "options": [
+        "Solo las del ERTE",
+        "Solo las del RED",
+        "Las más beneficiosas para el empleado",
+        "Se combinan según autorización"
+      ],
+      "correct_option_id": "D",
+      "explanation": "Un empleado no puede estar sometido a dos medidas de regulación de empleo al mismo tiempo; la empresa debe definir claramente el régimen aplicable, evitando conflictos."
+    },
+    {
+      "id": "q11",
+      "question": "Tras finalizar un Mecanismo RED, ¿existe prohibición de despido para los empleados afectados?",
+      "options": [
+        "Sí, durante 6 meses",
+        "No, pero con restricciones",
+        "Solo para los que aceptaron la formación",
+        "Depende del acuerdo colectivo"
+      ],
+      "correct_option_id": "B",
+      "explanation": "Después de un RED, la empresa debe evitar despidos relacionados con los cambios digitales, y en caso de despido objetivo, debe cumplir con procedimientos específicos."
+    },
+    {
+      "id": "q12",
+      "question": "Si una empresa incumple la prohibición de despido durante un ERTE, ¿qué sanción administrativa puede recibir?",
+      "options": [
+        "Multa de hasta 10.000 euros",
+        "Pérdida de exoneraciones y multas",
+        "Solo advertencia",
+        "Cancelación del ERTE"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El incumplimiento de la prohibición de despido en un ERTE puede conllevar la pérdida de beneficios como exoneraciones, además de multas administrativas."
+    },
+    {
+      "id": "q13",
+      "question": "En un ERTE por fuerza mayor, ¿qué papel juegan los sindicatos?",
+      "options": [
+        "Deben aprobar el ERTE",
+        "Son consultados pero no deciden",
+        "Pueden vetar la solicitud",
+        "No tienen participación"
+      ],
+      "correct_option_id": "B",
+      "explanation": "En un ERTE por fuerza mayor, la empresa debe informar y consultar a los representantes de los trabajadores, pero la decisión recae en la autoridad laboral basada en la causa alegada."
+    },
+    {
+      "id": "q14",
+      "question": "¿En qué caso se permite el despido durante un ERTE por fuerza mayor?",
+      "options": [
+        "Por causas económicas",
+        "Por causas disciplinarias graves",
+        "Por negativa a trabajar",
+        "Por cierre de la empresa"
+      ],
+      "correct_option_id": "B",
+      "explanation": "Durante un ERTE, el despido solo es posible por causas disciplinarias graves y debidamente acreditadas, como faltas muy graves del trabajador."
+    },
+    {
+      "id": "q15",
+      "question": "En el escenario de TecnoInnov S.A., si despiden a empleados durante el ERTE alegando causas disciplinarias falsas, ¿qué recurso tienen los empleados?",
+      "options": [
+        "Demanda por despido nulo",
+        "Denuncia penal por fraude",
+        "Ambas anteriores",
+        "Solo reclamar indemnización"
+      ],
+      "correct_option_id": "C",
+      "explanation": "Los empleados pueden recurrir el despido ante lo social por nulidad, y si se demuestra que las causas son falsas, podría haber responsabilidad penal por simulación."
+    }
+  ]
+}

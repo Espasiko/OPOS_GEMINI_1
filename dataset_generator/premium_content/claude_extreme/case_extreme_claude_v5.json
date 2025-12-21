@@ -1,0 +1,381 @@
+{
+  "topic": "Ingreso Mínimo Vital: Unidad de convivencia compleja con personas con vínculos no registrados y cómputo de rentas",
+  "scenario": "Doña Marta Sánchez Ruiz, de 39 años, presenta solicitud de Ingreso Mínimo Vital el 18 de marzo de 2024 ante el Instituto Nacional de la Seguridad Social. Convive en un domicilio sito en Calle Mayor nº 45, 3º B, de Madrid, empadronada desde el 2 de enero de 2022, junto con las siguientes personas:\n\n1) Don Carlos Fernández López (42 años), con quien mantiene una relación afectiva análoga a la conyugal desde el 15 de junio de 2021, aunque nunca han formalizado pareja de hecho ni contraído matrimonio. Carlos figura empadronado en dicho domicilio desde el 8 de febrero de 2022.\n\n2) Laura Sánchez Ruiz (17 años), hija biológica de Marta, nacida el 3 de mayo de 2006, empadronada en el mismo domicilio desde el 2 de enero de 2022.\n\n3) Javier Fernández Moreno (15 años), hijo biológico de Carlos de una relación anterior, que reside con ellos desde el 10 de septiembre de 2022, fecha en que fue empadronado tras el fallecimiento de su madre.\n\n4) Doña Encarnación Ruiz Gómez (68 años), madre de Marta, empadronada en el domicilio desde el 20 de noviembre de 2023, tras sufrir un ictus que le ha generado una dependencia reconocida de Grado II (resolución de 5 de diciembre de 2023).\n\nDurante el ejercicio 2023 (año de referencia para el cómputo de rentas), las circunstancias económicas fueron las siguientes:\n\n- Marta percibió prestación por desempleo desde enero hasta el 30 de junio de 2023, por importe total de 7.200 euros. Desde julio de 2023 no percibe ingreso alguno.\n\n- Carlos trabajó como autónomo en el sector de la construcción, declarando en su IRPF de 2023 un rendimiento neto de actividad económica de 9.850 euros. El 15 de enero de 2024 causó baja en el RETA por cese de actividad.\n\n- Laura realizó prácticas formativas no laborales en una empresa entre abril y septiembre de 2023, percibiendo una beca de 300 euros mensuales (total: 1.800 euros).\n\n- Javier no percibió renta alguna durante 2023.\n\n- Encarnación percibe pensión de viudedad desde 2018 por importe mensual de 890 euros (10.680 euros anuales en 2023, más dos pagas extraordinarias que totalizan 12.460 euros anuales).\n\nEl patrimonio de la unidad familiar incluye: un vehículo turismo a nombre de Carlos, adquirido en 2019, con valor de mercado de 8.500 euros; y una cuenta corriente conjunta de Marta y Carlos con saldo a 31 de diciembre de 2023 de 3.200 euros.\n\nMarta alega en su solicitud que Carlos \"no forma parte de su unidad de convivencia\" porque no están casados ni son pareja de hecho registrada, y que su madre Encarnación debe computar como miembro pero sin incluir su pensión íntegramente por estar en situación de dependencia. Además, solicita que no se compute la beca de Laura por tratarse de \"ayuda al estudio\".\n\nEl INSS, tras analizar la documentación aportada (certificados de empadronamiento, libro de familia, declaraciones de IRPF, informes de convivencia del Ayuntamiento y certificado de dependencia), dicta resolución denegatoria el 2 de mayo de 2024, notificada el 8 de mayo de 2024, fundamentándose en que la unidad de convivencia supera los límites de renta establecidos y en la incorrecta configuración de la unidad solicitada.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Respecto a la configuración de la Unidad de Convivencia (UC), ¿forman Marta y Carlos una única UC a efectos del IMV?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, porque llevan conviviendo más de un año en relación análoga."
+        },
+        {
+          "id": "b",
+          "text": "No, al no existir matrimonio ni registro de pareja de hecho, siendo ambos adultos independientes sin vínculo de parentesco entre ellos.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, porque tienen una cuenta corriente conjunta."
+        },
+        {
+          "id": "d",
+          "text": "Sí, porque Javier (hijo de Carlos) y Laura (hija de Marta) viven juntos."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art. 6 Ley 19/2021 IMV. La relación análoga a la conyugal debe acreditarse mediante registro (Pareja de Hecho). Sin registro, son dos adultos 'sin vínculo' compartiendo piso (salvo que existieran hijos comunes, que no es el caso)."
+    },
+    {
+      "id": "q2",
+      "question": "Dado que comparten domicilio y no son UC única, ¿quiénes componen la UC de Marta?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Marta, Laura y Encarnación (madre).",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Marta y Laura solamente."
+        },
+        {
+          "id": "c",
+          "text": "Marta, Laura, Encarnación y Javier (por afinidad)."
+        },
+        {
+          "id": "d",
+          "text": "Marta sola."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "Marta forma UC con sus parientes hasta 2º grado que convivan (Hija Laura: 1º grado; Madre Encarnación: 1º grado). Carlos y Javier quedan fuera."
+    },
+    {
+      "id": "q3",
+      "question": "¿Computan los ingresos de la beca de Laura (1.800€) para el cálculo de rentas de la UC?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, todas las rentas computan."
+        },
+        {
+          "id": "b",
+          "text": "Sí, al 50% por ser menor."
+        },
+        {
+          "id": "c",
+          "text": "No, las becas de formación no inyegran el cómputo de rentas según la Ley del IMV.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Solo si superan 3000 euros."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "Art. 18/20 Ley IMV (Rentas exentas). Las ayudas al estudio y formación están exentas."
+    },
+    {
+      "id": "q4",
+      "question": "¿Cómo se computa la pensión de viudedad de la abuela Encarnación (12.460€)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Está exenta por ser contributiva."
+        },
+        {
+          "id": "b",
+          "text": "Computa íntegramente como renta de la UC (12.460€).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Está exenta por tener Dependencia reconocida."
+        },
+        {
+          "id": "d",
+          "text": "Solo computan 10.000€ (límite exento)."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Las pensiones contributivas (Viudedad) computan al 100%. Solo están exentas las prestaciones económicas vinculadas a la Dependencia (servicio/cuidados), no las pensiones ordinarias de quien tiene dependencia."
+    },
+    {
+      "id": "q5",
+      "question": "¿Cuáles son los ingresos totales computables de la UC de Marta para 2023?",
+      "options": [
+        {
+          "id": "a",
+          "text": "7.200 (Marta) + 0 (Laura) + 0 (Encarnación) = 7.200€."
+        },
+        {
+          "id": "b",
+          "text": "7.200 (Marta) + 1.800 (Laura) + 12.460 (Encarnación) = 21.460€."
+        },
+        {
+          "id": "c",
+          "text": "7.200 (Marta) + 12.460 (Encarnación) = 19.660€.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "0 (Marta, desempleada actual) + 12.460 = 12.460€."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "Suma del Desempleo de Marta (computable) y Viudedad de Encarnación (computable). Beca Laura exenta."
+    },
+    {
+      "id": "q6",
+      "question": "A efectos del límite de renta garantizada, ¿qué escala corresponde a una UC de '2 adultos y 1 menor'?",
+      "options": [
+        {
+          "id": "a",
+          "text": "100% Renta Básica."
+        },
+        {
+          "id": "b",
+          "text": "170% Renta Básica (100% titular + 30% adulto + 40% menor? No, escala compleja).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "220% Renta Básica."
+        },
+        {
+          "id": "d",
+          "text": "140% Renta Básica."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Escala Art 13. Adulto extra: 0.3. Menor: 0.3. (Titular 1 + 0.3 + 0.3 = 1.6). Wait, escala 2024: Adulto 2º 30%, Menores 30%. Total 1.6."
+    },
+    {
+      "id": "q7",
+      "question": "Asumiendo una Renta Garantizada anual aprox de 14.500€ para esa UC. Con ingresos de 19.660€, ¿es correcta la denegación?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, superan el umbral de renta.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, porque hay que descontar el alquiler de 800€ (hipótesis)."
+        },
+        {
+          "id": "c",
+          "text": "No, porque se aplica el incentivo al empleo sobre el desempleo."
+        },
+        {
+          "id": "d",
+          "text": "No, porque la renta del año actual (2024) es 0 para Marta."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "Al superar los ingresos computables (19k) la renta garantizada (aprox 14-15k), no hay derecho a la prestación."
+    },
+    {
+      "id": "q8",
+      "question": "¿Afecta el patrimonio de Carlos (Coche 8.500€) a la solicitud de Marta?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, porque conviven."
+        },
+        {
+          "id": "b",
+          "text": "No, al no formar parte de la UC, su patrimonio no se suma.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, porque la cuenta conjunta les vincula."
+        },
+        {
+          "id": "d",
+          "text": "Solo la mitad del coche."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El patrimonio se computa SOLO de los miembros de la UC. Carlos is out."
+    },
+    {
+      "id": "q9",
+      "question": "¿Y la cuenta conjunta con 3.200€?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No cuenta."
+        },
+        {
+          "id": "b",
+          "text": "Cuenta el 100% para Marta."
+        },
+        {
+          "id": "c",
+          "text": "Cuenta el 50% para la UC de Marta (1.600€) al ser cotitular.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Solo los intereses."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "Reglas de valoración de activos. Cuentas conjuntas se prorratean entre titulares."
+    },
+    {
+      "id": "q10",
+      "question": "La situación de desempleo actual de Marta (desde julio 2023), ¿permite solicitar el IMV con las rentas de 2024 en lugar de 2023?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, siempre se elige el mejor año."
+        },
+        {
+          "id": "b",
+          "text": "Sí, existe la modalidad de 'pobreza sobrevenida' para el año en curso si los ingresos han bajado drásticamente.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "No, siempre es ejercicio vencido."
+        },
+        {
+          "id": "d",
+          "text": "Solo en caso de catástrofe."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art 11.4 Ley IMV. Excepcionalmente, si en el año en curso los ingresos caen >50% respecto al anterior y hay vulnerabilidad, se puede computar año corriente."
+    },
+    {
+      "id": "q11",
+      "question": "(Reserva) ¿Tienen derecho al Complemento de Ayuda a la Infancia (API) por Laura (17 años)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, porque no les conceden el IMV."
+        },
+        {
+          "id": "b",
+          "text": "Sí, podrían tenerlo si no superan el 300% de la renta garantizada (umbral más alto que el IMV base).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "No, Laura tiene más de 16 años."
+        },
+        {
+          "id": "d",
+          "text": "Solo si Laura tiene discapacidad."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El API tiene umbrales de renta mucho más altos (300% de la RG y 150% patrimonio). Es posible que les den el API (50€/mes o lo que corresponda por edad) aunque denieguen la renta básica."
+    },
+    {
+      "id": "q12",
+      "question": "(Reserva) Encarnación se empadronó en noviembre 2023. Solicitud marzo 2024. ¿Cumple requisito de antigüedad de convivencia?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, se exigen 6 meses ininterrumpidos de convivencia previa.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Sí, 3 meses es suficiente."
+        },
+        {
+          "id": "c",
+          "text": "Al ser madre (familiar directo) no se exige antigüedad."
+        },
+        {
+          "id": "d",
+          "text": "Sí, porque viene por motivo de salud (ictus)."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "Art. 7.2. Se exige convivencia continuada de al menos 6 meses anteriores a la solicitud para formar parte de la UC."
+    },
+    {
+      "id": "q13",
+      "question": "(Reserva) ¿Se considera la UC 'Monoparental' a efectos del complemento del 22%?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, Marta es la única progenitora en la UC."
+        },
+        {
+          "id": "b",
+          "text": "No, al convivir con la abuela (Encarnación), hay más de un adulto en la UC.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, porque la abuela es dependiente."
+        },
+        {
+          "id": "d",
+          "text": "Depende de si Carlos aporta dinero."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Definición UC Monoparental (Art 3): 'constituida por un solo adulto responsable de menores'. Aquí hay 2 adultos."
+    },
+    {
+      "id": "q14",
+      "question": "(Reserva) ¿Tiene Carlos obligación de firmar la solicitud?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, todos los convivientes deben firmar."
+        },
+        {
+          "id": "b",
+          "text": "No, al no ser miembro de la UC alegada, solo deben firmar los miembros adultos de la misma (Marta y Encarnación).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, como dueño del piso (si lo fuera)."
+        },
+        {
+          "id": "d",
+          "text": "Solo si pide ayuda él."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Firman el titular y los miembros adultos de la UC. Los meros convivientes sin vínculo a la UC no firman la solicitud de la prestación."
+    },
+    {
+      "id": "q15",
+      "question": "(Reserva) ¿El grado II de dependencia de Encarnación otorga algún incremento en el IMV?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, un 30% más."
+        },
+        {
+          "id": "b",
+          "text": "No, el complemento de discapacidad del 22% es solo para grado >= 65% (Discapacidad, no Dependencia).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, cuenta como dos personas."
+        },
+        {
+          "id": "d",
+          "text": "Sí, exime sus ingresos."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "La Ley IMV habla de discapacidad reconocida >=65%. La 'Dependencia' (ley 39/2006) es administrativa distinta. Generalmente requiere certificado de discapacidad >65% para el complemento."
+    }
+  ]
+}

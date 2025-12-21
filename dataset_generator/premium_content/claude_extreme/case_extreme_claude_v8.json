@@ -1,0 +1,382 @@
+{
+  "topic": "Convenios Internacionales: Cómputo de periodos de seguro en países extracomunitarios con convenio bilateral",
+  "scenario": "Don Ramiro Sánchez Velasco, nacido el 15 de marzo de 1958, inició su vida laboral en España el 1 de septiembre de 1976 como operario en una empresa metalúrgica, cotizando ininterrumpidamente hasta el 31 de agosto de 1985, acumulando exactamente 9 años completos de cotización al Régimen General de la Seguridad Social española.\n\nEl 15 de septiembre de 1985, Don Ramiro emigró a Argentina, donde trabajó como técnico industrial en Buenos Aires desde el 1 de octubre de 1985 hasta el 30 de junio de 1998, cotizando al sistema previsional argentino durante 12 años y 9 meses. Durante este período, sufrió un accidente laboral el 12 de marzo de 1992 que le causó una incapacidad temporal de 4 meses, período que fue reconocido como cotizado por la legislación argentina. El Convenio Hispano-Argentino de Seguridad Social, ratificado por Instrumento de 28 de febrero de 1997 (BOE 4 de abril de 1997), entró en vigor el 1 de julio de 1997.\n\nEl 1 de julio de 1998, Don Ramiro regresó a España y reanudó su actividad laboral el 1 de septiembre de 1998 en una empresa de construcción, cotizando hasta el 31 de diciembre de 2003, acumulando 5 años y 4 meses adicionales de cotización española. Durante este período español, estuvo en situación de desempleo contributivo desde el 1 de enero de 2002 hasta el 31 de marzo de 2002, período asimilado a cotizado.\n\nEl 15 de abril de 2004, Don Ramiro se trasladó a Marruecos por motivos familiares, donde trabajó como asesor técnico desde el 1 de mayo de 2004 hasta el 31 de agosto de 2011, cotizando 7 años y 4 meses al sistema marroquí. El Convenio Hispano-Marroquí de Seguridad Social, firmado el 8 de noviembre de 1979, establece en su artículo 18 que los períodos de seguro cubiertos bajo la legislación de uno de los Estados contratantes se totalizarán con los cubiertos bajo la legislación del otro Estado, siempre que no se superpongan. Sin embargo, el artículo 22.3 del mismo Convenio especifica que para el cómputo de períodos anteriores a la entrada en vigor del Convenio (1 de febrero de 1982), se requiere que el trabajador haya cotizado al menos 6 meses en territorio español con posterioridad a dicha fecha.\n\nEl 1 de septiembre de 2011, Don Ramiro retornó definitivamente a España, trabajando desde el 15 de septiembre de 2011 hasta el 28 de febrero de 2018 en una empresa de logística, acumulando 6 años y 5 meses más de cotización. Durante este último período, disfrutó de una incapacidad temporal por contingencias comunes desde el 1 de junio de 2015 hasta el 31 de agosto de 2015.\n\nEl 14 de marzo de 2023, cumplidos los 65 años, Don Ramiro solicitó su pensión de jubilación ordinaria. La Dirección Provincial del INSS debe determinar: (1) qué períodos extranjeros son computables según los convenios bilaterales aplicables; (2) si se cumplen los requisitos temporales del artículo 205.1.b) LGSS (15 años cotizados, de los cuales al menos 2 deben estar comprendidos en los 15 años inmediatamente anteriores al hecho causante); (3) la base reguladora aplicable considerando que los períodos marroquíes cotizados antes de 1982 generaron bases de cotización que, actualizadas, equivaldrían a 850 euros mensuales; y (4) si procede aplicar el artículo 23 del Convenio con Marruecos que establece un prorrateo de la pensión según los períodos cotizados en cada país.\n\nDatos adicionales: Don Ramiro no ha percibido ninguna pensión de Argentina ni de Marruecos. La base reguladora de sus cotizaciones españolas asciende a 2.100 euros mensuales. El coeficiente aplicable según sus años cotizados totales sería del 100% si se superan los 36 años y 6 meses de cotización.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Cumple Ramiro el requisito de carencia genérica (15 años) solo con cotizaciones españolas?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, tiene 9 años + 5 años = 14 años."
+        },
+        {
+          "id": "b",
+          "text": "Sí, sumando sus tres periodos españoles alcanza 20 años y 9 meses.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, pero necesita sumar los de Argentina para llegar al mínimo exigible."
+        },
+        {
+          "id": "d",
+          "text": "No, porque el primer periodo es anterior a 1985."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Calculando los periodos españoles: 9 años (76-85) + 5a 4m (98-03) + 6a 5m (11-18) = 20 años y 9 meses. Cumple por sí solo."
+    },
+    {
+      "id": "q2",
+      "question": "Al cumplir los requisitos con cotizaciones españolas, ¿cómo se calcula su pensión?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Solo como Pensión Nacional (Independiente), ignorando los periodos extranjeros.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Obligatoriamente por Totalización y Prorrata."
+        },
+        {
+          "id": "c",
+          "text": "Se calculan ambas (Nacional y Prorrata) y se le reconoce la más favorable.",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Se suman todos los años al 100% como si fueran españoles."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "Corrección técnica: En reglamentos UE siempre se hace el doble cálculo. En convenios bilaterales (como Marruecos/Argentina), si se tiene derecho a la pensión nacional SIN totalizar, esta se concede directamente. La totalización se usa para *adquirir* el derecho. (Aunque en la práctica moderna se tiende al doble cálculo, la regla base bilateral es subsidiariedad de la totalización). *Matiz*: Si la prorrata fuese superior, el convenio suele permitirlo, pero matemáticamente en España (con primeros 15 años al 50%) la Nacional siempre gana."
+    },
+    {
+      "id": "q3",
+      "question": "A efectos del cálculo de la Base Reguladora de una hipotética pensión de prorrata con Marruecos, ¿se pueden usar las bases de 850€ cotizadas allí?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, se integran en el cálculo."
+        },
+        {
+          "id": "b",
+          "text": "No, nunca se suman bases extranjeras. Se toma la base de cotización española equivalente o mínima vigente en ese momento para rellenar lagunas si fuera necesario, pero la BR se forma solo con bases españolas reales o integradas.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo si son superiores a las españolas."
+        },
+        {
+          "id": "d",
+          "text": "Se hace la media."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Principio fundamental internacional: Los tiempos se suman, las cotizaciones (dinero) NO. La pensión teórica se calcula con las bases del país que paga, proyectando sus bases o rellenando lagunas con mínimas conforme a su legislación."
+    },
+    {
+      "id": "q4",
+      "question": "¿Puede Ramiro sumar todos sus años (España + Argentina + Marruecos) en un único cálculo?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, todos los convenios se comunican."
+        },
+        {
+          "id": "b",
+          "text": "No, salvo que exista un Convenio Multilateral que vincule a los tres países. Marruecos no está en el Convenio Multilateral Iberoamericano, por lo que no se totaliza con Argentina.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, porque España es el nexo común."
+        },
+        {
+          "id": "d",
+          "text": "Solo para el porcentaje, no para la carencia."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "No existe 'totalización múltiple' automática. Se calcularía España+Argentina y España+Marruecos por separado. No se suma el triángulo completo."
+    },
+    {
+      "id": "q5",
+      "question": "¿Tiene validez el periodo cotizado en Argentina (1985-1997) anterior a la entrada en vigor del Convenio (1997)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, los convenios no son retroactivos."
+        },
+        {
+          "id": "b",
+          "text": "Sí, los periodos anteriores se tienen en cuenta para determinar el derecho a pensión, aunque el pago solo pueda reclamarse desde la vigencia.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo la mitad del tiempo."
+        },
+        {
+          "id": "d",
+          "text": "Depende de si estaba en alta."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Cláusula estándar de los convenios: Se computan periodos anteriores a la firma para carencia, pero los efectos económicos no se retrotraen."
+    },
+    {
+      "id": "q6",
+      "question": "¿Cumple el requisito del Art 22.3 del Convenio con Marruecos (cotizar 6 meses post-1982 en España)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, se fue en 1985."
+        },
+        {
+          "id": "b",
+          "text": "Sí, cotizó del 1998 al 2003 (5 años) y del 2011 al 2018 (6 años).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "No aplica porque es español."
+        },
+        {
+          "id": "d",
+          "text": "Solo si trabaja en Marruecos."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Cumple sobradamente el requisito de vinculación posterior con la SS española."
+    },
+    {
+      "id": "q7",
+      "question": "En el cálculo de la Pensión Nacional (sola con España), con 20 años y 9 meses cotizados, ¿qué porcentaje de la Base Reguladora le corresponde?",
+      "options": [
+        {
+          "id": "a",
+          "text": "50%."
+        },
+        {
+          "id": "b",
+          "text": "Aprox 62-65% (50% por los primeros 15 años + porcentaje extra por los 5 años y pico restantes).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "100%."
+        },
+        {
+          "id": "d",
+          "text": "80%."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Escala general LGSS: 15 años = 50%. Cada mes adicional suma coeficientes (aprox 0.21% mensual). Con 5 años más, suma un buen tramo."
+    },
+    {
+      "id": "q8",
+      "question": "Si Ramiro hubiera usado la opción de 'Jubilación Anticipada' a los 63 años, ¿podría haber usado los periodos de Argentina para acceder?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, siempre."
+        },
+        {
+          "id": "b",
+          "text": "No, la jubilación anticipada suele estar excluida del campo de aplicación material de muchos convenios bilaterales antiguos, aunque la jurisprudencia reciente tiende a abrirlo.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, pero con penalización del 50%."
+        },
+        {
+          "id": "d",
+          "text": "Solo si reside en Argentina."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Muchos convenios antiguos solo contemplan Vejez ordinaria. No obstante, si con periodos españoles solos ya accede, puede jubilarse anticipadamente."
+    },
+    {
+      "id": "q9",
+      "question": "¿El periodo de Desempleo (2002) en España cuenta como cotizado para el Convenio?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, es asistencial."
+        },
+        {
+          "id": "b",
+          "text": "Sí, es periodo de seguro/cotización efectivo o asimilado.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo para España, no para totalizar."
+        },
+        {
+          "id": "d",
+          "text": "Cuenta a la mitad."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El desempleo contributivo cotiza a jubilación y es periodo computable."
+    },
+    {
+      "id": "q10",
+      "question": "Si la Pensión Teórica (Totalizada) con Argentina sumase 33 años (85% de la BR) y luego se prorrateara, ¿sería mayor que la Nacional?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, siempre es mayor."
+        },
+        {
+          "id": "b",
+          "text": "No. Matemáticamente, el prorrateo devuelve la pensión a la proporción de años españoles (21/33). Debido a que los primeros 15 años españoles dan el 50% (bonus inicial), la pensión Nacional (independiente) suele ser superior a la prorrata.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Son iguales."
+        },
+        {
+          "id": "d",
+          "text": "Depende del IPC."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Regla matemática de convexidad de la escala española. Salvo complementos a mínimos, la pensión independiente gana."
+    },
+    {
+      "id": "q11",
+      "question": "(Reserva) ¿Tiene derecho a asistencia sanitaria en España siendo pensionista solo con cargo a España?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, como titular de pensión española residente en España.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, debe pagar convenio especial."
+        },
+        {
+          "id": "c",
+          "text": "Solo urgencias."
+        },
+        {
+          "id": "d",
+          "text": "Sí, pero con copago del 50%."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "El pensionista del sistema español tiene derecho a AS."
+    },
+    {
+      "id": "q12",
+      "question": "(Reserva) El hecho de residir en España, ¿afecta al cobro de la pensión argentina si la tuviera?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, no se exportan."
+        },
+        {
+          "id": "b",
+          "text": "No, el principio de exportabilidad de las prestaciones es clave en los Convenios. Se cobra íntegra en el lugar de residencia.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo si Argentina quiere."
+        },
+        {
+          "id": "d",
+          "text": "Se reduce al 40%."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Principio de supresión de cláusulas de residencia. Las pensiones contributivas se exportan."
+    },
+    {
+      "id": "q13",
+      "question": "(Reserva) Si Ramiro fallece, ¿puede su viuda cobrar viudedad de los tres países?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, si cumple requisitos en cada uno totalizando periodos.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, solo de uno."
+        },
+        {
+          "id": "c",
+          "text": "Solo de España."
+        },
+        {
+          "id": "d",
+          "text": "Se reparten la cuota."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "La viudedad también se causa en cada sistema si se cumplen las carencias (totalizando si es preciso) y se prorratea."
+    },
+    {
+      "id": "q14",
+      "question": "(Reserva) ¿Cómo afecta la incapacidad temporal de 1992 en Argentina?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No cuenta para nada."
+        },
+        {
+          "id": "b",
+          "text": "Cuenta como periodo de seguro si la legislación argentina lo reconoce así (como dice el texto).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Resta tiempo."
+        },
+        {
+          "id": "d",
+          "text": "Solo si fue en España."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Se aceptan los periodos 'equivalentes' o asimilados certificados por el país competente."
+    },
+    {
+      "id": "q15",
+      "question": "(Reserva) ¿Cuál es la carencia específica para jubilación?",
+      "options": [
+        {
+          "id": "a",
+          "text": "2 años en toda la vida."
+        },
+        {
+          "id": "b",
+          "text": "2 años dentro de los 15 inmediatamente anteriores al hecho causante.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "5 años en los últimos 10."
+        },
+        {
+          "id": "d",
+          "text": "1 año."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art 205 LGSS. Carencia específica."
+    }
+  ]
+}

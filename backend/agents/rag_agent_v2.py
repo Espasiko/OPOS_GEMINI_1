@@ -11,6 +11,7 @@ from datetime import datetime
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 import time
+import cohere
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,18 @@ class RAGAgentV2:
             self.model = SentenceTransformer(self.embedding_model)
         else:
             self.model = None
+            
+        # Initialize Cohere client for Reranking
+        self.co_key = os.getenv("COHERE_API_KEY")
+        if self.co_key:
+            try:
+                self.co = cohere.ClientV2(self.co_key)
+                logger.info("  Cohere Rerank initialized")
+            except Exception as e:
+                logger.error(f"  Failed to init Cohere: {e}")
+                self.co = None
+        else:
+            self.co = None
         
         logger.info("✅ RAG Agent V2 initialized successfully")
     
@@ -131,14 +144,37 @@ class RAGAgentV2:
             # 4. Filtrar por min_score
             search_results = [r for r in search_results if r.score >= min_score]
             
-            # 5. Aplicar reranking jerárquico
+            # 5. Aplicar reranking jerárquico inicial (Nivel de Ley)
             if apply_reranking and not layer_filter:
                 search_results = sorted(search_results, key=lambda x: (
                     -x.payload.get('nivel_jerarquia', 999),  # Menor = mayor prioridad
                     -x.score
                 ))
             
-            # 6. Tomar top_k después de reranking
+            # 6. Aplicar COHERE RERANK (Si está disponible)
+            if apply_reranking and self.co:
+                try:
+                    logger.info("  Applying Cohere Rerank...")
+                    documents_to_rerank = [r.payload.get("text", "") for r in search_results]
+                    if documents_to_rerank:
+                        rerank_response = self.co.rerank(
+                            model="rerank-v3.5",
+                            query=query,
+                            documents=documents_to_rerank,
+                            top_n=top_k
+                        )
+                        # Reordenar resultados basados en el índice devuelto por cohere
+                        new_results = []
+                        for result in rerank_response.results:
+                            idx = result.index
+                            orig_r = search_results[idx]
+                            orig_r.score = result.relevance_score # Actualizar score
+                            new_results.append(orig_r)
+                        search_results = new_results
+                except Exception as e:
+                    logger.error(f"  Cohere Rerank error: {e}")
+            
+            # 7. Tomar top_k después de reranking
             search_results = search_results[:top_k]
             
             # 7. Formatear resultados

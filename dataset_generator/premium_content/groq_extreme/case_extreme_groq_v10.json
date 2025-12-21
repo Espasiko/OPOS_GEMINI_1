@@ -1,0 +1,426 @@
+{
+  "questions": [
+    {
+      "correct_option_id": "b",
+      "explanation": "Un accidente de trabajo 'in itinere' se produce cuando el trabajador se dirige o regresa del lugar de trabajo.",
+      "id": "1",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un accidente que ocurre en el lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Un accidente que ocurre mientras el trabajador se dirige o regresa del lugar de trabajo",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Un accidente que ocurre durante una misión encomendada por la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un accidente que ocurre en un lugar diferente al habitual",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es un accidente de trabajo 'in itinere'?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "Un accidente de trabajo 'en misión' se produce cuando el trabajador está realizando una tarea específica encomendada por la empresa en un lugar diferente al habitual.",
+      "id": "2",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un accidente que ocurre en el lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Un accidente que ocurre mientras el trabajador se dirige o regresa del lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Un accidente que ocurre durante una misión encomendada por la empresa",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Un accidente que ocurre en un lugar diferente al habitual",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es un accidente de trabajo 'en misión'?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La diferencia entre un accidente 'in itinere' y un accidente 'en misión' radica en que el primero ocurre mientras el trabajador se dirige o regresa del lugar de trabajo, mientras que el segundo ocurre durante una misión encomendada por la empresa.",
+      "id": "3",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un accidente 'in itinere' ocurre en el lugar de trabajo, mientras que un accidente 'en misión' ocurre en un lugar diferente",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Un accidente 'in itinere' ocurre mientras el trabajador se dirige o regresa del lugar de trabajo, mientras que un accidente 'en misión' ocurre durante una misión encomendada por la empresa",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Un accidente 'in itinere' ocurre durante una misión encomendada por la empresa, mientras que un accidente 'en misión' ocurre en el lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un accidente 'in itinere' y un accidente 'en misión' son lo mismo",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es la diferencia entre un accidente 'in itinere' y un accidente 'en misión'?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La jurisprudencia reciente que se aplica en este caso es la que establece que un accidente de trabajo 'in itinere' se produce cuando el trabajador se dirige o regresa del lugar de trabajo.",
+      "id": "4",
+      "options": [
+        {
+          "id": "a",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'in itinere' se produce cuando el trabajador se dirige o regresa del lugar de trabajo",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'en misión' se produce cuando el trabajador está realizando una tarea específica encomendada por la empresa en un lugar diferente al habitual",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'in itinere' y un accidente 'en misión' son lo mismo",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'in itinere' ocurre en el lugar de trabajo",
+          "true": false
+        }
+      ],
+      "question": "¿Qué jurisprudencia reciente se aplica en este caso?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Las circunstancias específicas del caso que deben ser analizadas para determinar la naturaleza del accidente son la hora y el lugar del accidente, la tarea que el trabajador estaba realizando en el momento del accidente y la distancia entre el lugar de trabajo y el lugar del accidente.",
+      "id": "5",
+      "options": [
+        {
+          "id": "a",
+          "text": "La hora y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La tarea que el trabajador estaba realizando en el momento del accidente",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La distancia entre el lugar de trabajo y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "La velocidad a la que el trabajador se dirigía al lugar del accidente",
+          "true": false
+        }
+      ],
+      "question": "¿Qué circunstancias específicas del caso deben ser analizadas para determinar la naturaleza del accidente?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La calificación del accidente como 'in itinere' o 'en misión' puede tener consecuencias legales, como afectar la responsabilidad de la empresa y la indemnización del trabajador.",
+      "id": "6",
+      "options": [
+        {
+          "id": "a",
+          "text": "La calificación del accidente como 'in itinere' o 'en misión' no tiene consecuencias legales",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La calificación del accidente como 'in itinere' o 'en misión' puede afectar la responsabilidad de la empresa",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La calificación del accidente como 'in itinere' o 'en misión' puede afectar la indemnización del trabajador",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "La calificación del accidente como 'in itinere' o 'en misión' no puede afectar la relación laboral",
+          "true": false
+        }
+      ],
+      "question": "¿Qué consecuencias legales puede tener la calificación del accidente como 'in itinere' o 'en misión'?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Las pruebas que deben ser presentadas para demostrar que el accidente fue 'in itinere' son pruebas de la hora y el lugar del accidente, pruebas de la tarea que el trabajador estaba realizando en el momento del accidente y pruebas de la distancia entre el lugar de trabajo y el lugar del accidente.",
+      "id": "7",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pruebas de la hora y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Pruebas de la tarea que el trabajador estaba realizando en el momento del accidente",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Pruebas de la distancia entre el lugar de trabajo y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Pruebas de la velocidad a la que el trabajador se dirigía al lugar del accidente",
+          "true": false
+        }
+      ],
+      "question": "¿Qué pruebas deben ser presentadas para demostrar que el accidente fue 'in itinere'?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Las pruebas que deben ser presentadas para demostrar que el accidente fue 'en misión' son pruebas de la tarea que el trabajador estaba realizando en el momento del accidente, pruebas de la distancia entre el lugar de trabajo y el lugar del accidente y pruebas de la hora y el lugar del accidente.",
+      "id": "8",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pruebas de la tarea que el trabajador estaba realizando en el momento del accidente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Pruebas de la distancia entre el lugar de trabajo y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Pruebas de la hora y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Pruebas de la velocidad a la que el trabajador se dirigía al lugar del accidente",
+          "true": false
+        }
+      ],
+      "question": "¿Qué pruebas deben ser presentadas para demostrar que el accidente fue 'en misión'?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La 'misión' en el contexto de un accidente de trabajo se refiere a una tarea específica encomendada por la empresa.",
+      "id": "9",
+      "options": [
+        {
+          "id": "a",
+          "text": "Una tarea específica encomendada por la empresa",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Un lugar de trabajo diferente al habitual",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Una tarea que el trabajador realiza por su propia cuenta",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un accidente que ocurre en el lugar de trabajo",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es la 'misión' en el contexto de un accidente de trabajo?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "El 'in itinere' en el contexto de un accidente de trabajo se refiere a un accidente que ocurre mientras el trabajador se dirige o regresa del lugar de trabajo.",
+      "id": "10",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un accidente que ocurre en el lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Un accidente que ocurre mientras el trabajador se dirige o regresa del lugar de trabajo",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Un accidente que ocurre durante una misión encomendada por la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un accidente que ocurre en un lugar diferente al habitual",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es el 'in itinere' en el contexto de un accidente de trabajo?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El accidente 'in itinere' es más común en el contexto laboral.",
+      "id": "11",
+      "options": [
+        {
+          "id": "a",
+          "text": "Accidente 'in itinere'",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Accidente 'en misión'",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Accidente en el lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Accidente en un lugar diferente al habitual",
+          "true": false
+        }
+      ],
+      "question": "¿Qué tipo de accidente es más común en el contexto laboral?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El accidente 'in itinere' tiene más consecuencias legales.",
+      "id": "12",
+      "options": [
+        {
+          "id": "a",
+          "text": "Accidente 'in itinere'",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Accidente 'en misión'",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Accidente en el lugar de trabajo",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Accidente en un lugar diferente al habitual",
+          "true": false
+        }
+      ],
+      "question": "¿Qué tipo de accidente tiene más consecuencias legales?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La jurisprudencia reciente en materia de accidentes de trabajo establece que un accidente de trabajo 'in itinere' se produce cuando el trabajador se dirige o regresa del lugar de trabajo.",
+      "id": "13",
+      "options": [
+        {
+          "id": "a",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'in itinere' se produce cuando el trabajador se dirige o regresa del lugar de trabajo",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'en misión' se produce cuando el trabajador está realizando una tarea específica encomendada por la empresa en un lugar diferente al habitual",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'in itinere' y un accidente 'en misión' son lo mismo",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La jurisprudencia que establece que un accidente de trabajo 'in itinere' ocurre en el lugar de trabajo",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es la jurisprudencia reciente en materia de accidentes de trabajo?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Las pruebas necesarias para demostrar que un accidente fue 'in itinere' son pruebas de la hora y el lugar del accidente, pruebas de la tarea que el trabajador estaba realizando en el momento del accidente y pruebas de la distancia entre el lugar de trabajo y el lugar del accidente.",
+      "id": "14",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pruebas de la hora y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Pruebas de la tarea que el trabajador estaba realizando en el momento del accidente",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Pruebas de la distancia entre el lugar de trabajo y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Pruebas de la velocidad a la que el trabajador se dirigía al lugar del accidente",
+          "true": false
+        }
+      ],
+      "question": "¿Qué tipo de pruebas son necesarias para demostrar que un accidente fue 'in itinere'?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Las pruebas necesarias para demostrar que un accidente fue 'en misión' son pruebas de la tarea que el trabajador estaba realizando en el momento del accidente, pruebas de la distancia entre el lugar de trabajo y el lugar del accidente y pruebas de la hora y el lugar del accidente.",
+      "id": "15",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pruebas de la tarea que el trabajador estaba realizando en el momento del accidente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Pruebas de la distancia entre el lugar de trabajo y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Pruebas de la hora y el lugar del accidente",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Pruebas de la velocidad a la que el trabajador se dirigía al lugar del accidente",
+          "true": false
+        }
+      ],
+      "question": "¿Qué tipo de pruebas son necesarias para demostrar que un accidente fue 'en misión'?"
+    }
+  ],
+  "scenario": "En el caso de 'Gómez vs. Empresa XYZ', el demandante, un trabajador de mantenimiento, sufrió un accidente de tráfico mientras se dirigía a una reunión de trabajo en una sucursal de la empresa ubicada en otra ciudad. El trabajador había sido enviado por su jefe para discutir un proyecto importante con el equipo de la sucursal. El accidente ocurrió cuando el trabajador se detuvo en un semáforo y otro vehículo chocó contra su coche por detrás. El trabajador sufrió lesiones graves y presentó una demanda contra la empresa para que se reconociera el accidente como un accidente de trabajo 'in itinere'. La empresa se opuso argumentando que el trabajador estaba en 'misión' y que, por lo tanto, el accidente no era considerado 'in itinere'. El tribunal debe decidir si el accidente debe ser considerado como 'in itinere' o 'en misión' y si la empresa es responsable de las lesiones sufridas por el trabajador. La jurisprudencia reciente establece que un accidente de trabajo 'in itinere' se produce cuando el trabajador se dirige o regresa del lugar de trabajo, mientras que un accidente 'en misión' se produce cuando el trabajador está realizando una tarea específica encomendada por la empresa en un lugar diferente al habitual. Sin embargo, la línea que separa ambos conceptos es difusa y ha generado numerous controversias en la práctica. El tribunal debe analizar las circunstancias específicas del caso y aplicar la jurisprudencia reciente para determinar la naturaleza del accidente.",
+  "topic": "Accidente de Trabajo in Itinere vs En Misión: Jurisprudencia Reciente"
+}

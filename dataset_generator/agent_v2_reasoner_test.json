@@ -1,0 +1,24 @@
+[
+  {
+    "id": "reta_001",
+    "pregunta": "Según el artículo 314 de la Ley General de la Seguridad Social, ¿cuál es el alcance de la acción protectora del Régimen Especial de Trabajadores Autónomos (RETA)?",
+    "tipo": "test",
+    "opciones": [
+      "Incluye todas las prestaciones del artículo 42, incluida la protección por desempleo.",
+      "Comprende la acción protectora del artículo 42, con excepción de la protección por desempleo y las prestaciones no contributivas.",
+      "Se limita a las prestaciones de jubilación e incapacidad permanente.",
+      "Incluye únicamente la protección por cese de actividad."
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "El artículo 314 LGSS establece expresamente que 'La acción protectora de este régimen especial será la establecida en el artículo 42, con excepción de la protección por desempleo y las prestaciones no contributivas'. Esta redacción es similar a la del régimen general (art. 155) pero con la salvedad de que en el RETA se excluye la protección por desempleo, mientras que en el régimen general se excluye la protección por cese de actividad.",
+    "referencia_legal": "Artículo 314 de la Ley General de la Seguridad Social (LGSS)"
+  },
+  {
+    "id": "reta_002",
+    "pregunta": "Enumere los requisitos que, conforme al artículo 330 de la Ley General de la Seguridad Social, deben concurrir para el nacimiento del derecho a la protección por cese de actividad de los trabajadores autónomos.",
+    "tipo": "desarrollo",
+    "respuesta_correcta": "De acuerdo con el artículo 330.1 LGSS, los requisitos son: a) Estar afiliado y en alta en el Régimen Especial de Trabajadores por Cuenta Propia o Autónomos o en el Régimen Especial de los Trabajadores del Mar, en su caso; b) Tener cubierto el período mínimo de cotización por cese de actividad a que se refiere el artículo 338; c) Encontrarse en situación legal de cese de actividad, suscribir el compromiso de actividad al que se refiere el artículo 300 y acreditar activa disponibilidad para la reincorporación al mercado de trabajo a través de las actividades formativas, de orientación profesional y de promoción de la actividad emprendedora a las que pueda convocarle el servicio público de empleo competente.",
+    "explicacion": "El artículo 330 LGSS regula los requisitos sustantivos para acceder a la prestación por cese de actividad en el RETA. Estos requisitos combinan condiciones formales (afiliación y alta), un período mínimo de cotización específico (regulado en el art. 338) y condiciones actitudinales (compromiso de actividad y disponibilidad para la reinserción laboral). La redacción ha sido modificada por el Real Decreto-ley 13/2022, que adapta la terminología a 'personas trabajadoras por cuenta propia o autónomas'.",
+    "referencia_legal": "Artículo 330 de la Ley General de la Seguridad Social (LGSS)"
+  }
+]

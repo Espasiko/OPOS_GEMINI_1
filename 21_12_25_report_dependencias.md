@@ -1,0 +1,275 @@
+# Reporte de Dependencias y Librerías (21_12_25)
+
+## 1. Entornos Virtuales Detectados 🐍
+Se ha realizado un escaneo profundo de la estructura del proyecto y se ha confirmado la existencia de **un único entorno virtual principal**:
+
+*   **Ruta:** `/home/spas/OPOS_GEMINI_1/.venv`
+*   **Estado:** Activo y en uso por los scripts de generación.
+
+*(Nota: Si existían otros venvs en `basura/`, han sido eliminados).*
+
+---
+
+## 2. Librerías Instaladas (pip freeze) 📦
+Estas son las librerías que **realmente están presentes** en el entorno `.venv`. Si un script falla por "ImportError" y la librería está aquí, es un problema de ruta (PYTHONPATH). Si NO está aquí, hay que instalarla.
+
+```text
+Package                                  Version
+---------------------------------------- ---------------
+aiofiles                                 24.1.0
+annotated-doc                            0.0.4
+annotated-types                          0.7.0
+antlr4-python3-runtime                   4.9.3
+anyio                                    4.12.0
+attrs                                    25.4.0
+beautifulsoup4                           4.12.0
+boto3                                    1.42.14
+botocore                                 1.42.14
+cached-property                          2.0.1
+cachetools                               6.2.3
+certifi                                  2025.11.12
+cffi                                     2.0.0
+charset-normalizer                       3.4.4
+chevron                                  0.14.0
+click                                    8.3.1
+cloudpickle                              3.1.2
+cohere                                   5.11.0
+coverage                                 7.13.0
+cryptography                             46.0.3
+dill                                     0.4.0
+distro                                   1.9.0
+dnspython                                2.8.0
+docker                                   7.1.0
+ecdsa                                    0.19.1
+email-validator                          2.3.0
+eval_type_backport                       0.3.1
+fastapi                                  0.115.0
+fastavro                                 1.12.1
+filelock                                 3.20.0
+frozendict                               2.4.7
+fsspec                                   2025.12.0
+genanki                                  0.13.0
+google-ai-generativelanguage             0.6.9
+google-api-core                          2.28.1
+google-api-python-client                 2.187.0
+google-auth                              2.43.0
+google-auth-httplib2                     0.2.1
+google-generativeai                      0.8.0
+google-pasta                             0.2.0
+googleapis-common-protos                 1.72.0
+graphene                                 3.4.3
+graphql-core                             3.2.7
+graphql-relay                            3.2.0
+groq                                     1.0.0
+grpcio                                   1.76.0
+grpcio-status                            1.71.2
+grpcio-tools                             1.71.2
+h11                                      0.16.0
+h2                                       4.3.0
+hf-xet                                   1.2.0
+hpack                                    4.1.0
+httpcore                                 1.0.9
+httplib2                                 0.31.0
+httptools                                0.7.1
+httpx                                    0.28.1
+httpx-sse                                0.4.0
+huggingface-hub                          0.36.0
+hyperframe                               6.1.0
+idna                                     3.11
+importlib-metadata                       6.11.0
+iniconfig                                2.3.0
+invoke                                   2.2.1
+Jinja2                                   3.1.6
+jmespath                                 1.0.1
+joblib                                   1.5.2
+jsonschema                               4.25.1
+jsonschema-specifications                2025.9.1
+lxml                                     5.3.0
+markdown-it-py                           4.0.0
+MarkupSafe                               3.0.3
+mdurl                                    0.1.2
+mistralai                                1.10.0
+mock                                     4.0.3
+mpmath                                   1.3.0
+multiprocess                             0.70.18
+networkx                                 3.6.1
+numpy                                    2.3.5
+nvidia-cublas-cu12                       12.8.4.1
+nvidia-cuda-cupti-cu12                   12.8.90
+nvidia-cuda-nvrtc-cu12                   12.8.93
+nvidia-cuda-runtime-cu12                 12.8.90
+nvidia-cudnn-cu12                        9.10.2.21
+nvidia-cufft-cu12                        11.3.3.83
+nvidia-cufile-cu12                       1.13.1.3
+nvidia-curand-cu12                       10.3.9.90
+nvidia-cusolver-cu12                     11.7.3.90
+nvidia-cusparse-cu12                     12.5.8.93
+nvidia-cusparselt-cu12                   0.7.1
+nvidia-nccl-cu12                         2.27.5
+nvidia-nvjitlink-cu12                    12.8.93
+nvidia-nvshmem-cu12                      3.3.20
+nvidia-nvtx-cu12                         12.8.90
+ollama                                   0.4.0
+omegaconf                                2.3.0
+opentelemetry-api                        1.38.0
+opentelemetry-exporter-otlp-proto-common 1.38.0
+opentelemetry-exporter-otlp-proto-http   1.38.0
+opentelemetry-proto                      1.38.0
+opentelemetry-sdk                        1.38.0
+opentelemetry-semantic-conventions       0.59b0
+outcome                                  1.3.0.post0
+packaging                                24.2
+pandas                                   2.3.3
+parameterized                            0.9.0
+pathos                                   0.3.4
+pdf2image                                1.17.0
+pdfminer.six                             20251107
+pdfplumber                               0.11.8
+pillow                                   12.0.0
+pip                                      25.3
+platformdirs                             4.5.1
+pluggy                                   1.6.0
+portalocker                              2.10.1
+pox                                      0.3.6
+ppft                                     1.7.7
+prometheus_client                        0.21.0
+proto-plus                               1.26.1
+protobuf                                 5.29.5
+psutil                                   7.1.3
+psycopg2-binary                          2.9.9
+pyasn1                                   0.6.1
+pyasn1_modules                           0.4.2
+pycparser                                2.23
+pydantic                                 2.12.5
+pydantic_core                            2.41.5
+pydantic-settings                        2.6.0
+Pygments                                 2.19.2
+pyparsing                                3.2.5
+pypdf                                    5.1.0
+PyPDF2                                   3.0.1
+pypdfium2                                5.2.0
+PySocks                                  1.7.1
+pytesseract                              0.3.13
+pytest                                   8.3.0
+pytest-asyncio                           0.23.5
+pytest-cov                               6.0.0
+python-dateutil                          2.9.0.post0
+python-docx                              1.1.2
+python-dotenv                            1.0.0
+python-jose                              3.3.0
+python-multipart                         0.0.9
+pytz                                     2025.2
+PyYAML                                   6.0.3
+qdrant-client                            1.12.0
+referencing                              0.37.0
+regex                                    2025.11.3
+requests                                 2.31.0
+rich                                     14.2.0
+rpds-py                                  0.30.0
+rsa                                      4.9.1
+s3transfer                               0.16.0
+safetensors                              0.7.0
+sagemaker                                2.255.0
+sagemaker-core                           1.0.72
+schema                                   0.7.8
+scikit-learn                             1.7.2
+scipy                                    1.16.3
+selenium                                 4.39.0
+sentence-transformers                    3.3.0
+setuptools                               80.9.0
+six                                      1.17.0
+smdebug-rulesconfig                      1.0.1
+sniffio                                  1.3.1
+sortedcontainers                         2.4.0
+soupsieve                                2.8
+starlette                                0.38.6
+sympy                                    1.14.0
+tblib                                    3.2.2
+threadpoolctl                            3.6.0
+tokenizers                               0.22.1
+torch                                    2.9.1
+tqdm                                     4.66.0
+transformers                             4.57.3
+trio                                     0.32.0
+trio-websocket                           0.12.2
+triton                                   3.5.1
+types-requests                           2.32.4.20250913
+typing_extensions                        4.15.0
+typing-inspection                        0.4.2
+tzdata                                   2025.2
+uritemplate                              4.2.0
+urllib3                                  2.6.1
+uvicorn                                  0.32.0
+uvloop                                   0.22.1
+watchfiles                               1.1.1
+webdriver-manager                        4.0.2
+websocket-client                         1.9.0
+websockets                               15.0.1
+wsproto                                  1.3.2
+xmltodict                                0.13.0
+zipp                                     3.23.0
+
+```
+
+---
+
+## 3. Dependencias Declaradas (Requirements) 📝
+Comparativa con lo que los diferentes módulos dicen necesitar:
+
+
+### 📄 ./backend/requirements.txt
+```text
+# FastAPI & Web Framework
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.0
+pydantic-settings==2.6.0
+
+# Vector Database
+qdrant-client==1.12.0
+
+# Embeddings & LLM
+sentence-transformers==3.3.0
+ollama==0.4.0
+
+# Gemini & AI Providers
+google-generativeai==0.8.0
+
+# Text Processing & RAG
+# langchain==0.3.0  # REMOVED: Not used in project (saves ~2GB)
+# langchain-community==0.3.0  # REMOVED: Not used in project 
+beautifulsoup4==4.12.0
+... (truncated)
+```
+
+### 📄 ./dataset_generator/requirements.txt
+```text
+# Core dependencies
+groq>=0.4.0
+anthropic>=0.18.0
+qdrant-client>=1.7.0
+python-dotenv>=1.0.0
+
+# PDF processing
+PyPDF2>=3.0.0
+pdfplumber>=0.10.0
+
+# Text processing
+langchain>=0.1.0
+tiktoken>=0.5.0
+
+# Utilities
+tqdm>=4.66.0
+rich>=13.7.0
+
+```
+
+
+## 4. Diagnóstico de "Scripts Rotos" 🔧
+Analizando los fallos reportados anteriormente (`BROKEN_IMPORTS`):
+
+*   **pytesseract / pdf2image**: Busca 'pytesseract' en la lista de arriba. Si no sale, hay que hacer `pip install pytesseract pdf2image`.
+*   **mistralai**: Busca 'mistralai'. Es crítica para los scripts `v2`.
+*   **dotenv**: Busca 'python-dotenv'.
+
+Este reporte sirve como base para "revivir" los scripts antiguos instalando lo que falta.

@@ -1,0 +1,14 @@
+**1. Valor del SMI encontrado (vigente hasta agosto 2025)**  
+- **SMI 2025:** **1 184 €** brutos al mes en 14 pagas (equivalente a 16 576 € anuales).  
+- Fuente(s) consultadas: varios comunicados oficiales y artículos de prensa (BOE, SEPE, Bankinter, Audiolis) que confirman que el Gobierno acordó una subida del 4,4 % para 2025, fijando el SMI en 1 184 € mensuales.
+
+**2. Breve escenario práctico (cálculo del 75 % del SMI)**  
+
+El subsidio para mayores de 52 años se establece en el **75 % del SMI**. Con el SMI de 1 184 €, el importe mensual del subsidio sería:
+
+\[
+0,75 \times 1 184 € = **888 €** \text{ al mes}
+\]
+
+*Escenario:*  
+María, de 54 años, se encuentra desempleada y solicita el subsidio para mayores de 52 años. Al aplicar la normativa vigente en 2025, su ayuda mensual asciende a **888 €**. Este ingreso complementa sus ahorros y le permite cubrir gastos básicos (alquiler, alimentación y servicios) mientras busca una nueva colocación laboral, garantizando un nivel mínimo de vida acorde con el SMI de la época.

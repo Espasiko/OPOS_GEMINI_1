@@ -1,0 +1,186 @@
+{
+  "topic": "Incapacidad Permanente: Revisión por mejoría y efectos en compatibilidad laboral",
+  "scenario": "Un trabajador ha sido declarado en situación de incapacidad permanente total para su profesión habitual debido a una lesión grave. Tras dos años, el Instituto Nacional de la Seguridad Social (INSS) inicia un procedimiento de revisión por mejoría, considerando que el trabajador podría reincorporarse a su puesto de trabajo. Durante este proceso, el trabajador empieza a ejercer un empleo por cuenta propia en un ámbito distinto al de su profesión habitual.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Cuál es el plazo máximo de reserva del puesto de trabajo tras una declaración de incapacidad permanente que se prevé revisable por mejoría?",
+      "options": [
+        "A) 1 año",
+        "B) 2 años",
+        "C) 3 años",
+        "D) 5 años"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El plazo máximo de reserva del puesto de trabajo es de 2 años desde la fecha de la resolución que declara la incapacidad permanente, según lo establecido en la normativa."
+    },
+    {
+      "id": "q2",
+      "question": "¿Qué organismo es competente para declarar la situación de incapacidad permanente y su revisión?",
+      "options": [
+        "A) Servicio Público de Salud",
+        "B) Instituto Nacional de la Seguridad Social (INSS)",
+        "C) Mutua colaboradora con la Seguridad Social",
+        "D) Ministerio de Trabajo y Economía Social"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El Instituto Nacional de la Seguridad Social (INSS) es el organismo competente para declarar la situación de incapacidad permanente y su revisión."
+    },
+    {
+      "id": "q3",
+      "question": "¿Qué ocurre si el trabajador, declarado en incapacidad permanente, empieza a trabajar por cuenta propia durante el periodo de reserva del puesto de trabajo?",
+      "options": [
+        "A) Pierde automáticamente la prestación por incapacidad.",
+        "B) El INSS puede promover la revisión de la incapacidad.",
+        "C) Debe comunicarlo a la empresa en un plazo de 15 días.",
+        "D) No tiene ninguna consecuencia legal."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Si el trabajador empieza a ejercer cualquier trabajo, el INSS puede promover la revisión de la incapacidad, independientemente de que haya transcurrido el plazo señalado en la resolución."
+    },
+    {
+      "id": "q4",
+      "question": "¿Qué plazo debe constar en la resolución de incapacidad permanente para solicitar una revisión por mejoría?",
+      "options": [
+        "A) 6 meses",
+        "B) 1 año",
+        "C) El plazo que determine el INSS",
+        "D) No hay plazo específico"
+      ],
+      "correct_option_id": "C",
+      "explanation": "La resolución debe hacer constar el plazo a partir del cual se podrá instar la revisión por mejoría, siendo este plazo vinculante para todos los sujetos que puedan promover la revisión."
+    },
+    {
+      "id": "q5",
+      "question": "¿Qué sucede si el trabajador no se reincorpora al puesto de trabajo tras la revisión que determina su mejoría?",
+      "options": [
+        "A) Pierde el derecho a cualquier prestación.",
+        "B) Se le concede un nuevo plazo de 30 días.",
+        "C) Se extingue la relación laboral.",
+        "D) Debe pagar una indemnización a la empresa."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Si el trabajador no se reincorpora tras la revisión que determina su mejoría, se puede considerar la extinción de la relación laboral."
+    },
+    {
+      "id": "q6",
+      "question": "¿Puede el trabajador solicitar una revisión de su incapacidad permanente por mejoría antes del plazo establecido en la resolución?",
+      "options": [
+        "A) Sí, en cualquier momento.",
+        "B) No, debe esperar al plazo establecido.",
+        "C) Solo si hay error de diagnóstico.",
+        "D) Solo si cumple 60 años."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Las revisiones fundadas en error de diagnóstico pueden llevarse a cabo en cualquier momento."
+    },
+    {
+      "id": "q7",
+      "question": "¿Qué ocurre si el INSS no realiza la revisión de la incapacidad en el plazo establecido?",
+      "options": [
+        "A) El trabajador pierde la prestación.",
+        "B) El plazo se prorroga automáticamente.",
+        "C) El trabajador puede reclamar ante los tribunales.",
+        "D) No tiene consecuencias legales."
+      ],
+      "correct_option_id": "D",
+      "explanation": "La normativa no especifica consecuencias directas si el INSS no realiza la revisión en el plazo establecido."
+    },
+    {
+      "id": "q8",
+      "question": "¿Qué tipo de incapacidad permite al trabajador reincorporarse a su puesto de trabajo si hay mejoría?",
+      "options": [
+        "A) Solo la incapacidad permanente parcial.",
+        "B) Incapacidad permanente total, absoluta o gran invalidez.",
+        "C) Solo la incapacidad temporal.",
+        "D) Ninguna incapacidad permanente."
+      ],
+      "correct_option_id": "B",
+      "explanation": "La revisión por mejoría que permite la reincorporación aplica a la incapacidad permanente total, absoluta o gran invalidez."
+    },
+    {
+      "id": "q9",
+      "question": "¿Qué plazo tiene el trabajador para reincorporarse al puesto de trabajo tras la revisión que determina su mejoría?",
+      "options": [
+        "A) 15 días naturales",
+        "B) 30 días naturales",
+        "C) 60 días naturales",
+        "D) No hay plazo específico"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El trabajador debe reincorporarse en el plazo máximo de 30 días naturales tras la revisión que determine su mejoría."
+    },
+    {
+      "id": "q10",
+      "question": "¿Qué entidad gestiona la reserva del puesto de trabajo durante la incapacidad permanente revisable?",
+      "options": [
+        "A) La empresa del trabajador",
+        "B) El INSS",
+        "C) La mutua colaboradora",
+        "D) El Servicio Público de Empleo Estatal"
+      ],
+      "correct_option_id": "A",
+      "explanation": "La reserva del puesto de trabajo es responsabilidad de la empresa del trabajador durante el periodo de incapacidad permanente revisable."
+    },
+    {
+      "id": "q11",
+      "question": "¿Qué ocurre si el trabajador no cumple con el plazo de reincorporación tras la revisión por mejoría?",
+      "options": [
+        "A) Se le concede un nuevo plazo de 15 días.",
+        "B) Se extingue la relación laboral.",
+        "C) Pierde el derecho a la prestación por 6 meses.",
+        "D) Debe pagar una multa."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Si el trabajador no cumple con el plazo de reincorporación, puede extinguirse la relación laboral."
+    },
+    {
+      "id": "q12",
+      "question": "¿Puede el trabajador impugnar la decisión del INSS sobre la revisión de su incapacidad?",
+      "options": [
+        "A) No, es una decisión definitiva.",
+        "B) Sí, mediante recurso administrativo.",
+        "C) Solo si tiene más de 5 años de antigüedad.",
+        "D) Solo si la revisión fue solicitada por la empresa."
+      ],
+      "correct_option_id": "B",
+      "explanation": "El trabajador puede impugnar la decisión del INSS mediante recurso administrativo."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué requisitos debe cumplir el trabajador para que se le reserve el puesto de trabajo?",
+      "options": [
+        "A) Haber cotizado al menos 10 años.",
+        "B) Que la situación de incapacidad sea previsiblemente revisable por mejoría.",
+        "C) Que la empresa tenga más de 50 trabajadores.",
+        "D) Que el trabajador tenga menos de 55 años."
+      ],
+      "correct_option_id": "B",
+      "explanation": "La reserva del puesto de trabajo aplica cuando la situación de incapacidad es previsiblemente revisable por mejoría."
+    },
+    {
+      "id": "q14",
+      "question": "¿Qué sucede si el trabajador, tras la revisión, es declarado apto para su profesión habitual pero no para otra?",
+      "options": [
+        "A) Pierde la prestación de incapacidad.",
+        "B) Puede solicitar un cambio de puesto en la empresa.",
+        "C) Debe aceptar cualquier puesto ofrecido por la empresa.",
+        "D) Se le concede una incapacidad parcial."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Si el trabajador es declarado apto para su profesión habitual, puede solicitar un cambio de puesto en la empresa si no es apto para otro."
+    },
+    {
+      "id": "q15",
+      "question": "¿Qué plazo tiene el INSS para examinar al trabajador tras la extinción del subsidio por incapacidad temporal?",
+      "options": [
+        "A) 1 mes",
+        "B) 3 meses",
+        "C) 6 meses",
+        "D) 1 año"
+      ],
+      "correct_option_id": "B",
+      "explanation": "El INSS tiene un plazo máximo de 3 meses para examinar al trabajador tras la extinción del subsidio por incapacidad temporal."
+    }
+  ]
+}

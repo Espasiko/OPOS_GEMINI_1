@@ -1,0 +1,186 @@
+{
+  "topic": "Expatriados y Desplazados: Seguridad Social en Teletrabajo Internacional",
+  "scenario": "Juan es un ingeniero de software español contratado por una empresa con sede en Madrid. En 2023, su empresa le permite trabajar en remoto de forma permanente. Juan decide convertirse en nómada digital, viviendo en tres países durante el año: comienza en Colombia (3 meses), luego se muda a Tailandia (4 meses), y finalmente a Marruecos (5 meses). Durante su estancia en Marruecos, sufre un accidente mientras trabaja desde un café, resultando en una lesión grave. La empresa tiene subsidiarias en algunos de estos países, pero no en todos. Juan y la empresa no habían clarificado los aspectos de seguridad social antes de su movilidad, y no existen convenios bilaterales de seguridad social entre España y todos los países involucrados.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "En el contexto de seguridad social, ¿qué se entiende comúnmente por 'expatriado'?",
+      "options": [
+        "Persona que trabaja en el extranjero de forma temporal por su empleador",
+        "Persona que cambia de residencia permanente a otro país",
+        "Persona que trabaja en remoto desde otro país sin desplazamiento oficial",
+        "Persona desplazada por motivos personales sin relación laboral"
+      ],
+      "correct_option_id": "a",
+      "explanation": "En seguridad social, 'expatriado' se refiere típicamente a trabajadores desplazados temporalmente al extranjero por su empleador, lo que afecta la determinación de la legislación aplicable."
+    },
+    {
+      "id": "q2",
+      "question": "¿Qué reglamento de la Unión Europea coordina los sistemas de seguridad social para trabajadores desplazados dentro de la UE?",
+      "options": [
+        "Reglamento (CE) 883/2004",
+        "Reglamento (UE) 492/2011",
+        "Directiva 96/71/CE",
+        "Convenio de Seguridad Social de la OIT"
+      ],
+      "correct_option_id": "a",
+      "explanation": "El Reglamento (CE) 883/2004 establece las normas de coordinación de los sistemas de seguridad social en la UE para trabajadores desplazados, incluyendo aquellos en teletrabajo."
+    },
+    {
+      "id": "q3",
+      "question": "Según el escenario, ¿cuál es el principal problema de seguridad social que enfrenta Juan tras su accidente en Marruecos?",
+      "options": [
+        "Falta de claridad sobre la legislación de seguridad social aplicable para cobertura",
+        "Dificultad para comunicarse en idioma local",
+        "Altos costes médicos en Marruecos",
+        "Incapacidad de la empresa para pagar su salario"
+      ],
+      "correct_option_id": "a",
+      "explanation": "La movilidad internacional sin acuerdos previos crea incertidumbre sobre qué sistema de seguridad social cubre el accidente, especialmente en países sin convenios bilaterales con España."
+    },
+    {
+      "id": "q4",
+      "question": "Para teletrabajadores internacionales como Juan, ¿qué criterio se utiliza generalmente para determinar la legislación de seguridad social aplicable?",
+      "options": [
+        "Siempre el lugar de residencia del empleado",
+        "Siempre el lugar de establecimiento del empleador",
+        "Depende de factores como duración de estancia, convenios y naturaleza del trabajo",
+        "Ninguno, ya que el teletrabajo internacional no está regulado"
+      ],
+      "correct_option_id": "c",
+      "explanation": "La determinación varía según circunstancias específicas, incluyendo la duración del desplazamiento, acuerdos internacionales y si el trabajo es temporal o permanente."
+    },
+    {
+      "id": "q5",
+      "question": "Si Juan fuera un trabajador desplazado dentro de la Unión Europea, ¿qué documento necesitaría para acreditar su situación de seguridad social?",
+      "options": [
+        "Certificado A1",
+        "Contrato de trabajo modificado",
+        "Pasaporte de la UE",
+        "Visa de trabajo uniforme"
+      ],
+      "correct_option_id": "a",
+      "explanation": "El certificado A1, bajo el Reglamento (CE) 883/2004, prueba que el trabajador sigue sujeto a la seguridad social de su país de origen durante un desplazamiento temporal."
+    },
+    {
+      "id": "q6",
+      "question": "En caso de accidente laboral en el extranjero, como el de Juan en Marruecos, ¿qué cubre típicamente la seguridad social?",
+      "options": [
+        "Solo si ocurre en el país de origen del empleado",
+        "Siempre cubierto por la seguridad social del país donde ocurre el accidente",
+        "Depende de convenios bilaterales o multilaterales que puedan extender la cobertura",
+        "No cubierto, ya que el teletrabajo no se considera laboral en el extranjero"
+      ],
+      "correct_option_id": "c",
+      "explanation": "La cobertura depende de acuerdos internacionales; sin ellos, puede haber lagunas, pero algunos convenios permiten la extensión de prestaciones por accidente laboral."
+    },
+    {
+      "id": "q7",
+      "question": "¿Qué tipo de convenio internacional se utiliza comúnmente para evitar la doble cotización en seguridad social para trabajadores como Juan?",
+      "options": [
+        "Convenio de Viena sobre Relaciones Diplomáticas",
+        "Convenios bilaterales de seguridad social",
+        "Acuerdos de libre comercio como el TLC",
+        "Convenio de Ginebra sobre Refugiados"
+      ],
+      "correct_option_id": "b",
+      "explanation": "Los convenios bilaterales de seguridad social entre países establecen reglas para determinar la legislación aplicable y evitar la doble cotización."
+    },
+    {
+      "id": "q8",
+      "question": "¿Qué responsabilidad tiene la empresa de Juan en relación con la seguridad social durante su teletrabajo internacional?",
+      "options": [
+        "Ninguna, es responsabilidad exclusiva de Juan",
+        "Declarar el desplazamiento y asegurar que se cumplan las obligaciones de cotización según la legislación aplicable",
+        "Solo si hay una subsidiaria en el país de residencia",
+        "Pagar impuestos locales en cada país"
+      ],
+      "correct_option_id": "b",
+      "explanation": "El empleador debe identificar y cumplir con las obligaciones de seguridad social, incluyendo declaraciones y cotizaciones, basándose en la legislación determinada por factores como convenios y duración de estancia."
+    },
+    {
+      "id": "q9",
+      "question": "Si no hay un convenio bilateral de seguridad social entre España y Marruecos, ¿qué podría ocurrir con la cobertura de Juan?",
+      "options": [
+        "Juan automáticamente no tiene cobertura de seguridad social",
+        "Se aplica únicamente la legislación marroquí de seguridad social",
+        "Puede enfrentar doble cotización o lagunas en la cobertura",
+        "Siempre se aplica la legislación española, independientemente de la ubicación"
+      ],
+      "correct_option_id": "c",
+      "explanation": "Sin convenios, puede requerirse cotizar en ambos países o quedar brechas en la cobertura, complicando el acceso a prestaciones como por accidente laboral."
+    },
+    {
+      "id": "q10",
+      "question": "¿Cómo afecta el tiempo de estancia de Juan en cada país a sus obligaciones de seguridad social?",
+      "options": [
+        "No afecta, ya que trabaja para una empresa española",
+        "Determina si está obligado a cotizar en el sistema de seguridad social de ese país",
+        "Solo afecta para fines de impuestos sobre la renta",
+        "Depende exclusivamente de la voluntad de la empresa"
+      ],
+      "correct_option_id": "b",
+      "explanation": "Muchos países establecen umbrales de tiempo (por ejemplo, 6 meses) para considerar a un trabajador sujeto a su legislación de seguridad social, influyendo en las obligaciones de cotización."
+    },
+    {
+      "id": "q11",
+      "question": "En la Unión Europea, ¿qué es un certificado A1 en el contexto de seguridad social para desplazados?",
+      "options": [
+        "Un documento que prueba el empleo en el país de destino",
+        "Un certificado que acredita que el trabajador está sujeto a la seguridad social de su país de origen durante el desplazamiento",
+        "Un permiso de trabajo para extranjeros",
+        "Un seguro de salud privado obligatorio"
+      ],
+      "correct_option_id": "b",
+      "explanation": "El certificado A1, emitido bajo el Reglamento (CE) 883/2004, confirma que un trabajador desplazado temporalmente sigue cubierto por el sistema de seguridad social de su país de origen."
+    },
+    {
+      "id": "q12",
+      "question": "¿Qué pasos debería tomar Juan para reclamar prestaciones por accidente laboral en Marruecos, según el escenario?",
+      "options": [
+        "Contactar únicamente a la embajada española para asistencia",
+        "Reclamar directamente a la seguridad social marroquí sin más trámites",
+        "Notificar a su empresa y coordinar con autoridades españolas y marroquíes, considerando posibles convenios",
+        "Ignorar el incidente, ya que el teletrabajo no cubre accidentes en el extranjero"
+      ],
+      "correct_option_id": "c",
+      "explanation": "En casos internacionales complejos, se requiere notificación a la empresa y coordinación entre autoridades de ambos países, especialmente si hay convenios o procedimientos establecidos."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué rol juegan las subsidiarias de la empresa en la determinación de la seguridad social aplicable para Juan?",
+      "options": [
+        "No tienen ningún rol relevante",
+        "Pueden actuar como empleador local, lo que podría sujetar a Juan a la legislación de seguridad social del país donde opera la subsidiaria",
+        "Solo afectan los impuestos, no la seguridad social",
+        "Siempre asumen toda la responsabilidad de seguridad social, independientemente de la ubicación"
+      ],
+      "correct_option_id": "b",
+      "explanation": "La presencia de una subsidiaria puede implicar que Juan esté considerado como empleado local, sujetándolo a la legislación de seguridad social de ese país, según criterios como el control y la duración."
+    },
+    {
+      "id": "q14",
+      "question": "¿Qué consecuencias legales podría enfrentar la empresa de Juan si no cumple con las obligaciones de seguridad social durante su teletrabajo internacional?",
+      "options": [
+        "Ninguna, ya que es un caso de fuerza mayor",
+        "Multas y sanciones administrativas por incumplimiento",
+        "Responsabilidad civil por daños si Juan no recibe cobertura adecuada",
+        "Multas y sanciones, además de posible responsabilidad civil por daños"
+      ],
+      "correct_option_id": "d",
+      "explanation": "El incumplimiento puede resultar en multas de autoridades locales o de la UE, y en responsabilidad civil si Juan sufre perjuicios por falta de cobertura de seguridad social."
+    },
+    {
+      "id": "q15",
+      "question": "En un caso hipotético donde Juan trabajara desde un país no UE sin convenio de seguridad social con España, ¿dónde debería cotizar para seguridad social?",
+      "options": [
+        "Siempre en el país de residencia, sin excepciones",
+        "Siempre en España, por ser el país del empleador",
+        "Es un área gris que requiere asesoramiento legal específico, ya que depende de leyes nacionales y circunstancias",
+        "Debe cotizar en ambos países para estar seguro"
+      ],
+      "correct_option_id": "c",
+      "explanation": "Sin convenios, la determinación es compleja y depende de leyes nacionales, duración de estancia y naturaleza del trabajo, por lo que se recomienda asesoramiento legal para evitar riesgos."
+    }
+  ]
+}

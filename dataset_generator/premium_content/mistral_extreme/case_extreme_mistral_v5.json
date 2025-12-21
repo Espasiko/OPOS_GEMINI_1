@@ -1,0 +1,186 @@
+{
+  "topic": "Ingreso Mínimo Vital: Unidad de Convivencia Compleja y Rentas Exentas",
+  "scenario": "Una familia compuesta por dos adultos y tres menores vive en una situación económica precaria. Uno de los adultos es beneficiario de una pensión de invalidez del 67%, y el otro ha estado trabajando de forma esporádica. Además, tienen un hijo mayor de edad con discapacidad del 70% que reside con ellos. La familia ha solicitado el Ingreso Mínimo Vital y está evaluando qué ingresos deben declararse y cómo se configura su unidad de convivencia.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué miembros de la familia se consideran parte de la unidad de convivencia para el cálculo del Ingreso Mínimo Vital?",
+      "options": [
+        "A) Solo los dos adultos.",
+        "B) Los dos adultos y los tres menores.",
+        "C) Los dos adultos, los tres menores y el hijo mayor con discapacidad.",
+        "D) Solo los adultos y el hijo mayor con discapacidad."
+      ],
+      "correct_option_id": "C",
+      "explanation": "La unidad de convivencia incluye a todos los miembros que conviven en el mismo domicilio, incluyendo a los hijos mayores con discapacidad que dependan económicamente de los solicitantes."
+    },
+    {
+      "id": "q2",
+      "question": "¿Cómo se consideran las rentas del adulto que trabaja de forma esporádica en el cómputo de ingresos para el Ingreso Mínimo Vital?",
+      "options": [
+        "A) No se consideran si son inferiores al 75% del SMI.",
+        "B) Se consideran en su totalidad.",
+        "C) Solo se consideran si superan el límite de acumulación de recursos.",
+        "D) Se computan únicamente las rentas del último mes."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Todas las rentas, independientemente de su cuantía, deben ser consideradas en el cómputo anual para determinar la elegibilidad del Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q3",
+      "question": "¿Qué porcentaje de discapacidad debe tener un miembro de la unidad de convivencia para ser considerado en la evaluación de ingresos?",
+      "options": [
+        "A) 33%",
+        "B) 50%",
+        "C) 65%",
+        "D) 75%"
+      ],
+      "correct_option_id": "C",
+      "explanation": "Se considera que un miembro tiene una discapacidad relevante para estos efectos si esta es igual o superior al 65%."
+    },
+    {
+      "id": "q4",
+      "question": "¿Qué ingresos no se computan para el cálculo del Ingreso Mínimo Vital?",
+      "options": [
+        "A) Las rentas del trabajo esporádico.",
+        "B) Las asignaciones de la Seguridad Social por hijos a cargo.",
+        "C) Los ingresos por alquiler de propiedades.",
+        "D) Las pensiones de invalidez."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Las asignaciones de la Seguridad Social por hijos a cargo no se computan como ingresos para el cálculo del Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q5",
+      "question": "¿Cómo afecta la pensión de invalidez del 67% al cálculo del Ingreso Mínimo Vital?",
+      "options": [
+        "A) No afecta, ya que es una renta exenta.",
+        "B) Se computa en su totalidad.",
+        "C) Solo se computa el 50%.",
+        "D) Se descuenta del total de ingresos."
+      ],
+      "correct_option_id": "B",
+      "explanation": "La pensión de invalidez se considera como renta computable en su totalidad para el cálculo del Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q6",
+      "question": "¿Qué límite de ingresos anuales no debe superar la unidad de convivencia para ser elegible al Ingreso Mínimo Vital?",
+      "options": [
+        "A) El 75% del salario mínimo interprofesional.",
+        "B) La cuantía anual de la prestación del Ingreso Mínimo Vital.",
+        "C) El doble del salario mínimo interprofesional.",
+        "D) El límite de acumulación de recursos según el número de convivientes."
+      ],
+      "correct_option_id": "D",
+      "explanation": "El límite de ingresos anuales está determinado por el límite de acumulación de recursos, que depende del número de miembros en la unidad de convivencia."
+    },
+    {
+      "id": "q7",
+      "question": "¿Qué ocurre si la unidad de convivencia supera el límite de acumulación de recursos?",
+      "options": [
+        "A) Pierden automáticamente el derecho al Ingreso Mínimo Vital.",
+        "B) Pueden solicitar una reducción del 50%.",
+        "C) Se recalcula el importe a recibir.",
+        "D) Se les concede un plazo para ajustar sus ingresos."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Si la unidad de convivencia supera el límite de acumulación de recursos, no cumple con los requisitos para recibir el Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q8",
+      "question": "¿Cómo se calcula el límite de acumulación de recursos para una unidad de convivencia con descendientes o ascendientes en primer grado?",
+      "options": [
+        "A) Equivalente a la cuantía anual de la pensión.",
+        "B) Dos veces la cuantía anual de la pensión.",
+        "C) Dos veces y media la cuantía que resulte de aplicar el cálculo estándar.",
+        "D) Tres veces la cuantía anual de la pensión."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Cuando la convivencia incluye descendientes o ascendientes en primer grado, el límite de acumulación de recursos es dos veces y media la cuantía que resulte del cálculo estándar."
+    },
+    {
+      "id": "q9",
+      "question": "¿Qué se considera como unidad económica en el contexto del Ingreso Mínimo Vital?",
+      "options": [
+        "A) Solo los miembros que trabajan.",
+        "B) Todos los miembros que conviven en el domicilio unidos por matrimonio o parentesco hasta el segundo grado.",
+        "C) Solo los miembros menores de edad.",
+        "D) Solo los miembros con discapacidad."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Se considera unidad económica a todos los miembros que conviven en el mismo domicilio, unidos por matrimonio o parentesco de consanguinidad hasta el segundo grado."
+    },
+    {
+      "id": "q10",
+      "question": "¿Qué rentas no se consideran computables para el Ingreso Mínimo Vital?",
+      "options": [
+        "A) Rentas del trabajo.",
+        "B) Rentas de capital inmobiliario.",
+        "C) Rentas derivadas de actividades económicas.",
+        "D) Asignaciones periódicas por hijos a cargo."
+      ],
+      "correct_option_id": "D",
+      "explanation": "Las asignaciones periódicas por hijos a cargo no se consideran rentas computables para el cálculo del Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q11",
+      "question": "¿Qué ocurre si un miembro de la unidad de convivencia tiene ingresos superiores al 75% del SMI?",
+      "options": [
+        "A) No se considera a cargo.",
+        "B) Se reduce la cuantía del Ingreso Mínimo Vital.",
+        "C) Se excluye del cálculo de la unidad de convivencia.",
+        "D) Se le asigna un límite especial de ingresos."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Si un miembro de la unidad de convivencia tiene ingresos superiores al 75% del SMI, no se considera a cargo para el cálculo del Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q12",
+      "question": "¿Cómo se valoran los bienes inmuebles sin rendimientos efectivos en la unidad de convivencia?",
+      "options": [
+        "A) No se valoran.",
+        "B) Según las normas del IRPF, excluyendo la vivienda habitual.",
+        "C) Se valoran al 50% de su valor de mercado.",
+        "D) Se incluyen como ingresos fijos mensuales."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Los bienes inmuebles sin rendimientos efectivos se valoran según las normas establecidas para el Impuesto sobre la Renta de las Personas Físicas, excluyendo la vivienda habitual."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué requisitos deben cumplir los hijos mayores de 26 años para ser considerados dentro de la unidad de convivencia?",
+      "options": [
+        "A) Deben estar desempleados.",
+        "B) Deben tener una discapacidad igual o superior al 65%.",
+        "C) Deben estar estudiando.",
+        "D) Deben ser económicamente independientes."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Los hijos mayores de 26 años deben tener una discapacidad igual o superior al 65% para ser considerados dentro de la unidad de convivencia."
+    },
+    {
+      "id": "q14",
+      "question": "¿Qué sucede si la unidad de convivencia no cumple con el requisito de carencia de rentas?",
+      "options": [
+        "A) Pueden acceder a una ayuda reducida.",
+        "B) No pueden acceder al Ingreso Mínimo Vital.",
+        "C) Se les otorga un plazo para regularizar su situación.",
+        "D) Se les aplica una sanción económica."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Si la unidad de convivencia no cumple con el requisito de carencia de rentas, no puede acceder al Ingreso Mínimo Vital."
+    },
+    {
+      "id": "q15",
+      "question": "¿Qué tipo de ingresos se consideran para el cómputo de rentas en el Ingreso Mínimo Vital?",
+      "options": [
+        "A) Solo ingresos laborales.",
+        "B) Ingresos laborales, de capital y prestacionales.",
+        "C) Solo ingresos de actividades económicas.",
+        "D) Solo ingresos por alquileres."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Se consideran ingresos laborales, de capital y prestacionales para el cómputo de rentas en el Ingreso Mínimo Vital."
+    }
+  ]
+}

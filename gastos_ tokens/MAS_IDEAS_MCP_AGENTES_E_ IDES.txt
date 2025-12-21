@@ -1,0 +1,565 @@
+Más MCPs útiles para tus agentes (solo listado, sin añadir aún)
+
+Orquestación/equipo de agentes:
+mcp-use: https://github.com/mcp-use/mcp-use (pool de MCP y selección dinámica; integra con LangChain)
+LangChain MCP adapters: https://github.com/langchain-ai/langchain-mcp-adapters (conexión MCP↔LangChain/LangGraph)
+RAG (vector DB / pipelines):
+Qdrant oficial: https://github.com/qdrant/mcp-server-qdrant (env vars, memoria y búsqueda semántica)
+mcp-rag-server: https://github.com/kwanLeeFrmVi/mcp-rag-server (RAG con embeddings y almacenamiento local)
+apify RAG web browser: https://github.com/apify/mcp-server-rag-web-browser (crawl+RAG sobre web)
+Crawl4AI RAG: https://github.com/coleam00/mcp-crawl4ai-rag
+Chat con documentos (PDF/archivos):
+mcp-pdf-tools: https://github.com/hanweg/mcp-pdf-tools (merge, extract, etc.)
+pdf-reader-mcp: https://github.com/sylphxltd/pdf-reader-mcp (lectura múltiple, URLs/local, outputs estructurados)
+pdf-rag-mcp-server: https://github.com/hyson666/pdf-rag-mcp-server (UI + MCP para PDF RAG)
+filesystem server: https://www.npmjs.com/package/@modelcontextprotocol/server-filesystem (acceso a ficheros con raíces controladas)
+BOE / información legal España:
+boe-mcp: https://github.com/AnCode666/boe-mcp (BOE/BORME, legislación consolidada)
+BOE API (base): https://github.com/BOE-API/BOE_API (si quieres construir uno propio)
+Scraping y datos frescos (páginas oficiales):
+microsoft/playwright-mcp: https://github.com/microsoft/playwright-mcp (navegación avanzada)
+mcp-playwright-scraper: https://github.com/dennisgl/mcp-playwright-scraper (scrape a Markdown)
+fetcher-mcp: https://github.com/jae-jae/fetcher-mcp (Playwright headless fetch)
+mcp-smart-crawler: https://github.com/loo-y/mcp-smart-crawler (crawler + metadatos + descargas)
+Mapas mentales / esquemas:
+markmap-mcp-server: https://github.com/jinzcdev/markmap-mcp-server (Markdown → mind map interactivo)
+mcp-mermaid: https://github.com/hustcc/mcp-mermaid (diagramas Mermaid; mapas, flujos, etc.)
+Documentación y contexto de librerías:
+Context7 (ya añadido): https://github.com/upstash/context7
+LangChain Docs server: https://github.com/LiteObject/langchain-mcp-server
+mcpdoc (llms.txt): https://github.com/langchain-ai/mcpdoc
+Git/Versionado:
+GitHub oficial (ya listado): https://github.com/github/github-mcp-server
+Git local: https://www.npmjs.com/package/@cyanheads/git-mcp-server (operaciones git locales)
+Qué te propongo ahora
+
+Confirmar implementación de LangChain para activarla en el YAML.
+Decidir qué RAG (Qdrant oficial u otro) y si usarás Ollama/OpenAI para embeddings.
+Elegir si añadimos BOE-MCP ya.
+Decir si quieres que incluya alguno de los “candidatos” en el YAML y te deje los tokens como secrets en Continue.
+
+Si quieres, actualizo ahora tu ~/.continue/config.yaml para:
+
+Añadir el bloque models anterior con ${{ secrets.* }}.
+Mantener MCP con tokens por entorno (más seguro).
+¿YAML es “inestable”? Hallazgos
+YAML 1.1 tuvo tipados implícitos problemáticos (yes/no/on/off, fechas, etc.). YAML 1.2 corrige varios, pero hay ecosistemas y librerías que mezclan comportamientos 1.1/1.2, generando confusiones.
+“YAML document from hell” detalla ambigüedades típicas y diferencias 1.1 vs 1.2.
+En general, YAML es legible pero sensible a indentación/espacios, y su tipado implícito puede sorprender si no se cotiza.
+No es “inutilizable”, pero sí hay trampas comunes si no aplicas buenas prácticas.
+Fuentes:
+
+The YAML document from hell (pitfalls): https://ruudvanasseldonk.com/2023/01/11/the-yaml-document-from-hell
+Resumen crítico y comparación con JSON (config): https://kula.blog/posts/yaml/
+Tutorial general (YAML 1.2, superset de JSON): https://spacelift.io/blog/yaml
+Buenas prácticas para un sistema de agentes
+Cita strings ambiguas:
+Escribe "yes", "no", "on", "off", fechas, números con ceros iniciales, SIEMPRE entre comillas.
+Evita tipado implícito:
+Cotiza siempre valores que puedan interpretarse como bool/fecha.
+Estructura estable:
+Para configuraciones complejas, considera JSON como “subset seguro” dentro de YAML (estilo inline) o directamente JSON para partes críticas.
+Validación:
+Define un esquema (JSON Schema) y valida los YAML en CI.
+Lint y pruebas:
+Usa linters/formatters (yamllint, prettier-plugin-yaml) y tests de carga/parseo.
+Divide y vencerás:
+Separa bloques por archivos (modelos, MCP, prompts) y usa anclas/aliases con moderación.
+Documenta versiones:
+Incluye schema: v1 y versiona tus archivos.
+Recomendación
+Puedes usar YAML sin problemas si aplicas las prácticas anteriores.
+Para zonas “delicadas” (credenciales, rutas, listas grandes), usa JSON embebido o JSON externo referenciado por YAML.
+Mantén secretos fuera del YAML (Hub o entorno). Para modelos, ${{ secrets.* }} es cómodo; para MCP, mejor entorno.
+Siguientes pasos
+¿Actualizo ya ~/.continue/config.yaml con el bloque models referenciando tus secrets y dejo notas claras para MCP via entorno?
+Si quieres, también preparo un .env.example y un mini script de export para WSL con las variables necesarias.
+LLM powered development for VSCode
+llm-vscode is an extension for all things LLM. It uses llm-ls as its backend.
+
+We also have extensions for:
+
+neovim
+jupyter
+intellij
+Previously huggingface-vscode.
+
+[!NOTE] When using the Inference API, you will probably encounter some limitations. Subscribe to the PRO plan to avoid getting rate limited in the free tier.
+
+https://huggingface.co/pricing#pro
+
+Features
+Code completion
+This plugin supports "ghost-text" code completion, à la Copilot.
+
+Choose your model
+Requests for code generation are made via an HTTP request.
+
+You can use the Hugging Face Inference API or your own HTTP endpoint, provided it adheres to the APIs listed in backend.
+
+The list of officially supported models is located in the config template section.
+
+Always fit within the context window
+The prompt sent to the model will always be sized to fit within the context window, with the number of tokens determined using tokenizers.
+
+Code attribution
+Hit Cmd+shift+a to check if the generated code is in The Stack. This is a rapid first-pass attribution check using stack.dataportraits.org. We check for sequences of at least 50 characters that match a Bloom filter. This means false positives are possible and long enough surrounding context is necesssary (see the paper for details on n-gram striding and sequence length). The dedicated Stack search tool is a full dataset index and can be used for a complete second pass.
+
+Installation
+Install like any other vscode extension.
+
+By default, this extension uses bigcode/starcoder & Hugging Face Inference API for the inference.
+
+HF API token
+You can supply your HF API token (hf.co/settings/token) with this command:
+
+Cmd/Ctrl+Shift+P to open VSCode command palette
+Type: Llm: Login
+If you previously logged in with huggingface-cli login on your system the extension will read the token from disk.
+
+Configuration
+You can check the full list of configuration settings by opening your settings page (cmd+,) and typing Llm.
+
+Backend
+You can configure the backend to which requests will be sent. llm-vscode supports the following backends:
+
+huggingface: The Hugging Face Inference API (default)
+ollama: Ollama
+openai: any OpenAI compatible API (e.g. llama-cpp-python)
+tgi: Text Generation Inference
+Let's say your current code is this:
+
+import numpy as np
+import scipy as sp
+{YOUR_CURSOR_POSITION}
+def hello_world():
+    print("Hello world")
+
+The request body will then look like:
+
+const inputs = `{start token}import numpy as np\nimport scipy as sp\n{end token}def hello_world():\n    print("Hello world"){middle token}`
+const data = { inputs, ...configuration.requestBody };
+
+const model = configuration.modelId;
+let endpoint;
+switch(configuration.backend) {
+    // cf URL construction
+    let endpoint = build_url(configuration);
+}
+
+const res = await fetch(endpoint, {
+    body: JSON.stringify(data),
+    headers,
+    method: "POST"
+});
+
+const json = await res.json() as { generated_text: string };
+
+Note that the example above is a simplified version to explain what is happening under the hood.
+
+URL construction
+The endpoint URL that is queried to fetch suggestions is build the following way:
+
+depending on the backend, it will try to append the correct path to the base URL located in the configuration (e.g. {url}/v1/completions for the openai backend)
+if no URL is set for the huggingface backend, it will automatically use the default URL
+it will error for other backends as there is no sensible default URL
+if you do set the correct path at the end of the URL it will not add it a second time as it checks if it is already present
+there is an option to disable this behavior: llm.disableUrlPathCompletion
+Suggestion behavior
+You can tune the way the suggestions behave:
+
+llm.enableAutoSuggest lets you choose to enable or disable "suggest-as-you-type" suggestions.
+llm.documentFilter lets you enable suggestions only on specific files that match the pattern matching syntax you will provide. The object must be of type DocumentFilter | DocumentFilter[]:
+to match on all types of buffers: llm.documentFilter: { pattern: "**" }
+to match on all files in my_project/: llm.documentFilter: { pattern: "/path/to/my_project/**" }
+to match on all python and rust files: llm.documentFilter: { pattern: "**/*.{py,rs}" }
+Keybindings
+llm-vscode sets two keybindings:
+
+you can trigger suggestions with Cmd+shift+l by default, which corresponds to the editor.action.inlineSuggest.trigger command
+code attribution is set to Cmd+shift+a by default, which corresponds to the llm.attribution command
+llm-ls
+By default, llm-ls is bundled with the extension. When developing locally or if you built your own binary because your platform is not supported, you can set the llm.lsp.binaryPath setting to the path of the binary.
+
+Tokenizer
+llm-ls uses tokenizers to make sure the prompt fits the context_window.
+
+To configure it, you have a few options:
+
+No tokenization, llm-ls will count the number of characters instead:
+{
+  "llm.tokenizer": null
+}
+
+from a local file on your disk:
+{
+  "llm.tokenizer": {
+    "path": "/path/to/my/tokenizer.json"
+  }
+}
+
+from a Hugging Face repository, llm-ls will attempt to download tokenizer.json at the root of the repository:
+{
+  "llm.tokenizer": {
+    "repository": "myusername/myrepo",
+    "api_token": null,
+  }
+}
+
+Note: when api_token is set to null, it will use the token you set with Llm: Login command. If you want to use a different token, you can set it here.
+
+from an HTTP endpoint, llm-ls will attempt to download a file via an HTTP GET request:
+{
+  "llm.tokenizer": {
+    "url": "https://my-endpoint.example.com/mytokenizer.json",
+    "to": "/download/path/of/mytokenizer.json"
+  }
+}
+
+Code Llama
+To test Code Llama 13B model:
+
+Make sure you have the latest version of this extension.
+Make sure you have supplied HF API token
+Open Vscode Settings (cmd+,) & type: Llm: Config Template
+From the dropdown menu, choose hf/codellama/CodeLlama-13b-hf
+Read more here about Code LLama.
+
+Phind and WizardCoder
+To test Phind/Phind-CodeLlama-34B-v2 and/or WizardLM/WizardCoder-Python-34B-V1.0 :
+
+Make sure you have the latest version of this extension.
+Make sure you have supplied HF API token
+Open Vscode Settings (cmd+,) & type: Llm: Config Template
+From the dropdown menu, choose hf/Phind/Phind-CodeLlama-34B-v2 or hf/WizardLM/WizardCoder-Python-34B-V1.0
+Read more about Phind-CodeLlama-34B-v2 here and WizardCoder-15B-V1.0 here.
+
+Developing
+Clone llm-ls: git clone https://github.com/huggingface/llm-ls
+Build llm-ls: cd llm-ls && cargo build (you can also use cargo build --release for a release build)
+Clone this repo: git clone https://github.com/huggingface/llm-vscode
+Install deps: cd llm-vscode && npm ci
+In vscode, open Run and Debug side bar & click Launch Extension
+In the new vscode window, set the llm.lsp.binaryPath setting to the path of the llm-ls binary you built in step 2 (e.g. /path/to/llm-ls/target/debug/llm-ls)
+Close the window and restart the extension with F5 or like in 5.
+Community
+Repository	Description
+huggingface-vscode-endpoint-server	Custom code generation endpoint for this repository
+llm-vscode-inference-server	An endpoint server for efficiently serving quantized open-source LLMs for code. Evaluación y plan (BMAD) para híbrido, MMR y agentes
+Viabilidad: búsqueda híbrida (tsvector + pgvector) y MMR
+Viable en Supabase Postgres + pgvector:
+Lexical: tsvector en rag.chunks.content con índice GIN y ranking ts_rank_cd() (aprox BM25).
+Vectorial: ivfflat con vector_cosine_ops (ya en plan).
+Híbrido: combinar top-N lexical y top-N vectorial con normalización por ventana y score mixto.
+MMR: aplicar en la API sobre los top-50 híbridos recuperando también sus embeddings; computar λ*sim(q,d) - (1-λ)*max sim(d, S) para diversificar.
+Impacto: mejora recall@k y reduce duplicados; coste bajo (2 consultas + fusión en API).
+Sugerencia SQL mínima:
+
+En Supabase:
+alter table rag.chunks
+  add column if not exists tsv tsvector
+  generated always as (to_tsvector('spanish', coalesce(content, ''))) stored;
+
+create index if not exists idx_chunks_tsv on rag.chunks using gin (tsv);
+
+create index if not exists rag_chunks_embedding_ivfflat
+  on rag.chunks using ivfflat (embedding vector_cosine_ops) with (lists=100);
+Consulta híbrida (idea, implementar en 
+apps/api/app/routers/rag.py
+):
+CTE L: lexical top-50 con ts_rank_cd().
+CTE V: vectorial top-50 con 1 - (embedding <=> q_emb) como similitud.
+Normalizar con min/max ventana y unir (union all), agrupar por (doc_id, chunk_index), score mixto α*sv + (1-α)*sl, order by score desc limit k.
+MMR en API:
+
+Recuperar top-50 con content, external_id, url, embedding y aplicar MMR (λ≈0.7), devolver top-k.
+Viabilidad: orquestador + agentes YAML + MCP
+YAML para agentes es viable y recomendable (config declarativa, reproducible). Esquema simple:
+name, role, model, tools, inputs, outputs, policy, schedule.
+Orquestador lee YAML, registra trabajos en job_queue (Supabase) y ejecuta workers en FastAPI (APScheduler) o proceso aparte.
+MCP servers para herramientas (scraping, BOE, web, GitHub, n8n, etc.) encajan bien como adaptadores; se pueden exponer como “tools” en YAML.
+LangChain/LlamaIndex: opcionales. Dado foco en control/ligereza (llama.cpp + FastAPI), mejor empezar con clientes http simples y lógica propia; integrar LC/LI más tarde si aporta valor.
+Ejemplo YAML mínimo (PoC):
+
+yaml
+# agents/qa.yaml
+name: qa_explain
+role: "Profesor de oposiciones"
+model:
+  base_url: http://127.0.0.1:8080  # llama.cpp server
+  type: llama.cpp
+  params: {max_tokens: 512, temperature: 0.2}
+tools:
+  - name: rag_query
+    type: http
+    method: POST
+    url: http://api.local/rag/query
+  - name: cache_get
+    type: supabase
+    table: explanations_cache
+policy:
+  retrieve_top_k: 8
+  mmr_lambda: 0.7
+  cite_required: true
+io:
+  input: {question, context_filters?}
+  output: {explanation, citations[], confidence}
+Encaje con BMAD
+Agentic Planning ya existe en docs/brief.md, docs/prd.md, docs/architecture.md.
+Context-Engineered Development:
+Añadir historias para: híbrido+MMR, llama.cpp /explain, YAML agents (QA, Scraper, Planner), alertas, mapas mentales, progreso.
+Usar 
+docs/checklists/mvp-checklist.md
+ como DoD.
+Roadmap propuesto (fases cortas)
+Infra y LLM (Día 0–1)
+Servidor: limpiar servicios no usados (CloudPanel, PHP-FPMs, Nginx/Varnish/ProFTPD/Postfix, Percona) tras tu confirmación para liberar RAM/SSD.
+llama.cpp: compilar, instalar systemd, exponer en 127.0.0.1:8080.
+API: variable LLM_BASE_URL y cliente httpx; implementar /explain con caché.
+RAG fuerte (Día 1–2)
+Híbrido (tsvector+vector) y MMR en 
+rag.py
+.
+Filtros por external_id/materia y stitching de contexto (±1).
+Métricas: recall@3/5 y latencia p95.
+Agentes (Día 2–3)
+YAML schema y orquestador mínimo.
+Agentes:
+QA (usa /rag/query + llama.cpp).
+Scraper_alerts: BOE_API + fuentes SS/oposiciones (RSS/HTML) → Supabase (tabla alerts).
+Planner: genera plan de estudio semanal y tarjetas SRS (FSRS).
+Colas/Jobs: job_queue en Supabase y APScheduler worker.
+UX inicial (Día 3–4)
+Front en Vercel: chat con ley/documentos subidos, explicación con citas, alertas, mapas mentales (tu Mind-map-API + Excalidraw repo), progreso.
+Upload de documentos de usuario → indexación en Supabase (namespace por usuario).
+Hardening y demo (Día 4–5)
+Seguridad: firewall, exponer sólo lo necesario, límites en /explain.
+Observabilidad: logs estructurados y métricas de calidad.
+Demo E2E.
+Integraciones sugeridas
+Legal chat: BOE-API oficial (https://github.com/BOE-API/BOE_API) + tu RAG en Supabase.
+Mapas mentales: tus repos Espasiko/excalidraw y Espasiko/Mind-map-API.
+Justicio como referencia de dominio jurídico (patrones de prompts/UX).
+MCP: activar según necesidades (web-scraping, GitHub, n8n), mapeados como tools YAML.
+Acciones inmediatas recomendadas
+Código:
+Implementar híbrido+MMR en 
+apps/api/app/routers/rag.py
+ y ajustar 
+services/vector_store_pg.py
+ si hace falta traer embeddings en consulta.
+Implementar /explain contra LLM_BASE_URL (llama.cpp).
+Añadir agents/ con YAML y orchestrator.py.
+Servidor:
+Te paso plan de limpieza por lotes cuando confirmes qué servicios quieres mantener.
+Instalar/servir llama.cpp y validar throughput con tu modelo GGUF.
+¿Te implemento ya híbrido+MMR y /explain en el API, y te preparo el esqueleto agents/ + orquestador YAML? Luego te presento un PR pequeño y vamos iterando.
+
+YAML DE BROWNFIELD: 
+
+# Opositor Agent Brownfield Architecture Document
+# Generated: 2025-09-07
+# Version: 1.0
+# Author: BMad Master
+# Focus: Complete analysis of existing codebase for oposiciones SS application
+
+introduction:
+  project_name: Opositor Agent
+  purpose: "Aplicación web para oposiciones que usa RAG específico para opositores de Seguridad Social en España. Ofrece tests, simulacros, casos prácticos, mapas mentales, esquemas y programas de estudio personalizados/genericos, según progreso y evolución del usuario. Con chat IA integrado para explicaciones y consejos. Comunidad, apoyo 24/7, fechas y términos de oposiciones, BOE, leyes."
+  scope: "Análisis exhaustivo de ambos workspaces: backend FastAPI y frontend Next.js"
+  change_log:
+    - date: "2025-09-07"
+      version: "1.0"
+      description: "Initial brownfield analysis based on code inspection"
+      author: "BMad Master"
+
+high_level_architecture:
+  technical_summary: "Arquitectura híbrida: Backend Python/FastAPI con RAG y embeddings, Frontend TypeScript/Next.js con chat UI, Base de datos PostgreSQL, Vector DB Qdrant para RAG"
+  actual_tech_stack:
+    - category: "Runtime"
+      technology: "Node.js"
+      version: "18.x"
+      notes: "Frontend runtime"
+    - category: "Framework"
+      technology: "Next.js"
+      version: "15.3.0-canary.31"
+      notes: "React framework con App Router"
+    - category: "Backend Runtime"
+      technology: "Python"
+      version: "3.8+"
+      notes: "Backend runtime"
+    - category: "Backend Framework"
+      technology: "FastAPI"
+      version: ">=0.115.0"
+      notes: "API framework con async support"
+    - category: "Database"
+      technology: "PostgreSQL"
+      version: "13+"
+      notes: "Con pgvector para embeddings"
+    - category: "Vector DB"
+      technology: "Qdrant"
+      version: "latest"
+      notes: "Para RAG vectorial"
+    - category: "ORM"
+      technology: "Drizzle"
+      version: "^0.34.0"
+      notes: "TypeScript ORM para frontend"
+    - category: "ORM Backend"
+      technology: "SQLAlchemy"
+      version: ">=2.0.30"
+      notes: "Async SQL toolkit"
+    - category: "Auth"
+      technology: "NextAuth"
+      version: "5.0.0-beta.25"
+      notes: "Authentication provider"
+    - category: "AI"
+      technology: "Mistral-7B-Instruct"
+      version: "GGUF"
+      notes: "LLM corriendo en Hostinger VPS"
+    - category: "Embeddings"
+      technology: "Qwen3-Embedding-0.6B"
+      version: "1024D"
+      notes: "Sentence transformers"
+
+repository_structure_reality:
+  type: "Multi-repo"
+  package_manager: "pnpm (frontend), pip (backend)"
+  notable: "Separación clara entre backend Python y frontend TypeScript"
+  frontend_structure: |
+    mi_opositor_ia/
+    ├── app/
+    │   ├── (auth)/          # Authentication pages
+    │   ├── (chat)/          # Chat functionality
+    │   ├── api/             # API routes
+    │   ├── simulacros/      # Simulacros pages
+    │   └── tests/           # Tests pages
+    ├── lib/
+    │   ├── db/              # Database schema and queries
+    │   └── ai/              # AI integrations
+    ├── components/          # UI components
+    └── public/              # Static assets
+  backend_structure: |
+    qwen_opositor_agent/apps/api/
+    ├── app/
+    │   ├── routers/         # API endpoints
+    │   │   ├── health.py    # Health checks
+    │   │   ├── rag.py       # RAG queries
+    │   │   ├── explain.py   # Explanations
+    │   │   ├── agents.py    # Agent management
+    │   │   ├── boe.py       # BOE integration
+    │   │   └── srs.py       # SRS specific
+    │   └── services/        # Business logic
+    ├── scripts/             # Ingestion scripts
+    └── .env                 # Configuration
+
+key_modules_and_purpose:
+  frontend:
+    - "Authentication": "app/(auth)/ - Login/register con NextAuth"
+    - "Chat System": "app/(chat)/ - Chat con IA integrado"
+    - "Database Layer": "lib/db/ - Drizzle ORM con PostgreSQL"
+    - "AI Integration": "lib/ai/ - Conexión con Mistral"
+    - "UI Components": "components/ - Componentes React"
+  backend:
+    - "API Core": "app/main.py - FastAPI application setup"
+    - "RAG System": "app/routers/rag.py - Vector search and retrieval"
+    - "LLM Integration": "app/routers/explain.py - Mistral connection"
+    - "Data Ingestion": "scripts/ - Scripts para cargar documentos legales"
+    - "BOE Integration": "app/routers/boe.py - API del Boletín Oficial"
+
+data_models_and_apis:
+  frontend_models:
+    - "User": "id, email, password (bcrypt hashed)"
+    - "Chat": "id, createdAt, title, userId, visibility"
+    - "Message_v2": "id, chatId, role, parts, attachments, createdAt"
+    - "Document": "id, createdAt, title, content, kind, userId"
+    - "Vote_v2": "chatId, messageId, isUpvoted"
+    - "Suggestion": "id, documentId, originalText, suggestedText, userId"
+  backend_apis:
+    - "GET /health": "Health check endpoint"
+    - "POST /rag/query": "RAG search with embeddings"
+    - "POST /explain": "LLM explanation generation"
+    - "POST /explain/stream": "Streaming LLM responses"
+    - "GET /boe/": "BOE document queries"
+    - "POST /agents/": "Agent management endpoints"
+
+technical_debt_and_known_issues:
+  critical_debt:
+    - "Deprecated Schemas": "Message y Vote tienen versiones deprecated (_v2)"
+    - "Mixed Patterns": "Frontend usa Drizzle, backend SQLAlchemy"
+    - "Environment Coupling": "Backend depende de LLM_BASE_URL hardcoded"
+    - "CORS Configuration": "Configurado pero no probado en producción"
+  workarounds:
+    - "Auth Fallback": "Sistema de dummy password para testing"
+    - "LLM Timeout": "30 segundos hardcoded, puede fallar en respuestas largas"
+    - "Vector Search": "Dependiente de Qdrant local en desarrollo"
+  constraints:
+    - "Supabase Limit": "BD gratis en desarrollo, limitado en producción"
+    - "Vercel Limits": "Funciones serverless con límites de tiempo"
+    - "Hostinger VPS": "Recursos limitados para GGUF models"
+
+integration_points:
+  external_services:
+    - "Mistral GGUF": "LLM corriendo en Hostinger VPS puerto 8080"
+    - "Qdrant": "Vector DB Docker local puerto 6333"
+    - "Supabase": "PostgreSQL con pgvector para producción"
+    - "Vercel": "Frontend deployment y functions"
+  internal_integrations:
+    - "Frontend-Backend": "REST API con CORS configurado"
+    - "Auth Flow": "NextAuth con BD PostgreSQL"
+    - "RAG Pipeline": "Embeddings → Qdrant → Retrieval → LLM"
+
+development_and_deployment:
+  local_development:
+    frontend:
+      - "cd /home/spas/mi_opositor_ia && pnpm dev"
+      - "Servidor en localhost:3000"
+      - "Requiere .env.local con POSTGRES_URL"
+    backend:
+      - "cd /home/spas/context-engineering-intro/qwen_opositor_agent/apps/api"
+      - "python -m uvicorn app.main:app --reload"
+      - "Servidor en localhost:8000"
+      - "Requiere .env con DATABASE_URL y LLM_BASE_URL"
+  production:
+    frontend: "Vercel deployment con Supabase"
+    backend: "Hostinger VPS con systemd services"
+  build_commands:
+    frontend: "pnpm build"
+    backend: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+testing_reality:
+  current_coverage:
+    frontend: "Playwright para E2E, limitado"
+    backend: "Scripts manuales, sin suite formal"
+    integration: "Curl testing básico"
+  test_commands:
+    frontend: "pnpm test"
+    backend: "python -m pytest" # No implementado
+  known_issues:
+    - "Auth testing limitado"
+    - "RAG accuracy no medido"
+    - "Performance en respuestas streaming"
+
+enhancement_focus:
+  planned_features:
+    - "Simulacros interactivos con chat IA"
+    - "Mapas mentales dinámicos"
+    - "Tests adaptativos por progreso"
+    - "Casos prácticos con explicaciones detalladas"
+    - "Comunidad de opositores"
+    - "Notificaciones de fechas BOE"
+  affected_files:
+    - "app/(chat)/ - Nuevo chat system"
+    - "lib/db/schema.ts - Nuevos modelos"
+    - "routers/agents.py - Agent orchestration"
+    - "scripts/ - Nuevos scripts de contenido"
+
+success_criteria:
+  - "Documento refleja REALIDAD del código, no aspiraciones"
+  - "Referencias a archivos reales con paths exactos"
+  - "Deuda técnica documentada honestamente"
+  - "Constraints y workarounds claramente identificados"
+  - "Facilita a agentes IA navegar y entender el sistema real"
+
+conclusion:
+  "Sistema bien estructurado con separación clara frontend/backend. Deuda técnica manejable. Listo para enhancements de oposiciones con arquitectura sólida."
+

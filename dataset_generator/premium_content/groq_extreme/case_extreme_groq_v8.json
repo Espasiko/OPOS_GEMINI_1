@@ -1,0 +1,426 @@
+{
+  "questions": [
+    {
+      "correct_option_id": "b",
+      "explanation": "La ley establece que, para tener derecho a la pensión de viudedad, la pareja de hecho debe acreditar una convivencia ininterrumpida con el fallecido durante los cinco años inmediatamente anteriores al fallecimiento.",
+      "id": "1",
+      "options": [
+        {
+          "id": "a",
+          "text": "Haber estado casada con Carlos",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Haber convivido con Carlos durante los cinco años anteriores a su fallecimiento",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Tener un hijo en común",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Ser registrada como pareja de hecho",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el requisito principal para que Ana tenga derecho a la pensión de viudedad?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Ana argumenta que, aunque Carlos se mudó, la relación continuó y que la separación fue temporal y por motivos laborales.",
+      "id": "2",
+      "options": [
+        {
+          "id": "a",
+          "text": "La separación fue temporal y por motivos laborales",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La separación fue definitiva y por motivos personales",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La separación no afecta a la convivencia",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La separación es irrelevante para la pensión de viudedad",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el argumento de Ana para justificar la interrupción de la convivencia?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "La hermana de Carlos no tiene derecho a la pensión de orfandad, ya que esta prestación está destinada a los hijos del fallecido.",
+      "id": "3",
+      "options": [
+        {
+          "id": "a",
+          "text": "Tiene derecho a la pensión de orfandad como hermana de Carlos",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Tiene derecho a la pensión de orfandad como tutora de Sofía",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "No tiene derecho a la pensión de orfandad",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Tiene derecho a la pensión de orfandad como madre de Sofía",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el derecho de la hermana de Carlos a la pensión de orfandad?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "La madre de Carlos no tiene derecho a la pensión de viudedad, ya que esta prestación está destinada a la pareja del fallecido.",
+      "id": "4",
+      "options": [
+        {
+          "id": "a",
+          "text": "Tiene derecho a la pensión de viudedad como madre de Carlos",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Tiene derecho a la pensión de viudedad como viuda de Carlos",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "No tiene derecho a la pensión de viudedad",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Tiene derecho a la pensión de viudedad como hermana de Carlos",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el derecho de la madre de Carlos a la pensión de viudedad?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La registración como pareja de hecho es necesaria pero no suficiente para tener derecho a la pensión de viudedad, ya que también se requiere la convivencia ininterrumpida durante los cinco años anteriores al fallecimiento.",
+      "id": "5",
+      "options": [
+        {
+          "id": "a",
+          "text": "La registración como pareja de hecho es suficiente para tener derecho a la pensión de viudedad",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La registración como pareja de hecho es necesaria pero no suficiente para tener derecho a la pensión de viudedad",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La registración como pareja de hecho no es relevante para la pensión de viudedad",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La registración como pareja de hecho es innecesaria para la pensión de viudedad",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la registración como pareja de hecho en la solicitud de Ana?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La entidad gestora de la Seguridad Social debe resolver las solicitudes de acuerdo con la legislación vigente sobre prestaciones por muerte y supervivencia.",
+      "id": "6",
+      "options": [
+        {
+          "id": "a",
+          "text": "La entidad gestora debe resolver las solicitudes de acuerdo con la legislación vigente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La entidad gestora debe resolver las solicitudes de acuerdo con la discreción del gestor",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La entidad gestora no tiene competencia para resolver las solicitudes",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La entidad gestora debe resolver las solicitudes de acuerdo con la opinión pública",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el papel de la entidad gestora de la Seguridad Social en la resolución de las solicitudes?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La separación temporal de Ana y Carlos afecta a la convivencia pero no la interrumpe, ya que la relación continuó durante la separación.",
+      "id": "7",
+      "options": [
+        {
+          "id": "a",
+          "text": "La separación temporal no afecta a la convivencia",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La separación temporal afecta a la convivencia pero no la interrumpe",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La separación temporal interrumpe la convivencia",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La separación temporal es irrelevante para la convivencia",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la separación temporal de Ana y Carlos en la convivencia?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Sofía tiene derecho a la pensión de orfandad como hija de Carlos, ya que esta prestación está destinada a los hijos del fallecido.",
+      "id": "8",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sofía tiene derecho a la pensión de orfandad como hija de Carlos",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Sofía no tiene derecho a la pensión de orfandad",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Sofía tiene derecho a la pensión de orfandad como hermana de Carlos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Sofía tiene derecho a la pensión de orfandad como madre de Carlos",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el derecho de Sofía a la pensión de orfandad?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La legislación vigente es rígida y no permite la interpretación, ya que establece requisitos específicos para tener derecho a las prestaciones por muerte y supervivencia.",
+      "id": "9",
+      "options": [
+        {
+          "id": "a",
+          "text": "La legislación vigente es flexible y permite la interpretación",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La legislación vigente es rígida y no permite la interpretación",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La legislación vigente es ambigua y no proporciona claridad",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La legislación vigente es innecesaria para la resolución de las solicitudes",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la legislación vigente en la resolución de las solicitudes?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La entidad gestora debe verificar la convivencia mediante una investigación exhaustiva, ya que es necesario acreditar la convivencia ininterrumpida durante los cinco años anteriores al fallecimiento.",
+      "id": "10",
+      "options": [
+        {
+          "id": "a",
+          "text": "La entidad gestora debe verificar la convivencia mediante una investigación exhaustiva",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La entidad gestora no debe verificar la convivencia",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La entidad gestora debe verificar la convivencia mediante una simple declaración",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La entidad gestora debe verificar la convivencia mediante una prueba de ADN",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el papel de la entidad gestora en la verificación de la convivencia?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La edad de Sofía afecta a su derecho a la pensión de orfandad, ya que la legislación vigente establece límites de edad para tener derecho a esta prestación.",
+      "id": "11",
+      "options": [
+        {
+          "id": "a",
+          "text": "La edad de Sofía no afecta a su derecho a la pensión de orfandad",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La edad de Sofía afecta a su derecho a la pensión de orfandad",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La edad de Sofía es irrelevante para la pensión de orfandad",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La edad de Sofía es un requisito para la pensión de orfandad",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la edad de Sofía en su derecho a la pensión de orfandad?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La situación laboral de Ana no afecta a su derecho a la pensión de viudedad, ya que la legislación vigente establece que la pensión de viudedad es independiente de la situación laboral del solicitante.",
+      "id": "12",
+      "options": [
+        {
+          "id": "a",
+          "text": "La situación laboral de Ana no afecta a su derecho a la pensión de viudedad",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La situación laboral de Ana afecta a su derecho a la pensión de viudedad",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La situación laboral de Ana es un requisito para la pensión de viudedad",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La situación laboral de Ana es irrelevante para la pensión de viudedad",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la situación laboral de Ana en su derecho a la pensión de viudedad?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La entidad gestora debe resolver las solicitudes de pensión de orfandad de acuerdo con la legislación vigente, ya que esta establece los requisitos y procedimientos para tener derecho a esta prestación.",
+      "id": "13",
+      "options": [
+        {
+          "id": "a",
+          "text": "La entidad gestora debe resolver las solicitudes de pensión de orfandad de acuerdo con la legislación vigente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La entidad gestora debe resolver las solicitudes de pensión de orfandad de acuerdo con la discreción del gestor",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La entidad gestora no tiene competencia para resolver las solicitudes de pensión de orfandad",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La entidad gestora debe resolver las solicitudes de pensión de orfandad de acuerdo con la opinión pública",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el papel de la entidad gestora en la resolución de las solicitudes de pensión de orfandad?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La registración como pareja de hecho no afecta a la situación laboral de Ana, ya que la legislación vigente establece que la situación laboral es independiente de la situación familiar.",
+      "id": "14",
+      "options": [
+        {
+          "id": "a",
+          "text": "La registración como pareja de hecho afecta a la situación laboral de Ana",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La registración como pareja de hecho no afecta a la situación laboral de Ana",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La registración como pareja de hecho es un requisito para la situación laboral de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La registración como pareja de hecho es irrelevante para la situación laboral de Ana",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la registración como pareja de hecho en la situación laboral de Ana?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La entidad gestora debe verificar la situación laboral de Ana mediante una investigación exhaustiva, ya que es necesario acreditar la situación laboral para determinar el derecho a la pensión de viudedad.",
+      "id": "15",
+      "options": [
+        {
+          "id": "a",
+          "text": "La entidad gestora debe verificar la situación laboral de Ana mediante una investigación exhaustiva",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La entidad gestora no debe verificar la situación laboral de Ana",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La entidad gestora debe verificar la situación laboral de Ana mediante una simple declaración",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La entidad gestora debe verificar la situación laboral de Ana mediante una prueba de ADN",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el papel de la entidad gestora en la verificación de la situación laboral de Ana?"
+    }
+  ],
+  "scenario": "En el año 2010, Ana y Carlos se unieron en pareja de hecho, y aunque nunca contrajeron matrimonio, decidieron registrar su unión en el registro correspondiente. Ambos trabajaban y cotizaban a la Seguridad Social. En 2015, Ana dio a luz a una hija, Sofía, fruto de su relación con Carlos. Sin embargo, en 2020, Carlos falleció en un accidente de tráfico. Ana, como pareja de hecho, solicitó la pensión de viudedad, pero se encontró con que la ley establece que, para tener derecho a esta prestación, debe acreditar una convivencia ininterrumpida con el fallecido durante los cinco años inmediatamente anteriores al fallecimiento. Ana y Carlos habían vivido juntos durante diez años, pero en 2018, debido a problemas laborales, Carlos se mudó temporalmente a otra ciudad durante seis meses. Ana argumenta que, aunque Carlos se mudó, la relación continuó y que la separación fue temporal y por motivos laborales. La entidad gestora de la Seguridad Social le niega la pensión argumentando que no cumple con el requisito de convivencia ininterrumpida. Mientras tanto, la hermana de Carlos, que es soltera y no tiene hijos, también solicita una pensión de orfandad para Sofía, argumentando que, como hija de Carlos, Sofía tiene derecho a la pensión de orfandad. La madre de Carlos, viuda de su primer matrimonio, también solicita una pensión de viudedad, alegando que, como madre de Carlos, tiene derecho a la pensión. La entidad gestora de la Seguridad Social debe resolver estas solicitudes, teniendo en cuenta la legislación vigente sobre prestaciones por muerte y supervivencia, y los derechos de cada una de las partes involucradas.",
+  "topic": "Prestaciones por Muerte y Supervivencia: Pareja de Hecho vs Matrimonio"
+}

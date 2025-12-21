@@ -1,0 +1,186 @@
+{
+  "topic": "Cálculo de Pensiones: Lagunas de Cotización y Bases Mínimas (Integración)",
+  "scenario": "Carlos López, nacido en 1958, solicita la jubilación a los 65 años en 2023. Tiene una historia laboral compleja: trabajó como autónomo de 1990 a 1995, luego como empleado por cuenta ajena de 1996 a 2005, con períodos de desempleo de 2006 a 2008, y nuevamente autónomo de 2009 a 2023. Dentro de los últimos 25 años antes de la jubilación (desde 1998 a 2023), tiene lagunas de cotización de 60 meses distribuidos en varios períodos, debido a desempleo sin prestación y transiciones entre trabajos. Algunos meses cotizó por bases inferiores a la mínima, otros por encima. La Seguridad Social debe calcular su pensión integrando las lagunas con las bases mínimas aplicables según la normativa. Se asume que cumple los requisitos generales de edad y tiene más de 35 años cotizados, pero el cálculo de la base reguladora es crítico debido a las irregularidades.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué se entiende por 'lagunas de cotización' en el contexto del cálculo de pensiones de jubilación?",
+      "options": [
+        "A) Períodos en los que el trabajador cotizó por bases superiores al mínimo.",
+        "B) Períodos en los que no se ha cotizado a la Seguridad Social, a pesar de estar en edad laboral.",
+        "C) Períodos en los que las cotizaciones son inferiores a la base mínima.",
+        "D) Errores en los registros de cotización."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Las lagunas de cotización son períodos dentro del tiempo de cotización requerido donde no existen cotizaciones, lo que puede afectar al cálculo de la base reguladora y la pensión."
+    },
+    {
+      "id": "q2",
+      "question": "¿Cómo se integran las lagunas de cotización en el cálculo de la base reguladora para la pensión de jubilación?",
+      "options": [
+        "A) Se ignoran completamente, no afectan al cálculo.",
+        "B) Se rellenan con ceros, reduciendo la base reguladora.",
+        "C) Se completan con las bases mínimas de cotización del año correspondiente.",
+        "D) Se sustituyen por las bases máximas de cotización."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Según la normativa, las lagunas de cotización se integran utilizando las bases mínimas de cotización del año en que ocurren, para no perjudicar al trabajador en el cálculo de la base reguladora."
+    },
+    {
+      "id": "q3",
+      "question": "En el cálculo de la pensión de jubilación, ¿cuál es el período de cotización que se considera para determinar la base reguladora en el caso general?",
+      "options": [
+        "A) Los últimos 15 años.",
+        "B) Los últimos 25 años (300 meses).",
+        "C) Toda la vida laboral.",
+        "D) Los últimos 10 años."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Para las pensiones de jubilación, la base reguladora se calcula sobre las bases de cotización de los últimos 25 años (300 meses) anteriores al hecho causante."
+    },
+    {
+      "id": "q4",
+      "question": "Si Carlos López tiene 60 meses de lagunas de cotización dentro de los últimos 25 años, ¿cuántos meses de cotización efectiva se utilizan para calcular su base reguladora?",
+      "options": [
+        "A) 300 meses, incluyendo las lagunas integradas.",
+        "B) 240 meses, excluyendo las lagunas.",
+        "C) 300 meses, pero las lagunas se rellenan con bases mínimas.",
+        "D) Depende de su edad."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Se consideran los 300 meses del período de cálculo, y los meses con lagunas se completan con las bases mínimas correspondientes, por lo que se usan todos los meses."
+    },
+    {
+      "id": "q5",
+      "question": "Para integrar una laguna de cotización en un mes específico, ¿qué base mínima se debe aplicar?",
+      "options": [
+        "A) La base mínima del año en que se solicita la pensión.",
+        "B) La base mínima del grupo de cotización del trabajador en ese año.",
+        "C) La base mínima del año en que ocurrió la laguna, según la actividad laboral.",
+        "D) La base mínima promedio de los últimos 5 años."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Cada laguna se integra con la base mínima de cotización correspondiente al año y grupo de cotización en que se produjo la laguna."
+    },
+    {
+      "id": "q6",
+      "question": "¿Cómo afectan las lagunas de cotización al porcentaje aplicable sobre la base reguladora para determinar la pensión?",
+      "options": [
+        "A) Reducen el porcentaje proporcionalmente al tiempo de laguna.",
+        "B) No afectan al porcentaje, solo a la base reguladora.",
+        "C) Aumentan el porcentaje si las lagunas son por desempleo.",
+        "D) Depende de la edad del trabajador."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Las lagunas afectan a la base reguladora al integrarse con bases mínimas, pero el porcentaje de pensión se calcula en función de los años cotizados, no directamente de las lagunas."
+    },
+    {
+      "id": "q7",
+      "question": "Si Carlos tuvo una laguna de cotización en enero de 2010, siendo autónomo, y la base mínima para autónomos en 2010 era 800 euros, ¿qué base se usará para ese mes en el cálculo?",
+      "options": [
+        "A) 0 euros, ya que no cotizó.",
+        "B) 800 euros, la base mínima de 2010 para autónomos.",
+        "C) La base media de sus cotizaciones.",
+        "D) La base mínima del año 2023."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Para integrar la laguna, se utiliza la base mínima de cotización del año y régimen correspondiente, en este caso 800 euros para autónomos en 2010."
+    },
+    {
+      "id": "q8",
+      "question": "Supongamos que en los últimos 25 años, Carlos cotizó 240 meses con bases que suman 360,000 euros, y tiene 60 meses de lagunas. Si las bases mínimas para esos 60 meses suman 48,000 euros, ¿cuál es su base reguladora? (Base reguladora = suma de bases / número de meses)",
+      "options": [
+        "A) (360,000) / 300 = 1,200 euros.",
+        "B) (360,000 + 48,000) / 300 = 1,360 euros.",
+        "C) 360,000 / 240 = 1,500 euros.",
+        "D) (360,000 + 48,000) / 240 = 1,700 euros."
+      ],
+      "correct_option_id": "B",
+      "explanation": "La base reguladora se calcula sumando todas las bases de cotización (incluidas las integradas por lagunas) y dividiendo entre 300 meses: (360,000 + 48,000) / 300 = 1,360 euros."
+    },
+    {
+      "id": "q9",
+      "question": "¿Cuál es el período mínimo de cotización requerido para tener derecho a una pensión de jubilación contributiva en España?",
+      "options": [
+        "A) 10 años.",
+        "B) 15 años.",
+        "C) 20 años.",
+        "D) 25 años."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Se requiere un período mínimo de cotización de 15 años, con al menos 2 años dentro de los 15 años inmediatamente anteriores a la jubilación."
+    },
+    {
+      "id": "q10",
+      "question": "Si un trabajador cotiza por una base inferior a la mínima en algunos meses, ¿cómo se trata en el cálculo de la pensión?",
+      "options": [
+        "A) Se considera como laguna y se integra con la base mínima.",
+        "B) Se usa la base real cotizada, aunque sea inferior.",
+        "C) Se ajusta automáticamente a la base mínima.",
+        "D) Se ignora ese mes."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Si se cotizó por una base inferior a la mínima, se utiliza esa base real en el cálculo, no se integra como laguna; las lagunas solo aplican para meses sin cotización."
+    },
+    {
+      "id": "q11",
+      "question": "Los períodos de desempleo con prestación o subsidio, ¿cómo afectan a las cotizaciones para la pensión?",
+      "options": [
+        "A) No se consideran cotizaciones.",
+        "B) Se consideran como lagunas de cotización.",
+        "C) Se cotiza por la base correspondiente al desempleo, y se incluyen en el cálculo.",
+        "D) Solo afectan si son inferiores a 6 meses."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Durante los períodos de desempleo con prestación o subsidio, se realizan cotizaciones a la Seguridad Social por una base específica, que se incluye en el cálculo de la pensión."
+    },
+    {
+      "id": "q12",
+      "question": "En el caso de Carlos, que ha sido tanto autónomo como empleado por cuenta ajena, ¿hay diferencias en cómo se integran las lagunas?",
+      "options": [
+        "A) No, se aplica el mismo criterio de bases mínimas por año.",
+        "B) Sí, para autónomos se usan bases mínimas diferentes.",
+        "C) Solo los empleados por cuenta ajena pueden tener lagunas.",
+        "D) Las lagunas de autónomos no se integran."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Las bases mínimas de cotización varían según el régimen (general o autónomos), por lo que al integrar lagunas, se debe usar la base mínima correspondiente al régimen en ese año."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué normativa regula principalmente el cálculo de pensiones con lagunas de cotización en España?",
+      "options": [
+        "A) Ley General de la Seguridad Social.",
+        "B) Código Civil.",
+        "C) Ley de Presupuestos Generales del Estado.",
+        "D) Convenios colectivos."
+      ],
+      "correct_option_id": "A",
+      "explanation": "La Ley General de la Seguridad Social y sus reglamentos establecen las normas para el cálculo de pensiones, incluida la integración de lagunas."
+    },
+    {
+      "id": "q14",
+      "question": "Basado en el escenario, si Carlos tiene 25 años de cotización efectiva (incluyendo períodos con bases bajas y lagunas integradas), y su base reguladora es 1,360 euros, ¿qué porcentaje de pensión le correspondería si se jubila a los 65 años con 35 años cotizados? (Asumiendo que cumple los requisitos)",
+      "options": [
+        "A) 80% de la base reguladora.",
+        "B) 90% de la base reguladora.",
+        "C) 100% de la base reguladora.",
+        "D) 50% de la base reguladora."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Para acceder a la jubilación a los 65 años con 35 años o más cotizados, se tiene derecho al 100% de la base reguladora."
+    },
+    {
+      "id": "q15",
+      "question": "¿Qué consejo se podría dar a un trabajador para minimizar el impacto de las lagunas de cotización en su futura pensión?",
+      "options": [
+        "A) No preocuparse, ya que las lagunas se integran con bases mínimas.",
+        "B) Intentar cotizar por bases altas en períodos cortos.",
+        "C) Mantener la cotización continua, incluso en períodos de desempleo mediante convenios especiales.",
+        "D) Retrasar la jubilación más allá de los 65 años."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Para minimizar el impacto, es importante mantener cotizaciones continuas, y en caso de desempleo, considerar convenios especiales de cotización para evitar lagunas."
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "topic": "Falta de Alta y Responsabilidad Empresarial: Principio de Automaticidad",
+  "scenario": "En 2018, los hermanos Ana y Luis fundaron 'Innovatech Solutions', una startup tecnológica que rápidamente creció, facturando más de 10 millones de euros anuales a clientes internacionales. Sin embargo, nunca se dieron de alta en el Registro Mercantil, ni en Hacienda para IVA o Impuesto de Sociedades, operando totalmente en la clandestinidad durante 6 años. Utilizaron cuentas bancarias personales y offshore para mover fondos. En 2024, una inspección de la Agencia Tributaria, tras una denuncia anónima, descubrió la falta de alta. Aplicando el principio de automaticidad, se impusieron de inmediato: sanciones del 150% de la deuda tributaria estimada (5 millones de euros), embargo automático de todas las cuentas vinculadas, inhabilitación profesional automática de los administradores por 10 años, y responsabilidad solidaria de Ana y Luis con su patrimonio personal. La empresa colapsó en días, dejando a 50 empleados sin salarios y a clientes con proyectos a medio hacer, desencadenando una crisis mediática y múltiples demandas penales por delito fiscal y alzamiento de bienes.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué significa el 'principio de automaticidad' en el contexto de falta de alta empresarial?",
+      "options": [
+        "La necesidad de un juicio previo para imponer sanciones.",
+        "La aplicación inmediata de sanciones administrativas sin necesidad de resolución judicial previa, al detectarse la infracción.",
+        "Un proceso voluntario de regularización por parte de la empresa.",
+        "La exención automática de responsabilidad si la empresa es pequeña."
+      ],
+      "correct_option_id": "b",
+      "explanation": "El principio de automaticidad implica que, al constatarse la falta de alta (infracción tributaria o administrativa grave), las sanciones y medidas se aplican de forma automática por la autoridad, sin requerir un procedimiento judicial largo, basándose en normativas como la Ley General Tributaria."
+    },
+    {
+      "id": "q2",
+      "question": "En el caso de Innovatech, ¿cuál fue la sanción automática inicial por falta de alta?",
+      "options": [
+        "Una advertencia por escrito.",
+        "Multa del 50% de la deuda tributaria.",
+        "Sanciones del 150% de la deuda tributaria estimada y embargo de cuentas.",
+        "Cierre temporal de la empresa por un mes."
+      ],
+      "correct_option_id": "c",
+      "explanation": "Según el escenario, se aplicaron sanciones automáticas del 150% de la deuda tributaria estimada (5 millones de euros) y embargo de cuentas, reflejando la gravedad extrema de operar sin alta durante años."
+    },
+    {
+      "id": "q3",
+      "question": "¿Quiénes son responsables solidariamente en este caso bajo el principio de automaticidad?",
+      "options": [
+        "Solo la empresa como persona jurídica.",
+        "Los empleados de la empresa.",
+        "Los administradores de hecho o de derecho, como Ana y Luis, con su patrimonio personal.",
+        "Los clientes de Innovatech."
+      ],
+      "correct_option_id": "c",
+      "explanation": "En casos de falta de alta, los administradores (de hecho o de derecho) suelen tener responsabilidad solidaria con su patrimonio personal, ya que el principio de automaticidad extiende la responsabilidad para disuadir fraudes graves."
+    },
+    {
+      "id": "q4",
+      "question": "¿Puede Innovatech regularizar su situación después de la aplicación del principio de automaticidad?",
+      "options": [
+        "Sí, pagando las sanciones y dándose de alta retroactivamente, pero las sanciones y embargos automáticos no se revocan.",
+        "No, la empresa es disuelta automáticamente sin opción a regularización.",
+        "Sí, y todas las sanciones se anulan si se regulariza en 30 días.",
+        "Solo si obtiene un perdón judicial."
+      ],
+      "correct_option_id": "a",
+      "explanation": "Aunque la empresa puede intentar regularizarse pagando deudas y dándose de alta, las sanciones automáticas (como multas y embargos) ya aplicadas generalmente persisten, ya que el principio de automaticidad busca efectos disuasorios inmediatos."
+    },
+    {
+      "id": "q5",
+      "question": "¿Qué plazo típico tiene la autoridad para aplicar sanciones automáticas por falta de alta?",
+      "options": [
+        "No hay plazo; se aplican en cuanto se detecta la infracción.",
+        "Un plazo de 5 años desde la infracción.",
+        "Debe esperar a una resolución judicial en 6 meses.",
+        "Solo aplica si la empresa no se regulariza en un año."
+      ],
+      "correct_option_id": "a",
+      "explanation": "El principio de automaticidad permite a la autoridad (como Hacienda) imponer sanciones automáticas inmediatamente al detectar la falta de alta, sin plazos de espera, para evitar dilaciones en casos flagrantes."
+    },
+    {
+      "id": "q6",
+      "question": "¿Cómo se notifican usualmente las sanciones automáticas en estos casos extremos?",
+      "options": [
+        "Mediante publicación en prensa.",
+        "Por notificación electrónica o administrativa a la empresa y administradores, a menudo con efectos inmediatos.",
+        "Solo en persona a los dueños.",
+        "No se notifican; se aplican directamente."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Las sanciones automáticas se notifican mediante vías administrativas (como notificación electrónica), pero su aplicación puede ser inmediata o en breve plazo, sin esperar aceptación, reforzando el carácter automático."
+    },
+    {
+      "id": "q7",
+      "question": "¿Existe recurso contra las sanciones automáticas por falta de alta?",
+      "options": [
+        "No, son irrevocables.",
+        "Sí, se puede recurrir ante la vía administrativa o judicial, pero no suspenden automáticamente la ejecución de las sanciones.",
+        "Solo si la empresa demuestra inocencia en un juicio penal.",
+        "Sí, y las sanciones se paralizan hasta la resolución del recurso."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Aunque se puede recurrir las sanciones (ej., vía recurso de alzada o contencioso-administrativo), el principio de automaticidad a menudo implica que las medidas (como embargos) no se suspenden durante el recurso, salvo excepciones."
+    },
+    {
+      "id": "q8",
+      "question": "¿Qué pasa con los contratos firmados por Innovatech durante la falta de alta?",
+      "options": [
+        "Son nulos de pleno derecho automáticamente.",
+        "Pueden ser válidos civilmente, pero la empresa enfrenta responsabilidades administrativas; los clientes pueden reclamar daños.",
+        "Se convierten en responsabilidad exclusiva de los empleados.",
+        "Son renegociados automáticamente por la autoridad."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Los contratos pueden seguir siendo válidos en derecho civil, pero la falta de alta expone a la empresa a sanciones, y los clientes pueden demandar por incumplimiento o daños, agravando la situación."
+    },
+    {
+      "id": "q9",
+      "question": "¿Afecta la falta de alta y las sanciones automáticas a los empleados de Innovatech?",
+      "options": [
+        "No, los empleados están protegidos automáticamente por ley.",
+        "Sí, pueden perder salarios y derechos laborales si la empresa quiebra, y enfrentar responsabilidad si colaboraron en el fraude.",
+        "Solo si son administradores.",
+        "La autoridad garantiza sus salarios automáticamente."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Los empleados pueden verse afectados, por ejemplo, perdiendo salarios si la empresa colapsa, y en casos extremos, si participaron en actividades fraudulentas, podrían tener responsabilidad penal o administrativa."
+    },
+    {
+      "id": "q10",
+      "question": "¿Qué papel podrían tener auditores externos en detectar la falta de alta en casos como este?",
+      "options": [
+        "Ninguno, ya que la empresa no estaba auditada.",
+        "Podrían haber detectado irregularidades en auditorías voluntarias, pero al no existir alta, no había obligación legal de auditar.",
+        "Están obligados a denunciar automáticamente a Hacienda.",
+        "Son responsables solidarios si no informaron."
+      ],
+      "correct_option_id": "b",
+      "explanation": "En este caso, al operar clandestinamente, Innovatech probablemente evitó auditorías. Si hubiera auditores, en contextos normales, podrían detectar señales, pero la falta de alta elimina muchas obligaciones formales."
+    },
+    {
+      "id": "q11",
+      "question": "¿Hay responsabilidad penal para Ana y Luis además de la administrativa?",
+      "options": [
+        "No, solo administrativa.",
+        "Sí, pueden enfrentar delitos como delito fiscal o alzamiento de bienes, con penas de prisión.",
+        "Solo si evadieron más de 1 millón de euros.",
+        "La responsabilidad penal es automáticamente exonerada si pagan las sanciones."
+      ],
+      "correct_option_id": "b",
+      "explanation": "En casos extremos de falta de alta con evasión masiva, como aquí, los administradores pueden enfrentar responsabilidad penal por delitos fiscales (ej., en España, delito contra Hacienda Pública), con posibles penas de prisión."
+    },
+    {
+      "id": "q12",
+      "question": "¿Cómo se calculan típicamente las multas automáticas por falta de alta?",
+      "options": [
+        "Un porcentaje fijo del capital social.",
+        "Basado en la deuda tributaria estimada, a menudo con porcentajes altos (ej., 100-150%) y recargos.",
+        "Según el número de empleados.",
+        "Solo se calculan después de un juicio."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Las multas automáticas suelen calcularse como un porcentaje de la deuda tributaria evadida (estimada por la autoridad), con recargos por mora y porcentajes sancionadores altos para disuadir, como el 150% en este escenario."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué autoridades suelen aplicar el principio de automaticidad en falta de alta?",
+      "options": [
+        "Solo los jueces penales.",
+        "Agencias tributarias (ej., Hacienda) y administraciones mercantiles, mediante procedimientos administrativos.",
+        "Los clientes afectados.",
+        "Organizaciones internacionales."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Autoridades administrativas como Agencias Tributarias (Hacienda) y registros mercantiles aplican el principio de automaticidad, usando poderes legales para imponer sanciones automáticas sin pasar primero por los tribunales."
+    },
+    {
+      "id": "q14",
+      "question": "¿Podría Innovatech declararse en bancarrota para evitar las responsabilidades automáticas?",
+      "options": [
+        "Sí, y todas las deudas se cancelan.",
+        "Podría iniciar concurso de acreedores, pero las deudas con Hacienda y sanciones suelen ser privilegiadas y no se extinguen fácilmente.",
+        "No, porque nunca estuvo legalmente constituida.",
+        "Solo si obtiene un acuerdo con los acreedores en 24 horas."
+      ],
+      "correct_option_id": "b",
+      "explanation": "Aunque podría declararse en concurso (bancarrota), las deudas tributarias y sanciones administrativas a menudo tienen privilegio, y el principio de automaticidad puede hacer que los administradores sigan siendo responsables solidariamente, limitando el alivio."
+    },
+    {
+      "id": "q15",
+      "question": "¿Qué medida preventiva clave deben tomar las empresas para evitar este escenario extremo?",
+      "options": [
+        "Operar en efectivo para evitar rastros.",
+        "Darse de alta en registros mercantiles y tributarios antes de iniciar actividades, y cumplir con obligaciones formales.",
+        "Contratar solo empleados temporales.",
+        "Usar nombres falsos en los contratos."
+      ],
+      "correct_option_id": "b",
+      "explanation": "La medida preventiva esencial es darse de alta legalmente (Registro Mercantil, Hacienda) antes de operar y mantener el cumplimiento normativo, evitando así la aplicación del principio de automaticidad y sus severas consecuencias."
+    }
+  ]
+}

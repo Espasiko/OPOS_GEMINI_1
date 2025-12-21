@@ -1,0 +1,186 @@
+{
+  "topic": "Trabajadores Fijos Discontinuos: Llamamiento y Desempleo (Cómputo Antigüedad)",
+  "scenario": "María es una trabajadora fija discontinua en un complejo hotelero en la Costa del Sol. Su contrato se inició el 1 de enero de 2015. La empresa la llama para trabajar durante la temporada alta (junio a septiembre) y en eventos especiales. A lo largo de los años, ha tenido los siguientes períodos de actividad: - 2015: 1 junio - 30 septiembre. - 2016: 1 junio - 30 septiembre. - 2017: 1 junio - 30 septiembre, más 15 días en diciembre por un evento. - 2018: La empresa no la llamó en junio debido a una reestructuración, pero la llamó el 1 de julio al 30 septiembre. - 2019: 1 junio - 30 septiembre. - 2020: Debido a la pandemia, la temporada se redujo: 1 julio - 31 agosto. - 2021: 1 junio - 30 septiembre. - 2022: 1 junio - 30 septiembre, y fue despedida el 30 de septiembre por causas económicas. Durante los períodos de inactividad, María ha cobrado el desempleo cuando ha tenido derecho. En 2023, la empresa la llama de nuevo el 1 de junio, pero María está cobrando una prestación por desempleo desde enero de 2023. En su historial, ha cotizado un total de 1.200 días desde 2015, con bases de cotización variables. La empresa tiene 10 trabajadores fijos discontinuos en situaciones similares, y en 2018 priorizó a otros por antigüedad. En 2020, el hotel cerró parcialmente por fuerza mayor. María desea saber sus derechos de antigüedad, desempleo y llamamiento.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué define a un trabajador fijo discontinuo según la legislación laboral española?",
+      "options": [
+        "Un trabajador con contrato temporal por obra o servicio",
+        "Un trabajador con contrato indefinido pero que presta servicios en períodos fijos o variables de actividad",
+        "Un trabajador autónomo con actividad estacional",
+        "Un trabajador con contrato de prácticas o formación"
+      ],
+      "correct_option_id": "Un trabajador con contrato indefinido pero que presta servicios en períodos fijos o variables de actividad",
+      "explanation": "El trabajador fijo discontinuo tiene un contrato indefinido, pero su prestación de servicios se realiza en períodos de actividad e inactividad, típicamente en sectores estacionales. No es un contrato temporal, sino una modalidad de contrato indefinido."
+    },
+    {
+      "id": "q2",
+      "question": "¿Cómo se computa la antigüedad de María a fecha de 1 de enero de 2023, considerando todos sus períodos de actividad?",
+      "options": [
+        "Solo se cuentan los días trabajados desde 2015",
+        "Se cuenta desde el inicio del contrato en 2015, incluyendo períodos de inactividad",
+        "Se cuenta solo desde el último período de actividad en 2022",
+        "Se cuenta desde 2015, pero excluyendo los períodos donde no fue llamada"
+      ],
+      "correct_option_id": "Se cuenta desde el inicio del contratos en 2015, incluyendo períodos de inactividad",
+      "explanation": "En los trabajadores fijos discontinuos, la antigüedad se computa desde la fecha de inicio del contrato, incluyendo los períodos de inactividad, para derechos como indemnizaciones, vacaciones, y ascensos. Esto está regulado en el Estatuto de los Trabajadores."
+    },
+    {
+      "id": "q3",
+      "question": "¿Qué efecto tienen los períodos de inactividad de María en su antigüedad para el cálculo de indemnizaciones por despido?",
+      "options": [
+        "No se tienen en cuenta, solo los días trabajados",
+        "Se computan parcialmente, al 50%",
+        "Se computan en su totalidad como si fueran días trabajados",
+        "Solo se computan si ha cobrado desempleo durante ellos"
+      ],
+      "correct_option_id": "Se computan en su totalidad como si fueran días trabajados",
+      "explanation": "La antigüedad de un trabajador fijo discontinuo incluye todos los períodos desde el inicio del contrato, tanto de actividad como de inactividad, para el cálculo de indemnizaciones por despido, según jurisprudencia consolidada."
+    },
+    {
+      "id": "q4",
+      "question": "En 2018, la empresa no llamó a María en junio pero sí en julio. ¿Qué derecho tiene María respecto al llamamiento?",
+      "options": [
+        "Debe ser llamada por orden de antigüedad entre los fijos discontinuos",
+        "La empresa puede decidir libremente a quién llamar",
+        "Debe ser llamada solo si hay un acuerdo previo por escrito",
+        "No tiene derecho a ser llamada si la empresa reestructura"
+      ],
+      "correct_option_id": "Debe ser llamada por orden de antigüedad entre los fijos discontinuos",
+      "explanation": "Los trabajadores fijos discontinuos tienen derecho a ser llamados por orden de antigüedad en la empresa, salvo que existan causas justificadas. La reestructuración no exime de este deber, a menos que sea por fuerza mayor."
+    },
+    {
+      "id": "q5",
+      "question": "¿Cuál es el requisito mínimo de cotización para que María acceda a la prestación por desempleo después de su despido en 2022?",
+      "options": [
+        "180 días cotizados en los últimos 6 años",
+        "360 días cotizados en los últimos 6 años",
+        "720 días cotizados en los últimos 6 años",
+        "No tiene requisitos por ser fija discontinua"
+      ],
+      "correct_option_id": "360 días cotizados en los últimos 6 años",
+      "explanation": "Para acceder a la prestación contributiva por desempleo, se requieren al menos 360 días cotizados en los últimos 6 años. Esto aplica a todos los trabajadores, incluidos los fijos discontinuos."
+    },
+    {
+      "id": "q6",
+      "question": "¿Cómo se computan los períodos de carencia para el desempleo en el caso de María, considerando su historial desde 2015?",
+      "options": [
+        "Solo los días trabajados en cada período de actividad",
+        "Todos los días desde el inicio del contrato, incluyendo inactividad",
+        "Solo los días cotizados efectivamente",
+        "Los días en que cobró desempleo anteriormente"
+      ],
+      "correct_option_id": "Solo los días cotizados efectivamente",
+      "explanation": "Para el acceso y cálculo del desempleo, solo se computan los días efectivamente cotizados durante los períodos de actividad. Los períodos de inactividad no cotizados no cuentan para la carencia."
+    },
+    {
+      "id": "q7",
+      "question": "En 2023, María está cobrando desempleo desde enero y la empresa la llama el 1 de junio. ¿Qué ocurre si María rechaza el llamamiento?",
+      "options": [
+        "Puede seguir cobrando el desempleo sin consecuencias",
+        "Debe suspender el desempleo y aceptar el trabajo",
+        "Pierde el derecho al desempleo por rechazar una oferta adecuada",
+        "Solo afecta si el llamamiento es por escrito"
+      ],
+      "correct_option_id": "Pierde el derecho al desempleo por rechazar una oferta adecuada",
+      "explanation": "Si un trabajador en desempleo rechaza una oferta de trabajo adecuada, incluido un llamamiento como fija discontinua, puede perder el derecho a la prestación por desempleo, según la ley."
+    },
+    {
+      "id": "q8",
+      "question": "Tras su despido en 2022 por causas económicas, ¿a qué indemnización tiene derecho María por su antigüedad desde 2015?",
+      "options": [
+        "20 días por año trabajado, con máximo de 12 mensualidades",
+        "33 días por año trabajado, con máximo de 24 mensualidades",
+        "45 días por año trabajado, con máximo de 42 mensualidades",
+        "No tiene derecho a indemnización por ser despido económico"
+      ],
+      "correct_option_id": "20 días por año trabajado, con máximo de 12 mensualidades",
+      "explanation": "Por despido por causas económicas, la indemnización es de 20 días por año de servicio, con un máximo de 12 mensualidades. La antigüedad se calcula desde 2015 incluyendo períodos de inactividad."
+    },
+    {
+      "id": "q9",
+      "question": "¿Cómo se calcula la base reguladora de la prestación por desempleo de María, considerando sus bases de cotización variables?",
+      "options": [
+        "Se toma la media de las bases de los últimos 180 días cotizados",
+        "Se toma la media de las bases de los últimos 360 días cotizados",
+        "Se toma la base más alta de los últimos 6 meses",
+        "Se usa una base fija establecida por ley"
+      ],
+      "correct_option_id": "Se toma la media de las bases de los últimos 180 días cotizados",
+      "explanation": "La base reguladora para el desempleo se calcula como la media de las bases de cotización de los últimos 180 días cotizados anteriores a la situación legal de desempleo."
+    },
+    {
+      "id": "q10",
+      "question": "¿Qué diferencia clave existe entre un trabajador fijo discontinuo y un trabajador temporal por obra o servicio?",
+      "options": [
+        "El fijo discontinuo tiene derecho a indemnización por fin de contrato",
+        "El temporal tiene antigüedad desde el inicio del contrato",
+        "El fijo discontinuo tiene contrato indefinido y derecho a llamamiento prioritario",
+        "No hay diferencias significativas"
+      ],
+      "correct_option_id": "El fijo discontinuo tiene contrato indefinido y derecho a llamamiento prioritario",
+      "explanation": "El trabajador fijo discontinuo tiene un contrato indefinido, no temporal, y derecho a ser llamado prioritariamente en períodos de actividad, a diferencia de los temporales cuyo contrato finaliza con la obra o servicio."
+    },
+    {
+      "id": "q11",
+      "question": "¿Qué derechos tiene María durante los períodos de inactividad como fija discontinua?",
+      "options": [
+        "Derecho a salario y vacaciones",
+        "Derecho a desempleo si cumple requisitos, y conservación de antigüedad",
+        "Ningún derecho, ya que no está trabajando",
+        "Solo derecho a formación gratuita"
+      ],
+      "correct_option_id": "Derecho a desempleo si cumple requisitos, y conservación de antigüedad",
+      "explanation": "Durante la inactividad, los fijos discontinuos no tienen derecho a salario, pero pueden acceder al desempleo si reúnen los requisitos, y su antigüedad se mantiene para derechos laborales."
+    },
+    {
+      "id": "q12",
+      "question": "En 2020, la temporada se redujo por la pandemia. ¿Cómo afecta esto al cómputo de antigüedad de María?",
+      "options": [
+        "No afecta, la antigüedad sigue computándose normalmente",
+        "Se suspende la antigüedad durante ese período",
+        "Solo se computan los días trabajados en 2020",
+        "La empresa puede rescindir el contrato sin indemnización"
+      ],
+      "correct_option_id": "No afecta, la antigüedad sigue computándose normalmente",
+      "explanation": "La reducción de jornada o actividad por fuerza mayor, como la pandemia, no afecta al cómputo de la antigüedad, que continúa acumulándose desde el inicio del contrato."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué consecuencia tiene para la empresa no haber llamado a María en junio de 2018 según lo habitual?",
+      "options": [
+        "Debe indemnizar a María por los días no trabajados",
+        "Debe priorizarla en futuros llamamientos o compensar económicamente",
+        "No tiene consecuencia si fue por reestructuración justificada",
+        "María puede considerar el contrato extinguido"
+      ],
+      "correct_option_id": "Debe priorizarla en futuros llamamientos o compensar económicamente",
+      "explanation": "Si la empresa no llama a un fijo discontinuo sin causa justificada, puede incurrir en responsabilidades, como priorizar en futuros llamamientos o pagar una compensación por daños, según jurisprudencia."
+    },
+    {
+      "id": "q14",
+      "question": "Para calcular la antigüedad de María a efectos de vacaciones, ¿qué períodos se consideran?",
+      "options": [
+        "Solo los días trabajados en el último año",
+        "Todos los días desde el inicio del contrato, incluyendo inactividad",
+        "Solo los períodos de actividad en el último año natural",
+        "Los días cotizados en los últimos 6 meses"
+      ],
+      "correct_option_id": "Todos los días desde el inicio del contrato, incluyendo inactividad",
+      "explanation": "La antigüedad para vacaciones en trabajadores fijos discontinuos se computa desde el inicio del contrato, incluyendo períodos de inactividad, lo que afecta a la duración y remuneración de las vacaciones."
+    },
+    {
+      "id": "q15",
+      "question": "Si María hubiera sido llamada en 2023 y aceptado, ¿cómo afecta a su prestación por desempleo que estaba cobrando?",
+      "options": [
+        "El desempleo se suspende automáticamente y se reinicia después",
+        "Puede cobrar desempleo y salario simultáneamente",
+        "Debe renunciar al desempleo y empezar a trabajar sin compensación",
+        "El desempleo se extingue y pierde el resto de la prestación"
+      ],
+      "correct_option_id": "El desempleo se suspende automáticamente y se reinicia después",
+      "explanation": "Al aceptar un llamamiento como fija discontinua, la prestación por desempleo se suspende durante el período de actividad. Una vez finalice, puede solicitar la reanudación si le quedan derechos, sin perder el resto de la prestación."
+    }
+  ]
+}

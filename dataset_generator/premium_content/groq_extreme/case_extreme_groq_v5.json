@@ -1,0 +1,426 @@
+{
+  "questions": [
+    {
+      "correct_option_id": "a",
+      "explanation": "La Tarifa Plana es una cuota fija mensual que se aplica durante los primeros 12 meses de inscripción en el RETA, y no depende de la situación laboral del autónomo.",
+      "id": "1",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, siempre que no supere el límite de ingresos",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, debe cambiar a la cotización ordinaria",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No, debe dejar de cotizar en el RETA",
+          "true": false
+        }
+      ],
+      "question": "¿Puede Ana seguir pagando la Tarifa Plana después de dejar su trabajo como empleada?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Es importante que Ana comunique el cambio en su situación laboral a la Seguridad Social para evitar problemas con su cotización y asegurarse de que está cumpliendo con todas las obligaciones legales y tributarias.",
+      "id": "2",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, para evitar problemas con su cotización",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, no es necesario",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No, solo si cambia de negocio",
+          "true": false
+        }
+      ],
+      "question": "¿Debe Ana comunicar el cambio en su situación laboral a la Seguridad Social?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La pluriactividad puede afectar la cotización en el RETA, ya que Ana debe cotizar por ambos negocios.",
+      "id": "3",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, debe cotizar por ambos negocios",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, no afecta su cotización",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No, solo cotiza por uno de los negocios",
+          "true": false
+        }
+      ],
+      "question": "¿Afetará el nuevo estatus de Ana como pluriactiva su cotización en el RETA?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Ana debe declarar todos sus ingresos y gastos en su declaración de la renta, ya que es obligatorio para todos los contribuyentes.",
+      "id": "4",
+      "options": [
+        {
+          "id": "a",
+          "text": "Debe declarar todos sus ingresos y gastos en la declaración de la renta",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No debe declarar nada, ya que es autónomo",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No debe declarar sus gastos, solo sus ingresos",
+          "true": false
+        }
+      ],
+      "question": "¿Cómo debe Ana declarar sus ingresos y gastos en su declaración de la renta?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Ana debe pagar impuestos sobre sus beneficios, ya que es obligatorio para todos los contribuyentes.",
+      "id": "5",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, debe pagar impuestos sobre sus beneficios",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, no debe pagar impuestos",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No, solo debe pagar impuestos sobre sus ingresos personales",
+          "true": false
+        }
+      ],
+      "question": "¿Debe Ana pagar impuestos sobre su negocio?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Ana puede solicitar el paro si su negocio no tiene éxito, siempre que cumpla con los requisitos establecidos por la ley.",
+      "id": "6",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, siempre que cumpla con los requisitos",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, no puede solicitar el paro",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No, solo si deja de cotizar en el RETA",
+          "true": false
+        }
+      ],
+      "question": "¿Puede Ana solicitar el paro si su negocio no tiene éxito?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La cotización en el RETA es necesaria para acceder a la prestación por desempleo, por lo que Ana debe asegurarse de que está cumpliendo con todas las obligaciones legales y tributarias.",
+      "id": "7",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, la cotización en el RETA es necesaria para acceder a la prestación por desempleo",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "No, no afecta su acceso a la prestación por desempleo",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Depende de la situación concreta de Ana",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No, solo si Ana deja de cotizar en el RETA",
+          "true": false
+        }
+      ],
+      "question": "¿Afetará la cotización de Ana en el RETA su acceso a la prestación por desempleo?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La Tarifa Plana es una cuota fija mensual que se aplica durante los primeros 12 meses de inscripción en el RETA, y es una medida para fomentar el emprendimiento y la creación de empleo.",
+      "id": "8",
+      "options": [
+        {
+          "id": "a",
+          "text": "Una cuota fija mensual que se aplica durante los primeros 12 meses de inscripción en el RETA",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Una cotización ordinaria que se aplica a todos los autónomos",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Una prestación por desempleo para autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un impuesto sobre los beneficios de los autónomos",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es la Tarifa Plana en el Régimen de Autónomos?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La pluriactividad se refiere a la situación en la que un autónomo tiene varios negocios o actividades simultáneamente, lo que puede afectar su cotización en el RETA y su acceso a la prestación por desempleo.",
+      "id": "9",
+      "options": [
+        {
+          "id": "a",
+          "text": "La situación en la que un autónomo tiene varios negocios o actividades simultáneamente",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La situación en la que un autónomo tiene un solo negocio o actividad",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La situación en la que un autónomo deja de cotizar en el RETA",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La situación en la que un autónomo solicita el paro",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es la pluriactividad en el Régimen de Autónomos?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El Régimen de Autónomos (RETA) es un régimen especial de la Seguridad Social para autónomos y empresarios, que les permite cotizar y acceder a prestaciones como la jubilación, la incapacidad temporal y la prestación por desempleo.",
+      "id": "10",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un régimen especial de la Seguridad Social para autónomos y empresarios",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Un régimen especial de la Seguridad Social para empleados",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Un régimen especial de la Seguridad Social para funcionarios",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un régimen especial de la Seguridad Social para jubilados",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es el Régimen de Autónomos (RETA)?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La cotización en el Régimen de Autónomos es la cantidad que un autónomo paga mensualmente para acceder a prestaciones de la Seguridad Social, como la jubilación, la incapacidad temporal y la prestación por desempleo.",
+      "id": "11",
+      "options": [
+        {
+          "id": "a",
+          "text": "La cantidad que un autónomo paga mensualmente para acceder a prestaciones de la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La cantidad que un autónomo paga mensualmente para acceder a prestaciones de la Seguridad Social y al paro",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La cantidad que un autónomo paga mensualmente para acceder a prestaciones de la Seguridad Social, al paro y a la jubilación",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La cantidad que un autónomo paga mensualmente para acceder a prestaciones de la Seguridad Social, al paro, a la jubilación y a la incapacidad temporal",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es la cotización en el Régimen de Autónomos?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La prestación por desempleo en el Régimen de Autónomos es una prestación económica que se otorga a autónomos que han perdido su negocio o actividad, y que han cotizado en el RETA.",
+      "id": "12",
+      "options": [
+        {
+          "id": "a",
+          "text": "Una prestación económica que se otorga a autónomos que han perdido su negocio o actividad",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Una prestación económica que se otorga a autónomos que han perdido su negocio o actividad y que han cotizado en el RETA",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Una prestación económica que se otorga a autónomos que han perdido su negocio o actividad y que han cotizado en el RETA durante al menos 12 meses",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Una prestación económica que se otorga a autónomos que han perdido su negocio o actividad y que han cotizado en el RETA durante al menos 24 meses",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es la prestación por desempleo en el Régimen de Autónomos?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay plazo específico para solicitar la prestación por desempleo en el Régimen de Autónomos, pero es importante solicitarla lo antes posible para evitar retrasos en el pago de la prestación.",
+      "id": "13",
+      "options": [
+        {
+          "id": "a",
+          "text": "15 días desde la pérdida del negocio o actividad",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "30 días desde la pérdida del negocio o actividad",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "60 días desde la pérdida del negocio o actividad",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay plazo específico para solicitar la prestación por desempleo",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para solicitar la prestación por desempleo en el Régimen de Autónomos?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "El importe de la prestación por desempleo en el Régimen de Autónomos es el 70% del promedio de las bases de cotización de los 6 meses anteriores.",
+      "id": "14",
+      "options": [
+        {
+          "id": "a",
+          "text": "El 50% del promedio de las bases de cotización de los 6 meses anteriores",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El 60% del promedio de las bases de cotización de los 6 meses anteriores",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "El 70% del promedio de las bases de cotización de los 6 meses anteriores",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "El 80% del promedio de las bases de cotización de los 6 meses anteriores",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el importe de la prestación por desempleo en el Régimen de Autónomos?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "El plazo de duración de la prestación por desempleo en el Régimen de Autónomos es de 12 meses.",
+      "id": "15",
+      "options": [
+        {
+          "id": "a",
+          "text": "6 meses",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "12 meses",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "18 meses",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "24 meses",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el plazo de duración de la prestación por desempleo en el Régimen de Autónomos?"
+    }
+  ],
+  "scenario": "Ana, una joven emprendedora, decide abrir su propio negocio de diseño gráfico en Madrid. Ella ya trabaja como empleada en una empresa de publicidad, pero quiere complementar su ingreso con su propio negocio. Ana se inscribe en el Régimen de Autónomos (RETA) y opta por la Tarifa Plana, que le permite pagar una cuota fija mensual de 60 euros durante los primeros 12 meses. Sin embargo, Ana pronto se da cuenta de que su negocio requiere más tiempo y esfuerzo del que inicialmente pensó, y decide dejar su trabajo como empleada para dedicarse full-time a su negocio. Mientras tanto, su hermano, Juan, que también es autónomo, le pide que se una a su negocio de construcción como socios, lo que haría que Ana sea pluriactiva. Ana se pregunta si puede seguir pagando la Tarifa Plana, si debe comunicar el cambio en su situación laboral a la Seguridad Social, y si su nuevo estatus como pluriactiva afectará su cotización. Además, Ana tiene dudas sobre cómo declarar sus ingresos y gastos en su declaración de la renta, y si debe pagar impuestos sobre su negocio. Ana también se preocupa por la posibilidad de que su negocio no tenga éxito y deba solicitar el paro, y si su cotización en el RETA le permitirá acceder a la prestación por desempleo. Ana decide consultar con un asesor fiscal para resolver todas sus dudas y asegurarse de que está cumpliendo con todas las obligaciones legales y tributarias.",
+  "topic": "Régimen de Autónomos (RETA): Tarifa Plana y Pluriactividad"
+}

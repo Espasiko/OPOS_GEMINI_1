@@ -1,0 +1,186 @@
+{
+  "topic": "Desempleo: Pago Único y Mantenimiento de Actividad (Criterios SEPE vs Hacienda)",
+  "scenario": "Un trabajador autónomo, tras agotar su prestación contributiva por desempleo, decide solicitar el pago único para iniciar una nueva actividad empresarial. Durante el proceso, se enfrenta a discrepancias entre los criterios del SEPE y Hacienda respecto al mantenimiento de la actividad y la justificación de gastos.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Qué requisito fundamental debe cumplir un trabajador autónomo para acceder al pago único del desempleo según el SEPE?",
+      "options": [
+        "A) Haber estado inscrito como demandante de empleo durante al menos tres meses.",
+        "B) Estar afiliado y en alta en el Régimen Especial de Trabajadores Autónomos.",
+        "C) No haber rechazado ninguna oferta de empleo en los últimos seis meses.",
+        "D) Tener un plan de negocio aprobado por una entidad financiera."
+      ],
+      "correct_option_id": "B",
+      "explanation": "El trabajador autónomo debe estar afiliado y en alta en el Régimen Especial de Trabajadores Autónomos para acceder al pago único."
+    },
+    {
+      "id": "q2",
+      "question": "¿Cuál es el plazo máximo para iniciar la actividad tras recibir el pago único del desempleo?",
+      "options": [
+        "A) 30 días naturales.",
+        "B) 1 mes desde la percepción del pago.",
+        "C) No existe un plazo específico.",
+        "D) 6 meses desde la concesión."
+      ],
+      "correct_option_id": "B",
+      "explanation": "El trabajador debe iniciar la actividad en el plazo de un mes desde la percepción del pago único."
+    },
+    {
+      "id": "q3",
+      "question": "¿Qué ocurre si el trabajador no justifica adecuadamente los gastos realizados con el pago único ante Hacienda?",
+      "options": [
+        "A) Debe devolver el importe íntegro del pago único.",
+        "B) Solo debe justificar el 50% de los gastos.",
+        "C) Puede ser sancionado con una multa proporcional al gasto no justificado.",
+        "D) Pierde el derecho a cualquier prestación futura."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Hacienda puede imponer sanciones si no se justifican adecuadamente los gastos realizados con el pago único."
+    },
+    {
+      "id": "q4",
+      "question": "¿Qué requisito adicional exige el SEPE para reanudar la prestación por desempleo si el trabajador cesa su actividad autónoma después de 24 meses?",
+      "options": [
+        "A) Acreditar motivos económicos, técnicos o de fuerza mayor.",
+        "B) Presentar un informe de viabilidad de la actividad.",
+        "C) No es posible reanudar la prestación después de 24 meses.",
+        "D) Demostrar que no se ha obtenido beneficio económico."
+      ],
+      "correct_option_id": "A",
+      "explanation": "El SEPE exige acreditar motivos económicos, técnicos, productivos u organizativos, o fuerza mayor para reanudar la prestación tras 24 meses."
+    },
+    {
+      "id": "q5",
+      "question": "¿Qué criterio utiliza Hacienda para considerar que un gasto es justificable con el pago único?",
+      "options": [
+        "A) Que el gasto esté relacionado directamente con la actividad empresarial.",
+        "B) Que el gasto sea superior a 1000 euros.",
+        "C) Que el gasto se realice en los primeros 3 meses.",
+        "D) Que el gasto sea validado por un auditor externo."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Hacienda considera justificable el gasto si está directamente relacionado con la actividad empresarial."
+    },
+    {
+      "id": "q6",
+      "question": "¿Qué plazo tiene el trabajador para presentar la justificación de gastos ante Hacienda?",
+      "options": [
+        "A) 3 meses desde el inicio de la actividad.",
+        "B) 6 meses desde la percepción del pago único.",
+        "C) 1 año desde el inicio de la actividad.",
+        "D) No existe un plazo específico."
+      ],
+      "correct_option_id": "B",
+      "explanation": "El trabajador tiene un plazo de 6 meses desde la percepción del pago único para presentar la justificación de gastos."
+    },
+    {
+      "id": "q7",
+      "question": "¿Qué consecuencia tiene para el trabajador no suscribir el compromiso de actividad con el SEPE?",
+      "options": [
+        "A) Pierde el derecho al pago único.",
+        "B) Debe devolver el 50% del pago único.",
+        "C) No puede acceder a otras prestaciones por desempleo.",
+        "D) Recibe una amonestación formal."
+      ],
+      "correct_option_id": "A",
+      "explanation": "No suscribir el compromiso de actividad implica la pérdida del derecho al pago único."
+    },
+    {
+      "id": "q8",
+      "question": "¿Qué tipo de actividades pueden ser financiadas con el pago único del desempleo según el SEPE?",
+      "options": [
+        "A) Solo actividades relacionadas con el sector de la construcción.",
+        "B) Cualquier actividad empresarial o profesional.",
+        "C) Solo actividades que generen empleo para terceros.",
+        "D) Actividades que requieran una inversión inicial superior a 10,000 euros."
+      ],
+      "correct_option_id": "B",
+      "explanation": "El pago único puede financiar cualquier actividad empresarial o profesional."
+    },
+    {
+      "id": "q9",
+      "question": "¿Qué ocurre si el trabajador autónomo no mantiene la actividad durante el tiempo mínimo exigido por el SEPE?",
+      "options": [
+        "A) Debe devolver el pago único íntegro.",
+        "B) Pierde el derecho a futuras prestaciones por 2 años.",
+        "C) Debe pagar una multa equivalente al 20% del pago único.",
+        "D) No ocurre nada si justifica la interrupción."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Si no se mantiene la actividad durante el tiempo mínimo, el trabajador debe devolver el pago único íntegro."
+    },
+    {
+      "id": "q10",
+      "question": "¿Qué documento debe presentar el trabajador ante Hacienda para justificar los gastos del pago único?",
+      "options": [
+        "A) Facturas originales y un informe de gastos.",
+        "B) Solo facturas originales.",
+        "C) Un certificado de un gestor administrativo.",
+        "D) Un contrato de arrendamiento del local."
+      ],
+      "correct_option_id": "A",
+      "explanation": "El trabajador debe presentar facturas originales y un informe detallado de gastos ante Hacienda."
+    },
+    {
+      "id": "q11",
+      "question": "¿Qué plazo tiene el SEPE para resolver la solicitud de pago único?",
+      "options": [
+        "A) 15 días hábiles.",
+        "B) 1 mes.",
+        "C) 3 meses.",
+        "D) 6 meses."
+      ],
+      "correct_option_id": "B",
+      "explanation": "El SEPE tiene un plazo de 1 mes para resolver la solicitud de pago único."
+    },
+    {
+      "id": "q12",
+      "question": "¿Qué sucede si el trabajador autónomo realiza un gasto no justificado con el pago único?",
+      "options": [
+        "A) Debe devolver el importe del gasto no justificado.",
+        "B) Pierde el derecho a cualquier ayuda futura.",
+        "C) Debe pagar una multa del 50% del gasto no justificado.",
+        "D) No puede solicitar préstamos bancarios por 5 años."
+      ],
+      "correct_option_id": "A",
+      "explanation": "El trabajador debe devolver el importe del gasto no justificado."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué requisito debe cumplir un trabajador para que se considere válida la inscripción ininterrumpida como demandante de empleo?",
+      "options": [
+        "A) No superar interrupciones de 60 días naturales.",
+        "B) No superar interrupciones de 90 días naturales.",
+        "C) No tener interrupciones.",
+        "D) No superar interrupciones de 30 días naturales."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Se considera inscripción ininterrumpida si las interrupciones no superan los 90 días naturales."
+    },
+    {
+      "id": "q14",
+      "question": "¿Qué ocurre si el trabajador no inicia la actividad en el plazo establecido por el SEPE?",
+      "options": [
+        "A) Pierde el derecho al pago único y debe devolverlo.",
+        "B) Puede solicitar una prórroga de 1 mes.",
+        "C) Debe pagar una multa equivalente al 10% del pago único.",
+        "D) Pierde el derecho a cualquier prestación futura."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Si no inicia la actividad en el plazo establecido, pierde el derecho al pago único y debe devolverlo."
+    },
+    {
+      "id": "q15",
+      "question": "¿Qué tipo de justificación adicional puede requerir Hacienda para validar los gastos del pago único?",
+      "options": [
+        "A) Un informe de un auditor registrado.",
+        "B) Un certificado de la Cámara de Comercio.",
+        "C) Un contrato de compraventa de activos.",
+        "D) Una declaración jurada del trabajador."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Hacienda puede requerir un informe de un auditor registrado para validar los gastos del pago único."
+    }
+  ]
+}

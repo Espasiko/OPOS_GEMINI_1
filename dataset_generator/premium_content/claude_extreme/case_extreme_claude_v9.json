@@ -1,0 +1,381 @@
+{
+  "topic": "Régimen del Mar: Coeficientes de bonificación por edad en embarcaciones de pesca de altura",
+  "scenario": "Don Ramiro Costales Marín, nacido el 15 de marzo de 1967, inició su actividad laboral como marinero en la embarcación de pesca de altura \"Estrella del Cantábrico\" el 1 de septiembre de 1985, con 18 años recién cumplidos. La embarcación, con matrícula de Santander y arqueo bruto de 185 toneladas, realizaba campañas de pesca en el Gran Sol con períodos de navegación superiores a 72 horas continuadas.\n\nDurante el período comprendido entre el 1 de septiembre de 1985 y el 31 de diciembre de 1995, Don Ramiro cotizó ininterrumpidamente en el Régimen Especial de Trabajadores del Mar, grupo primero, categoría de marinero. El 1 de enero de 1996, fue ascendido a contramaestre en la misma embarcación, manteniendo esta categoría hasta el 15 de junio de 2002, fecha en la que la embarcación sufrió un accidente que la dejó fuera de servicio durante 8 meses.\n\nDurante este período de inactividad forzosa (16 de junio de 2002 a 15 de febrero de 2003), Don Ramiro percibió prestación por desempleo, manteniéndose en situación de alta especial en el Régimen del Mar. El 16 de febrero de 2003 se reincorporó, pero esta vez en la embarcación \"Nuevo Horizonte\", de características similares pero con matrícula de Vigo, donde continuó como contramaestre hasta el 30 de abril de 2008.\n\nEl 1 de mayo de 2008, Don Ramiro cambió radicalmente de actividad, incorporándose como encargado de almacén en una empresa conservera en tierra, causando alta en el Régimen General de la Seguridad Social. Permaneció en esta actividad hasta el 31 de agosto de 2015, fecha en la que, por motivos económicos personales y nostalgia del mar, decidió regresar a la actividad pesquera.\n\nEl 1 de septiembre de 2015, con 48 años cumplidos, Don Ramiro se reincorporó como marinero (reducción voluntaria de categoría por facilitar su contratación) en la embarcación de pesca de altura \"Galerna III\", con matrícula de La Coruña y arqueo bruto de 220 toneladas, dedicada a la pesca de merluza en caladeros del Atlántico Norte. Continuó en esta embarcación hasta el 28 de febrero de 2023.\n\nEl 1 de marzo de 2023, Don Ramiro solicitó su jubilación ordinaria en el Régimen Especial de Trabajadores del Mar, alegando tener 55 años cumplidos y acreditando un total de 30 años y 6 meses de cotización efectiva en dicho régimen especial, de los cuales 23 años y 9 meses correspondían a servicios prestados en embarcaciones de pesca de altura.\n\nLa Dirección Provincial del Instituto Nacional de la Seguridad Social debe resolver sobre: (1) el reconocimiento del derecho a la jubilación anticipada por coeficientes reductores; (2) la aplicación de los coeficientes de bonificación por edad según la normativa vigente; (3) la consideración del período de desempleo de 2002-2003; (4) la incidencia del período cotizado en Régimen General (2008-2015) en el cómputo de coeficientes; y (5) la edad efectiva de jubilación aplicable considerando las bonificaciones procedentes.\n\nDatos adicionales: Don Ramiro nunca sufrió accidentes laborales graves, no tiene reconocida discapacidad, y la base reguladora calculada asciende a 2.450 euros mensuales. La empresa armadora ha presentado certificación acreditativa de las navegaciones y modalidad de pesca conforme al Registro de Buques Pesqueros.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Según el RD 1311/2007, ¿qué coeficiente reductor corresponde a la actividad de pesca de altura en buques de más de 150 TRB (como los descritos)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "0,15."
+        },
+        {
+          "id": "b",
+          "text": "0,30."
+        },
+        {
+          "id": "c",
+          "text": "0,40.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "0,20."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "La pesca de altura en buques de cierto tonelaje y lejanía (Gran Sol) tiene el coeficiente máximo de 0,40."
+    },
+    {
+      "id": "q2",
+      "question": "Calculando los periodos bonificables (~29,4 años efectivos de mar), la reducción teórica sería de 11,76 años. ¿Se aplica íntegramente?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, adelantando la jubilación a los 54 años."
+        },
+        {
+          "id": "b",
+          "text": "No, existe un tope máximo de reducción de 5 años."
+        },
+        {
+          "id": "c",
+          "text": "No, el tope máximo de reducción de la edad de jubilación por coeficientes del mar es de 10 años.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Sí, pero se penaliza la cuantía."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "Art. 5 RD 1311/2007. La edad de jubilación no puede reducirse en más de 10 años respecto a la ordinaria."
+    },
+    {
+      "id": "q3",
+      "question": "Con 37 años y medio cotizados en total (Mar + Tierra), ¿cuál es la edad ordinaria de jubilación de Ramiro en 2023?",
+      "options": [
+        {
+          "id": "a",
+          "text": "65 años (si tuviera 37 años y 9 meses o más)."
+        },
+        {
+          "id": "b",
+          "text": "66 años y 4 meses (al no llegar a los 37a y 9m exigidos en 2023).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "67 años."
+        },
+        {
+          "id": "d",
+          "text": "65 años siempre en el Mar."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "No llega al periodo de carencia cualificada para los 65 años (le faltan meses). Aplica la edad transitoria (66a 4m)."
+    },
+    {
+      "id": "q4",
+      "question": "Aplicando el tope de 10 años a la edad de 66a 4m, la edad bonificada exigible es 56a 4m. Ramiro tiene casi 56 (le faltan días). ¿Puede jubilarse el 1 de marzo?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, se redondea."
+        },
+        {
+          "id": "b",
+          "text": "No, debe esperar a cumplir la edad exacta resultante de la bonificación (56 años y 4 meses).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, porque tiene más de 55."
+        },
+        {
+          "id": "d",
+          "text": "Depende de la voluntad del INSS."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "La bonificación actúa como 'edad ficticia'. Si la edad real + bonificación >= edad legal, se jubila. Aquí: 55,9 + 10 = 65,9 < 66,33. No llega."
+    },
+    {
+      "id": "q5",
+      "question": "¿El periodo de Desempleo (2002-2003) genera coeficiente reductor?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, al estar en alta especial en el Mar."
+        },
+        {
+          "id": "b",
+          "text": "No, el coeficiente solo se aplica a periodos de trabajo efectivo a bordo (embarque) y situaciones asimiladas muy concretas (vacaciones, bajas vinculadas). El paro nunca bonifica.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, con coeficiente 0.10."
+        },
+        {
+          "id": "d",
+          "text": "Solo si es paro derivado de naufragio."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Principio básico: Sin penosidad/peligrosidad (estar en tierra cobrando paro) no hay bonificación."
+    },
+    {
+      "id": "q6",
+      "question": "El periodo trabajado en la conservera en tierra (Régimen General), ¿cómo computa?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Resta coeficientes."
+        },
+        {
+          "id": "b",
+          "text": "Computa para la carencia y el porcentaje, pero tiene coeficiente 0.0.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "No computa para la jubilación del Mar."
+        },
+        {
+          "id": "d",
+          "text": "Se transforma en días de mar al 50%."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Los periodos de otros regímenes se totalizan para alcanzar los años necesarios (carencia), pero no generan reducción de edad."
+    },
+    {
+      "id": "q7",
+      "question": "¿Debe Ramiro pagar algo por jubilarse antes?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, un coeficiente penalizador del 8% anual."
+        },
+        {
+          "id": "b",
+          "text": "No, la jubilación con coeficientes se considera 'Ordinaria' a todos los efectos económicos (100% base).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, pierde las pagas extra."
+        },
+        {
+          "id": "d",
+          "text": "Depende de la base."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "La gran ventaja del REM es que anticipas la edad SIN penalización en la cuantía (a diferencia de la anticipada voluntaria)."
+    },
+    {
+      "id": "q8",
+      "question": "Si Ramiro tuviera 55 años reales y la edad bonificada le permitiera jubilarse (hipótesis), ¿podría hacerlo?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, la edad mínima absoluta es 52 años."
+        },
+        {
+          "id": "b",
+          "text": "Sí, pero nunca antes de los 52 años (salvo Minería que es distinto). El Mar tiene tope de 52 años efectivo como regla general implícita por el tope de 10 años sobre los 62 de la antigua anticipada? No, el tope es restar 10 años a la ordinaria.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Podría jubilarse a los 45 si tuviera coeficiente 0.50."
+        },
+        {
+          "id": "d",
+          "text": "La edad mínima es 60."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Al ser la reducción máxima 10 años, la edad mínima teórica ronda los 55-57 años (dependiendo de si la ordinaria es 65 o 67). Matemáticamente 65-10=55."
+    },
+    {
+      "id": "q9",
+      "question": "Si Ramiro se jubila, ¿puede volver a pescar?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, es compatible."
+        },
+        {
+          "id": "b",
+          "text": "No, el disfrute de la pensión bonificada es incompatible con el trabajo que dio lugar a la bonificación.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo en bajura."
+        },
+        {
+          "id": "d",
+          "text": "Sí, a tiempo parcial."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Norma específica. No puedes cobrar anticipadamente por penosidad y seguir expuesto a la penosidad."
+    },
+    {
+      "id": "q10",
+      "question": "¿Se consideran los periodos de 'vacaciones retribuidas y no disfrutadas' cotizadas a la finalización de cada campaña para el coeficiente?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, son tierra."
+        },
+        {
+          "id": "b",
+          "text": "Sí, se asimilan al periodo de embarque precedente.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo la mitad."
+        },
+        {
+          "id": "d",
+          "text": "Depende del Convenio."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Los días de vacaciones generados por el embarque llevan el mismo coeficiente que el embarque."
+    },
+    {
+      "id": "q11",
+      "question": "(Reserva) ¿Cambia el coeficiente por ser Contramaestre en lugar de Marinero?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, los oficiales tienen menos coeficiente."
+        },
+        {
+          "id": "b",
+          "text": "No, el coeficiente se asigna a la clase de buque y tipo de navegación, independientemente de la categoría (salvo excepciones puntuales).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, contramaestre es 0.35."
+        },
+        {
+          "id": "d",
+          "text": "Depende del sueldo."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "La penosidad se vincula al barco (Pesca de altura)."
+    },
+    {
+      "id": "q12",
+      "question": "(Reserva) ¿Cotiza Ramiro por Desempleo en el Régimen del Mar (Grupo I)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, no tienen paro."
+        },
+        {
+          "id": "b",
+          "text": "Sí, el Grupo I (cuenta ajena) tiene plena protección, incluido desempleo y FOGASA.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo el Grupo II."
+        },
+        {
+          "id": "d",
+          "text": "Solo la empresa."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El Grupo I del REM (trabajadores por cuenta ajena en buques grandes) tiene una protección casi idéntica al Régimen General."
+    },
+    {
+      "id": "q13",
+      "question": "(Reserva) Si la empresa no hubiera pagado la cotización adicional, ¿perdería Ramiro la bonificación?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí."
+        },
+        {
+          "id": "b",
+          "text": "No, la responsabilidad es empresarial, el trabajador no pierde el derecho (principio de automaticidad relativa).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Se reduce a la mitad."
+        },
+        {
+          "id": "d",
+          "text": "Debe pagarla él."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El incumplimiento empresarial se persigue por la TGSS, pero no perjudica el reconocimiento del coeficiente al trabajador."
+    },
+    {
+      "id": "q14",
+      "question": "(Reserva) ¿La base reguladora del REM se calcula igual que en el RGSS?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, se usan bases fijas por categorías."
+        },
+        {
+          "id": "b",
+          "text": "En el Grupo I sí, sobre bases reales. En los grupos II y III va por bases tarificadas según provincias.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Siempre bases mínimas."
+        },
+        {
+          "id": "d",
+          "text": "Depende del captura."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Ramiro (Grupo I, buque grande) cotiza por bases reales => cálculo idéntico al RGSS."
+    },
+    {
+      "id": "q15",
+      "question": "(Reserva) ¿Qué pasaría si la solicitud se presentase 3 meses antes de cumplir la edad bonificada?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Se deniega por prematura.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Se admite condicionada."
+        },
+        {
+          "id": "c",
+          "text": "Se guarda en un cajón."
+        },
+        {
+          "id": "d",
+          "text": "Los efectos se retrasan."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "La solicitud de jubilación requiere tener cumplida la edad (o faltar máximo 3 meses PARA la ordinaria o anticipada legal, pero si no se cumple el requisito de edad bonificada en el momento de efectos... normalmente se puede presentar con antelación de 3 meses, pero los efectos son desde el cumplimiento)."
+    }
+  ]
+}

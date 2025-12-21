@@ -1,0 +1,426 @@
+{
+  "questions": [
+    {
+      "correct_option_id": "c",
+      "explanation": "El plazo máximo de duración de la incapacidad temporal es de 540 días",
+      "id": "1",
+      "options": [
+        {
+          "id": "a",
+          "text": "180 días",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "365 días",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "540 días",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "730 días",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el plazo máximo de duración de la incapacidad temporal?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "En el pago delegado, la mutua es la responsable del pago de la incapacidad temporal",
+      "id": "2",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La mutua",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La Seguridad Social",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "El trabajador",
+          "true": false
+        }
+      ],
+      "question": "¿Quién es el responsable del pago de la incapacidad temporal en el pago delegado?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La empresa debe notificar a la mutua y a la Seguridad Social para cambiar del pago delegado al pago directo",
+      "id": "3",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe notificar a la mutua y a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa debe notificar solo a la mutua",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe notificar solo a la Seguridad Social",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No es necesario notificar a nadie",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para cambiar del pago delegado al pago directo?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay plazo establecido para que la Inspección de Trabajo y Seguridad Social inicie una investigación",
+      "id": "4",
+      "options": [
+        {
+          "id": "a",
+          "text": "30 días",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "60 días",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "90 días",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay plazo establecido",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para que la Inspección de Trabajo y Seguridad Social inicie una investigación?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La empresa debe notificar a la Seguridad Social y al trabajador para extinción de la relación laboral debido a incapacidad temporal",
+      "id": "5",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe notificar a la Seguridad Social y al trabajador",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa debe notificar solo a la Seguridad Social",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe notificar solo al trabajador",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No es necesario notificar a nadie",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para extinción de la relación laboral debido a incapacidad temporal?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay plazo establecido para que el trabajador pueda solicitar la revisión de la resolución de extinción",
+      "id": "6",
+      "options": [
+        {
+          "id": "a",
+          "text": "30 días",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "60 días",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "90 días",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay plazo establecido",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para que el trabajador pueda solicitar la revisión de la resolución de extinción?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "La incapacidad temporal continúa hasta su vencimiento",
+      "id": "7",
+      "options": [
+        {
+          "id": "a",
+          "text": "La incapacidad temporal se extingue automáticamente",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La incapacidad temporal continúa hasta su vencimiento",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "La incapacidad temporal se convierte en incapacidad permanente",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La incapacidad temporal se suspende",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el efecto de la extinción de la relación laboral en la incapacidad temporal?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "El trabajador debe solicitarla a la Seguridad Social",
+      "id": "8",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador debe solicitarla a la mutua",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador debe solicitarla a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe solicitarla a la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No es necesario solicitarla",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para solicitar la revisión de la incapacidad temporal?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay plazo establecido para que la Seguridad Social resuelva la solicitud de revisión",
+      "id": "9",
+      "options": [
+        {
+          "id": "a",
+          "text": "30 días",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "60 días",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "90 días",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay plazo establecido",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para que la Seguridad Social resuelva la solicitud de revisión?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay efecto en la relación laboral",
+      "id": "10",
+      "options": [
+        {
+          "id": "a",
+          "text": "La relación laboral se extingue automáticamente",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La relación laboral continúa hasta su vencimiento",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La relación laboral se suspende",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay efecto en la relación laboral",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el efecto de la revisión de la incapacidad temporal en la relación laboral?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "El trabajador debe solicitarla a la Seguridad Social",
+      "id": "11",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador debe solicitarla a la mutua",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador debe solicitarla a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe solicitarla a la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No es necesario solicitarla",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para solicitar la prórroga de la incapacidad temporal?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay plazo establecido para que la Seguridad Social resuelva la solicitud de prórroga",
+      "id": "12",
+      "options": [
+        {
+          "id": "a",
+          "text": "30 días",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "60 días",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "90 días",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay plazo establecido",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para que la Seguridad Social resuelva la solicitud de prórroga?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay efecto en la relación laboral",
+      "id": "13",
+      "options": [
+        {
+          "id": "a",
+          "text": "La relación laboral se extingue automáticamente",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "La relación laboral continúa hasta su vencimiento",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La relación laboral se suspende",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay efecto en la relación laboral",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el efecto de la prórroga de la incapacidad temporal en la relación laboral?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "El trabajador debe solicitarla a la Seguridad Social",
+      "id": "14",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador debe solicitarla a la mutua",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador debe solicitarla a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe solicitarla a la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No es necesario solicitarla",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el procedimiento para solicitar la rehabilitación laboral?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "No hay plazo establecido para que la Seguridad Social resuelva la solicitud de rehabilitación",
+      "id": "15",
+      "options": [
+        {
+          "id": "a",
+          "text": "30 días",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "60 días",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "90 días",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "No hay plazo establecido",
+          "true": true
+        }
+      ],
+      "question": "¿Cuál es el plazo para que la Seguridad Social resuelva la solicitud de rehabilitación?"
+    }
+  ],
+  "scenario": "La empresa 'Industrias Metálicas S.A.' tiene un trabajador, Juan Pérez, que lleva 10 años trabajando en la empresa. Juan sufrió un accidente laboral el 1 de enero de 2022 y fue diagnosticado con una lesión en la columna vertebral que requiere una recuperación de al menos 6 meses. La empresa tiene un seguro de accidentes laborales con la mutua 'Mutua del Mediterráneo' y ha optado por el pago delegado de la incapacidad temporal. Sin embargo, el 15 de marzo de 2022, Juan sufrió una recaída y tuvo que ser intervenido quirúrgicamente, lo que prolongó su incapacidad temporal. La empresa ha estado pagando la incapacidad temporal a Juan a través de la mutua, pero ahora está considerando cambiar al pago directo debido a los altos costos que está asumiendo. Mientras tanto, la Inspección de Trabajo y Seguridad Social ha iniciado una investigación para determinar si la empresa ha cumplido con las obligaciones legales en relación con la incapacidad temporal de Juan. La empresa también ha recibido una notificación de la Tesorería General de la Seguridad Social sobre la posibilidad de extinción de la relación laboral de Juan debido a su incapacidad temporal prolongada.",
+  "topic": "Incapacidad Temporal: Pago Directo vs Delegado y Extinción"
+}

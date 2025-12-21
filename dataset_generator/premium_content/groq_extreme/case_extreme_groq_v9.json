@@ -1,0 +1,426 @@
+{
+  "questions": [
+    {
+      "correct_option_id": "a",
+      "explanation": "El Convenio Especial es un instrumento jurídico que permite a los trabajadores y empleadores regularizar su situación laboral y acceder a los beneficios de la Seguridad Social.",
+      "id": "1",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un acuerdo entre el trabajador y la empresa para regularizar la situación laboral",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Un contrato de trabajo temporal",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Un procedimiento para solicitar la jubilación anticipada",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Un mecanismo para regularizar la situación de los autónomos",
+          "true": false
+        }
+      ],
+      "question": "¿Qué es un Convenio Especial en el marco de la Seguridad Social española?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "Existen diferentes tipos de Convenios Especiales, incluyendo los destinados a trabajadores fijos, temporales y autónomos.",
+      "id": "2",
+      "options": [
+        {
+          "id": "a",
+          "text": "Convenio Especial para trabajadores fijos",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "Convenio Especial para trabajadores temporales",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Convenio Especial para autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Todos los anteriores",
+          "true": true
+        }
+      ],
+      "question": "¿Qué tipos de Convenios Especiales existen en la Seguridad Social española?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "El trabajador debe estar en situación de desempleo para poder suscribir un Convenio Especial.",
+      "id": "3",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador debe tener una antigüedad mínima de 1 año en la empresa",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador debe tener una edad mínima de 55 años",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe tener una plantilla mínima de 10 trabajadores",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "El trabajador debe estar en situación de desempleo",
+          "true": true
+        }
+      ],
+      "question": "¿Qué requisitos deben cumplirse para suscribir un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El Convenio Especial conlleva el acceso a una prestación por desempleo mejorada para el trabajador.",
+      "id": "4",
+      "options": [
+        {
+          "id": "a",
+          "text": "Acceso a una prestación por desempleo mejorada",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Acceso a una jubilación anticipada",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Acceso a un contrato de trabajo temporal",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Acceso a un procedimiento para regularizar la situación de los autónomos",
+          "true": false
+        }
+      ],
+      "question": "¿Qué derechos conlleva el Convenio Especial para el trabajador?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "La empresa debe pagar una contribución especial a la Seguridad Social como parte del Convenio Especial.",
+      "id": "5",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe pagar una contribución especial a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa debe contratar a un nuevo trabajador temporal",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe regularizar la situación de los autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa debe pagar una indemnización al trabajador",
+          "true": false
+        }
+      ],
+      "question": "¿Qué obligaciones conlleva el Convenio Especial para la empresa?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "Si el trabajador rechaza la oferta de suscribir un Convenio Especial, puede demandar a la empresa por improcedencia de la extinción de su contrato.",
+      "id": "6",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador pierde su derecho a la prestación por desempleo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador puede demandar a la empresa por improcedencia de la extinción de su contrato",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe aceptar la oferta de la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "El trabajador puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si el trabajador rechaza la oferta de suscribir un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Si la empresa no cumple con los requisitos para suscribir un Convenio Especial, debe pagar una multa a la Seguridad Social.",
+      "id": "7",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe pagar una multa a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa puede ser sancionada con una penalización",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe regularizar la situación de los autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si la empresa no cumple con los requisitos para suscribir un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "b",
+      "explanation": "Si el trabajador ya está en situación de desempleo y suscribe un Convenio Especial, puede acceder a una prestación por desempleo mejorada.",
+      "id": "8",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador pierde su derecho a la prestación por desempleo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador puede acceder a una prestación por desempleo mejorada",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe aceptar la oferta de la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "El trabajador puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si el trabajador ya está en situación de desempleo y suscribe un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Si la empresa contrata a un nuevo trabajador temporal después de suscribir un Convenio Especial, debe pagar una contribución especial a la Seguridad Social.",
+      "id": "9",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe pagar una contribución especial a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa puede ser sancionada con una penalización",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe regularizar la situación de los autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si la empresa contrata a un nuevo trabajador temporal después de suscribir un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "El trabajador no puede solicitar una jubilación anticipada después de suscribir un Convenio Especial.",
+      "id": "10",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador puede acceder a una jubilación anticipada",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador pierde su derecho a la prestación por desempleo",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe aceptar la oferta de la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "El trabajador no puede solicitar una jubilación anticipada",
+          "true": true
+        }
+      ],
+      "question": "¿Qué sucede si el trabajador solicita una jubilación anticipada después de suscribir un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Si la empresa no paga la contribución especial a la Seguridad Social, debe pagar una multa a la Seguridad Social.",
+      "id": "11",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe pagar una multa a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa puede ser sancionada con una penalización",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe regularizar la situación de los autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si la empresa no paga la contribución especial a la Seguridad Social?"
+    },
+    {
+      "correct_option_id": "d",
+      "explanation": "Si el trabajador ya está en situación de desempleo y no suscribe un Convenio Especial, mantiene su derecho a la prestación por desempleo.",
+      "id": "12",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador pierde su derecho a la prestación por desempleo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador puede acceder a una prestación por desempleo mejorada",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe aceptar la oferta de la empresa",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "El trabajador mantiene su derecho a la prestación por desempleo",
+          "true": true
+        }
+      ],
+      "question": "¿Qué sucede si el trabajador ya está en situación de desempleo y no suscribe un Convenio Especial?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "El objetivo principal del Convenio Especial es regularizar la situación laboral de los trabajadores.",
+      "id": "13",
+      "options": [
+        {
+          "id": "a",
+          "text": "Regularizar la situación laboral de los trabajadores",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Proporcionar una prestación por desempleo mejorada",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "Facilitar la contratación de nuevos trabajadores temporales",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "Regularizar la situación de los autónomos",
+          "true": false
+        }
+      ],
+      "question": "¿Cuál es el objetivo principal del Convenio Especial?"
+    },
+    {
+      "correct_option_id": "c",
+      "explanation": "Si el trabajador suscribe un Convenio Especial y luego es contratado por otra empresa, debe devolver la prestación por desempleo.",
+      "id": "14",
+      "options": [
+        {
+          "id": "a",
+          "text": "El trabajador pierde su derecho a la prestación por desempleo",
+          "true": false
+        },
+        {
+          "id": "b",
+          "text": "El trabajador puede acceder a una prestación por desempleo mejorada",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "El trabajador debe devolver la prestación por desempleo",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "El trabajador puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si el trabajador suscribe un Convenio Especial y luego es contratado por otra empresa?"
+    },
+    {
+      "correct_option_id": "a",
+      "explanation": "Si la empresa suscribe un Convenio Especial y luego cierra, debe pagar una multa a la Seguridad Social.",
+      "id": "15",
+      "options": [
+        {
+          "id": "a",
+          "text": "La empresa debe pagar una multa a la Seguridad Social",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La empresa puede ser sancionada con una penalización",
+          "true": false
+        },
+        {
+          "id": "c",
+          "text": "La empresa debe regularizar la situación de los autónomos",
+          "true": false
+        },
+        {
+          "id": "d",
+          "text": "La empresa puede solicitar una jubilación anticipada",
+          "true": false
+        }
+      ],
+      "question": "¿Qué sucede si la empresa suscribe un Convenio Especial y luego cierra?"
+    }
+  ],
+  "scenario": "En el marco de la Seguridad Social española, el Convenio Especial es un instrumento jurídico que permite a los trabajadores y empleadores regularizar su situación laboral y acceder a los beneficios de la Seguridad Social. Sin embargo, su aplicación puede ser compleja y generar conflictos. Imaginemos un escenario en el que una empresa, 'Industrias XYZ', con sede en Madrid, tiene un total de 50 empleados. De estos, 20 son trabajadores fijos, 15 son temporales y 15 son autónomos que prestan servicios para la empresa. La empresa ha estado experimentando dificultades financieras y ha decidido reducir su plantilla. Para ello, ha ofrecido a 10 de sus trabajadores fijos la posibilidad de suscribir un Convenio Especial con la Seguridad Social, lo que les permitiría acceder a una prestación por desempleo mejorada. Sin embargo, 5 de estos trabajadores han rechazado la oferta y han decidido demandar a la empresa por improcedencia de la extinción de sus contratos. Mientras tanto, la empresa ha decidido contratar a 5 nuevos trabajadores temporales para cubrir las necesidades laborales. La cuestión es ¿cómo afecta el Convenio Especial a los trabajadores y a la empresa?, ¿qué requisitos deben cumplirse para su aplicación?, ¿qué derechos y obligaciones conlleva para las partes involucradas?",
+  "topic": "Convenio Especial con la Seguridad Social: Tipos y Requisitos"
+}

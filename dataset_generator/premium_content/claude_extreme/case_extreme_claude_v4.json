@@ -1,0 +1,381 @@
+{
+  "topic": "Pensión de Viudedad: Divorcio con pensión compensatoria extinguida por fallecimiento y límites de cuantía",
+  "scenario": "Doña Remedios García Valverde contrajo matrimonio con Don Esteban Morales Ruiz el 15 de marzo de 1982. Tras 28 años de convivencia, la sentencia de divorcio firme se dictó el 22 de septiembre de 2010, estableciendo una pensión compensatoria mensual de 850 euros a favor de Doña Remedios, debido al desequilibrio económico acreditado. La sentencia especificaba expresamente que dicha pensión tendría carácter vitalicio \"salvo modificación sustancial de las circunstancias\".\n\nDon Esteban falleció el 8 de enero de 2024 a consecuencia de un infarto agudo de miocardio. En el momento del fallecimiento, Don Esteban percibía una pensión de jubilación de 2.850 euros mensuales, causada el 1 de julio de 2019, tras acreditar 38 años y 7 meses de cotización efectiva al Régimen General de la Seguridad Social. Doña Remedios, de 67 años en la fecha del óbito, había percibido ininterrumpidamente la pensión compensatoria desde la sentencia de divorcio hasta el fallecimiento de su ex cónyuge, sin que existiera resolución judicial alguna que la modificara o suspendiera.\n\nLa situación se complica porque Don Esteban había contraído nuevas nupcias el 3 de mayo de 2015 con Doña Amparo Sánchez Prieto, de 52 años en el momento del fallecimiento. Este segundo matrimonio duró 8 años y 8 meses. Doña Amparo trabajaba como administrativa en una empresa privada, percibiendo un salario neto mensual de 1.650 euros. No existían hijos comunes de este segundo matrimonio, aunque Don Esteban tenía dos hijos mayores de edad del primer matrimonio con Doña Remedios, nacidos en 1985 y 1988 respectivamente, ambos económicamente independientes.\n\nDoña Remedios presentó solicitud de pensión de viudedad el 28 de enero de 2024 ante la Dirección Provincial del INSS, aportando la sentencia de divorcio, los justificantes bancarios de percepción ininterrumpida de la pensión compensatoria y certificado de empadronamiento que acreditaba su residencia continuada en España. Declaró en su solicitud percibir una pensión de jubilación propia de 980 euros mensuales, causada en febrero de 2022 tras acreditar 18 años y 3 meses cotizados en el Régimen General, habiendo trabajado esporádicamente como dependienta de comercio durante los años 1978-1985 y posteriormente 1995-2006.\n\nPor su parte, Doña Amparo presentó igualmente solicitud de pensión de viudedad el 30 de enero de 2024, alegando su condición de cónyuge supérstite y aportando el certificado de matrimonio y el libro de familia. Manifestó expresamente su oposición a que Doña Remedios accediera a prestación alguna, argumentando que la pensión compensatoria se había extinguido automáticamente por el fallecimiento del causante conforme al artículo 101 del Código Civil.\n\nEl INSS debe resolver sobre la concurrencia de beneficiarios, la determinación de las cuantías aplicables y la posible concurrencia de pensiones públicas en el caso de Doña Remedios. La base reguladora de la pensión de jubilación del causante ascendía a 3.450 euros mensuales. Ambas solicitantes cumplen los requisitos generales de acceso, pero la Entidad Gestora debe analizar meticulosamente los porcentajes aplicables, los límites establecidos en la normativa y la posible aplicación del complemento para mínimos en función de las rentas personales de cada beneficiaria.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Tiene derecho Doña Remedios, como divorciada, a la pensión de viudedad a pesar de la oposición de la viuda actual?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, porque el fallecimiento extingue la pensión compensatoria civilmente."
+        },
+        {
+          "id": "b",
+          "text": "Sí, porque cumple el requisito de ser acreedora de pensión compensatoria extinguida por el fallecimiento (Art 174.2 LGSS).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo si la viuda actual renuncia."
+        },
+        {
+          "id": "d",
+          "text": "No, porque percibe una jubilación propia superior a la compensatoria."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El requisito clave para el divorciado es que la pensión compensatoria se extinga por la muerte del causante. Remedios cumple esto."
+    },
+    {
+      "id": "q2",
+      "question": "Existiendo concurrencia entre divorciada (Remedios) y cónyuge supérstite (Amparo), ¿cómo se reparte la pensión de viudedad?",
+      "options": [
+        {
+          "id": "a",
+          "text": "50% para cada una."
+        },
+        {
+          "id": "b",
+          "text": "Íntegra para Amparo por ser la esposa actual."
+        },
+        {
+          "id": "c",
+          "text": "Proporcionalmente al tiempo de convivencia de cada una con el causante, garantizando el 40% a la esposa actual.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Proporcionalmente, garantizando el 40% a la primera esposa por antigüedad."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "Art. 174 LGSS. Reparto proporcional al tiempo vivido, con garantía del 40% a favor del cónyuge superviviente (Amparo)."
+    },
+    {
+      "id": "q3",
+      "question": "¿Existe un límite máximo específico para la cuantía de la pensión de viudedad de Doña Remedios?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, el tope máximo de pensión pública (aprox 3175 euros)."
+        },
+        {
+          "id": "b",
+          "text": "Sí, el importe de la pensión compensatoria que venía percibiendo (850 euros).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "No tiene límite específico más allá del porcentaje que le toque."
+        },
+        {
+          "id": "d",
+          "text": "El límite es el Salario Mínimo Interprofesional."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art. 174.2 LGSS. La pensión de viudedad del separado/divorciado no puede superar la pensión compensatoria."
+    },
+    {
+      "id": "q4",
+      "question": "¿Qué porcentaje de la Base Reguladora (3.450€) se aplicará para calcular la cuantía inicial global a repartir?",
+      "options": [
+        {
+          "id": "a",
+          "text": "60%, porque Remedios tiene más de 65 años."
+        },
+        {
+          "id": "b",
+          "text": "52%, porque ninguna cumple los requisitos para el 70% (cargas familiares/carencia de rentas).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "70%, porque Amparo vive sola tras la muerte."
+        },
+        {
+          "id": "d",
+          "text": "52% para Amparo y 60% para Remedios."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Para el 70% se exige no tener rentas suficientes y cargas familiares. Remedios tiene su pensión y Amparo tiene salario (1650€). Para el 60% (mayores 65), se exige carencia de rentas (Remedios cobra 980+850, supera el límite). Se aplica el general del 52%."
+    },
+    {
+      "id": "q5",
+      "question": "Para calcular la proporcionalidad, ¿qué 'tiempo total' se usa como denominador?",
+      "options": [
+        {
+          "id": "a",
+          "text": "La suma de los periodos de convivencia de ambas (28 años + 8 años 8 meses).",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "La vida laboral del causante (38 años)."
+        },
+        {
+          "id": "c",
+          "text": "La duración del matrimonio más largo."
+        },
+        {
+          "id": "d",
+          "text": "25 años siempre."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "La jurisprudencia y normativa de desarrollo indican que el reparto se hace sobre la suma de convivencias acreditadas con derecho a pensión."
+    },
+    {
+      "id": "q6",
+      "question": "Dado que Remedios percibe una Jubilación propia (980€), ¿es compatible con su parte de Viudedad?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, debe optar por una."
+        },
+        {
+          "id": "b",
+          "text": "Sí, son compatibles hasta el límite de la pensión máxima pública.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, íntegramente aunque supere el tope máximo."
+        },
+        {
+          "id": "d",
+          "text": "Solo si la suma no supera el 75% de la base reguladora."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art. 179 LGSS. Compatibilidad de pensiones R. General, sujetas al límite máximo de pensiones."
+    },
+    {
+      "id": "q7",
+      "question": "¿Doña Amparo cumple los requisitos para acceder a viudedad siendo el matrimonio de 8 años de duración?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, al no tener hijos debía llevar 10 años casada."
+        },
+        {
+          "id": "b",
+          "text": "Sí, porque el fallecimiento fue por enfermedad común posterior al matrimonio."
+        },
+        {
+          "id": "c",
+          "text": "Sí, el requisito general es estar casada al momento del fallecimiento. Al no ser enfermedad común preexistente (infarto agudo), no se exige periodo mínimo de matrimonio.",
+          "true": true
+        },
+        {
+          "id": "d",
+          "text": "Necesita acreditar 5 años de convivencia previa."
+        }
+      ],
+      "correct_option_id": "c",
+      "explanation": "Art 219 LGSS a contrario sensu. Solo si es enfermedad común anterior se exige 1 año de matrimonio. Infarto es repentino."
+    },
+    {
+      "id": "q8",
+      "question": "La Base Reguladora de 3.450 euros supera la pensión máxima. ¿Sobre qué cantidad se giran los porcentajes?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sobre 3.450€, aunque luego el pago se tope.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Sobre la pensión máxima vigente (3.175€)."
+        },
+        {
+          "id": "c",
+          "text": "Sobre la base de cotización media de los últimos 24 meses."
+        },
+        {
+          "id": "d",
+          "text": "Sobre el salario mínimo."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "Los porcentajes (52%) se aplican a la Base Reguladora calculada técnica. El resultado final es lo que se topa. Esto beneficia cuando hay repartos."
+    },
+    {
+      "id": "q9",
+      "question": "¿En qué fecha nace el derecho económico (Hecho Causante) para ambas?",
+      "options": [
+        {
+          "id": "a",
+          "text": "El día del fallecimiento (8 de enero)."
+        },
+        {
+          "id": "b",
+          "text": "El día 1 del mes siguiente (1 de febrero), al ser el causante pensionista.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "El día de la solicitud (28/30 enero)."
+        },
+        {
+          "id": "d",
+          "text": "El día siguiente al fallecimiento."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Cuando el causante es pensionista, los efectos son desde el día primero del mes siguiente al fallecimiento."
+    },
+    {
+      "id": "q10",
+      "question": "Si la pensión prorrateada de Remedios fuera de 900€, pero está limitada a 850€, ¿qué pasa con los 50€ excedentes?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Se los queda el Tesoro Público."
+        },
+        {
+          "id": "b",
+          "text": "Acrecen a la pensión de Doña Amparo.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Se pagan a Remedios como complemento."
+        },
+        {
+          "id": "d",
+          "text": "Se pierden."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Al operar el límite de la compensatoria, el resto de la pensión de viudedad 'liberada' corresponde al cónyuge supérstite, respetando su garantía del 40%."
+    },
+    {
+      "id": "q11",
+      "question": "(Reserva) ¿Tienen derecho a orfandad los hijos de 35 y 38 años nacidos del primer matrimonio?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, hasta los 40 años si no trabajan."
+        },
+        {
+          "id": "b",
+          "text": "No, la edad máxima general es 21 (o 25 si estudian/paro). Al tener más de 25 y ser independientes, no.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Solo si tienen discapacidad del 33%."
+        },
+        {
+          "id": "d",
+          "text": "Sí, por derecho de sangre."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Límites de edad de orfandad (Art 224 LGSS). Salvo discapacidad absoluta, se extingue mucho antes."
+    },
+    {
+      "id": "q12",
+      "question": "(Reserva) Si Doña Remedios se hubiera vuelto a casar en 2012, ¿conservaría la viudedad de Esteban?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sí, el primer matrimonio genera derechos indestructibles."
+        },
+        {
+          "id": "b",
+          "text": "No, contraer nuevas nupcias extingue el derecho a viudedad del cónyuge anterior (salvo excepciones muy estrictas).",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, si la nueva pensión es inferior."
+        },
+        {
+          "id": "d",
+          "text": "Depende de la CCAA."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art 219 LGSS. El derecho a viudedad se extingue, en general, al contraer nuevo matrimonio."
+    },
+    {
+      "id": "q13",
+      "question": "(Reserva) ¿Se aplica el complemento de maternidad (o brecha de género) a la pensión de Esteban?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Ya lo estaría cobrando en su jubilación. Si genera viudedad, se recalcula."
+        },
+        {
+          "id": "b",
+          "text": "No se transmite a las viudas. Las viudas pueden generarlo por sus propios hijos en su pensión de viudedad.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Sí, se hereda."
+        },
+        {
+          "id": "d",
+          "text": "No existe para hombres."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "El complemento de brecha (Art 60 LGSS) se reconoce a la mujer en su viudedad si cumple requisitos. No se 'hereda' el del marido."
+    },
+    {
+      "id": "q14",
+      "question": "(Reserva) Si Doña Amparo y Esteban hubieran sido Pareja de Hecho registrada en lugar de matrimonio, ¿qué requisito adicional se exigiría?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Ninguno, es igual."
+        },
+        {
+          "id": "b",
+          "text": "Acreditar ingresos de la pareja superviviente inferiores a cierto límite en el año anterior.",
+          "true": true
+        },
+        {
+          "id": "c",
+          "text": "Tener hijos comunes obligatoriamente."
+        },
+        {
+          "id": "d",
+          "text": "Que la pareja durara 10 años."
+        }
+      ],
+      "correct_option_id": "b",
+      "explanation": "Art 221 LGSS. Para Parejas de Hecho, existe un requisito de dependencia económica (límites de ingresos) que no existe para cónyuges."
+    },
+    {
+      "id": "q15",
+      "question": "(Reserva) ¿Afecta el hecho de que Don Esteban falleciera por infarto (Enfermedad Común) a la base reguladora de la viudedad?",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, porque él ya era pensionista de jubilación. Se usa la BR de jubilación revalorizada.",
+          "true": true
+        },
+        {
+          "id": "b",
+          "text": "Sí, se calcula sobre los últimos 24 meses antes del infarto."
+        },
+        {
+          "id": "c",
+          "text": "Sí, se divide por 14 en lugar de 12."
+        },
+        {
+          "id": "d",
+          "text": "No, se usa la base mínima."
+        }
+      ],
+      "correct_option_id": "a",
+      "explanation": "Al fallecer siendo pensionista, la BR de viudedad es la misma que sirvió para su jubilación, actualizada."
+    }
+  ]
+}

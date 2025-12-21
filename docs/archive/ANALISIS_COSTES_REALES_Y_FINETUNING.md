@@ -155,7 +155,9 @@ Con caché (50% hit rate):
 - Input: $2.50/1M tokens
 - Output: $10.00/1M tokens
 
-**TOTAL COHERE: $30.75** (MUY CARO - no recomendado para producción)
+**TOTAL COHERE: $30.75** (MUY CARO - no recomendado para producción) 
+**recomendacion**
+usar para reforzamiento de conocimientos de los modelos y reevaluacion, es famoso en clasificaciones etc. 
 
 ---
 
@@ -188,7 +190,7 @@ Con caché (50% hit rate):
 - 66% más barato que Groq
 - Ya implementado y funcionando
 - Caché inteligente reduce costes aún más
-
+MUY mala calidad, por ahora , sin probar con agentes y verificacion en vivo!!! probarlo!!!
 ---
 
 ## 4. MODELOS PARA FINE-TUNING

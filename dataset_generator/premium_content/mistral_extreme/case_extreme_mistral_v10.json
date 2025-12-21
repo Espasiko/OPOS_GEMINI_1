@@ -1,0 +1,186 @@
+{
+  "topic": "Jubilación Activa vs Flexible: Cotización y Requisitos Autónomos",
+  "scenario": "Un autónomo de 67 años está evaluando las opciones de jubilación activa y flexible para continuar su actividad laboral mientras recibe su pensión de jubilación. Tiene dudas sobre cómo afectarán estas modalidades a su cotización y los requisitos específicos que debe cumplir.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "¿Cuál es el requisito de edad para acceder a la jubilación activa como autónomo?",
+      "options": [
+        "A) Haber cumplido la edad ordinaria de jubilación.",
+        "B) Tener al menos 65 años.",
+        "C) Haber cumplido la edad de jubilación y transcurrido al menos un año desde entonces.",
+        "D) No hay requisito de edad específico."
+      ],
+      "correct_option_id": "C",
+      "explanation": "Para acceder a la jubilación activa, es necesario haber cumplido la edad ordinaria de jubilación y que haya transcurrido al menos un año desde entonces."
+    },
+    {
+      "id": "q2",
+      "question": "¿Qué porcentaje de la pensión de jubilación recibe un autónomo en jubilación activa si continúa trabajando?",
+      "options": [
+        "A) 50%",
+        "B) 75%",
+        "C) 100%",
+        "D) Depende de los años cotizados."
+      ],
+      "correct_option_id": "A",
+      "explanation": "En la jubilación activa, el autónomo recibe el 50% de su pensión de jubilación mientras continúa trabajando."
+    },
+    {
+      "id": "q3",
+      "question": "¿Qué condición adicional debe cumplir un autónomo para acceder a la jubilación flexible?",
+      "options": [
+        "A) Reducir su jornada laboral entre un 25% y un 50%.",
+        "B) No tener trabajadores a su cargo.",
+        "C) Estar al corriente de pagos con la Seguridad Social.",
+        "D) No haber recibido ninguna sanción previa."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Para acceder a la jubilación flexible, el autónomo debe reducir su jornada laboral entre un 25% y un 50%."
+    },
+    {
+      "id": "q4",
+      "question": "¿Cómo afecta la jubilación activa a la cotización del autónomo?",
+      "options": [
+        "A) No cotiza por la actividad que continúa realizando.",
+        "B) Cotiza únicamente por incapacidad temporal y profesional.",
+        "C) Cotiza por contingencias comunes y profesionales.",
+        "D) Cotiza solo por contingencias profesionales."
+      ],
+      "correct_option_id": "B",
+      "explanation": "En la jubilación activa, el autónomo cotiza únicamente por incapacidad temporal y profesional."
+    },
+    {
+      "id": "q5",
+      "question": "¿Qué ocurre con la pensión si un autónomo en jubilación activa decide cesar su actividad laboral?",
+      "options": [
+        "A) Pierde el derecho a la pensión.",
+        "B) Recibe el 100% de la pensión.",
+        "C) La pensión se recalcula según nuevas bases.",
+        "D) Recibe un complemento del 25%."
+      ],
+      "correct_option_id": "B",
+      "explanation": "Si un autónomo en jubilación activa cesa su actividad laboral, pasa a recibir el 100% de su pensión."
+    },
+    {
+      "id": "q6",
+      "question": "¿Qué requisitos de cotización debe cumplir un autónomo para acceder a la jubilación flexible?",
+      "options": [
+        "A) Tener al menos 15 años de cotización.",
+        "B) No se requiere un mínimo de años cotizados.",
+        "C) Tener cotizados al menos 35 años.",
+        "D) Debe haber cotizado al menos 25 años."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Para acceder a la jubilación flexible, el autónomo debe tener al menos 15 años de cotización."
+    },
+    {
+      "id": "q7",
+      "question": "¿Puede un autónomo en jubilación activa contratar nuevos trabajadores?",
+      "options": [
+        "A) Sí, sin restricciones.",
+        "B) No, está prohibido.",
+        "C) Solo si son familiares directos.",
+        "D) Solo si la contratación es temporal."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Un autónomo en jubilación activa puede contratar nuevos trabajadores sin restricciones."
+    },
+    {
+      "id": "q8",
+      "question": "¿Qué porcentaje de la jornada laboral debe mantener un autónomo en jubilación flexible?",
+      "options": [
+        "A) Entre el 50% y el 75%.",
+        "B) Entre el 25% y el 50%.",
+        "C) Menos del 25%.",
+        "D) Más del 75%."
+      ],
+      "correct_option_id": "B",
+      "explanation": "En la jubilación flexible, el autónomo debe mantener entre el 25% y el 50% de su jornada laboral."
+    },
+    {
+      "id": "q9",
+      "question": "¿Qué ocurre con la cotización de un autónomo en jubilación flexible?",
+      "options": [
+        "A) Cotiza solo por contingencias comunes.",
+        "B) No cotiza mientras está en jubilación flexible.",
+        "C) Cotiza por la parte proporcional de la jornada que sigue trabajando.",
+        "D) Cotiza únicamente por contingencias profesionales."
+      ],
+      "correct_option_id": "C",
+      "explanation": "En la jubilación flexible, el autónomo cotiza por la parte proporcional de la jornada que sigue trabajando."
+    },
+    {
+      "id": "q10",
+      "question": "¿Puede un autónomo en jubilación activa cambiar a jubilación flexible?",
+      "options": [
+        "A) Sí, en cualquier momento.",
+        "B) No, no es posible cambiar de modalidad.",
+        "C) Solo si reduce su jornada laboral.",
+        "D) Solo si cumple con los requisitos de cotización adicionales."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Un autónomo en jubilación activa puede cambiar a jubilación flexible si así lo decide y cumple con los requisitos."
+    },
+    {
+      "id": "q11",
+      "question": "¿Qué requisitos debe cumplir un autónomo para mantener su jubilación activa?",
+      "options": [
+        "A) Mantenerse al corriente de pagos con la Seguridad Social.",
+        "B) No superar un límite de ingresos anuales.",
+        "C) No contratar más de un trabajador.",
+        "D) No realizar actividades por cuenta ajena."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Para mantener la jubilación activa, el autónomo debe mantenerse al corriente de pagos con la Seguridad Social."
+    },
+    {
+      "id": "q12",
+      "question": "¿Cómo se calcula la pensión de un autónomo en jubilación flexible?",
+      "options": [
+        "A) Según la base reguladora y el porcentaje de jornada trabajada.",
+        "B) Se mantiene igual que en la jubilación ordinaria.",
+        "C) Se reduce proporcionalmente a la jornada laboral.",
+        "D) Se calcula según nuevas bases de cotización."
+      ],
+      "correct_option_id": "C",
+      "explanation": "La pensión de un autónomo en jubilación flexible se reduce proporcionalmente a la jornada laboral que mantiene."
+    },
+    {
+      "id": "q13",
+      "question": "¿Qué sucede si un autónomo en jubilación activa incumple los requisitos?",
+      "options": [
+        "A) Pierde el derecho a la pensión de jubilación activa.",
+        "B) Se le aplica una sanción económica.",
+        "C) Debe devolver las cantidades percibidas.",
+        "D) Se le reduce la pensión en un 50%."
+      ],
+      "correct_option_id": "A",
+      "explanation": "Si un autónomo en jubilación activa incumple los requisitos, pierde el derecho a la pensión de jubilación activa."
+    },
+    {
+      "id": "q14",
+      "question": "¿Puede un autónomo en jubilación flexible acceder a bonificaciones en las cotizaciones?",
+      "options": [
+        "A) Sí, siempre que cumpla ciertos requisitos.",
+        "B) No, no existen bonificaciones.",
+        "C) Solo si contrata a nuevos trabajadores.",
+        "D) Solo si reduce más su jornada laboral."
+      ],
+      "correct_option_id": "B",
+      "explanation": "No existen bonificaciones específicas para autónomos en jubilación flexible."
+    },
+    {
+      "id": "q15",
+      "question": "¿Qué impacto tiene la jubilación activa en la futura pensión del autónomo?",
+      "options": [
+        "A) No tiene impacto en la cuantía de la pensión.",
+        "B) Puede incrementar la pensión futura.",
+        "C) Reduce la pensión futura.",
+        "D) Depende de los años adicionales cotizados."
+      ],
+      "correct_option_id": "A",
+      "explanation": "La jubilación activa no tiene impacto en la cuantía de la pensión futura del autónomo."
+    }
+  ]
+}
