@@ -1,3 +1,4 @@
+
 # Dependencies
 node_modules/
 
@@ -49,6 +50,11 @@ scripts/tests/test_mistral_agent_tools.py
 scripts/tests/test_mistral_agent_respuestas_completas.py
 scripts/tests/test_mistral_agent_quality_check.py
 scripts/tests/test_mistral_vs_claude.py
+scripts/tests/test_mistral_nueva_key.py
+
+# DATASETS & GENERATORS (Large Files)
+dataset_generator/
+gastos_ tokens/
 
 # IDE
 .vscode/
@@ -120,3 +126,5 @@ dataset_output_seguro/
 scripts/maintenance/__pycache__/
 scripts/tests/__pycache__/
 Seguridad_09_11.md
+golden_dataset/
+*.jsonl

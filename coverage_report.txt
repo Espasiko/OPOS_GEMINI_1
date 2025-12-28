@@ -1,0 +1,252 @@
+# 📊 Dataset Coverage & Quality Report
+
+## File: official_exams_qa_complete.jsonl
+- **Count**: 83
+- **Quality (References)**: 0/83 (0.0%)
+- **Top Topics**:
+  - Seguridad Social: 39
+  - Constitución: 20
+  - UE: 13
+
+## File: official_exams_qa.jsonl
+- **Count**: 83
+- **Quality (References)**: 0/83 (0.0%)
+- **Top Topics**:
+  - Seguridad Social: 39
+  - Constitución: 20
+  - UE: 13
+
+## File: official_exams_qa_FINAL_V3.jsonl
+- **Count**: 370
+- **Quality (References)**: 0/370 (0.0%)
+- **Top Topics**:
+  - Seguridad Social: 145
+  - Constitución: 144
+  - UE: 40
+
+## File: official_exams_qa_COMPLETE.jsonl
+- **Count**: 256
+- **Quality (References)**: 0/256 (0.0%)
+- **Top Topics**:
+  - Seguridad Social: 112
+  - Constitución: 95
+  - UE: 27
+
+## File: official_exams_qa_FINAL.jsonl
+- **Count**: 83
+- **Quality (References)**: 0/83 (0.0%)
+- **Top Topics**:
+  - Seguridad Social: 39
+  - Constitución: 20
+  - UE: 13
+
+## File: official_exams_qa_FINAL_V2.jsonl
+- **Count**: 284
+- **Quality (References)**: 0/284 (0.0%)
+- **Top Topics**:
+  - Seguridad Social: 120
+  - Constitución: 111
+  - UE: 28
+
+## File: premium_qa_batch2_20251219_124201.jsonl
+- **Count**: 57
+- **Quality (References)**: 57/57 (100.0%)
+- **Top Topics**:
+  - Otros / General: 30
+  - Constitución: 13
+  - UE: 8
+
+## File: ALL_PREMIUM_100.jsonl
+- **Count**: 100
+- **Quality (References)**: 100/100 (100.0%)
+- **Top Topics**:
+  - Otros / General: 49
+  - Constitución: 27
+  - UE: 12
+
+## File: premium_qa_gemini_20251219_122633.jsonl
+- **Count**: 25
+- **Quality (References)**: 25/25 (100.0%)
+- **Top Topics**:
+  - Constitución: 11
+  - Otros / General: 10
+  - Seguridad Social: 3
+
+## File: premium_qa_batch3_20251219_124449.jsonl
+- **Count**: 18
+- **Quality (References)**: 18/18 (100.0%)
+- **Top Topics**:
+  - Otros / General: 9
+  - UE: 4
+  - Constitución: 3
+
+## File: legacy_rag_context.jsonl
+- **Count**: 14
+- **Quality (References)**: 0/14 (0.0%)
+- **Top Topics**:
+  - Otros / General: 10
+  - Seguridad Social: 2
+  - Procedimiento Administrativo: 1
+
+## File: legacy_dialogues.jsonl
+- **Count**: 15
+- **Quality (References)**: 15/15 (100.0%)
+- **Top Topics**:
+  - Constitución: 15
+
+## File: legacy_flashcards.jsonl
+- **Count**: 12
+- **Quality (References)**: 0/12 (0.0%)
+- **Top Topics**:
+  - Constitución: 12
+
+## File: legacy_qa_extra.jsonl
+- **Count**: 12
+- **Quality (References)**: 12/12 (100.0%)
+- **Top Topics**:
+  - Otros / General: 5
+  - Constitución: 4
+  - Seguridad Social: 3
+
+## File: legacy_cases.jsonl
+- **Count**: 6
+- **Quality (References)**: 0/6 (0.0%)
+- **Top Topics**:
+  - Otros / General: 5
+  - UE: 1
+
+## File: new_flashcards_batch.jsonl
+- **Count**: 25
+- **Quality (References)**: 0/25 (0.0%)
+- **Top Topics**:
+  - Constitución: 25
+
+## File: mistral_legacy_qa_consolidated.jsonl
+- **Count**: 671
+- **Quality (References)**: 671/671 (100.0%)
+- **Top Topics**:
+  - Constitución: 191
+  - Otros / General: 191
+  - Seguridad Social: 127
+
+## File: deepseek_extreme_cases.jsonl
+- **Count**: 150
+- **Quality (References)**: 150/150 (100.0%)
+- **Top Topics**:
+  - Incapacidad Permanente en Funcionarios (MUFACE): Diferencias con RGSS: 15
+  - Procedimiento Sancionador: Actas de Liquidación y de Infracción (Concurrencia): 15
+  - Alta Dirección: Indemnizaciones y Fondo de Garantía Salarial (FOGASA): 15
+
+## File: deepseek_rescued_cases.jsonl
+- **Count**: 0
+- **Quality (References)**: 0/0 (0.0%)
+- **Top Topics**:
+
+## File: groq_500_qa_verified.jsonl
+- **Count**: 500
+- **Quality (References)**: 500/500 (100.0%)
+- **Top Topics**:
+  - Constitución: 212
+  - Seguridad Social: 144
+  - Otros / General: 89
+
+## File: deepseek_premium_qa.jsonl
+- **Count**: 60
+- **Quality (References)**: 60/60 (100.0%)
+- **Top Topics**:
+  - El Acto Administrativo: Invalidez, Nulidad y Anulabilidad (Casos Límites): 18
+  - Procedimiento Administrativo: Plazos, Silencio y Caducidad: 18
+  - El Poder Judicial: Consejo General y Responsabilidad de Jueces: 12
+
+## File: golden_dataset_consolidated_20251220.jsonl
+- **Count**: 2055
+- **Quality (References)**: 184/2055 (9.0%)
+- **Top Topics**:
+  - Seguridad Social: 738
+  - Constitución: 526
+  - Otros / General: 474
+
+## File: FINAL_TRAINING_DATASET_20251221.jsonl
+- **Count**: 1388
+- **Quality (References)**: 0/1388 (0.0%)
+- **Top Topics**:
+  - Constitución: 1388
+
+## File: golden_dataset_consolidated_20251221.jsonl
+- **Count**: 3086
+- **Quality (References)**: 859/3086 (27.8%)
+- **Top Topics**:
+  - Seguridad Social: 1012
+  - Constitución: 875
+  - Otros / General: 714
+
+## File: official_exams_enriched_mistral.jsonl
+- **Count**: 223
+- **Quality (References)**: 223/223 (100.0%)
+- **Top Topics**:
+  - Constitución: 90
+  - Seguridad Social: 86
+  - UE: 25
+
+---
+
+## 🌍 Global Totals
+**Total Items**: 9576
+**Global Quality Indicators**:
+- Items with Explanations: 5819 (60.8%)
+- Items with Legal References: 2874 (30.0%)
+
+## 📚 Topic Distribution
+Topic                          | Count  | %    
+---------------------------------------------
+Constitución                   | 3802   | 39.7 
+Seguridad Social               | 2614   | 27.3 
+Otros / General                | 1717   | 17.9 
+UE                             | 715    | 7.5  
+Personal/Funcionarios          | 188    | 2.0  
+Procedimiento Administrativo   | 163    | 1.7  
+Régimen Jurídico               | 113    | 1.2  
+Igualdad/Género                | 52     | 0.5  
+El Acto Administrativo: Invalidez, Nulidad y Anulabilidad (Casos Límites) | 18     | 0.2  
+Procedimiento Administrativo: Plazos, Silencio y Caducidad | 18     | 0.2  
+Incapacidad Permanente en Funcionarios (MUFACE): Diferencias con RGSS | 15     | 0.2  
+Procedimiento Sancionador: Actas de Liquidación y de Infracción (Concurrencia) | 15     | 0.2  
+Alta Dirección: Indemnizaciones y Fondo de Garantía Salarial (FOGASA) | 15     | 0.2  
+Falta de Alta y Responsabilidad Empresarial: Principio de Automaticidad | 15     | 0.2  
+Expatriados y Desplazados: Seguridad Social en Teletrabajo Internacional | 15     | 0.2  
+ERTE y Mecanismo RED: Exoneraciones y Prohibición de Despido | 15     | 0.2  
+Cálculo de Pensiones: Lagunas de Cotización y Bases Mínimas (Integración) | 15     | 0.2  
+Jubilación en Clases Pasivas vs Régimen General: Cómputo Recíproco | 15     | 0.2  
+Trabajadores Fijos Discontinuos: Llamamiento y Desempleo (Cómputo Antigüedad) | 15     | 0.2  
+Prestación por Cuidado de Menor con Cáncer: Requisitos y Reducción Jornada | 15     | 0.2  
+El Poder Judicial: Consejo General y Responsabilidad de Jueces | 12     | 0.1  
+Jurisdicción Contencioso-Administrativa: Competencias y Procedimiento Abreviado | 12     | 0.1  
+Contratos                      | 2      | 0.0  
+
+## 🧩 Item Types
+- unknown: 5511
+- C1_SS: 1331
+- TEST: 662
+- test: 479
+- Gestión_PI: 231
+- Gestión_Libre: 231
+- TEST_ENRIQUECIDO: 223
+- procedimiento: 170
+- caso_practico_extremo: 150
+- comparacion: 104
+- pregunta_contexto_respuesta: 80
+- relacion: 74
+- supuesto_practico: 72
+- caso_practico: 63
+- qa_simple: 24
+- razonamiento: 20
+- RAZONAMIENTO JURÍDICO: 20
+- PROCEDIMIENTO: 20
+- desarrollo: 20
+- RELACIÓN: 19
+- COMPARACIÓN: 17
+- pregunta_contexto_rag: 16
+- dialogo_conversacional: 15
+- flashcard_resumen: 12
+- multiple: 10
+- RAZONAMIENTO: 2

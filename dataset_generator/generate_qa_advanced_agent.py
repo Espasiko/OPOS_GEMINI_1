@@ -1,289 +1,156 @@
-
 import os
 import time
 import json
 import logging
 import requests
+import argparse
+from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any
-from verify_boe_links import verify_on_boe
 
-# Configuración de Logging
+# --- CONFIGURACIÓN ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Configuración de APIs
-def load_env_vars():
-    env_path = "backend/.env.backend"
-    if os.path.exists(env_path):
-        from dotenv import load_dotenv
-        load_dotenv(env_path)
-        logger.info(f"✅ Variables cargadas desde {env_path}")
+OLLAMA_URL = "http://localhost:11434/api/chat"
+MODEL_NAME = "mistral:latest"
 
-load_env_vars()
+OUTPUT_DIR = Path("dataset_generator/premium_content/mistral_night_mode")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-BACKEND_URL = "http://127.0.0.1:8000"
+# --- PROMPTS ---
+SYSTEM_PROMPT_ARCHITECT = "Eres un Estratega de Oposiciones. Diseña un Plan de Caso Práctico Dificultad Extrema."
+SYSTEM_PROMPT_WRITER = "Eres Redactor Oficial. Convierte el plan en JSON con 18 preguntas (15+3)."
 
-# Modelos Avanzados Seleccionados
-MODELS = {
-    "groq_fast": "llama-3.3-70b-versatile",
-    "deepseek_reasoner": "deepseek-reasoner", # DeepSeek R1 / V3.2 Speciale (según alias API)
-    "deepseek_v3_2": "deepseek-chat",        # DeepSeek V3.2 (según alias API)
-    "deepseek_speciale": "deepseek-reasoner", # Alias para razonamiento superior
-    "deepseek_chat": "deepseek-chat"
-}
+# --- AGENTE CON PAUSAS Y RETRIES ---
 
-# Temas (Cobertura Total 26 temas)
-TOPICS = [
-    "La protección social de los trabajadores autónomos (RETA)",
-    "Régimen Especial de la Minería del Carbón y del Mar",
-    "Pensión de Jubilación: Requisitos, Cuantía y Modalidades",
-    "Incapacidad Temporal: Concepto, Duración y Subsidio",
-    "El presupuesto de la Seguridad Social: Elaboración y Ejecución",
-    "Ingreso Mínimo Vital: Requisitos y Beneficiarios",
-    "La Corona: Sucesión, Regencia y Funciones del Rey",
-    "Las Cortes Generales: Composición y atribuciones",
-    "Políticas de Igualdad y Violencia de Género",
-    "Derechos y Deberes Fundamentales",
-    "El Gobierno y la Administración",
-    "Organización Territorial del Estado",
-    "El Acto Administrativo: Concepto y Clases",
-    "El Procedimiento Administrativo Común",
-    "Contratos del Sector Público: Clasificación",
-    "El Personal al Servicio de las Administraciones Públicas",
-    "Gestión Económico-Financiera de la SS",
-    "Pensiones de Muerte y Supervivencia",
-    "El Seguro Obligatorio de Vejez e Invalidez (SOVI)",
-    "Asistencia Sanitaria: Competencias y Gestión",
-    "Incapacidad Permanente: Grados",
-    "Lesiones Permanentes No Invalidantes",
-    "Convenios Internacionales de SS",
-    "Protección por Desempleo",
-    "Servicios Sociales: El IMSERSO",
-    "Infracciones y Sanciones en el Orden Social"
-]
-
-def buscar_rag(query: str, top_k: int = 5) -> str:
-    """RAG con Reranking para contexto legal preciso"""
-    try:
-        resp = requests.post(f"{BACKEND_URL}/api/v2/rag/search", 
-                             json={"query": query, "top_k": top_k, "apply_reranking": True},
-                             timeout=15)
-        if resp.status_code == 200:
-            data = resp.json()
-            docs = data.get("documents", [])
-            context = "\n\n".join([f"[DOC {i+1}] (Score: {d['score']:.2f}) {d['content']}" for i, d in enumerate(docs)])
-            return context if context else "No se encontraron documentos relevantes."
-        return f"Error en RAG: Status {resp.status_code}"
-    except Exception as e:
-        return f"Error en RAG: {e}"
-
-def verificar_referencia(articulo: str, ley: str) -> str:
-    """Doble verificación: Local (RAG) + Externa (BOE)"""
-    # 1. Verificación local
-    query = f"{articulo} {ley}"
-    local_found = False
-    try:
-        resp = requests.post(f"{BACKEND_URL}/api/v2/rag/search", json={"query": query, "top_k": 1}, timeout=5)
-        if resp.status_code == 200 and resp.json().get("documents"):
-            local_found = True
-    except: pass
-
-    # 2. Verificación externa (BOE Real)
-    boe_res = verify_on_boe(articulo, ley)
-    
-    status = "✅ VERIFICADO (DB + BOE)" if (local_found and boe_res["valid"]) else \
-             "⚠️ VERIFICADO (Sólo BOE)" if boe_res["valid"] else \
-             "❌ NO ENCONTRADO EN BOE"
-             
-    message = f"{status}. {boe_res.get('message', '')}"
-    if boe_res.get("url"):
-        message += f" Link: {boe_res['url']}"
-    return message
-
-# Herramientas (TOOLS) - Formato OpenAI
-TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "buscar_rag",
-            "description": "Obtiene legislación oficial y materiales de estudio actualizados. Úsala SIEMPRE antes de responder.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Consulta legal detallada"}
-                },
-                "required": ["query"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "verificar_referencia",
-            "description": "Valida si un artículo existe realmente en la base de datos local y en la web del BOE.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "articulo": {"type": "string", "description": "Número de artículo"},
-                    "ley": {"type": "string", "description": "Nombre de la ley"}
-                },
-                "required": ["articulo", "ley"]
-            }
-        }
+def call_ollama_safe(messages, json_mode=False, retries=3):
+    payload = {
+        "model": MODEL_NAME,
+        "messages": messages,
+        "stream": False,
+        "options": {"num_predict": 4096, "num_ctx": 8192}
     }
-]
+    if json_mode: payload["format"] = "json"
 
-def run_agent_v2(provider_key: str, model_id: str, topic: str, count: int = 10):
-    """
-    Agente optimizado para Groq Prompt Caching y Native DeepSeek CoT.
-    """
-    api_key = GROQ_API_KEY if "groq" in provider_key else DEEPSEEK_API_KEY
-    base_url = "https://api.groq.com/openai/v1" if "groq" in provider_key else "https://api.deepseek.com/v1"
-
-    # Caso especial para DeepSeek Reasoner (CoT Native)
-    is_reasoner = (model_id == "deepseek-reasoner")
-
-    if not api_key:
-        logger.error(f"❌ API Key no encontrada para {provider_key}")
-        return None
-
-    # ESTRUCTURA PARA PROMPT CACHING (GROQ):
-    # 1. System Prompt (Estático)
-    # 2. Tool Definitions (Estático)
-    # 3. User query (Dinámico)
+    for i in range(retries):
+        try:
+            logger.info(f"🔄 Intento {i+1}/{retries}...")
+            # Timeout ampliado a 1200s (20 mins)
+            response = requests.post(OLLAMA_URL, json=payload, timeout=1200) 
+            response.raise_for_status()
+            return response.json()["message"]["content"]
+        except Exception as e:
+            logger.warning(f"⚠️ Error Ollama: {e}. Reintentando en 10s...")
+            time.sleep(10)
     
-    system_prompt = f"""
-    Eres un experto en oposiciones de Seguridad Social de España. 
-    Tu objetivo es generar un dataset de alta precisión legal para entrenamiento de IA.
+    logger.error("❌ Fallaron todos los intentos.")
+    return None
+
+def generate_case_workflow(topic):
+    logger.info(f"🚀 Iniciando Agente para: {topic}")
     
-    REGLAS DE ORO:
-    1. PROHIBIDO ALUCINAR: Si no encuentras el dato exacto con 'buscar_rag', di que no lo sabes.
-    2. REFERENCIAS REALES: Usa 'verificar_referencia' para cada artículo citado.
-    3. FORMATO: Responde SIEMPRE en un ARRAY JSON puro.
+    # 1. THINKING (Arquitecto)
+    logger.info("🧠 Fase 1: Thinking...")
+    plan = call_ollama_safe([
+        {"role": "system", "content": SYSTEM_PROMPT_ARCHITECT},
+        {"role": "user", "content": f"Analiza: {topic}. Diseña trampas y escenario."}
+    ])
+    if not plan: return
     
-    Genera {count} preguntas sobre: '{topic}'.
-    """
+    # PAUSA ESTRATÉGICA (Para dejar descansar la VRAM/CPU)
+    logger.info("☕ Pausa de enfriamiento (5s)...")
+    time.sleep(5)
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"Inicia la generación para el tema: {topic}"}
-    ]
-
-    try:
-        # Llamada inicial
-        r = requests.post(f"{base_url}/chat/completions", headers={"Authorization": f"Bearer {api_key}"}, json={
-            "model": model_id,
-            "messages": messages,
-            "tools": TOOLS,
-            "tool_choice": "auto",
-            "temperature": 0.1 # Menor temperatura para mayor precisión legal
-        }, timeout=120)
+    # 2. WRITING (Redactor)
+    logger.info("✍️ Fase 2: Writing...")
+    json_content = call_ollama_safe([
+        {"role": "system", "content": SYSTEM_PROMPT_WRITER},
+        {"role": "user", "content": f"Plan: {plan}\n\nGenera JSON final."}
+    ], json_mode=True)
+    
+    if json_content:
+        # Guardar
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_topic = topic.replace(" ", "_").replace(":", "").replace("/", "_")[:30]
+        file_path = OUTPUT_DIR / f"mistral_night_{safe_topic}_{timestamp}.json"
         
-        data = r.json()
-        if "choices" not in data:
-            logger.error(f"Error API: {data}")
-            return None
-            
-        choice = data["choices"][0]
-        
-        # Guardar razonamiento si existe (DeepSeek Native)
-        reasoning = choice["message"].get("reasoning_content", "")
-        if reasoning:
-            logger.info(f"🧠 Reasoning Content Capturado ({len(reasoning)} chars)")
-        
-        while choice["message"].get("tool_calls"):
-            tool_calls = choice["message"]["tool_calls"]
-            messages.append(choice["message"])
-            
-            for call in tool_calls:
-                func_name = call["function"]["name"]
-                args = json.loads(call["function"]["arguments"])
-                logger.info(f"🛠️ Tool Call: {func_name}({args})")
-                
-                if func_name == "buscar_rag":
-                    result = buscar_rag(args["query"])
-                elif func_name == "verificar_referencia":
-                    result = verificar_referencia(args["articulo"], args["ley"])
-                else:
-                    result = "Error: Función desconocida"
-
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": call["id"],
-                    "name": func_name,
-                    "content": result
-                })
-
-            # Siguiente turno de conversación
-            r = requests.post(f"{base_url}/chat/completions", headers={"Authorization": f"Bearer {api_key}"}, json={
-                "model": model_id,
-                "messages": messages,
-                "tools": TOOLS
-            }, timeout=120)
-            data = r.json()
-            choice = data["choices"][0]
-
-        # 3. Extraer contenido final
-        content = choice["message"]["content"]
-        return {
-            "content": content,
-            "reasoning": reasoning
-        }
-    except Exception as e:
-        logger.error(f"Error en ejecución del agente: {e}")
-        return None
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(json_content) 
+        logger.info(f"✅ Guardado: {file_path}")
+    else:
+        logger.error("❌ Falló Fase 2")
 
 if __name__ == "__main__":
-    import sys
-    
-    provider = sys.argv[1] if len(sys.argv) > 1 else "deepseek"
-    model_key = sys.argv[2] if len(sys.argv) > 2 else "deepseek_reasoner"
-    
-    output_dir = "dataset_generator/multi_model_v3_2_20_12"
-    os.makedirs(output_dir, exist_ok=True)
-    output_file = f"{output_dir}/qa_{model_key}_master_500.jsonl"
-    
-    print(f"🚀 Iniciando Generación Masiva (V3.2/R1 compatible) con {model_key}...")
-    print(f"📁 Salida: {output_file}")
-    
-    total_generated = 0
-    batch_size = 10
-    total_target = 500
-    
-    # Loop de generación masiva
-    while total_generated < total_target:
-        topic = TOPICS[ (total_generated // batch_size) % len(TOPICS) ]
-        batch_num = (total_generated // batch_size) + 1
+    # LISTA DE TEMAS (NIGHT MODE) - 50 Temas Diversos
+    NIGHT_TOPICS = [
+        # SEGURIDAD SOCIAL
+        "Jubilación Activa: Requisitos y Cuantía",
+        "Incapacidad Permanente Total vs Absoluta",
+        "Gran Invalidez: Complemento y revisión",
+        "IMV: Requisitos de acceso y unidad de convivencia",
+        "Desempleo: Nivel Contributivo vs Asistencial",
+        "Subsidio para mayores de 52 años: Rentas y Cotización",
+        "Maternidad y Paternidad: Prestaciones y permisos",
+        "Riesgo durante el embarazo y lactancia natural",
+        "Jubilación Anticipada Voluntaria vs Involuntaria",
+        "Accidente de Trabajo: Concepto y Presunciones",
+        "Enfermedad Profesional: Listado y Calificación",
+        "Cotización: Conceptos computables y excluidos",
+        "Recaudación: Periodo voluntario y vía ejecutiva",
+        "Infracciones y Sanciones en el Orden Social (LISOS)",
+        "Prestaciones Familiares: Asignación por hijo a cargo",
         
-        logger.info(f"🔄 Processing Batch {batch_num}/50: {topic}")
-        resp = run_agent_v2(provider, MODELS[model_key], topic, batch_size)
+        # DERECHO ADMINISTRATIVO
+        "El Acto Administrativo: Elementos y clases",
+        "Nulidad y Anulabilidad de los actos administrativos",
+        "El Procedimiento Administrativo Común: Fases",
+        "El Silencio Administrativo: Positivo y Negativo",
+        "Recursos Administrativos: Alzada y Reposición",
+        "Recurso Contencioso-Administrativo: Plazos",
+        "Responsabilidad Patrimonial de la Administración",
+        "Potestad Sancionadora: Principios y Procedimiento",
+        "Contratos del Sector Público: Tipos y Procedimientos",
+        "Expropiación Forzosa: Procedimiento General",
         
-        if resp and resp.get("content"):
-            try:
-                # Limpiar Markdown si existe
-                clean_json = resp["content"].replace("```json", "").replace("```", "").strip()
-                data = json.loads(clean_json)
-                
-                with open(output_file, "a", encoding="utf-8") as f:
-                    for item in data:
-                        item["model_provider"] = f"{provider}_{model_key}"
-                        item["reasoning_chain"] = resp.get("reasoning", "")
-                        item["timestamp"] = datetime.now().isoformat()
-                        f.write(json.dumps(item, ensure_ascii=False) + "\n")
-                
-                total_generated += len(data)
-                logger.info(f"✅ {len(data)} items guardados en batch {batch_num}. Total: {total_generated}")
-                
-                # Pausa estratégica para estabilidad de API
-                time.sleep(10)
-            except Exception as e:
-                logger.error(f"❌ Error parseando JSON en batch {batch_num}: {e}")
-                time.sleep(5)
-        else:
-            logger.error(f"⚠️ Batch {batch_num} falló o devolvió vacío.")
-            time.sleep(15)
+        # CONSTITUCIONAL Y ORGANIZACIÓN
+        "La Corona: Funciones y Sucesión",
+        "Las Cortes Generales: Congreso y Senado",
+        "El Gobierno: Composición y Funciones",
+        "El Poder Judicial: CGPJ y Tribunal Supremo",
+        "El Tribunal Constitucional: Composición y Competencias",
+        "Derechos Fundamentales y Libertades Públicas",
+        "La Reforma de la Constitución: Procedimientos",
+        "Organización Territorial: CCAA y Entidades Locales",
+        "La Unión Europea: Instituciones y Derecho Comunitario",
+        
+        # FUNCIÓN PÚBLICA
+        "TREBEP: Clases de personal y derechos",
+        "Situaciones Administrativas de los funcionarios",
+        "Régimen Disciplinario de los funcionarios",
+        "Incompatibilidades del personal al servicio de las AAPP",
+        "Acceso al empleo público: Principios rectores",
+        
+        # EXTRAS ESPECÍFICOS
+        "Régimen Especial de Trabajadores Autónomos (RETA)",
+        "Régimen Especial del Mar y Minería",
+        "Convenios Especiales con la Seguridad Social",
+        "Asistencia Sanitaria: Titulares y Beneficiarios",
+        "Incapacidad Temporal: Pago directo y Pago delegado",
+        "Jubilación Parcial y Contrato de Relevo",
+        "Complemento para la reducción de la brecha de género",
+        "Prestaciones por Muerte y Supervivencia: Viudedad y Orfandad",
+        "El SOVI: Prestaciones y condiciones",
+        "La Gestión Financiera de la Seguridad Social"
+    ]
 
-    print(f"\n✨ Generación Masiva Finalizada: {total_generated} items en {output_file}")
+    logger.info(f"🌙 MODO NOCTURNO ACTIVADO. Total Temas: {len(NIGHT_TOPICS)}")
+    
+    for i, topic in enumerate(NIGHT_TOPICS):
+        logger.info(f"✨ Procesando Tema {i+1}/{len(NIGHT_TOPICS)}: {topic}")
+        generate_case_workflow(topic)
+        
+        # Pausa larga entre casos para proteger hardware local
+        logger.info("💤 Pausa larga de recuperación (60s)...")
+        time.sleep(60)
+        
+    logger.info("🌞 ¡Buenos días! Tarea nocturna finalizada.")

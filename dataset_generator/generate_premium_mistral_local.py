@@ -96,7 +96,8 @@ def call_ollama(messages, json_mode=False):
         payload["format"] = "json"
 
     try:
-        response = requests.post(OLLAMA_URL, json=payload, timeout=300) # 5 min timeout para local
+        # AQUI ESTA EL CAMBIO IMPORTANTE: Timeout 1200 segundos (20 min)
+        response = requests.post(OLLAMA_URL, json=payload, timeout=1200) 
         response.raise_for_status()
         return response.json()["message"]["content"]
     except Exception as e:

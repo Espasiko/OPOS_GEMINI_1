@@ -103,7 +103,7 @@ async def get_collection_stats():
     - `status`: Estado de la colección
     """
     try:
-        rag_agent = get_rag_agent()
+        rag_agent = get_rag_agent_v2()
         stats = await rag_agent.get_collection_stats()
         return stats
         
@@ -118,7 +118,7 @@ async def health_check():
     Health check del servicio RAG
     """
     try:
-        rag_agent = get_rag_agent()
+        rag_agent = get_rag_agent_v2()
         stats = await rag_agent.get_collection_stats()
         
         return {
@@ -145,7 +145,7 @@ async def test_rag():
     Busca "incapacidad temporal" como ejemplo
     """
     try:
-        rag_agent = get_rag_agent()
+        rag_agent = get_rag_agent_v2()
         
         result = await rag_agent.search_and_answer(
             query="¿Qué es la incapacidad temporal?",

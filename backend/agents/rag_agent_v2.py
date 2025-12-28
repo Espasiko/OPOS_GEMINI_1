@@ -11,7 +11,7 @@ from datetime import datetime
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 import time
-import cohere
+# import cohere  # TODO: Descomentar cuando se use reranking
 
 logger = logging.getLogger(__name__)
 
@@ -152,59 +152,90 @@ class RAGAgentV2:
                 ))
             
             # 6. Aplicar COHERE RERANK (Si está disponible)
-            if apply_reranking and self.co:
-                try:
-                    logger.info("  Applying Cohere Rerank...")
-                    documents_to_rerank = [r.payload.get("text", "") for r in search_results]
-                    if documents_to_rerank:
-                        rerank_response = self.co.rerank(
-                            model="rerank-v3.5",
-                            query=query,
-                            documents=documents_to_rerank,
-                            top_n=top_k
-                        )
-                        # Reordenar resultados basados en el índice devuelto por cohere
-                        new_results = []
-                        for result in rerank_response.results:
-                            idx = result.index
-                            orig_r = search_results[idx]
-                            orig_r.score = result.relevance_score # Actualizar score
-                            new_results.append(orig_r)
-                        search_results = new_results
-                except Exception as e:
-                    logger.error(f"  Cohere Rerank error: {e}")
+            # TODO: Descomentar cuando se use Cohere
+            # if apply_reranking and self.co:
+            #     try:
+            #         logger.info("  Applying Cohere Rerank...")
+            #         documents_to_rerank = [r.payload.get("text", "") for r in search_results]
+            #         if documents_to_rerank:
+            #             rerank_response = self.co.rerank(
+            #                 model="rerank-v3.5",
+            #                 query=query,
+            #                 documents=documents_to_rerank,
+            #                 top_n=top_k
+            #             )
+            #             # Reordenar resultados basados en el índice devuelto por cohere
+            #             new_results = []
+            #             for result in rerank_response.results:
+            #                 idx = result.index
+            #                 orig_r = search_results[idx]
+            #                 orig_r.score = result.relevance_score # Actualizar score
+            #                 new_results.append(orig_r)
+            #             search_results = new_results
+            #     except Exception as e:
+            #         logger.error(f"  Cohere Rerank error: {e}")
             
             # 7. Tomar top_k después de reranking
             search_results = search_results[:top_k]
             
-            # 7. Formatear resultados
+            # 7. Formatear resultados - INCLUIR SIEMPRE TODOS LOS CAMPOS
             documents = []
             for result in search_results:
                 layer = result.payload.get('layer', 0)
                 
-                # Metadata según la capa
-                if layer == 1:
-                    # Capa 1: Normativa
-                    metadata = {
-                        "layer": layer,
+                # SIEMPRE incluir campos básicos del payload (independiente de layer)
+                metadata = {
+                    "layer": layer,
+                    "boe_id": result.payload.get('boe_id', ''),
+                    "law_name": result.payload.get('law_name', ''),
+                    "article_id": result.payload.get('article_id', ''),
+                    "chunk_index": result.payload.get('chunk_index', 0),
+                    "parent_id": result.payload.get('parent_id', ''),
+                    "nivel_jerarquia": result.payload.get('nivel_jerarquia', 3),
+                    "is_smart_chunk": result.payload.get('is_smart_chunk', False)
+                }
+                
+                # Añadir metadata anidado si existe
+                if 'metadata' in result.payload and isinstance(result.payload['metadata'], dict):
+                    metadata['metadata_nested'] = result.payload['metadata']
+                
+                # Campos adicionales según tipo de documento
+                if layer == 1 or layer == "article_chunk":
+                    # Normativa / article_chunk
+                    metadata.update({
                         "tipo": result.payload.get('tipo', ''),
-                        "norma_nombre": result.payload.get('norma_nombre', ''),
+                        "norma_nombre": result.payload.get('norma_nombre', result.payload.get('law_name', '')),
                         "norma_completa": result.payload.get('norma_completa', ''),
-                        "articulo": result.payload.get('articulo'),
-                        "nivel_jerarquia": result.payload.get('nivel_jerarquia', 1),
+                        "articulo": result.payload.get('articulo', result.payload.get('article_id', '')),
                         "fecha": result.payload.get('fecha', '')
-                    }
-                else:
-                    # Capa 3: Materiales
-                    metadata = {
-                        "layer": layer,
+                    })
+
+                    # LOGICA ROBUSTA: Construir URL desde BOE ID si es necesario
+                    url = ""
+                    boe_id = result.payload.get('boe_id', '')
+                    
+                    # 1. Intentar sacar de metadata_nested (si existe)
+                    if 'metadata' in result.payload and 'data' in result.payload['metadata']:
+                         try:
+                             url = result.payload['metadata']['data']['metadatos']['url_html_consolidada']['_text']
+                         except:
+                             pass
+                    
+                    # 2. Si falla, construirla usando el patrón oficial
+                    if not url and boe_id and boe_id.startswith('BOE'):
+                        url = f"https://www.boe.es/buscar/act.php?id={boe_id}"
+                        logger.info(f"🔗 URL Construida desde ID: {url}")
+                    
+                    metadata["url"] = url
+                elif layer == 3:
+                    # Materiales
+                    metadata.update({
                         "tipo": result.payload.get('tipo', ''),
                         "material_nombre": result.payload.get('material_nombre', ''),
                         "material_descripcion": result.payload.get('material_descripcion', ''),
                         "fuente": result.payload.get('fuente', ''),
-                        "tiene_respuestas": result.payload.get('tiene_respuestas', False),
-                        "nivel_jerarquia": result.payload.get('nivel_jerarquia', 3)
-                    }
+                        "tiene_respuestas": result.payload.get('tiene_respuestas', False)
+                    })
                 
                 doc = {
                     "id": str(result.id),

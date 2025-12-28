@@ -28,8 +28,12 @@ Repositorio de enlaces compartidos durante la fase de expansión multi-modelo y 
 - **Buscador BOE**: [boe.es/buscar](https://www.boe.es/buscar/boe.php)
  **deepseek knoledge api models etc.**
  https://api-docs.deepseek.com/api/deepseek-api https://api-docs.deepseek.com/guides/thinking_mode https://api-docs.deepseek.com/guides/multi_round_chat https://api-docs.deepseek.com/guides/chat_prefix_completion https://api-docs.deepseek.com/guides/fim_completion https://api-docs.deepseek.com/guides/json_mode https://api-docs.deepseek.com/guides/tool_calls https://api-docs.deepseek.com/guides/kv_cache
+ https://api-docs.deepseek.com/quick_start/pricing
 
  **mistral docs**
  https://docs.mistral.ai/
+ **mistral beta**
+ https://docs.mistral.ai/api/endpoint/beta/agents
  **groq models**
  https://console.groq.com/docs/models 
+ https://console.groq.com/docs/tool-use/remote-mcp
