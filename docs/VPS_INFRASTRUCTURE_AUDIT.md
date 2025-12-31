@@ -86,51 +86,16 @@ export async function ragSearch(query: string) {
 1. Exponer puerto 8001 externamente (o usar proxy)
 2. Configurar CORS en la API
 3. Documentar endpoints disponibles
+4.estos creoque ya estan aplicadas , comprobarlo YA !!! 
 
-### Opción 2: Instalar Ollama en VPS
 
-**Pasos**:
-```bash
-# 1. Instalar Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# 2. Descargar modelos
-ollama pull mistral
-ollama pull nomic-embed-text
-ollama pull phi3:mini
-
-# 3. Verificar
-ollama list
-```
-
-**Ventajas**:
-- ✅ Modelos locales (gratis)
-- ✅ Sin dependencias externas
-- ✅ Rápido
-
-**Desventajas**:
-- ⚠️ Requiere ~8-10 GB de espacio
-- ⚠️ Requiere RAM (4-8 GB por modelo)
 
 ### Opción 3: Arquitectura Híbrida (Recomendado)
 
 ```
-Frontend (Vercel)
-    │
-    ├─────────────┬──────────────┬────────────┐
-    │             │              │            │
-Gemini API   VPS API      Ollama (WSL)   Qdrant (WSL)
-(Cloud)      (8001)       (Local)        (Local)
-$0/mes       $0/mes       $0/mes         $0/mes
 ```
 
-**Flujo**:
-1. **Embeddings**: Ollama local (WSL)
-2. **RAG Search**: VPS API (ya implementado)
-3. **Generación compleja**: Gemini API
-4. **Vector DB**: Qdrant local (WSL)
-
-## 📋 Plan de Acción Inmediato
+# 📋 Plan de Acción Inmediato
 
 ### Fase 1: Conectar con API Existente (1 día)
 

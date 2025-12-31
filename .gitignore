@@ -125,6 +125,27 @@ dataset_output_seguro/
 # Script caches
 scripts/maintenance/__pycache__/
 scripts/tests/__pycache__/
-Seguridad_09_11.md
 golden_dataset/
 *.jsonl
+
+# Kaggle API credentials (NEVER COMMIT)
+.kaggle/
+kaggle.json
+
+# Model outputs and checkpoints (Large files)
+outputs/
+model_gguf/
+lora_model/
+*.gguf
+*.safetensors
+checkpoint-*/
+
+# Large compiled folders
+llama.cpp/
+.venv_kaggle/
+Mistral_guuf/
+
+# Kaggle dataset folders (user-specific)
+kaggle_dataset/
+kaggle_kernel/
+
