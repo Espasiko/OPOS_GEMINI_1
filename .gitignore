@@ -86,6 +86,8 @@ __pycache__/
 .Python
 venv/
 .venv/
+.venv_conversion/
+.venv_cpu/
 ENV/
 env/
 .pytest_cache/
@@ -135,10 +137,34 @@ kaggle.json
 # Model outputs and checkpoints (Large files)
 outputs/
 model_gguf/
+model_merged/
 lora_model/
 *.gguf
 *.safetensors
 checkpoint-*/
+
+# Modelfiles (no subir - se instalan localmente)
+Modelfile.salamandra-*
+
+# Archivos temporales de análisis
+archivos_no_seguidos_git.txt
+wget-log
+
+# Carpetas grandes de datos
+academias/
+data/
+extracted_texts/
+staging_area/
+
+# Archivos JSON de resultados (no subir)
+caso_*.json
+*_resultados.json
+*_test_*.json
+salamandra_*.json
+deepseek_*.json
+gemini_*.json
+comparacion_*.json
+analisis_*.json
 
 # Large compiled folders
 llama.cpp/

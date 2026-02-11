@@ -551,6 +551,59 @@ print(f"Trainer ready: {trainer is not None}")
 print(f"Dataset size: {len(dataset)}")
 ```
 
+
+---
+
+## 🚨 Limitación Crítica Descubierta: Conversión GGUF en Kaggle
+
+### Problema
+**NO es posible convertir checkpoints a GGUF directamente en Kaggle**, incluso con espacio suficiente.
+
+### Error
+```python
+ValueError: weight is on the meta device, we need a `value` to put in on 1.
+RuntimeError: Tensor.item() cannot be called on meta tensors
+```
+
+### Causa Raíz
+- Bug de Unsloth/PEFT/Accelerate en Kaggle
+- Cuando carga checkpoint LoRA, intenta offload a CPU por memoria
+- Los tensors quedan en "meta device" y la conversión GGUF falla
+- No hay workaround conocido (probado `/kaggle/tmp/`, limpieza cache, etc.)
+
+### Solución ÚNICA
+**Descargar checkpoint y convertir localmente:**
+
+1. **En Kaggle:**
+   ```python
+   # Crear ZIP descargable
+   import shutil
+   shutil.make_archive("/kaggle/working/checkpoint-900", 'zip', "outputs/checkpoint-900")
+   ```
+
+2. **Descargar:**
+   - Panel Output → `checkpoint-900.zip`
+
+3. **Convertir en PC/WSL:**
+   ```bash
+   cd /mnt/d/KAGGLE_MODEL
+   python convert_checkpoint_to_gguf.py checkpoint-900
+   ```
+
+### Requisitos Locales
+- Python 3.10+
+- 16GB RAM (tu PC tiene 15GB ✅)
+- 10GB disco libre (D: tiene 408GB ✅)
+
+### Alternativa
+Si no puedes instalar Unsloth local, usa llama.cpp:
+```bash
+# Merge LoRA + Base model
+python merge_lora.py checkpoint-900 BSC-LT/salamandra-7b-instruct merged/
+# Convertir
+./llama.cpp/convert_hf_to_gguf.py merged/ --outtype q4_k_m
+```
+
 ---
 
 ## ⚠️ Errores Comunes a Evitar
@@ -561,6 +614,7 @@ print(f"Dataset size: {len(dataset)}")
 4. **NO** usar NumPy >= 2.0 (incompatibilidad binaria)
 5. **NO** ejecutar Celda 1 múltiples veces (acumula conflictos)
 6. **NO** olvidar reiniciar kernel tras cambios de versiones
+7. **NO** intentar convertir GGUF en Kaggle (imposible por bug meta device) ⚠️ NUEVO
 
 ---
 

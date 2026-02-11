@@ -52,10 +52,12 @@ OLLAMA_BASE_URL=http://localhost:11434
 - **Esperado**: `http://localhost:11434`
 - **Problema**: La API está configurada para usar Ollama pero no está disponible
 
-#### 2. Mistral 8B GGUF
-- **Estado**: ❌ No encontrado
-- **Ubicación esperada**: `/root/models/` (vacío)
-- **Problema**: No hay modelos GGUF instalados
+#### 2. Salamandra 7B Instruct (Q4_K_M) - **NUEVO**
+- **Estado**: ✅ Listo para subir
+- **Ubicación Local**: `/home/spas/OPOS_GEMINI_1/model_gguf/salamandra-7b-instruct-unsloth.Q4_K_M.gguf`
+- **Ubicación Destino**: `/root/models/` o `/usr/share/ollama/.ollama/models/`
+- **Tamaño**: 4.6 GB (Perfecto para 8GB RAM)
+- **Ventaja**: Modelo especializado en Oposiciones Española.
 
 ## 🎯 Opciones de Integración
 

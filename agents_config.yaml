@@ -1,0 +1,191 @@
+# Configuración de Agentes para Pipeline Multi-Agente
+# Máxima veracidad en generación de casos legales
+
+agent_1_generator:
+  name: "Legal Case Generator"
+  model: "deepseek-ai/deepseek-v3.1"
+  provider: "novita"
+  
+  tools:
+    - name: "search_boe_article"
+      description: "Busca artículos específicos en el BOE usando MCP-BOE"
+      mcp_server: "uvx mcp-boe"
+      parameters:
+        article_number: string
+        law_name: string
+      
+    - name: "query_local_rag"
+      description: "Consulta RAG local (Qdrant) para contexto legal"
+      endpoint: "http://localhost:8000/rag/search"
+      parameters:
+        query: string
+        top_k: integer
+  
+  workflow:
+    - step: "Recibir tema del caso"
+    - step: "Query RAG local para artículos relevantes"
+    - step: "Verificar cada artículo con MCP-BOE"
+    - step: "Generar caso usando SOLO datos verificados"
+
+verification_pipeline:
+  name: "Legal Case Verification Factory"
+  
+  agents:
+    # AGENTE 1: Crítico de URLs BOE
+    - agent_id: "critic_boe_urls"
+      model: "deepseek-ai/deepseek-v3.1"
+      role: "BOE URL Validator"
+      
+      task: |
+        Verifica que TODAS las URLs del BOE sean:
+        1. Reales (existen en boe.es)
+        2. Coincidan con el artículo citado
+        3. Apunten a la ley correcta (TRLGSS, no otra)
+      
+      tools:
+        - name: "verify_boe_url"
+          mcp_server: "uvx mcp-boe"
+      
+      thresholds:
+        min_score: 1.0  # 100% de URLs correctas
+      
+      retry_policy:
+        max_attempts: 3
+        on_fail: "Request generator to fix URLs"
+    
+    # AGENTE 2: Crítico de Razonamiento Legal
+    - agent_id: "critic_legal_reasoning"
+      model: "deepseek-ai/deepseek-v3.1"
+      role: "Legal Reasoning Validator"
+      
+      task: |
+        Analiza el razonamiento legal paso a paso:
+        1. ¿La subsunción es correcta?
+        2. ¿Se aplican las excepciones adecuadas?
+        3. ¿El descarte de opciones es lógico?
+        4. ¿La conclusión se deriva de las premisas?
+      
+      tools:
+        - name: "query_local_rag"
+          description: "Consultar jurisprudencia y doctrina"
+      
+      thresholds:
+        min_score: 0.95
+      
+      retry_policy:
+        max_attempts: 3
+        on_fail: "Request generator to rewrite reasoning"
+    
+    # AGENTE 3: Crítico de Cálculos
+    - agent_id: "critic_calculations"
+      model: "deepseek-ai/deepseek-v3.1"
+      role: "Numerical Validator"
+      
+      task: |
+        Verifica TODOS los cálculos numéricos:
+        1. Base reguladora
+        2. Porcentajes de prestación
+        3. Complementos
+        4. Años cotizados (conversión años/meses/días)
+      
+      tools:
+        - name: "python_calculator"
+          description: "Ejecuta cálculos en Python para verificar"
+      
+      thresholds:
+        min_score: 1.0  # 100% de cálculos correctos
+      
+      retry_policy:
+        max_attempts: 2
+        on_fail: "Request generator to recalculate"
+    
+    # AGENTE 4: Crítico de Coherencia Interna
+    - agent_id: "critic_coherence"
+      model: "deepseek-ai/deepseek-v3.1"
+      role: "Internal Coherence Validator"
+      
+      task: |
+        Detecta contradicciones internas:
+        1. Fechas inconsistentes
+        2. Datos que no cuadran
+        3. Razonamiento circular
+        4. Opciones que no se derivan del enunciado
+      
+      thresholds:
+        min_score: 0.98
+      
+      retry_policy:
+        max_attempts: 3
+        on_fail: "Request generator to fix contradictions"
+    
+    # AGENTE 5: Crítico de Trampa Pedagógica
+    - agent_id: "critic_pedagogical_trap"
+      model: "deepseek-ai/deepseek-v3.1"
+      role: "Pedagogical Trap Validator"
+      
+      task: |
+        Evalúa la calidad de la trampa:
+        1. ¿Es realista? (basada en errores comunes de opositores)
+        2. ¿Es educativa? (enseña un concepto clave)
+        3. ¿Es sutil? (no obvia)
+        4. ¿Tiene solución clara y bien explicada?
+      
+      thresholds:
+        min_score: 0.90
+      
+      retry_policy:
+        max_attempts: 2
+        on_fail: "Request generator to improve trap"
+  
+  # ORQUESTACIÓN
+  orchestration:
+    mode: "sequential_with_feedback"
+    max_iterations: 5
+    timeout: 300  # 5 minutos por caso
+    
+    workflow:
+      - step: 1
+        action: "Generator crea caso inicial (con RAG + MCP-BOE)"
+      
+      - step: 2
+        action: "Critic BOE URLs valida URLs"
+        on_fail: "Generator corrige URLs → GOTO step 2"
+      
+      - step: 3
+        action: "Critic Legal Reasoning valida razonamiento"
+        on_fail: "Generator reescribe razonamiento → GOTO step 3"
+      
+      - step: 4
+        action: "Critic Calculations valida cálculos"
+        on_fail: "Generator recalcula → GOTO step 4"
+      
+      - step: 5
+        action: "Critic Coherence valida coherencia"
+        on_fail: "Generator corrige contradicciones → GOTO step 5"
+      
+      - step: 6
+        action: "Critic Pedagogical Trap valida trampa"
+        on_fail: "Generator mejora trampa → GOTO step 6"
+      
+      - step: 7
+        action: "ALL PASS → Caso aprobado"
+
+# Configuración de costes
+cost_estimation:
+  model: "deepseek-ai/deepseek-v3.1"
+  provider: "novita"
+  pricing:
+    input: 0.27  # $/M tokens
+    output: 1.00  # $/M tokens
+  
+  estimated_tokens_per_case:
+    generator: 3000
+    critic_boe_urls: 700
+    critic_legal_reasoning: 1200
+    critic_calculations: 600
+    critic_coherence: 900
+    critic_pedagogical_trap: 800
+    total: 7200
+  
+  estimated_cost_per_case: 0.005  # $0.005 por caso
+  estimated_cost_5000_cases: 25.0  # $25 para 5,000 casos

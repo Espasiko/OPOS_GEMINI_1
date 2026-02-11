@@ -25,3 +25,4 @@ Se deben procesar mediante scraping web directo o descarga de PDF y OCR si es ne
 1. Verificar si existen en formato web (HTML) en `boe.es`.
 2. Crear un scraper específico o usar `fetch_webpage` para obtener su contenido.
 3. Ingestar en Qdrant manualmente.
+4. averiguar leyes y reglamentos necesarios y comprobar por boe y no por el postgres, averiguar temarios, hojas, AGE y ss especificos todo!!! 

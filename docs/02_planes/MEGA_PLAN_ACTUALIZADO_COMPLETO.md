@@ -1,7 +1,8 @@
+---\n\n## 🎉 ACTUALIZACIÓN 06 ENE 2026: SALAMANDRA + MCP RAG OPERATIVO\n\n**Stack Completo:**\n- ✅ Pablosi Flask (puerto 5001)\n- ✅ MCP HTTP Wrapper (puerto 3100)  \n- ✅ VPS Salamandra (electroyhogarpelotazo.tienda)\n- ✅ Qdrant Cloud: `opositaia_knowledge`\n\n**Doc:** `060126_memoria_mcp_vps_salamandra.md`\n\n---\n\n## 📊 ACTUALIZACIÓN 09 ENE 2026: RESULTADOS EXAMEN ENERO 2025\n\n**Prueba de Validación Salamandra (70 preguntas):**\n- **Precisión:** 35.7% (25/70 correctas)\n- **Tiempo:** 7h total, 4.7min/pregunta\n- **VPS:** 100% uptime, sin errores\n\n**Problemas Detectados:**\n- Sesgo hacia opción B (42.9%)\n- RAG insuficiente (10 chunks)\n- 14 duplicados con respuestas variables\n\n**Informes:** Ver artifacts en `.gemini/antigravity/brain/cbbd51fa.../ANALISIS_POST_EXAMEN_3_TAREAS.md`\n\n---
 # 🚀 MEGA PLAN ACTUALIZADO - RAG + FINE-TUNING COMPLETO
-**Fecha:** 15 de diciembre de 2025  
-**Versión:** 2.2 - MCP INTEGRADO  
-**Estado:** 🟢 EN EJECUCIÓN - MCP OPERATIVO
+**Fecha:** 15 de diciembre de 2025 (Actualizado 31/12/2025)  
+**Versión:** 3.0 - VPS DESPLEGADO & ARQUITECTURA DISTRIBUIDA  
+**Estado:** 🟢 EN EJECUCIÓN - SALAMANDRA ONLINE
 
 ---
 
@@ -39,7 +40,111 @@ Ver detalles en: `MEMORIA_15_12_KIRO.md`
 
 ---
 
-## 📊 RESUMEN EJECUTIVO
+## � ACTUALIZACIÓN 31 DIC 2025: INFRAESTRUCTURA HÍBRIDA
+
+### ✅ HITO VPS COMPLETADO
+1.  **Modelo Desplegado:** Salamandra 7B Q4_K_M (4.6GB) corriendo en VPS Hostinger.
+2.  **Motor:** Ollama activo en puerto 11434.
+3.  **Seguridad:** Puertos cerrados, solo SSH y API interna.
+
+### 🔄 CAMBIO DE RUMBO: ARQUITECTURA DISTRIBUIDA
+Para escalar a 1,000 usuarios sin saturar el VPS (8GB RAM):
+1.  **Frontend:** Next.js en **Vercel** (Global CDN).
+2.  **DB:** Migración a **Supabase** (PostgreSQL Gratuito).
+3.  **Vectores:** Migración a **Qdrant Cloud** (Gratuito).
+4.  **VPS:** Solo Inferencia IA (Cerebro Puro).
+
+Ver documento maestro: [`docs/PLAN_ARQUITECTURA_DISTRIBUIDA_2025.md`](file:///home/spas/OPOS_GEMINI_1/docs/PLAN_ARQUITECTURA_DISTRIBUIDA_2025.md)
+
+---
+
+## 🆕 ACTUALIZACIÓN 02 ENE 2026: ESTRATEGIA RAG "BALANCED PAYLOAD"
+
+### Problema Detectado
+La ingesta anterior guardaba DEMASIADA información en Qdrant Cloud:
+- JSON completo de metadatos BOE (~5KB por punto)
+- Texto completo de artículos
+- **Resultado:** Acercándose al límite del Free Tier (1GB)
+
+### Nueva Estrategia: "Balanced Payload"
+**Payload ÓPTIMO por punto (~800 bytes):**
+```json
+{
+  "boe_id": "BOE-A-2015-11724",
+  "law_name": "LGSS",
+  "article_title": "Artículo 208",
+  "text_snippet": "...primeros 500 caracteres...",
+  "postgres_id": 12345,
+  "layer": "article_chunk",
+  "source": "hybrid_sync_v3"
+}
+```
+
+### Arquitectura Final
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    FLUJO DE CONSULTA                        │
+│                                                             │
+│  1. Usuario pregunta → MCP genera embedding (pablosi)       │
+│  2. Qdrant Cloud → IDs + scores + text_snippet              │
+│  3. Si snippet basta → Respuesta directa (80% casos)        │
+│  4. Si necesita más → Postgres lookup con postgres_id       │
+│  5. MCP ensambla contexto → LLM genera respuesta            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Modelo de Embeddings: ÚNICO
+**pablosi/bge-m3-spa-law-qa-trained-2** (1024 dimensiones)
+- ❌ NO usar RoBERTalex
+- ❌ NO usar all-MiniLM
+- ❌ NO usar modelos de OpenAI/Gemini
+
+### Archivos Modificados
+- `backend/agents/ingest_cloud_master_v2.py`: Payload balanceado + wipe collection + Payload Indexes
+- `backend/agents/rag_agent_v2.py`: Docstring actualizado (Pablosi-only)
+
+---
+
+## 🏛️ DECISIONES ARQUITECTURA (04 ENE 2026)
+Ver detalle en: [`docs/RESPUESTAS_ARQUITECTURA_PENDIENTES.md`](file:///home/spas/OPOS_GEMINI_1/docs/RESPUESTAS_ARQUITECTURA_PENDIENTES.md)
+
+| Área | Decisión | Razón |
+|------|----------|-------|
+| **Generación Documental** | **AGENT FACTORY** (3 Capas) | Calidad extrema verificada. Imprescindible. |
+| **Chat Rápido** | **RAG Directo** | Velocidad. Verificación por citación de fuentes. |
+| **Backend** | **Investigar Cloudflare Workers** | **AHORRO RAM VPS**. Libera recursos para el LLM. |
+| **Base de Datos** | **PostgreSQL Central** (Fase 1) | Simplicidad vs Local DB (Sync problemático). |
+| **Aprendizaje** | **Feedback RAG** | Guardar correcciones en Vector DB ("RAG Dinámico"). |
+
+---
+
+## 🚀 ACTUALIZACIÓN 04 ENE 2026: 54 LEYES & INGESTA HÍBRIDA COMPLETADA
+
+### ✅ HITO: 100% LEYES RECUPERADAS
+Se ha completado la recuperación de las 19 leyes faltantes que daban error 404.
+1. **Estrategia XML (12 leyes):** Corrección de IDs incorrectos (ej. LO Defensor Pueblo).
+2. **Estrategia PDF (3 leyes):** `download_pdfs_via_scraping.py` + `convert_pdfs_to_json.py`.
+   - RDL 11/2024 (Pensiones)
+   - Ley 9/2009 (Paternidad)
+   - RD 1415/2001 (Defensa)
+
+### 🔄 FULL REFRESH QDRANT CLOUD
+- **Estado:** Ingesta total en curso (Full Wipe & Reload).
+- **Volumen:** 54 Leyes / ~17,014 Chunks.
+- **Optimización:**
+  - `recreate_collection` + `create_payload_index` (Keywords, Text).
+  - Limpieza HTML y Smart Chunking con solapamiento (150 chars).
+  - Quota Usage: ~85MB (8.5% del Free Tier).
+
+### Scripts Críticos Generados:
+- `backend/scripts/download_missing_laws_corrected.py`: Ingesta XML corregida.
+- `backend/scripts/download_pdfs_via_scraping.py`: Scraper PDF fallback.
+- `backend/scripts/convert_pdfs_to_json.py`: PDF -> BOE JSON Interop.
+- `backend/scripts/check_quota.py`: Monitor de espacio Cloud.
+
+---
+
+## �📊 RESUMEN EJECUTIVO
 
 Después de leer **TODOS** los documentos en `docs/` y `docs/archive/`, este es el plan DEFINITIVO que integra:
 
@@ -90,7 +195,25 @@ GET /datosabiertos/api/boe/sumario/{fecha}
 GET /datosabiertos/api/boe/documento/{id}
 ```
 
-**NOTA:** Todos los agentes del proyecto deben usar la API oficial de datos abiertos del BOE en lugar de scraping HTML/PDF directo  
+**NOTA:** Todos los agentes del proyecto deben usar la API oficial.
+
+### ⚠️ ESTÁNDARES DE EJECUCIÓN E INFRAESTRUCTURA (CRÍTICO)
+
+**1. Entorno Virtual (VENV):** 
+El proyecto usa un entorno virtual ubicado en `.venv`. **SIEMPRE** usar los binarios de este entorno.
+- **Python:** `/home/spas/OPOS_GEMINI_1/.venv/bin/python3`
+- **Pip:** `/home/spas/OPOS_GEMINI_1/.venv/bin/pip`
+- **Activación:** `source .venv/bin/activate`
+
+**2. Dependencias Clave:**
+- `qdrant-client`: Gestión BD Vectorial.
+- `sentence-transformers`: Embeddings locales (pablosi).
+- `python-dotenv`: Carga de variables de entorno.
+- `psycopg2-binary`: Conexión PostgreSQL.
+
+**3. Variables de Entorno:**
+- Archivo maestro: `backend/.env.backend`
+- Carga en scripts: `load_dotenv("/home/spas/OPOS_GEMINI_1/backend/.env.backend")`
 
 ---
 
@@ -386,7 +509,9 @@ Opción 3: 256 tokens, 25 overlap → 1,200 chunks → 4.8 GB Qdrant
 
 ### 🔵 SPRINT 3: GENERACIÓN DATASET MULTI-AGENTE (Semanas 7-10)
 
-**Objetivo:** Generar 10,000 Q&A de alta calidad con pipeline multi-agente
+**Objetivo:** Generar 10,000- [ ] **Semana 5:** Generadores de Casos y Simulacros "Template-based".
+- [ ] **Semana 5b:** Ingesta Exámenes Oficiales (36 PDFs) + Enriquecimiento Claude (RAG + FineTuning Dataset).
+- [ ] **Semana 6:** Herramientas Visuales (Excalidraw, Mapas).ificación
 
 #### Semana 7: Implementar Pipeline Extracción + Clasificación
 
@@ -738,9 +863,14 @@ qdrant.update_collection(
 **Fecha inicio:** 9 de diciembre de 2025  
 **Fecha fin estimada:** 1 de abril de 2026 (16 semanas)
 
+### 📌 PRÓXIMOS PASOS (Semana 1 Enero 2026)
+1.  **Frontend:** Levantar Next.js + Tailwind (Deployment en Vercel).NOOO, VERCEL NO PERMITE USO COMERCIAL, MEJOR CLOWDFLARE Y ES GRATIS CON WORKERS Y DURABLE OBJECS!!!
+2.  **Supabase:** Crear proyecto y migrar tablas de leyes.
+3.  **Integración:** Conectar Frontend -> Supabase -> API VPS.
+
 ---
 
-## 📚 DOCUMENTACIÓN INTEGRADA
+## 📚 DOCUMENTACIÓN INTEGRADA -REVISAR, HAY IDEAS OBSOLETAS!!!! 
 
 Este plan integra TODA la información de:
 - 22 archivos en `docs/`
@@ -748,6 +878,48 @@ Este plan integra TODA la información de:
 - 25 archivos en raíz del proyecto
 
 **Total:** 185 documentos analizados y consolidados.
+
+---
+## 4. 📝 METODOLOGÍA BMAD (MODO DE TRABAJO)
+
+Para cada uno de los puntos anteriores, seguiremos ESTRICTAMENTE este ciclo:
+ 0. ¡¡¡PRIMERO E IMPORTANTE!!! ¡¡¡averiguar en que carpeta los colocamos para estar accesibles para agente antigravity y bmad a la vez!!!
+1.  **Definición (Epic):** Crear documento `.md` describiendo la funcionalidad.
+2.  **Arquitectura (Story):** Definir agentes YAML y flujo de datos.
+3.  **Seguridad (Simulación):** ¿Cómo podría abusarse de esto? Mitigación.
+4.  **Criterios de Aceptación:** Lista checklable de qué define "Estar hecho".
+5.  **Desarrollo TDD:** Test primero, código después.
+6.  **Verificación E2E:** Usuario simulado prueba todo el flujo.
+7.  **Aprobación:** Tú das el OK.
+
+---
+
+## 5. 🚦 SIGUIENTES PASOS INMEDIATOS
+ 0. ¡¡¡ PRIMERO E IMPORTANTE!!! leer los puntos de investigacion abajo, investigarlos ¡TODOS!, evaluarlos y hacer un plan de acción concretos para implementar los que corresponden.
+
+1.  **Aprobación del Plan:** ¿Estás de acuerdo con usar Vite en VPS (para poder cobrar) y la arquitectura híbrida Supabase/Local?
+2.  **Limpieza:** Ejecutar Punto 14. Auditar lo que hay, borrar basura obsoleta.
+3.  **Inicio Fase 1:** Definir la Epic de "Infraestructura Base & Monetización".
+## para investigar, eveluar e implementar, si cabe ##
+1. Hay que investigar si usamos notebook con un conjunto de PDF de leyes o algo parecido, si procede.
+2. Investigar los temas que faltan los tratados de Unión Europea código civil y órdenes anuales. 
+3. averiguar como mejorar las búsquedas en BOE para el MCP nuestro
+4. subir todos los exámenes oficiales y crear temas enteros gratis, inspiradas en los de las academisa, pero con salamandra, comparar y mejorarlas!
+5. desarrollar temas enteros para , leer ejemplos por temaa 
+6. investigar mapas mentales esquemas temario, conceptos, logica y meterlo todo en un juego con castillos y bibliotecas, conquistando el premio "APROBADO" con gamificación y hacerlo divertido 
+7. investigar el seguimiento del progreso del usuario PARA DARLE alertas de lo que debe repasr, cambios impportantes etc.
+8. VER como usar las bases de datos y las memorias para que se pueda hacer el seguimiento efectivo. 
+9. tenemos fórmulas y podemos crear una calculadora de éxito y nota, está poracer 
+10. investigar la competencia en qué formatos entregan sus cosas aparte del vídeo, decidir la IU para los chats con pfd-s y URL-s, mejorando el >IU y UX para ser cómodo y fácil e intuitivo. 
+11. investigar cómo hacer aprender mi IA a con los fallos de los usuarios 
+12. comprobar si lo ingestado está en UTF-8 correcto con los tildes que antes había problemas 
+13. investigar la posibilidad de usar un Excel o ggldrive u otras opciones mejores cuáles son los requisitos y cómo se usa esto para historial de usuario 
+14. investigar workers en cloudFlare con Durable objects , mcp, ia etc, no conozco el sistema!!! 
+15. También ver cómo preparar los textos para que los dispositivos los puedan leer en voz alta para escucharlo en el coche o en la cocina o donde sea, sin usar la ia de voz!!!
+16. Hacer la ventana divivdida en el caso de casos practicos para poder ver a la vez anunciado+preguntas. !
+17. Ver como hacer la salamandra que vea lo subrayado por el usuario, o por colores, por ej. verde-explicar termino, rojo - tener cuidado con esta cuestion y ponerla en los flashcards, con un boton flotante al subrayar etc. etc. 
+18. leer de nuevo el plan de ideas de brainstorming para meter las mejores practicas oficiales y alternativas de estudio y memorizacion y reinvestigarlo bien!
+19. crear ya conjuntos de casos practicos con chat explicativo de IA, tests, simulacros y algunas mapas mentales comunes, esquemas, temas enteros(estos sin chat explicativo) y falshcards todo para evaluar y regalar a los primeros interesados y venderlas ya!!! 
 
 ---
 

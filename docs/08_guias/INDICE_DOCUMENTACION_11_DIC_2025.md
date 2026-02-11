@@ -1,69 +1,56 @@
-# 📚 ÍNDICE MAESTRO DE DOCUMENTACIÓN - 11 DIC 2025
+# 📚 ÍNDICE MAESTRO DE GUÍAS - 31 DIC 2025
 
 **Proyecto:** OpositaIA
-**Estado:** 🟢 CONSOLIDADO (Smart Chunking + RAG)
-**Fecha:** 11 Diciembre 2025
+**Estado:** 🟢 SALAMANDRA VPS + ARQUITECTURA DISTRIBUIDA
+**Fecha:** 31 Diciembre 2025
 
 ---
 
-## 🌟 FUENTE DE VERDAD (LEER PRIMERO)
+## 🌟 GUÍAS DE ARQUITECTURA (LEER PRIMERO)
 
-1.  **[`ACTUALIZACION_DOCS_11_DIC_2025.md`](./ACTUALIZACION_DOCS_11_DIC_2025.md)**
-    *   Estado actual real del proyecto.
-    *   Arquitectura híbrida (VPS/Local).
-    *   Logros recientes (Smart Chunking).
+1.  **[`PLAN_ARQUITECTURA_DISTRIBUIDA_2025.md`](../PLAN_ARQUITECTURA_DISTRIBUIDA_2025.md)**
+    *   **CRÍTICO:** Nueva topología Vercel (Front) + Supabase (DB) + VPS (IA).
+    *   Estrategia de coste $0/mes.
 
-2.  **[`MEGA_PLAN_ACTUALIZADO_COMPLETO.md`](./MEGA_PLAN_ACTUALIZADO_COMPLETO.md)**
-    *   Plan maestro de ejecución.
-    *   Fases, hitos y estrategia de datos.
+2.  **[`MEGA_PLAN_ACTUALIZADO_COMPLETO.md`](../02_planes/MEGA_PLAN_ACTUALIZADO_COMPLETO.md)**
+    *   Plan Maestro v3.0 actualizado con todos los hitos.
 
 ---
 
-## 🛠️ ESPECIFICACIONES Y GUÍAS TÉCNICAS
+## 🛠️ GUÍAS DE IMPLEMENTACIÓN TÉCNICA
 
-3.  **[`SPECS_PRODUCTO_FINAL.md`](./SPECS_PRODUCTO_FINAL.md)**
-    *   Definición del producto (PD).
-    *   Especificaciones funcionales (App).
-    *   Roadmap detallado.
+3.  **[`26_12_ESTRATEGIA_FINAL_RAG.md`](../../26_12_ESTRATEGIA_FINAL_RAG.md)**
+    *   La "Biblia" de la verificación BOE.
+    *   Reglas para evitar alucinaciones en RAG.
 
-4.  **[`GUIA_SEGURIDAD_DESARROLLO_AGENTES.md`](./GUIA_SEGURIDAD_DESARROLLO_AGENTES.md)**
-    *   Reglas de seguridad (BMAD).
-    *   Estándares de código para agentes.
-    *   Mejores prácticas RAG.
+4.  **[`INSTRUCCIONES_MODELO_OLLAMA.md`](../../dataset_generator/INSTRUCCIONES_MODELO_OLLAMA.md)**
+    *   Cómo interactuar con Salamandra/Mistral vía Ollama.
+    *   Formatos de prompt y parámetros.
 
----
-
-## ⚙️ INGESTA Y DATOS
-
-5.  **[`RESUMEN_INGESTA_SMART_CHUNK_11_DIC.md`](./RESUMEN_INGESTA_SMART_CHUNK_11_DIC.md)**
-    *   Detalles técnicos de la nueva estrategia de chunking.
-    *   Resultados de la ejecución.
-
-6.  **[`docs/LEYES_PENDIENTES_SCRAPING.md`](./docs/LEYES_PENDIENTES_SCRAPING.md)**
-    *   Lista de leyes en cuarentena (Error 404) que requieren scraping manual.
+5.  **[`GUIA_VERIFICACION_QA_AVANZADA.md`](../../dataset_generator/GUIA_VERIFICACION_QA_AVANZADA.md)**
+    *   Protocolos de calidad para datasets generados.
 
 ---
 
-## 🧪 TESTING Y VALIDACIÓN
+## ⚙️ INFRAESTRUCTURA Y DESPLIEGUE
 
-7.  **[`test_rag_mistral.py`](./test_rag_mistral.py)**
-    *   Script para verificar la conexión RAG (Qdrant + Ollama).
+6.  **[`VPS_INFRASTRUCTURE_AUDIT.md`](../VPS_INFRASTRUCTURE_AUDIT.md)**
+    *   Estado real del VPS Hostinger (Puertos, Servicios, Seguridad).
+    *   Confirmación de limpieza de procesos "zombie".
 
----
-
-## 🛡️ AUDITORÍA, SEGURIDAD Y MEJORES PRÁCTICAS (HISTÓRICO Y VIGENTE)
-
-8.  **[`MEJORES_PRACTICAS_globales_09_11.md`](./MEJORES_PRACTICAS_globales_09_11.md)**
-    *   Estándares de código, estructura de carpetas y estrategia de testing.
-    *   Roles de agentes y separación de responsabilidades.
-
-9.  **[`AUDIT_GROQ_RESPUESTAS_PROBLEMATICAS.md`](./AUDIT_GROQ_RESPUESTAS_PROBLEMATICAS.md)**
-    *   Análisis de vulnerabilidades en respuestas de IA (Hallucinaciones).
-    *   Ejemplos de fallos de seguridad en la generación de contenido legal.
-
-10. **[`GUIA_SEGURIDAD_DESARROLLO_AGENTES.md`](./GUIA_SEGURIDAD_DESARROLLO_AGENTES.md)**
-    *   (Referencia cruzada) Protocolos de seguridad para agentes BMAD.
+7.  **[`RAG_COST_ANALYSIS.md`](../RAG_COST_ANALYSIS.md)**
+    *   Desglose de costes y justificación de decisiones cloud.
 
 ---
 
-**Nota:** Cualquier documento anterior al 11 de diciembre de 2025 debe considerarse obsoleto si contradice a los listados aquí.
+## 🧪 TESTING E IA
+
+8.  **[`23_12_MEMORIA_SCRIPTS_OPTIMIZADOS.md`](../../23_12_MEMORIA_SCRIPTS_OPTIMIZADOS.md)**
+    *   Explicación de los scripts de generación de preguntas (DeepSeek, Mistral, Groq).
+
+9.  **[`GUIA_SEGURIDAD_DESARROLLO_AGENTES.md`](../GUIA_SEGURIDAD_DESARROLLO_AGENTES.md)**
+    *   (Vigente) Protocolos de seguridad para desarrollo de agentes.
+
+---
+
+**Nota:** Documento actualizado el 31/12/2025 para reflejar la realidad post-despliegue VPS.

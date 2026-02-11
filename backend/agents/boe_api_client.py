@@ -25,7 +25,12 @@ class BOEApiClient:
     
     def __init__(self, timeout: int = 30):
         self.timeout = timeout
-        self.client = httpx.Client(timeout=timeout)
+        # Headers requeridos por la API de datos abiertos del BOE
+        headers = {
+            "Accept": "application/xml",
+            "User-Agent": "OpositaIA-Bot/1.0 (Spanish Law Study App)"
+        }
+        self.client = httpx.Client(timeout=timeout, headers=headers)
     
     def __enter__(self):
         return self

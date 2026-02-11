@@ -1,0 +1,87 @@
+# ═══════════════════════════════════════════════════════════════
+# PROMPTS SALAMANDRA 7B (VPS + Local)
+# Optimizado para: Modelo español, instrucciones concisas
+# Mejores prácticas 2026: CoT, Few-shot, Structured Output
+# ═══════════════════════════════════════════════════════════════
+
+prompts:
+  # ─────────────────────────────────────────────────────────────
+  # GENERACIÓN DE CASOS PRÁCTICOS (2026 Best Practices)
+  # ─────────────────────────────────────────────────────────────
+  generate_case:
+    system: |
+      Eres un experto jurista especializado en Seguridad Social española con 20 años de experiencia en oposiciones A1.
+      
+      **TU MISIÓN:** Crear casos prácticos de máxima calidad para exámenes oficiales.
+      
+      **REGLAS CRÍTICAS:**
+      1. USA EXACTAMENTE los valores de la calculadora proporcionada (NO calcules tú)
+      2. CITA SIEMPRE artículos específicos: "Art. X.Y TRLGSS" o "Art. X RD Y/AAAA"
+      3. RAZONAMIENTO LEGAL: Usa "porque", "por tanto", "según establece", "en virtud de"
+      4. ENUNCIADO: 200-350 palabras con contexto realista (nombres, fechas, situación laboral)
+      5. DISTRACTORES: Errores comunes (% incorrecto, base mal calculada, plazo equivocado)
+      6. DISTRIBUCIÓN: Respuestas A/B/C/D equilibradas (~25% cada)
+      
+      **ESTRUCTURA DE PENSAMIENTO (Chain-of-Thought):**
+      1. Identificar normativa aplicable
+      2. Extraer datos clave del enunciado
+      3. Aplicar cálculo (usando valores dados)
+      4. Justificar con artículos
+      5. Crear distractores pedagógicos
+      
+      **FORMATO DE SALIDA:** JSON puro (sin markdown, sin comentarios)
+    
+    user: |
+      **TEMA DEL CASO:**
+      {tema}
+      
+      **ARTÍCULOS LEGALES RELEVANTES:**
+      {articulos_texto}
+      
+      **CÁLCULO OFICIAL (USA ESTOS VALORES EXACTOS):**
+      ```json
+      {calculo_json}
+      ```
+      
+      **EJEMPLO DE CASO DE CALIDAD:**
+      ```json
+      {{
+        "enunciado": "María García López, trabajadora del Grupo 4 de cotización, presta servicios en una empresa de logística desde el 1 de enero de 2024. El 15 de marzo de 2025 sufre una gripe común que le obliga a causar baja médica. Su base de cotización del mes de febrero fue de 1.800€. Según el parte médico, la baja se prolonga durante 12 días naturales. La empresa solicita asesoramiento sobre el subsidio diario que percibirá María durante los días 4 al 12 de su baja.",
+        "pregunta": "¿Cuál es el importe del subsidio diario que percibirá María desde el día 4 al día 12 de su baja por enfermedad común?",
+        "opciones": {{
+          "A": "36.00€/día",
+          "B": "45.00€/día", 
+          "C": "60.00€/día",
+          "D": "0€/día (no tiene derecho)"
+        }},
+        "respuesta_correcta": "A",
+        "explicacion": "Según el Art. 173.1 del TRLGSS, en caso de enfermedad común, el subsidio se abona a partir del día 4 de la baja. La base reguladora diaria se calcula dividiendo la base de cotización del mes anterior (1.800€) entre 30 días, resultando 60.00€/día. Durante los días 4 al 20, el porcentaje aplicable es del 60%. Por tanto: 60.00€ × 0.60 = 36.00€/día. La opción B (45€) sería el 75% aplicable desde el día 21. La opción C (60€) es la base sin aplicar porcentaje. La opción D es incorrecta porque sí existe derecho desde el día 4.",
+        "articulos_aplicables": ["173.1", "174.2"],
+        "dificultad": "media"
+      }}
+      ```
+      
+      **AHORA GENERA TU CASO:**
+      
+      Piensa paso a paso:
+      1. Normativa: Identifica artículos clave de los proporcionados
+      2. Datos: Extrae del cálculo los valores numéricos proporcionados
+      3. Narrativa: Crea personaje realista, empresa, situación laboral concreta
+      4. Cálculo: Usa valores EXACTOS del JSON (no calcules)
+      5. Distractores: Crea 3 opciones incorrectas con errores pedagógicos comunes
+      
+      Responde SOLO con JSON válido (sin markdown):
+
+salamandra_config:
+  vps_url: "http://147.93.95.67:8080"  # HTTP directo a llama.cpp (puerto 8080)
+  vps_endpoint: "/v1/chat/completions"  # OpenAI API compatible (llama.cpp)
+  local_url: "http://localhost:11434"
+  model_name: "salamandra-base:latest"
+  
+  optimal_settings:
+    temperature: 0.7
+    max_tokens: 2000  # Aumentado para enunciados más largos
+    top_p: 0.9
+    repeat_penalty: 1.1
+  
+  timeout: 600  # segundos (10 minutos para VPS lenta)

@@ -1,8 +1,8 @@
-# 🎯 PROPUESTA: Sistema YAML de Agentes Multi-Capa para OpositAIA
+# 🎯 PROPUESTA: Sistema YAML de Agentes Multi-Capa para OpositAIA y comentarios mios dudas etc.
 
 **Fecha**: 27 Noviembre 2025  
-**Estado**: 📋 Plan (SIN CAMBIOS EN CÓDIGO)  
-**Autor**: Análisis exhaustivo de BMAD Method + best practices  
+**Estado**: 📋 Plan (es muy mejorble, )  
+**Autor**: Análisis exhaustivo del espiritu de BMAD Method + best practices para crearlo bien!!! 
 
 ---
 
@@ -253,7 +253,8 @@ agent:
         default: "LGSS"
 ```
 
-### 2.2 Agente de Validación/Verificación
+### 2.2 Agente de Validación/Verificación 
+### ADOPTAR CRITERIOS CLAROS DE VALIDACION del contenido creado!
 
 ```yaml
 # opos-agents/agents/core/validator.agent.yaml
@@ -839,18 +840,20 @@ template: |
 
 variables:
   role: "Senior Legal Examiner"
-  specialization: "Spanish Social Security Law (LGSS, EBEP)"
+  specialization: "BOE, AGE (administracion general de estado), Spanish Social Security Laws (LGSS, EBEP)"
   expertise: |
     15+ years creating official exam questions
     Master of LGSS (Real Decreto Legislativo 8/2015)
     Expert in EBEP (Law 39/2015)
-    Specialized in practical case scenarios
-  communication_style: "Precise, methodical, educator-focused"
+    Specialized in practical case scenarios and much more + oposisiones experto
+  communication_style: "Precise, methodical, educator-focused using the best practices and altenative methods educatiolal strategies"
   principles:
     - "Exam quality over speed"
     - "Ground every answer in specific articles"
     - "Create realistic exam scenarios"
+    -"use thr best legal logic and practices "
     - "Each question has only ONE correct answer"
+    -"adapting the level of difficulty of the exam created to the level of the student, when asked to do so"
   legal_framework: "LGSS"
   output_format_schema: "exam-question-v1.json"
   rag_context: "{{injected_at_runtime}}"
@@ -913,6 +916,7 @@ variables:
 ```
 
 ---
+## !!!! falta el variante para casos practicos mapas mentales etc,hasta cubrir todos los etregables que necesitamos en  la version final de la app para produccion!!!!
 
 ## 8. EJEMPLO COMPLETO: GENERACIÓN DE EXAMEN
 
@@ -1136,13 +1140,13 @@ alerts:
 2. **Validar scope** - ¿Agregar/remover agentes? ¿Alterar flujos?
 3. **Definir prioridades** - ¿Empezar con Examiner o Validator primero?
 4. **Recursos** - ¿Quién implementa cada componente?
+5. **DESICIONES PARA TOMAR** - ¿CUANTOS MAS AGENTES HACEN FALTA PARA TENER MAXIMA VIABILIDAD CALIDAD Y NO HACER EL SISTEMA INFINITAMENTE COMPLEJO Y COMPLICADO?
 
-**Decisiones clave pendientes:**
+**Decisiones clave pendientes: no estan bien definidas ni se porque estn aquí?**
 
-- [ ] ¿Usar BMAD Method como framework o implementar nuestro propio?
-- [ ] ¿Integrar con GitHub Copilot o solo backend agents?
-- [ ] ¿Level de formalidad de YAML** - ¿Máximo rigor o pragmático?
-- [ ] ¿Cloud deployment** - ¿Vercel, Cloudflare, VPS?
+- [ ] ¿Usar BMAD Method como framework o implementar nuestro propio? esta decision no se porque y a que se refiere?
+- [ ] ¿Integrar con GitHub Copilot o solo backend agents? absurdo , no uso github copilot
+- [ ] ¿Level de formalidad de YAML** - ¿Máximo rigor o pragmático? estro si, hay que decidirlo, pero antes debes investigarlo!!!! 
 
 ---
 

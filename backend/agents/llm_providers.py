@@ -507,11 +507,12 @@ class MistralAPIProvider(LLMProvider):
         }
 
 
-class MistralVPSProvider(LLMProvider):
-    """Mistral en VPS - Fallback siempre disponible"""
+class SalamandraVPSProvider(LLMProvider):
+    """Salamandra 7B Instruct (VPS) - Modelo Propio"""
     
     def __init__(self):
-        self.model = 'mistral'
+        self.model = 'salamandra' # Nombre interno
+        # Mantenemos MISTRAL_URL por retrocompatibilidad del .env, pero la logica es Salamandra
         self.base_url = os.getenv('MISTRAL_URL', 'http://147.93.95.67:8080')
     
     async def generate_stream(
@@ -520,15 +521,16 @@ class MistralVPSProvider(LLMProvider):
         temperature: float = 0.7,
         max_tokens: int = 2000
     ) -> AsyncGenerator[str, None]:
-        """Genera respuesta usando Mistral VPS"""
+        """Genera respuesta usando Salamandra (protocolo OpenAI/Llama.cpp)"""
         
-        async with httpx.AsyncClient(timeout=180.0) as client:
+        async with httpx.AsyncClient(timeout=300.0, verify=False) as client: # Timeout ajustado, SSL ignorado (cert expirado)
             try:
+                # Llama.cpp server usa formato OpenAI compatible
                 async with client.stream(
                     "POST",
                     f"{self.base_url}/v1/chat/completions",
                     json={
-                        "model": self.model,
+                        "model": "salamandra-7b-instruct", # Nombre para el server
                         "messages": messages,
                         "stream": True,
                         "temperature": temperature,
@@ -536,7 +538,7 @@ class MistralVPSProvider(LLMProvider):
                     }
                 ) as response:
                     if response.status_code != 200:
-                        raise Exception(f"Mistral VPS error: {response.status_code}")
+                        raise Exception(f"Salamandra VPS error: {response.status_code}")
                     
                     async for line in response.aiter_lines():
                         if line.startswith("data: "):
@@ -553,49 +555,39 @@ class MistralVPSProvider(LLMProvider):
                                 continue
             
             except Exception as e:
-                raise Exception(f"Mistral VPS streaming error: {e}")
+                raise Exception(f"Salamandra VPS streaming error: {e}")
     
     def get_info(self) -> Dict[str, Any]:
         return {
-            "provider": "mistral-vps",
+            "provider": "salamandra",
             "model": self.model,
-            "speed": "slow",
+            "speed": "cpu-slow",
             "cost": "free",
             "configured": True
         }
-
 
 # Registry de proveedores disponibles
 PROVIDERS = {
     # Groq (Ultra rápido) ⚡
     'groq-8b': GroqProvider('llama-3.1-8b-instant'),
     'groq-70b': GroqProvider('llama-3.3-70b-versatile'),
-    # 'groq-mixtral': GroqProvider('mixtral-8x7b-32768'),  # DEPRECADO
     
     # DeepSeek (Barato) 💰
     'deepseek': DeepSeekProvider(),
     
-    # Google Gemini (Multimodal) 🌟
-    # 'gemini-flash': GeminiProvider('gemini-2.0-flash-exp'),  # Quota issues
+    # Gemini 🌟
     'gemini-pro': GeminiProvider('gemini-2.5-pro'),
     'gemini-3-pro': GeminiProvider('gemini-3-pro-preview'),
     
-    # Mistral AI (Potente y barato) 🔮
+    # Mistral AI API 🔮
     'mistral-small': MistralAPIProvider('mistral-small-latest'),
     'mistral-medium': MistralAPIProvider('mistral-medium-latest'),
-    'mistral-large': MistralAPIProvider('mistral-large-latest'),
     
-    # Hugging Face (DESHABILITADO - API migrada) 🤗
-    # 'hf-llama-70b': HuggingFaceProvider('meta-llama/Llama-3.1-70B-Instruct'),
-    # 'hf-mixtral': HuggingFaceProvider('mistralai/Mixtral-8x7B-Instruct-v0.1'),
-    # 'hf-qwen': HuggingFaceProvider('Qwen/Qwen2.5-72B-Instruct'),
-    
-    # Cohere (Producción) 🔷
+    # Cohere 🔷
     'cohere-command-r': CohereProvider('command-r-08-2024'),
-    'cohere-command-r-plus': CohereProvider('command-r-plus-08-2024'),
     
-    # Mistral VPS (Fallback siempre disponible) 🐌
-    'mistral-vps': MistralVPSProvider()
+    # SALAMANDRA (VPS Propio) 🦎
+    'salamandra': SalamandraVPSProvider()
 }
 
 

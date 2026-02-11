@@ -91,44 +91,250 @@ NO vamos a cambiar de MODELO! OLVIDATE DEL RESO DE ESTE FICHER!!!- escrito por e
 los probaremos y los fienetunearemos, si hace falta! 
 ---
 
-## 5. IMPLEMENTACIÓN INMEDIATA 
-!!!lea los docs de VPS ya hay mucho de esto hecho con ssh!!!
+## 5. IMPLEMENTACIÓN REAL ✅ VERIFICADA 22/01/2026
 
-### Paso 1: Configurar LLM Server (Llama.cpp)
+### ✅ Estado Actual del VPS
+
+**Conexión SSH:**
 ```bash
-# En el VPS
-./llama-server -m models/Phi-3-mini-4k-instruct-q4.gguf --port 8080 --host 0.0.0.0 --n-gpu-layers 0
+ssh root@147.93.95.67
+# Hostname: srv838554
+# Usuario app: ubuntu
 ```
 
-### Paso 2: Optimizar Qdrant
-```yaml
-storage:
-  type: mmap # Usa disco, no RAM
-optimizers:
-  memmap_threshold_kb: 10000
+**Recursos disponibles:**
+- RAM: 7.8 GB total (6.0 GB usados, 1.7 GB libres)
+- Disco: 96 GB total (26 GB usados, 71 GB libres)
+- Swap: 2.0 GB
+
+### ✅ Paso 1: LLM Server (Llama.cpp) - YA CONFIGURADO
+
+**Servicio activo:** `llama-server.service`
+
+```bash
+# Ver estado
+ssh root@147.93.95.67 "systemctl status llama-server.service"
+
+# Configuración actual (NO CAMBIAR):
+# Comando: /usr/local/bin/llama-server
+# Modelo: /home/ubuntu/models/salamandra-7b-instruct-Q4_K_M.gguf (4.6 GB)
+# Puerto: 8080 (público en 0.0.0.0)
+# Contexto: 8192 tokens
+# Memoria: ~5.7 GB
 ```
 
-### Paso 3: Script de Agente (Ejemplo)
+**Endpoints disponibles:**
+```bash
+# Interno (desde VPS)
+curl http://127.0.0.1:8080/health
+curl http://127.0.0.1:8080/v1/models
+
+# Externo (vía nginx HTTPS)
+curl https://electroyhogarpelotazo.tienda/v1/models
+curl https://electroyhogarpelotazo.tienda/v1/chat/completions
+```
+
+### ✅ Paso 2: FastAPI Wrapper - YA CONFIGURADO
+
+**Servicio activo:** `salamandra-api.service`
+
+```bash
+# Ver estado
+ssh root@147.93.95.67 "systemctl status salamandra-api.service"
+
+# Configuración:
+# Directorio: /home/ubuntu/salamandra-api/
+# Puerto: 8001 (solo localhost)
+# Memoria: ~37 MB
+```
+
+**Endpoints públicos (vía nginx):**
+```bash
+# Health check
+curl https://electroyhogarpelotazo.tienda/health
+
+# Swagger UI
+https://electroyhogarpelotazo.tienda/docs
+
+# Razonamiento con Salamandra
+curl -X POST https://electroyhogarpelotazo.tienda/salamandra/reason \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "¿Cuál es el plazo de IT por EC?",
+    "context": "Art. 173 LGSS...",
+    "options": {"a": "365 días", "b": "545 días"}
+  }'
+```
+
+### ⚠️ Paso 3: CORRECCIÓN NECESARIA
+
+**Problema detectado:** El código de `salamandra-api` intenta llamar a Ollama (puerto 11434) que NO está instalado.
+
+**Solución:**
+```bash
+# Conectar al VPS
+ssh root@147.93.95.67
+
+# Editar el archivo
+nano /home/ubuntu/salamandra-api/main.py
+
+# Cambiar línea 48:
+# DE:   "http://127.0.0.1:11434/v1/chat/completions"
+# A:    "http://127.0.0.1:8080/v1/chat/completions"
+
+# Cambiar línea 38:
+# DE:   "model": "salamandra-opos:optimized"
+# A:    "model": "salamandra-7b-instruct-Q4_K_M.gguf"
+
+# Cambiar línea 60 (opcional, para consistencia):
+# DE:   "model_used": "salamandra-opos:optimized"
+# A:    "model_used": "salamandra-7b-instruct-Q4_K_M.gguf"
+
+# Reiniciar servicio
+systemctl restart salamandra-api.service
+```
+
+
+### ✅ Paso 4: Script de Agente (Ejemplo Real)
+
 ```python
 # backend/agents/micro_simulacro.py
 import requests
 
 def generar_pregunta(tema):
-    # 1. RAG Híbrido
+    # 1. RAG Híbrido (Qdrant Cloud o local)
     contexto = qdrant.search(tema, filter={"fecha": {"lte": "2024-01-01"}})
     
-    # 2. LLM Local
-    prompt = f"Contexto: {contexto}\nGenera una pregunta tipo test difícil."
-    resp = requests.post("http://localhost:8080/completion", json={"prompt": prompt})
+    # 2. LLM en VPS (Salamandra vía HTTPS)
+    payload = {
+        "question": f"Genera una pregunta tipo test difícil sobre: {tema}",
+        "context": contexto,
+        "options": {"a": "", "b": "", "c": "", "d": ""}
+    }
+    
+    resp = requests.post(
+        "https://electroyhogarpelotazo.tienda/salamandra/reason",
+        json=payload,
+        timeout=300
+    )
+    
+    return resp.json()
+
+# Alternativa: Llamar directamente a llama.cpp
+def generar_con_llamacpp(tema, contexto):
+    payload = {
+        "model": "salamandra-7b-instruct-Q4_K_M.gguf",
+        "messages": [
+            {"role": "system", "content": "Eres experto en oposiciones españolas."},
+            {"role": "user", "content": f"Contexto: {contexto}\n\nGenera pregunta sobre: {tema}"}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 1000
+    }
+    
+    resp = requests.post(
+        "https://electroyhogarpelotazo.tienda/v1/chat/completions",
+        json=payload,
+        timeout=300
+    )
     
     return resp.json()
 ```
 
+### 📋 Comandos de Verificación
+
+```bash
+# Verificar servicios activos
+ssh root@147.93.95.67 "systemctl list-units --type=service --state=running | grep -E 'llama|salamandra'"
+
+# Ver uso de recursos
+ssh root@147.93.95.67 "free -h && df -h | grep -E 'Filesystem|/$'"
+
+# Ver procesos de IA
+ssh root@147.93.95.67 "ps aux | grep -E 'llama-server|uvicorn' | grep -v grep"
+
+# Test completo
+curl https://electroyhogarpelotazo.tienda/health
+curl https://electroyhogarpelotazo.tienda/v1/models
+```
+
 ---
 
-## CONCLUSIÓN
-Con esta arquitectura:
-1.  **Coste:** 0€ extra (solo el VPS actual).
-2.  **Calidad:** RAG Híbrido asegura precisión.
-3.  **Estabilidad:** Phi-3 Mini evita caídas por falta de RAM.
-4.  **Funcionalidad:** Agentes especializados para cada producto del frontend.
+## CONCLUSIÓN - ESTADO REAL ✅
+
+### ✅ Lo que YA funciona (Verificado 22/01/2026):
+
+1. **Coste:** 0€ extra (solo el VPS de Hostinger ya pagado)
+2. **Modelo:** Salamandra 7B Q4_K_M (4.6 GB) corriendo en llama.cpp
+3. **Estabilidad:** Sistema estable con 1.7 GB RAM libres (22% margen)
+4. **Endpoints HTTPS:** Accesibles vía `electroyhogarpelotazo.tienda`
+5. **Certificado SSL:** Válido (Let's Encrypt)
+
+### 🔧 Correcciones Necesarias:
+
+1. **Arreglar salamandra-api:** Cambiar puerto 11434 → 8080 (Ollama no existe)
+2. **Actualizar nombre del modelo:** `salamandra-opos:optimized` → `salamandra-7b-instruct-Q4_K_M.gguf`
+3. **Limpiar servicio roto:** Deshabilitar `opositor-api.service`
+
+### 📋 Quick Start - Usar Salamandra AHORA:
+
+```python
+import requests
+
+# Opción 1: Vía FastAPI wrapper (una vez corregido)
+response = requests.post(
+    "https://electroyhogarpelotazo.tienda/salamandra/reason",
+    json={
+        "question": "¿Cuál es el plazo de IT por EC?",
+        "context": "Art. 173 LGSS: La IT por EC dura máximo 365 días prorrogables 180 más.",
+        "options": {"a": "365 días", "b": "545 días", "c": "730 días"}
+    },
+    timeout=300
+)
+
+# Opción 2: Directo a llama.cpp (funciona YA)
+response = requests.post(
+    "https://electroyhogarpelotazo.tienda/v1/chat/completions",
+    json={
+        "model": "salamandra-7b-instruct-Q4_K_M.gguf",
+        "messages": [
+            {"role": "system", "content": "Eres experto en legislación española."},
+            {"role": "user", "content": "Pregunta sobre IT..."}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 1000
+    },
+    timeout=300
+)
+```
+
+### 📊 Arquitectura Real Simplificada:
+
+```
+Local (tu laptop)
+    ↓ HTTPS
+electroyhogarpelotazo.tienda (Nginx)
+    ├─→ /salamandra/reason → FastAPI (puerto 8001) → llama.cpp (8080)
+    └─→ /v1/* → llama.cpp directo (puerto 8080)
+                    ↓
+            Salamandra 7B Q4_K_M (4.6 GB)
+```
+
+### 🎯 Próximos Pasos:
+
+1. **Aplicar correcciones** (5 minutos)
+2. **Integrar RAG** con Qdrant Cloud
+3. **Crear agentes** especializados (simulacro, mapas mentales, etc.)
+4. **Fine-tuning** de Salamandra con dataset validado
+
+### 📖 Documentación Completa:
+
+Ver archivo detallado: [`VPS_CONEXION_REAL_22_01_26.md`](file:///home/spas/OPOS_GEMINI_1/docs/01_arquitectura/VPS_CONEXION_REAL_22_01_26.md)
+
+---
+
+**Última actualización:** 22/01/2026 16:28 CET  
+**Estado:** ✅ Operativo (con correcciones menores pendientes)  
+**Conexión SSH:** `ssh root@147.93.95.67`  
+**Dominio:** `https://electroyhogarpelotazo.tienda`
+

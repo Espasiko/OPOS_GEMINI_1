@@ -1,7 +1,10 @@
 """
-RAG Agent V2 - Sistema de 2 capas con RoBERTalex
-Capa 1: Normativa Oficial
+RAG Agent V2 - Sistema de 2 capas con Pablosi (bge-m3-spa-law-qa-trained-2)
+Capa 1: Normativa Oficial (Leyes BOE)
 Capa 3: Materiales de Estudio
+
+MODELO ÚNICO: pablosi/bge-m3-spa-law-qa-trained-2 (1024 dims)
+NO usar RoBERTalex ni otros modelos para embeddings.
 """
 
 import os
