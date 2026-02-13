@@ -10,6 +10,7 @@ import yaml
 from typing import Dict, List, Any
 from dataclasses import dataclass
 from enum import Enum
+from decimal import Decimal
 
 class AgentStatus(Enum):
     PENDING = "pending"
@@ -111,7 +112,16 @@ class LegalCaseAgentFactory:
                 print(f"\n   🤖 Ejecutando: {agent_id}")
                 
                 result = self.run_critic_agent(agent_config, case)
-                results.append(result)
+                # Store serializable representation
+                result_obj = result
+                results.append({
+                    "agent_id": result_obj.agent_id,
+                    "status": result_obj.status.value,
+                    "score": result_obj.score,
+                    "errors": result_obj.errors,
+                    "corrections": result_obj.corrections,
+                    "metadata": result_obj.metadata
+                })
                 
                 if result.status == AgentStatus.FAIL:
                     all_pass = False
@@ -159,8 +169,86 @@ Responde en JSON con:
 }}
 """
         
-        # TODO: Implementar llamada real a DeepSeek V3.1
-        # Por ahora, simulamos
+        # For the 'critic_calculations' agent we run local Python calculators
+        if agent_id == 'critic_calculations':
+            try:
+                # Import calculators (local modules)
+                from backend.calculators.calculos_imv import CalculadoraIMV, TipoUnidadFamiliar
+                from backend.calculators.calculos_ss_extended import CalculadoraIPT
+            except Exception:
+                # If imports fail, return ERROR
+                return AgentResult(
+                    agent_id=agent_id,
+                    status=AgentStatus.ERROR,
+                    score=0.0,
+                    errors=["Failed to import local calculators"],
+                    corrections={},
+                    metadata={"role": role}
+                )
+
+            # Expect the case to include a 'calculations' section for verification
+            calc_info = case.get('calculations', {})
+
+            # Basic example: verify IPT pension if data present
+            errors = []
+            corrections = {}
+            score = 1.0
+
+            if calc_info.get('type') == 'IPT':
+                try:
+                    base = calc_info.get('base_reguladora_mensual')
+                    expected_pension = Decimal(str(calc_info.get('expected_pension')))
+                    # Use local calculator
+                    resultado = CalculadoraIPT.calcular_ipt(Decimal(str(base)))
+                    if resultado.pension_mensual != expected_pension.quantize(Decimal('0.01')):
+                        errors.append(f"IPT pension mismatch: calc={resultado.pension_mensual} expected={expected_pension}")
+                        corrections['calculations.expected_pension'] = str(resultado.pension_mensual)
+                        score = 0.0
+                except Exception as e:
+                    errors.append(f"Calculation error: {str(e)}")
+                    score = 0.0
+            else:
+                # If no specific data, we consider it PASS for now
+                pass
+            # IMV verification
+            if calc_info.get('type') == 'IMV':
+                try:
+                    tipo_unidad_str = calc_info.get('tipo_unidad', 'persona_sola')
+                    ingresos = Decimal(str(calc_info.get('ingresos_netos_familia', '0')))
+                    num_miembros = int(calc_info.get('num_miembros', 1))
+                    ambos_mayores_30 = bool(calc_info.get('ambos_mayores_30', False))
+                    patrimonio = Decimal(str(calc_info.get('patrimonio_total', '0')))
+
+                    tipo_unidad = TipoUnidadFamiliar(tipo_unidad_str)
+                    resultado_imv = CalculadoraIMV.calcular_imv(
+                        tipo_unidad=tipo_unidad,
+                        ingresos_netos_familia=float(ingresos),
+                        num_miembros=num_miembros,
+                        ambos_mayores_30=ambos_mayores_30,
+                        patrimonio_total=float(patrimonio)
+                    )
+
+                    expected_imv = Decimal(str(calc_info.get('expected_imv', resultado_imv.imv_a_recibir)))
+                    if resultado_imv.imv_a_recibir != expected_imv.quantize(Decimal('0.01')):
+                        errors.append(f"IMV mismatch: calc={resultado_imv.imv_a_recibir} expected={expected_imv}")
+                        corrections['calculations.expected_imv'] = str(resultado_imv.imv_a_recibir)
+                        score = 0.0
+                except Exception as e:
+                    errors.append(f"IMV calculation error: {str(e)}")
+                    score = 0.0
+
+            status = AgentStatus.PASS if score >= 1.0 and not errors else (AgentStatus.FAIL if errors else AgentStatus.PASS)
+            return AgentResult(
+                agent_id=agent_id,
+                status=status,
+                score=score,
+                errors=errors,
+                corrections=corrections,
+                metadata={"role": role}
+            )
+
+        # TODO: Implementar llamada real a DeepSeek V3.1 para otros agentes
+        # Por ahora, simulamos PASS para agentes no numéricos
         response = {
             "status": "PASS",
             "score": 0.95,
@@ -198,13 +286,64 @@ Responde en JSON con:
     def call_deepseek_generator(self, topic: str, verified_articles: List[Dict]) -> Dict:
         """Llama a DeepSeek V3.1 para generar caso"""
         # TODO: Implementar llamada real con function calling
+        # Simulated generator will include a calculations section for testing
+        # If topic indicates IMV, generate an IMV case; otherwise default to IPT
+        if "imv" in topic.lower():
+            try:
+                from backend.calculators.calculos_imv import CalculadoraIMV, TipoUnidadFamiliar
+                tipo_unidad = TipoUnidadFamiliar.PERSONA_SOLA
+                ingresos = Decimal("0")
+                resultado = CalculadoraIMV.calcular_imv(
+                    tipo_unidad=tipo_unidad,
+                    ingresos_netos_familia=float(ingresos),
+                    num_miembros=1
+                )
+                expected_imv = resultado.imv_a_recibir
+            except Exception:
+                tipo_unidad = None
+                ingresos = Decimal("0")
+                expected_imv = Decimal("564.60")
+
+            return {
+                "id": "SS_IMV_001",
+                "topic": topic,
+                "articles": verified_articles,
+                "enunciado": "Caso IMV generado...",
+                "opciones": {},
+                "respuesta_correcta": None,
+                "calculations": {
+                    "type": "IMV",
+                    "tipo_unidad": tipo_unidad.value if tipo_unidad else "persona_sola",
+                    "ingresos_netos_familia": str(ingresos),
+                    "num_miembros": 1,
+                    "ambos_mayores_30": False,
+                    "patrimonio_total": str(0),
+                    "expected_imv": str(expected_imv)
+                }
+            }
+
+        # Default IPT case
+        try:
+            from backend.calculators.calculos_ss_extended import CalculadoraIPT
+            base = Decimal("1500")
+            resultado = CalculadoraIPT.calcular_ipt(base)
+            expected_pension = resultado.pension_mensual
+        except Exception:
+            base = Decimal("1500")
+            expected_pension = Decimal("825.00")
+
         return {
             "id": "SS_IPT_001",
             "topic": topic,
             "articles": verified_articles,
             "enunciado": "Caso generado...",
             "opciones": {"a": "...", "b": "...", "c": "...", "d": "..."},
-            "respuesta_correcta": "c"
+            "respuesta_correcta": "c",
+            "calculations": {
+                "type": "IPT",
+                "base_reguladora_mensual": str(base),
+                "expected_pension": str(expected_pension)
+            }
         }
     
     def apply_corrections(self, case: Dict, corrections: Dict) -> Dict:
@@ -235,11 +374,14 @@ Responde en JSON con:
 
 # Ejemplo de uso
 if __name__ == "__main__":
+    import sys
     factory = LegalCaseAgentFactory("agents_config.yaml")
     
-    result = factory.run_full_pipeline(
-        topic="Incapacidad Permanente Total - Requisitos de alta"
-    )
+    topic = "Incapacidad Permanente Total - Requisitos de alta"
+    if len(sys.argv) > 1:
+        topic = sys.argv[1]
+
+    result = factory.run_full_pipeline(topic=topic)
     
     # Guardar resultado
     with open("caso_verificado.json", "w", encoding="utf-8") as f:
