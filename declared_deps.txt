@@ -1,3 +1,0 @@
-./backend/requirements.txt
-./.venv/lib/python3.12/site-packages/pandas/pyproject.toml
-./dataset_generator/requirements.txt

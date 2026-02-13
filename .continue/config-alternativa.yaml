@@ -1,0 +1,149 @@
+name: OPOS GEMINI - Config Alternativa (OpenAI + Claude)
+version: 1.0.0
+schema: v1
+
+# Configuración con múltiples proveedores
+# Descomenta la que necesites
+
+models:
+  # ═══════════════════════════════════════
+  # OPCIÓN 1: SOLO CLAUDE (RECOMENDADO)
+  # ═══════════════════════════════════════
+  
+  - name: Claude Sonnet 4.5
+    provider: anthropic
+    model: claude-3-5-sonnet-20241022
+    apiKey: ${ANTHROPIC_API_KEY}
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+
+  # ═══════════════════════════════════════
+  # OPCIÓN 2: AÑADIR OpenAI GPT-4o
+  # Descomenta si tienes OpenAI API key
+  # ═══════════════════════════════════════
+  
+  # - name: GPT-4o
+  #   provider: openai
+  #   model: gpt-4o
+  #   apiKey: ${OPENAI_API_KEY}
+  #   roles:
+  #     - chat
+  #     - edit
+  #   defaultCompletionOptions:
+  #     temperature: 0.7
+  #     maxTokens: 4096
+
+  # ═══════════════════════════════════════
+  # OPCIÓN 3: AÑADIR Gemini 2.5 Pro
+  # Descomenta si tienes Google API key
+  # ═══════════════════════════════════════
+  
+  # - name: Gemini 2.5 Pro
+  #   provider: google
+  #   model: gemini-2.5-pro
+  #   apiKey: ${GEMINI_API_KEY}
+  #   roles:
+  #     - chat
+  #     - edit
+  #   defaultCompletionOptions:
+  #     temperature: 0.7
+  #     maxTokens: 4096
+
+  # ═══════════════════════════════════════
+  # OPCIÓN 4: AÑADIR Ollama (Local)
+  # Requiere: ollama run model-name
+  # ═══════════════════════════════════════
+  
+  # - name: Ollama Local
+  #   provider: ollama
+  #   model: qwen2.5-coder
+  #   apiBase: http://localhost:11434/api
+  #   roles:
+  #     - chat
+  #     - edit
+  #     - autocomplete
+  #   defaultCompletionOptions:
+  #     temperature: 0.7
+  #     maxTokens: 2048
+
+  # ═══════════════════════════════════════
+  # OPCIÓN 5: OTROS PROVEEDORES
+  # ═══════════════════════════════════════
+  
+  # Mistral
+  # - name: Mistral Large
+  #   provider: mistral
+  #   model: mistral-large-latest
+  #   apiKey: ${MISTRAL_API_KEY}
+  #   roles:
+  #     - chat
+  #     - edit
+
+  # xAI Grok
+  # - name: Grok Code
+  #   provider: xai
+  #   model: grok-code-fast-1
+  #   apiKey: ${XAI_API_KEY}
+  #   roles:
+  #     - chat
+  #     - edit
+
+context:
+  - provider: file
+  - provider: code
+  - provider: diff
+  - provider: terminal
+
+rules:
+  - Always provide explanations for your changes
+  - Follow the existing code style and conventions
+  - Consider performance and security implications
+  - Break complex tasks into smaller, manageable steps
+
+mcpServers:
+  - name: Python Environment
+    command: python
+    args: ["-m", "mcp_server_python"]
+    env:
+      MCP_LOG_LEVEL: debug
+
+# ═══════════════════════════════════════
+# INSTRUCCIONES DE CONFIGURACIÓN POR PROVEEDOR
+# ═══════════════════════════════════════
+
+# ANTHROPIC (Claude)
+# 1. Obtener key: https://console.anthropic.com/account/keys
+# 2. Exportar: export ANTHROPIC_API_KEY='sk-ant-...'
+# 3. Modelos: claude-3-5-sonnet-20241022, claude-3-5-opus-20250514
+
+# OPENAI (GPT-4)
+# 1. Obtener key: https://platform.openai.com/account/api-keys
+# 2. Exportar: export OPENAI_API_KEY='sk-...'
+# 3. Modelos: gpt-4o, gpt-4-turbo, gpt-4
+
+# GOOGLE (Gemini)
+# 1. Obtener key: https://aistudio.google.com/
+# 2. Exportar: export GEMINI_API_KEY='AIzaSy...'
+# 3. Modelos: gemini-2.5-pro, gemini-pro
+
+# MISTRAL
+# 1. Obtener key: https://console.mistral.ai/
+# 2. Exportar: export MISTRAL_API_KEY='...'
+# 3. Modelos: mistral-large-latest
+
+# XAI (Grok)
+# 1. Obtener key: https://console.x.ai/
+# 2. Exportar: export XAI_API_KEY='...'
+# 3. Modelos: grok-code-fast-1
+
+# OLLAMA (Local)
+# 1. Instalar: https://ollama.ai
+# 2. Ejecutar: ollama run qwen2.5-coder
+# 3. NO necesita API key (corre localmente)

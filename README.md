@@ -13,7 +13,7 @@ OpositaIA es una aplicación web full-stack diseñada como un asistente de estud
 **Arquitectura:**
 - **Frontend**: React 19 + TypeScript + Vite (carpeta `frontend/`)
 - **Backend**: FastAPI + Python (carpeta `backend/`)
-- **Base de Datos**: Qdrant (Vector DB) + PostgreSQL
+- **Base de Datos**: Qdrant (Vector DB)+ fractal 
 - **IA**: Google Gemini, Groq, DeepSeek, Claude, Mistral
 
 ---

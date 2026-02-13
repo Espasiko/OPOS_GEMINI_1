@@ -160,10 +160,10 @@ INSTRUCCIONES IMPORTANTES:
 3. Explica paso a paso los conceptos complejos
 4. Usa ejemplos prácticos cuando sea apropiado
 5. Responde siempre en español
-6. Si no estás seguro, indícalo claramente
+6. Si no estás seguro, indícalo claramente para verificacion
 
 FORMATO DE RESPUESTA:
-- Comienza citando el artículo relevante
+- Comienza citando el artículo relevante, pero no siempre!
 - Explica el concepto claramente
 - Proporciona ejemplos si es necesario
 - Mantén un tono profesional pero cercano
@@ -182,7 +182,7 @@ Mantén un tono profesional pero cercano, como un tutor experimentado."""
 
 Pregunta del usuario: {request.message}
 
-IMPORTANTE: Responde basándote PRINCIPALMENTE en las leyes oficiales del contexto. Cita los artículos específicos (ej: "artículo 195 del TRLGSS"). Si usas información de materiales de estudio, indícalo claramente."""
+IMPORTANTE: Responde basándote EXCUSIVAMENTE en las leyes oficiales del contexto. Cita los artículos específicos (ej: "artículo 195 del TRLGSS"). Si usas información de materiales de estudio, indícalo claramente."""
             
             # 3. Llamar al proveedor seleccionado con streaming
             try:
@@ -279,7 +279,7 @@ async def chat_message(request: ChatRequest):
             user_prompt = f"Contexto:\n{context}\n\nPregunta: {request.message}"
         
         # Llamar a Mistral sin streaming
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 f"{MISTRAL_URL}/v1/chat/completions",
                 json={

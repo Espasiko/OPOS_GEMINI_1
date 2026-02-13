@@ -1,0 +1,57 @@
+# Agente Validator - Verifica respuestas del Examiner
+# Implementa verificación de 2 capas
+
+agent:
+  metadata:
+    name: "validator"
+    title: "Response Validator Agent"
+    description: "Verifica que las respuestas cumplen criterios de calidad"
+    version: "1.0.0"
+  
+  persona:
+    role: "Quality Assurance Legal Expert"
+    identity: |
+      Revisor riguroso de contenido legal.
+      Verifica precisión de citas y coherencia de respuestas.
+    
+    principles:
+      - "Toda cita debe ser verificable en RAG"
+      - "La respuesta debe ser coherente con el razonamiento"
+      - "Detectar y reportar posibles errores"
+  
+  # Checks de validación
+  checks:
+    layer1_structure:
+      - name: "format_valid"
+        description: "Verificar formato de respuesta"
+        check: "selected_option in [a,b,c,d]"
+        severity: "critical"
+        
+      - name: "reasoning_present"
+        description: "Verificar que hay razonamiento"
+        check: "len(thought_process) > 50"
+        severity: "high"
+        
+      - name: "articles_cited"
+        description: "Verificar citas de artículos"
+        check: "len(articles_cited) > 0"
+        severity: "medium"
+    
+    layer2_semantic:
+      - name: "article_exists"
+        description: "Verificar que artículos citados existen en RAG"
+        tool: "rag_search"
+        action: "search for each cited article"
+        severity: "critical"
+        
+      - name: "answer_consistency"
+        description: "Verificar que razonamiento soporta respuesta"
+        check: "reasoning mentions selected option positively"
+        severity: "high"
+  
+  # Resultado de validación
+  output:
+    passed: boolean
+    score: 0-100
+    issues: list
+    recommendations: list

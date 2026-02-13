@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""
+Agente Salamandra - Orquestador
+Usa:
+- MCP local para RAG (Qdrant Cloud)
+- Postgres local para textos completos
+- VPS FastAPI para razonamiento con Salamandra
+"""
+
+import json
+import sys
+import psycopg
+import requests
+from pathlib import Path
+from typing import Dict, Any, List
+
+# Add backend to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from utils import mcp_client
+
+# Configuración
+BASE_DIR = Path("/home/spas/OPOS_GEMINI_1")
+STAGING_DIR = BASE_DIR / "staging_area/05_01_26_exams_processing"
+ENRICHMENT_DIR = BASE_DIR / "staging_area/06_01_26_enrichment"
+INPUT_FILE = STAGING_DIR / "smart_paired_exams_cleaned.jsonl"
+OUTPUT_FILE = ENRICHMENT_DIR / "salamandra_reasoning.jsonl"
+
+VPS_URL = "http://electroyhogarpelotazo.tienda/salamandra/reason"
+POSTGRES_DSN = "postgresql://postgres:postgres@localhost:5432/opositaia"
+
+def call_mcp_rag(query: str, limit: int = 5) -> str:
+    """Llama al MCP HTTP wrapper para buscar contexto en Qdrant Cloud"""
+    try:
+        results = mcp_client.search_rag(query, limit=limit)
+        context = mcp_client.format_context(results)
+        return context
+    except Exception as e:
+        print(f"Error calling MCP: {e}")
+        return ""
+
+def get_full_text_from_postgres(law_name: str) -> str:
+    """Consulta Postgres local para obtener texto completo de una ley"""
+    try:
+        with psycopg.connect(POSTGRES_DSN) as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT content FROM laws WHERE name ILIKE %s LIMIT 1",
+                    (f"%{law_name}%",)
+                )
+                row = cur.fetchone()
+                if row:
+                    return row[0][:2000]  # Limitar a 2000 chars para no saturar
+        return ""
+    except Exception as e:
+        print(f"Warning: Postgres query failed: {e}")
+        return ""
+
+def reason_with_salamandra(question: str, context: str, options: Dict[str, str]) -> Dict[str, Any]:
+    """Llama al endpoint de razonamiento en el VPS"""
+    try:
+        payload = {
+            "question": question,
+            "context": context,
+            "options": options
+        }
+        
+        response = requests.post(VPS_URL, json=payload, timeout=300)
+        response.raise_for_status()
+        data = response.json()
+        
+        # Parsear el reasoning que viene como string JSON
+        reasoning_str = data.get("reasoning", "{}")
+        reasoning = json.loads(reasoning_str)
+        
+        return reasoning
+        
+    except Exception as e:
+        print(f"Error calling VPS: {e}")
+        return None
+
+def main():
+    ENRICHMENT_DIR.mkdir(parents=True, exist_ok=True)
+    
+    processed_exams = 0
+    MAX_EXAMS = 2  # Test con 2 primero
+    
+    with open(INPUT_FILE, "r") as f_in, open(OUTPUT_FILE, "w") as f_out:
+        for line in f_in:
+            if processed_exams >= MAX_EXAMS:
+                break
+                
+            exam_data = json.loads(line)
+            filename = exam_data['filename']
+            questions = exam_data['content']
+            
+            print(f"🦕 Procesando Examen: {filename}")
+            
+            for q in questions:
+                if not q.get('options') or len(q['options']) < 2:
+                    continue
+                
+                question_text = q['text']
+                options = q['options']
+                
+                print(f"   -> Q{q['number']}: Buscando contexto (MCP + Postgres)...")
+                
+                # 1. RAG via MCP
+                rag_context = call_mcp_rag(question_text)
+                
+                # 2. [OPCIONAL] Enriquecimiento con Postgres
+                # Intentar extraer nombre de ley de la pregunta para buscar texto completo
+                # (simplificado: se podría mejorar con NER)
+                postgres_context = ""
+                if "LGSS" in question_text or "Seguridad Social" in question_text:
+                    postgres_context = get_full_text_from_postgres("LGSS")
+                
+                combined_context = rag_context + "\n\n" + postgres_context
+                
+                print(f"   -> Q{q['number']}: Razonando con Salamandra VPS...")
+                
+                # 3. Razonamiento con Salamandra
+                reasoning = reason_with_salamandra(question_text, combined_context, options)
+                
+                if reasoning:
+                    record = {
+                        "exam_filename": filename,
+                        "question_number": q['number'],
+                        "question_data": q,
+                        "salamandra_output": reasoning,
+                        "rag_context_used": len(rag_context) > 0,
+                        "postgres_context_used": len(postgres_context) > 0,
+                        "model_used": "salamandra-vps-rag"
+                    }
+                    f_out.write(json.dumps(record, ensure_ascii=False) + "\n")
+                    f_out.flush()
+                    print(f"   ✅ Q{q['number']} Guardada.")
+                else:
+                    print(f"   ⚠️ Q{q['number']} Sin respuesta.")
+                    
+            processed_exams += 1
+
+    print(f"✅ Proceso terminado. Resultados en: {OUTPUT_FILE}")
+
+if __name__ == "__main__":
+    main()

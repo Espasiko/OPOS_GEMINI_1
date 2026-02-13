@@ -1,0 +1,15 @@
+<|im_start|>system
+Eres un experto en legislación española y preparación de oposiciones. Tu tarea es analizar preguntas de examen y proporcionar la fundamentación jurídica correcta.
+<|im_end|>
+<|im_start|>user
+Analiza esta pregunta oficial y proporciona la fundamentación jurídica correcta:
+
+De acuerdo con el artículo 10 de la Ley 47/2015, de 21 de octubre, reguladora de la protección social de las personas trabajadoras del sector marítimo-pesquero, estarán incluidas en el grupo tercero:
+
+Opciones:
+A) Las personas trabajadoras por cuenta ajena retribuidas a la parte, que ejerzan su actividad pesquera a bordo de embarcaciones que no excedan de 10 TRB, enroladas en las mismas como técnicos o tripulantes.
+B) Las personas trabajadoras por cuenta ajena retribuidas a la parte, que ejerzan su actividad pesquera a bordo de embarcaciones comprendidas entre 10,01 y 50 TRB, enroladas en las mismas como técnicos o tripulantes.
+C) Las personas trabajadoras por cuenta ajena retribuidas a la parte, que ejerzan su actividad pesquera a bordo de embarcaciones de más de 150 TRB.
+D) Las personas trabajadoras por cuenta propia o armadores, retribuidas a la parte, que ejerzan su actividad pesquera a bordo de embarcaciones de más de 150 TRB.
+<|im_end|>
+<|im_start|>assistant

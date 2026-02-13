@@ -1,0 +1,39 @@
+# OpositAIA Agent System
+# Versión inicial basada en BMAD Method
+
+# Configuración global
+config:
+  project: "OpositAIA"
+  version: "1.0.0"
+  
+  # Modelos disponibles
+  models:
+    local_finetuned:
+      name: "salamandra-opos"
+      url: "https://electroyhogarpelotazo.tienda/salamandra/reason"
+      type: "vps"
+      
+    local_base:
+      name: "salamandra-base"
+      url: "http://localhost:11434/api/generate"
+      type: "ollama"
+      
+    cloud_fast:
+      name: "llama-3.3-70b-versatile"
+      provider: "groq"
+      
+    cloud_reasoning:
+      name: "deepseek-chat"
+      provider: "deepseek"
+  
+  # RAG
+  rag:
+    qdrant_url: "http://localhost:6333"
+    collection: "opositaia_knowledge_hybrid_FULL"
+    embedding_model: "pablosi/bge-m3-spa-law-qa-trained-2"
+  
+  # Anti-bias
+  anti_bias_prompt: |
+    IMPORTANTE: La respuesta correcta puede ser A, B, C o D con IGUAL probabilidad.
+    NO asumas que ninguna posición es más probable que otra.
+    Analiza CADA opción de forma INDEPENDIENTE antes de elegir.

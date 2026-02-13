@@ -17,7 +17,7 @@ BEST_PRACTICES = {
     "min_quality_score": 90,  # Score mínimo de calidad
     "require_citations": True,  # Requiere citas legales
     "require_urls": False,  # URLs opcionales (muchos items conceptuales)
-    "max_hallucination_rate": 0.05,  # Máximo 5% de alucinaciones
+    "max_hallucination_rate": 0.05,  # Máximo 0% de alucinaciones
     "min_diversity": 0.7,  # Diversidad mínima de temas
     "require_balanced_types": True,  # Tipos de contenido balanceados
 }

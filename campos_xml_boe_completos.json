@@ -1,0 +1,61 @@
+{
+  "total_xmls_analizados": 10,
+  "campos": {
+    "root": [
+      "data",
+      "status"
+    ],
+    "metadatos": [
+      "ambito",
+      "departamento",
+      "diario",
+      "diario_numero",
+      "estado_consolidacion",
+      "estatus_anulacion",
+      "estatus_derogacion",
+      "fecha_actualizacion",
+      "fecha_derogacion",
+      "fecha_disposicion",
+      "fecha_publicacion",
+      "fecha_vigencia",
+      "identificador",
+      "numero_oficial",
+      "rango",
+      "titulo",
+      "url_eli",
+      "url_html_consolidada",
+      "vigencia_agotada"
+    ],
+    "analisis": [
+      "materias",
+      "notas",
+      "referencias",
+      "referencias.anteriores",
+      "referencias.posteriores"
+    ],
+    "texto": [
+      "bloque"
+    ]
+  },
+  "ejemplos": {
+    "fecha_actualizacion": "20251218T151034Z",
+    "identificador": "BOE-A-1997-25336",
+    "ambito": "Estatal",
+    "departamento": "Jefatura del Estado",
+    "rango": "Ley",
+    "fecha_disposicion": "19971127",
+    "numero_oficial": "50/1997",
+    "titulo": "Ley 50/1997, de 27 de noviembre, del Gobierno.",
+    "diario": "Boletín Oficial del Estado",
+    "fecha_publicacion": "19971128",
+    "diario_numero": "285",
+    "fecha_vigencia": "19971218",
+    "estatus_derogacion": "N",
+    "estatus_anulacion": "N",
+    "vigencia_agotada": "N",
+    "estado_consolidacion": "Finalizado",
+    "url_eli": "https://www.boe.es/eli/es/l/1997/11/27/50",
+    "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-1997-25336",
+    "fecha_derogacion": "20220505"
+  }
+}

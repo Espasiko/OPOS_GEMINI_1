@@ -39,7 +39,7 @@
 
 ---
 
-### 2. **Groq (Llama 3.3 70B + OSS 120B)**
+### 2. **Groq (Llama 3.3 70B + OSS 120B Y MAS MODELOS HAY!!!)**
 
 #### ✅ **Capacidades Únicas**
 - **Velocidad Extrema:** 3-5x más rápido que otros

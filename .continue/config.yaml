@@ -1,0 +1,186 @@
+name: OPOS GEMINI Continue Config - Ollama + Mistral API + Alternativas Gratis
+version: 1.0.0
+schema: v1
+
+# Modelos disponibles - Prioridad: Ollama Local > Mistral API > Alternativas Gratis
+models:
+  # ═══════════════════════════════════════
+  # OLLAMA LOCAL (PRIORIDAD 1 - MÁS RÁPIDO)
+  # ═══════════════════════════════════════
+
+  - name: Codestral Local
+    provider: ollama
+    model: codestral
+    apiBase: http://localhost:11434/api
+    roles:
+      - chat
+      - edit
+      - apply
+      - autocomplete
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+    chatOptions:
+      baseSystemMessage: "You are an expert programming assistant helping with code development, debugging, and refactoring tasks."
+      baseAgentSystemMessage: "You are an intelligent coding agent. Break down tasks methodically, use available tools effectively, and provide clear explanations."
+
+  - name: Mistral Local
+    provider: ollama
+    model: mistral
+    apiBase: http://localhost:11434/api
+    roles:
+      - chat
+      - edit
+      - autocomplete
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 2048
+
+  - name: Salamandra Local
+    provider: ollama
+    model: salamandra-base
+    apiBase: http://localhost:11434/api
+    roles:
+      - chat
+      - edit
+    defaultCompletionOptions:
+      temperature: 0.6
+      maxTokens: 2048
+
+  # ═══════════════════════════════════════
+  # MISTRAL API (PRIORIDAD 2 - SI OLLAMA FALLA)
+  # ═══════════════════════════════════════
+
+  - name: Codestral API (Mistral)
+    provider: mistral
+    model: codestral-latest
+    apiKey: ${MISTRAL_API_KEY}
+    roles:
+      - chat
+      - edit
+      - apply
+      - autocomplete
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+    chatOptions:
+      baseSystemMessage: "You are Codestral, an expert coding assistant built by Mistral AI."
+      baseAgentSystemMessage: "You are an intelligent coding agent. Break down tasks methodically, use available tools effectively, and provide clear explanations."
+
+  - name: Codestral Mamba (Mistral)
+    provider: mistral
+    model: codestral-mamba-latest
+    apiKey: ${MISTRAL_API_KEY}
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+
+  # ═══════════════════════════════════════
+  # ALTERNATIVAS GRATIS (PRIORIDAD 3)
+  # ═══════════════════════════════════════
+
+  - name: LiquidAI LFM2.5 Thinking (GRATIS)
+    provider: openrouter
+    model: liquid/lfm-2.5-1.2b-thinking:free
+    apiKey: ${OPENROUTER_API_KEY}
+    roles:
+      - chat
+      - edit
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+
+  - name: LiquidAI LFM2.5 Instruct (GRATIS)
+    provider: openrouter
+    model: liquid/lfm-2.5-1.2b-instruct:free
+    apiKey: ${OPENROUTER_API_KEY}
+    roles:
+      - chat
+      - edit
+      - autocomplete
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+
+  - name: GLM 4.7 Flash (MUY BARATO)
+    provider: openrouter
+    model: z-ai/glm-4.7-flash
+    apiKey: ${OPENROUTER_API_KEY}
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+
+  # ═══════════════════════════════════════
+  # CLAUDE (BACKUP - REQUIERE API KEY)
+  # ═══════════════════════════════════════
+
+  - name: Claude Sonnet 4.5
+    provider: anthropic
+    model: claude-3-5-sonnet-20241022
+    apiKey: ${ANTHROPIC_API_KEY}
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 4096
+
+  - name: Claude Haiku
+    provider: anthropic
+    model: claude-3-5-haiku-20241022
+    apiKey: ${ANTHROPIC_API_KEY}
+    roles:
+      - autocomplete
+    autocompleteOptions:
+      debounceDelay: 200
+      maxPromptTokens: 512
+      onlyMyCode: true
+      disable: false
+    defaultCompletionOptions:
+      temperature: 0.3
+      maxTokens: 256
+
+# Proveedores de contexto
+context:
+  - provider: file
+  - provider: code
+  - provider: diff
+  - provider: terminal
+
+# Reglas y restricciones
+rules:
+  - Always provide explanations for your changes
+  - Follow the existing code style and conventions
+  - Consider performance and security implications
+  - Break complex tasks into smaller, manageable steps
+  - Ask for clarification if requirements are ambiguous
+
+# MCP Servers (Model Context Protocol)
+mcpServers:
+  - name: Python Environment
+    command: python
+    args: ["-m", "mcp_server_python"]
+    env:
+      MCP_LOG_LEVEL: debug
+    connectionTimeout: 10000

@@ -29,7 +29,7 @@ except Exception as e:
     logger.error(f"❌ Error loading .env.backend: {e}")
 
 # Import routers
-from routers import rag, rag_v2, chat, upload, ai_functions, user, boe, mcp_gateway
+from routers import rag, rag_v2, chat, upload, ai_functions, user, boe, mcp_gateway, casos_practicos
 from database.db import db
 
 
@@ -85,6 +85,7 @@ app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
 app.include_router(user.router)  # Sprint 11: User management
 app.include_router(boe.router)  # API oficial datos abiertos BOE
 app.include_router(mcp_gateway.router)  # MCP Gateway para otras IAs
+app.include_router(casos_practicos.router)  # Casos prácticos con Salamandra
 
 # Root endpoint
 @app.get("/")

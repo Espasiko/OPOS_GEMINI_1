@@ -1,1 +1,0 @@
-Use `openspec/specs/documentation-standards.mdc` to update whatever documentation is needed according to the changes made

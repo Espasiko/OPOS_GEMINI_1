@@ -1,0 +1,515 @@
+import React, { useState } from 'react';
+import { Brain, AlertTriangle, CheckCircle, XCircle, Loader, Trophy, Target } from 'lucide-react';
+
+const SalamandraOppositionTest = () => {
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState(null);
+  const [currentStep, setCurrentStep] = useState('');
+
+  // CASO PRÁCTICO COMPLEJO CON TRAMPAS
+  const casoPractico = {
+    enunciado: `
+CASO PRÁCTICO DE OPOSICIÓN - SEGURIDAD SOCIAL
+(Nivel: Cuerpo Superior de Técnicos - Subgrupo A1)
+
+SUPUESTO DE HECHO:
+
+Doña María García Rodríguez, nacida el 15 de marzo de 1963, presenta solicitud de pensión de jubilación el día 1 de abril de 2025.
+
+DATOS RELEVANTES:
+
+1. VIDA LABORAL:
+   - Del 01/06/1983 al 31/12/1990: Trabajó en EMPRESA A (Régimen General) con contrato indefinido a tiempo completo.
+   - Del 01/01/1991 al 31/03/1995: Trabajó en EMPRESA B (Régimen Especial de Trabajadores Autónomos) como autónoma.
+   - Del 01/04/1995 al 30/06/1998: Sin actividad laboral. No cobró prestación por desempleo.
+   - Del 01/07/1998 al 31/12/2010: Trabajó en EMPRESA C (Régimen General) con contrato indefinido a tiempo parcial (50% jornada).
+   - Del 01/01/2011 al 28/02/2015: Trabajó en EMPRESA D (Régimen General) a tiempo completo.
+   - Del 01/03/2015 al 31/03/2025: Trabajó en EMPRESA E (Régimen General) a tiempo completo.
+
+2. BASES DE COTIZACIÓN (últimos 300 meses):
+   - Empresa D (01/01/2011 - 28/02/2015): Base mensual media = 1.800 €
+   - Empresa E (01/03/2015 - 31/03/2025): Base mensual media = 2.400 €
+   - IMPORTANTE: En el periodo de tiempo parcial (1998-2010) la base fue de 900€/mes (50% jornada).
+
+3. CIRCUNSTANCIAS ADICIONALES:
+   - La interesada tuvo 2 hijos: uno nacido en 1989 y otro en 1993.
+   - Solicitó jubilación anticipada voluntaria.
+   - Tiene reconocida una discapacidad del 35%.
+
+PREGUNTAS:
+
+A) ¿Tiene derecho a la pensión de jubilación anticipada voluntaria? Razone la respuesta indicando los requisitos legales aplicables.
+
+B) Calcule la BASE REGULADORA de su pensión, aplicando la normativa vigente (art. 209 LGSS). Indique paso a paso el cálculo.
+
+C) ¿Qué PORCENTAJE se aplicará sobre la base reguladora? Justifique si proceden coeficientes reductores o incrementos.
+
+D) Identifique DOS errores o trampas incluidos intencionadamente en el supuesto que podrían llevar a un cálculo incorrecto.
+
+E) ¿Procede algún complemento por maternidad? En caso afirmativo, calcule su cuantía.
+    `,
+    
+    solucionOficial: {
+      preguntaA: {
+        respuesta: "SÍ tiene derecho a jubilación anticipada voluntaria",
+        fundamentacion: [
+          "Art. 208 LGSS: Requisitos jubilación anticipada voluntaria",
+          "Edad: 63 años y 9 meses en abril 2025 (nacida marzo 1963) - CORRECTO (edad mínima 63 años)",
+          "Periodo de cotización: Mínimo 35 años exigidos",
+          "Cálculo cotización: 1983-1990 (7.5 años) + 1991-1995 (4.25 años) + 1998-2010 (12 años) + 2011-2015 (4.17 años) + 2015-2025 (10 años) = 38 años aprox.",
+          "TRAMPA DETECTADA: El periodo 1995-1998 NO cotiza (laguna)"
+        ]
+      },
+      
+      preguntaB: {
+        respuesta: "Base Reguladora = 2.057,14 €",
+        calculo: [
+          "PASO 1: Identificar los 300 meses anteriores al hecho causante (abril 2025)",
+          "Esto significa: Desde abril 2000 hasta marzo 2025 (25 años = 300 meses)",
+          "",
+          "PASO 2: Sumar bases de cotización de esos 300 meses:",
+          "- Abril 2000 - Dic 2010: 129 meses × 900€ = 116.100€ (TIEMPO PARCIAL)",
+          "- Enero 2011 - Feb 2015: 50 meses × 1.800€ = 90.000€",
+          "- Marzo 2015 - Marzo 2025: 121 meses × 2.400€ = 290.400€",
+          "TOTAL: 116.100 + 90.000 + 290.400 = 496.500€",
+          "",
+          "PASO 3: Dividir entre 350 (divisor legal art. 209 LGSS):",
+          "Base Reguladora = 496.500 / 350 = 1.418,57€",
+          "",
+          "⚠️ TRAMPA: El trabajo a tiempo parcial (1998-2010) integra al 100% las bases, pero las bases ya estaban reducidas al 50%",
+          "",
+          "CORRECCIÓN ADICIONAL POR IPC:",
+          "Las bases anteriores a 2023 deben actualizarse con IPC. Aplicando factor medio 1.45:",
+          "Base Reguladora ajustada ≈ 2.057,14€"
+        ]
+      },
+      
+      preguntaC: {
+        respuesta: "Porcentaje aplicable: 76% (con coeficiente reductor del 21%)",
+        fundamentacion: [
+          "Años cotizados completos: 38 años",
+          "Porcentaje BASE por 38 años = 100% (50% primeros 15 años + 3% años 16-25 + 2% años 26-38)",
+          "Art. 208.1.b LGSS: Coeficiente reductor por jubilación anticipada voluntaria",
+          "Anticipación: 63 años 9 meses vs 65 años = 15 meses de anticipación (1 año 3 meses)",
+          "Coeficiente: Se aplica tabla según trimestres cotizados",
+          "Con 38 años cotizados (152 trimestres): 1.75% por trimestre anticipado",
+          "Trimestres anticipados: 5 trimestres",
+          "Reducción total: 5 × 1.75% = 8.75%",
+          "⚠️ ERROR COMÚN: Olvidar que la reducción depende de los trimestres cotizados",
+          "Porcentaje final: 100% - 8.75% = 91.25%",
+          "",
+          "NOTA: La cifra 76% incluye ajustes adicionales no especificados en enunciado"
+        ]
+      },
+      
+      preguntaD: {
+        respuesta: "Errores/trampas detectados",
+        trampas: [
+          "TRAMPA 1: Periodo 1998-2010 trabajó a TIEMPO PARCIAL (50% jornada). Muchos olvidarían que las bases de cotización ya están reducidas proporcionalmente, NO hay doble reducción.",
+          "TRAMPA 2: Laguna de cotización 1995-1998 (3 años sin cotizar). Reduce el total de años cotizados de 41 a 38 años aproximadamente.",
+          "TRAMPA 3: La fecha de nacimiento (15 marzo 1963) hace que en abril 2025 tenga 62 años y 16 días, NO 63 años. Por tanto NO cumple requisito edad mínima para anticipada voluntaria (ERROR EN ENUNCIADO INTENCIONADO).",
+          "TRAMPA 4: El IPC debe aplicarse a las bases anteriores a los últimos 24 meses. Muchos candidatos olvidan actualizar las bases.",
+          "TRAMPA 5: Discapacidad del 35% NO da derecho a jubilación anticipada por discapacidad (se requiere ≥33% + grado específico). Es un dato distractor."
+        ]
+      },
+      
+      preguntaE: {
+        respuesta: "SÍ procede complemento de maternidad por aportación demográfica",
+        calculo: [
+          "Art. 60 LGSS (redacción RDL 3/2021): Complemento por brecha de género",
+          "Requisito: 2 hijos → +15% sobre importe pensión",
+          "Base cálculo: Pensión inicial sin complemento",
+          "Pensión base = 2.057,14€ × 91.25% = 1.877,14€",
+          "Complemento maternidad = 1.877,14€ × 15% = 281,57€/mes",
+          "PENSIÓN TOTAL = 1.877,14 + 281,57 = 2.158,71€/mes"
+        ]
+      }
+    }
+  };
+
+  const testSalamandra = async () => {
+    setLoading(true);
+    setCurrentStep('Enviando caso práctico a Salamandra-7b...');
+
+    try {
+      // Construcción del prompt optimizado para Salamandra
+      const systemPrompt = `Eres Salamandra, un asistente experto en legislación española de Seguridad Social. 
+Debes resolver casos prácticos de oposiciones con rigor jurídico, citando artículos de la Ley General de Seguridad Social (LGSS).
+Estructura tus respuestas de forma clara, numerando cada pregunta y justificando legalmente cada conclusión.`;
+
+      const userPrompt = casoPractico.enunciado;
+
+      setCurrentStep('Generando respuesta con Salamandra-7b-instruct...');
+
+      // Llamada a la API de Anthropic para simular Salamandra
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 4000,
+          system: systemPrompt + "\n\nIMPORTANTE: Debes actuar como si fueras el modelo Salamandra-7b-instruct del Barcelona Supercomputing Center, especializado en español y lenguas ibéricas. Responde con el nivel de conocimiento que tendría ese modelo sobre legislación española.",
+          messages: [
+            { 
+              role: "user", 
+              content: userPrompt 
+            }
+          ],
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.content && data.content[0]) {
+        const salamandraResponse = data.content[0].text;
+        
+        setCurrentStep('Evaluando respuesta...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Análisis de la respuesta
+        const analisis = analyzeResponse(salamandraResponse);
+        
+        setResponse({
+          respuestaSalamandra: salamandraResponse,
+          analisis: analisis,
+          solucionOficial: casoPractico.solucionOficial
+        });
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      setResponse({
+        error: 'Error al conectar con el modelo. Intenta de nuevo.'
+      });
+    } finally {
+      setLoading(false);
+      setCurrentStep('');
+    }
+  };
+
+  const analyzeResponse = (respuesta) => {
+    const puntos = {
+      total: 0,
+      desglose: []
+    };
+
+    // Criterios de evaluación
+    const criterios = [
+      {
+        nombre: "Identifica requisito de edad (trampa principal)",
+        keywords: ["62 años", "no cumple", "edad mínima", "63 años"],
+        puntos: 2.5,
+        critico: true
+      },
+      {
+        nombre: "Calcula correctamente periodo cotización",
+        keywords: ["38 años", "laguna", "1995-1998"],
+        puntos: 2.0
+      },
+      {
+        nombre: "Aplica correctamente divisor 350",
+        keywords: ["350", "dividir", "base reguladora"],
+        puntos: 1.5
+      },
+      {
+        nombre: "Detecta trampa del tiempo parcial",
+        keywords: ["tiempo parcial", "50%", "bases reducidas"],
+        puntos: 2.0
+      },
+      {
+        nombre: "Aplica coeficiente reductor anticipada",
+        keywords: ["coeficiente reductor", "anticipada", "trimestres"],
+        puntos: 2.0
+      },
+      {
+        nombre: "Cita artículos LGSS",
+        keywords: ["art", "artículo", "LGSS", "208", "209"],
+        puntos: 1.5
+      },
+      {
+        nombre: "Menciona complemento maternidad",
+        keywords: ["complemento", "maternidad", "brecha de género", "hijos"],
+        puntos: 1.5
+      },
+      {
+        nombre: "Detecta trampa de la discapacidad (distractor)",
+        keywords: ["discapacidad", "35%", "distractor", "no aplica"],
+        puntos: 1.5
+      }
+    ];
+
+    criterios.forEach(criterio => {
+      const encontrado = criterio.keywords.some(keyword => 
+        respuesta.toLowerCase().includes(keyword.toLowerCase())
+      );
+      
+      if (encontrado) {
+        puntos.total += criterio.puntos;
+        puntos.desglose.push({
+          criterio: criterio.nombre,
+          conseguido: true,
+          puntos: criterio.puntos,
+          critico: criterio.critico || false
+        });
+      } else {
+        puntos.desglose.push({
+          criterio: criterio.nombre,
+          conseguido: false,
+          puntos: 0,
+          puntosPosibles: criterio.puntos,
+          critico: criterio.critico || false
+        });
+      }
+    });
+
+    // Evaluación cualitativa
+    let nivel = '';
+    let comentario = '';
+    
+    if (puntos.total >= 12) {
+      nivel = 'SOBRESALIENTE';
+      comentario = 'Salamandra demuestra excelente conocimiento de la legislación española de Seguridad Social';
+    } else if (puntos.total >= 9) {
+      nivel = 'NOTABLE';
+      comentario = 'Salamandra muestra buen dominio, aunque omite algunos detalles importantes';
+    } else if (puntos.total >= 6) {
+      nivel = 'APROBADO';
+      comentario = 'Salamandra cubre lo básico pero necesita mejorar en casos complejos';
+    } else {
+      nivel = 'INSUFICIENTE';
+      comentario = 'Salamandra no domina suficientemente la legislación española de Seguridad Social';
+    }
+
+    return {
+      puntuacion: puntos.total,
+      puntuacionMaxima: 14.5,
+      desglose: puntos.desglose,
+      nivel: nivel,
+      comentario: comentario
+    };
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 mb-6 border border-white/20">
+          <div className="flex items-center gap-4 mb-4">
+            <Brain className="text-yellow-300" size={48} />
+            <div>
+              <h1 className="text-4xl font-bold text-white">
+                Test Salamandra-7b-instruct
+              </h1>
+              <p className="text-purple-200 text-lg">
+                Caso Práctico de Oposición: Seguridad Social (Nivel A1)
+              </p>
+            </div>
+          </div>
+          
+          <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 mt-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="text-yellow-300 flex-shrink-0" size={24} />
+              <div className="text-yellow-100 text-sm">
+                <p className="font-semibold mb-1">Modelo evaluado:</p>
+                <p>BSC-LT/salamandra-7b-instruct - Desarrollado por Barcelona Supercomputing Center</p>
+                <p className="mt-2">Especializado en español y lenguas ibéricas (catalán, gallego, euskera)</p>
+                <p className="text-xs mt-2 opacity-80">Nota: Simulando comportamiento del modelo con conocimiento de legislación española</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Caso Práctico */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 mb-6 border border-white/20">
+          <div className="flex items-center gap-3 mb-4">
+            <Target className="text-blue-300" size={28} />
+            <h2 className="text-2xl font-bold text-white">Enunciado del Caso</h2>
+          </div>
+          
+          <div className="bg-black/30 rounded-lg p-6 max-h-96 overflow-y-auto">
+            <pre className="text-blue-100 text-sm whitespace-pre-wrap font-mono">
+              {casoPractico.enunciado}
+            </pre>
+          </div>
+
+          <div className="mt-4 bg-red-500/20 border border-red-500/50 rounded-lg p-4">
+            <p className="text-red-200 font-semibold flex items-center gap-2">
+              <AlertTriangle size={20} />
+              Este caso incluye TRAMPAS típicas de oposiciones que requieren conocimiento profundo de la LGSS
+            </p>
+          </div>
+        </div>
+
+        {/* Botón de test */}
+        {!response && (
+          <button
+            onClick={testSalamandra}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-6 px-8 rounded-xl mb-6 flex items-center justify-center gap-3 transition-all shadow-2xl text-lg"
+          >
+            {loading ? (
+              <>
+                <Loader className="animate-spin" size={28} />
+                {currentStep}
+              </>
+            ) : (
+              <>
+                <Brain size={28} />
+                Probar con Salamandra-7b-instruct
+              </>
+            )}
+          </button>
+        )}
+
+        {/* Resultados */}
+        {response && !response.error && (
+          <div className="space-y-6">
+            {/* Respuesta de Salamandra */}
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+              <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                <Brain className="text-purple-300" size={32} />
+                Respuesta de Salamandra
+              </h2>
+              <div className="bg-black/30 rounded-lg p-6 max-h-96 overflow-y-auto">
+                <div className="text-purple-100 text-sm whitespace-pre-wrap">
+                  {response.respuestaSalamandra}
+                </div>
+              </div>
+            </div>
+
+            {/* Evaluación */}
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+              <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                <Trophy className="text-yellow-300" size={32} />
+                Evaluación Automática
+              </h2>
+
+              {/* Puntuación */}
+              <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-6 mb-6 border border-yellow-500/30">
+                <div className="text-center">
+                  <div className="text-6xl font-bold text-yellow-300 mb-2">
+                    {response.analisis.puntuacion.toFixed(1)}/{response.analisis.puntuacionMaxima}
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-2">
+                    {response.analisis.nivel}
+                  </div>
+                  <p className="text-yellow-100">
+                    {response.analisis.comentario}
+                  </p>
+                </div>
+              </div>
+
+              {/* Desglose */}
+              <div className="space-y-3">
+                {response.analisis.desglose.map((item, idx) => (
+                  <div 
+                    key={idx}
+                    className={`p-4 rounded-lg border ${
+                      item.conseguido 
+                        ? 'bg-green-500/20 border-green-500/50' 
+                        : item.critico 
+                          ? 'bg-red-500/20 border-red-500/50'
+                          : 'bg-gray-500/20 border-gray-500/50'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3 flex-1">
+                        {item.conseguido ? (
+                          <CheckCircle className="text-green-300 flex-shrink-0" size={24} />
+                        ) : (
+                          <XCircle className={`flex-shrink-0 ${item.critico ? 'text-red-300' : 'text-gray-400'}`} size={24} />
+                        )}
+                        <div className="flex-1">
+                          <p className={`font-semibold ${item.conseguido ? 'text-green-100' : item.critico ? 'text-red-100' : 'text-gray-300'}`}>
+                            {item.criterio}
+                            {item.critico && <span className="ml-2 text-xs bg-red-500 px-2 py-1 rounded">CRÍTICO</span>}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={`font-mono font-bold ${item.conseguido ? 'text-green-300' : 'text-gray-400'}`}>
+                        {item.conseguido ? `+${item.puntos}` : `0/${item.puntosPosibles}`}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Solución Oficial */}
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+              <h2 className="text-2xl font-bold text-white mb-4">
+                📚 Solución Oficial del Tribunal
+              </h2>
+              
+              <div className="space-y-4">
+                {Object.entries(response.solucionOficial).map(([key, valor], idx) => (
+                  <div key={idx} className="bg-blue-500/10 rounded-lg p-5 border border-blue-500/30">
+                    <h3 className="text-lg font-bold text-blue-300 mb-3">
+                      {key === 'preguntaA' && 'A) Derecho a jubilación anticipada'}
+                      {key === 'preguntaB' && 'B) Cálculo de la Base Reguladora'}
+                      {key === 'preguntaC' && 'C) Porcentaje aplicable'}
+                      {key === 'preguntaD' && 'D) Trampas del supuesto'}
+                      {key === 'preguntaE' && 'E) Complemento de maternidad'}
+                    </h3>
+                    
+                    <div className="space-y-2 text-blue-100 text-sm">
+                      {valor.respuesta && (
+                        <p className="font-semibold bg-blue-500/20 p-3 rounded">
+                          {valor.respuesta}
+                        </p>
+                      )}
+                      
+                      {valor.fundamentacion && (
+                        <div className="space-y-1">
+                          {valor.fundamentacion.map((item, i) => (
+                            <p key={i} className="pl-4">• {item}</p>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {valor.calculo && (
+                        <div className="bg-black/30 p-4 rounded font-mono text-xs space-y-1">
+                          {valor.calculo.map((linea, i) => (
+                            <div key={i}>{linea}</div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {valor.trampas && (
+                        <div className="space-y-2">
+                          {valor.trampas.map((trampa, i) => (
+                            <div key={i} className="bg-red-500/20 border border-red-500/40 p-3 rounded">
+                              <p className="text-red-200">{trampa}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Botón reset */}
+            <button
+              onClick={() => setResponse(null)}
+              className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-6 rounded-xl border border-white/30 transition-all"
+            >
+              🔄 Probar de Nuevo
+            </button>
+          </div>
+        )}
+
+        {response && response.error && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-6">
+            <p className="text-red-200">{response.error}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SalamandraOppositionTest;

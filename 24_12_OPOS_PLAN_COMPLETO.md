@@ -1,8 +1,8 @@
 # 📚 PLAN ACTUAL DE OPOSICIONES AGE Y SEGURIDAD SOCIAL 2025-2026
 
-**Fecha de análisis:** 23 Diciembre 2025  
+**Fecha de análisis:** 23 Diciembre 2025 (Actualizado 31/12/2025)  
 **Documento fuente:** [`Plan_age_ss_perpl_2025.txt`](file:///home/spas/OPOS_GEMINI_1/gastos_%20tokens/Plan_age_ss_perpl_2025.txt)  
-**Estado:** Análisis exhaustivo completado
+**Estado:** ✅ VPS Desplegado | ✅ Salamandra Operativa | 🔄 Transición a Arquitectura Distribuida
 
 ---
 
@@ -462,3 +462,22 @@ Si UNA falla → Respuesta es NO
 **Estado:** ✅ Análisis completado  
 **Próximo paso:** Indexar 6 leyes faltantes y escalar generación de contenido  
 **Convocatoria objetivo:** 2026 (tiempo suficiente)
+
+---
+
+## 🚀 ESTADO DE INFRAESTRUCTURA (31/12/2025)
+
+### ✅ Hitos Completados (VPS Hostinger)
+1.  **Modelo Propio:** `salamandra-7b-instruct-unsloth.Q4_K_M.gguf` (4.6GB) desplegado con éxito.
+2.  **Motor IA:** Ollama corriendo como servicio systemd en puerto 11434.
+3.  **API:** Opositor-Agent reconfigurado para usar el modelo local.
+4.  **Seguridad:** Limpieza de puertos legacy (8080/8000 cerrado), solo SSH/HTTP(s) activo.
+
+### 🔄 Nueva Arquitectura Distribuida "Genial" (En Progreso)
+Para soportar 1,000 usuarios sin colapsar el VPS:
+1.  **Frontend:** Next.js desplegado en **Vercel** (Edge Network).
+2.  **Base de Datos:** Migración a **Supabase** (PostgreSQL Cloud Gratis).
+3.  **Vectores:** Migración a **Qdrant Cloud** (Memoria RAG Gratis).
+4.  **VPS (Hostinger):** Se dedica EXCLUSIVAMENTE a inferencia de IA (Cerebro).
+
+Ver detalle en: [`docs/PLAN_ARQUITECTURA_DISTRIBUIDA_2025.md`](file:///home/spas/OPOS_GEMINI_1/docs/PLAN_ARQUITECTURA_DISTRIBUIDA_2025.md)
