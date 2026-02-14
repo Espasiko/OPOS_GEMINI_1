@@ -647,6 +647,357 @@ if __name__ == "__main__":
     print("=" * 80)
     
     # Caso test
+# ============================================================================
+# AGENT 6: ENUNCIADO VALIDATOR - Valida estructura PARTE 2: enunciado
+# ============================================================================
+
+class Agent6_EnunciadoValidator(VerificationAgent):
+    """Verifica PARTE 2 enunciado: 250-350 palabras, 6-9 personajes, coherencia"""
+    
+    def __init__(self):
+        super().__init__("agent_6", "Enunciado Validator")
+    
+    def verify(self, supuesto: Dict[str, Any]) -> VerificationResult:
+        """Valida enunciado de PARTE 2"""
+        feedback = []
+        detalles = {}
+        scores = []
+        
+        # Extraer enunciado
+        enunciado_data = supuesto.get("enunciado", {})
+        if not isinstance(enunciado_data, dict):
+            return self._crear_resultado(0.0, ["❌ Enunciado no es dict"], detalles)
+        
+        enunciado_texto = enunciado_data.get("texto", "")
+        personajes = enunciado_data.get("personajes", [])
+        
+        # 1. Validar longitud enunciado (250-350 palabras)
+        palabras = len(enunciado_texto.split())
+        detalles["palabras_enunciado"] = palabras
+        
+        if 250 <= palabras <= 350:
+            feedback.append(f"✅ Enunciado: {palabras} palabras (correcto 250-350)")
+            scores.append(1.0)
+        elif 200 <= palabras <= 400:
+            feedback.append(f"⚠️ Enunciado: {palabras} palabras (tolerado 200-400)")
+            scores.append(0.80)
+        else:
+            feedback.append(f"❌ Enunciado: {palabras} palabras (requerido 250-350)")
+            scores.append(0.40)
+        
+        # 2. Validar personajes (6-9)
+        num_personajes = len(personajes)
+        detalles["num_personajes"] = num_personajes
+        
+        if 6 <= num_personajes <= 9:
+            feedback.append(f"✅ Personajes: {num_personajes} (correcto 6-9)")
+            scores.append(1.0)
+        elif 4 <= num_personajes <= 11:
+            feedback.append(f"⚠️ Personajes: {num_personajes} (tolerado 4-11)")
+            scores.append(0.70)
+        else:
+            feedback.append(f"❌ Personajes: {num_personajes} (requerido 6-9)")
+            scores.append(0.30)
+        
+        # 3. Validar datos personajes (nombre, edad, puesto, base/pension)
+        personajes_completos = 0
+        for p in personajes:
+            required_fields = ["nombre", "edad"]  # Mínimo
+            if all(f in p for f in required_fields):
+                personajes_completos += 1
+        
+        ratio_completos = personajes_completos / num_personajes if num_personajes > 0 else 0
+        detalles["personajes_completos_ratio"] = ratio_completos
+        
+        if ratio_completos >= 0.80:
+            feedback.append(f"✅ Personajes con datos: {ratio_completos:.0%}")
+            scores.append(1.0)
+        elif ratio_completos >= 0.50:
+            feedback.append(f"⚠️ Personajes con datos: {ratio_completos:.0%}")
+            scores.append(0.70)
+        else:
+            feedback.append(f"❌ Personajes incompletos: {ratio_completos:.0%}")
+            scores.append(0.40)
+        
+        # 4. Validar coherencia: ¿Enunciado menciona a personajes?
+        personajes_mencionados = 0
+        for p in personajes:
+            nombre = p.get("nombre", "")
+            if nombre and nombre in enunciado_texto:
+                personajes_mencionados += 1
+        
+        ratio_mencionados = personajes_mencionados / num_personajes if num_personajes > 0 else 0
+        detalles["personajes_mencionados_ratio"] = ratio_mencionados
+        
+        if ratio_mencionados >= 0.80:
+            feedback.append(f"✅ Personajes mencionados en enunciado: {ratio_mencionados:.0%}")
+            scores.append(1.0)
+        elif ratio_mencionados >= 0.50:
+            feedback.append(f"⚠️ Personajes parcialmente mencionados: {ratio_mencionados:.0%}")
+            scores.append(0.70)
+        else:
+            feedback.append(f"⚠️ Personajes poco mencionados: {ratio_mencionados:.0%}")
+            scores.append(0.60)
+        
+        # 5. Validar contexto legal (articulos mencionados)
+        articulos = enunciado_data.get("articulos", [])
+        detalles["articulos"] = len(articulos)
+        
+        if len(articulos) >= 2:
+            feedback.append(f"✅ Artículos legales: {len(articulos)}")
+            scores.append(1.0)
+        elif len(articulos) >= 1:
+            feedback.append(f"⚠️ Artículos: {len(articulos)} (recomendado ≥2)")
+            scores.append(0.80)
+        else:
+            feedback.append(f"⚠️ Sin artículos explícitos")
+            scores.append(0.60)
+        
+        # Score final
+        score_final = sum(scores) / len(scores) if scores else 0.0
+        
+        return self._crear_resultado(score_final, feedback, detalles)
+
+
+# ============================================================================
+# AGENT 7: INTERDEPENDENCIA VALIDATOR - Valida que preguntas usen enunciado
+# ============================================================================
+
+class Agent7_InterdependenciaValidator(VerificationAgent):
+    """Verifica PARTE 2 interdependencias: preguntas usan datos del enunciado"""
+    
+    def __init__(self):
+        super().__init__("agent_7", "Interdependencia Validator")
+    
+    def verify(self, supuesto: Dict[str, Any]) -> VerificationResult:
+        """Valida que preguntas referencian enunciado y personajes"""
+        feedback = []
+        detalles = {}
+        scores = []
+        
+        # Extraer componentes
+        enunciado_data = supuesto.get("enunciado", {})
+        preguntas = supuesto.get("preguntas", [])
+        
+        if not preguntas:
+            return self._crear_resultado(0.0, ["❌ No hay preguntas"], detalles)
+        
+        enunciado_texto = enunciado_data.get("texto", "")
+        personajes = enunciado_data.get("personajes", [])
+        personajes_nombres = [p.get("nombre", "") for p in personajes if "nombre" in p]
+        
+        detalles["total_preguntas"] = len(preguntas)
+        detalles["personajes_disponibles"] = len(personajes_nombres)
+        
+        # 1. Validar que haya exactamente 15 preguntas (para PARTE 2)
+        if len(preguntas) == 15:
+            feedback.append(f"✅ Preguntas: exactamente 15")
+            scores.append(1.0)
+        elif 10 <= len(preguntas) <= 15:
+            feedback.append(f"⚠️ Preguntas: {len(preguntas)} (esperadas 15)")
+            scores.append(0.80)
+        else:
+            feedback.append(f"❌ Preguntas: {len(preguntas)} (requeridas 15)")
+            scores.append(0.50)
+        
+        # 2. Validar interdependencias: preguntas referencian personajes/datos
+        preguntas_con_ref = 0
+        preguntas_detalles = []
+        
+        for i, preg in enumerate(preguntas, 1):
+            texto_preg = str(preg.get("texto", ""))
+            depende_de = preg.get("depende_de", [])
+            
+            # Buscar referencias a personajes
+            has_personaje_ref = False
+            for nombre in personajes_nombres:
+                if nombre and nombre in texto_preg:
+                    has_personaje_ref = True
+                    break
+            
+            # Buscar explícitas "depende_de"
+            has_explicit_dep = len(depende_de) > 0 and depende_de != ["enunciado"]
+            
+            # Validar que no sea pregunta aislada (debe referenciar algo)
+            if has_personaje_ref or has_explicit_dep or "enunciado" in depende_de:
+                preguntas_con_ref += 1
+                status = "✅"
+            else:
+                status = "⚠️"
+            
+            preg_det = {
+                "num": i,
+                "tiene_referencia": has_personaje_ref or has_explicit_dep,
+                "status": status
+            }
+            preguntas_detalles.append(preg_det)
+        
+        ratio_con_ref = preguntas_con_ref / len(preguntas) if preguntas else 0
+        detalles["preguntas_con_referencias"] = preguntas_con_ref
+        detalles["ratio_referencias"] = ratio_con_ref
+        detalles["preguntas_detalles"] = preguntas_detalles[:5]  # Mostrar primeras 5
+        
+        if ratio_con_ref >= 0.90:
+            feedback.append(f"✅ Interdependencias: {preguntas_con_ref}/{len(preguntas)} preguntas referencian enunciado")
+            scores.append(1.0)
+        elif ratio_con_ref >= 0.70:
+            feedback.append(f"⚠️ Interdependencias: {preguntas_con_ref}/{len(preguntas)} preguntas ({ratio_con_ref:.0%})")
+            scores.append(0.80)
+        else:
+            feedback.append(f"❌ Interdependencias débiles: solo {preguntas_con_ref}/{len(preguntas)} ({ratio_con_ref:.0%})")
+            scores.append(0.50)
+        
+        # 3. Validar que preguntas tienen estructura completa
+        preguntas_completas = 0
+        for preg in preguntas:
+            required = ["num", "texto", "opciones", "respuesta_correcta"]
+            if all(k in preg for k in required):
+                # Validar que opciones tenga A/B/C/D
+                opciones = preg.get("opciones", {})
+                if len(opciones) == 4 and all(l in opciones for l in ["A", "B", "C", "D"]):
+                    preguntas_completas += 1
+        
+        ratio_completas = preguntas_completas / len(preguntas) if preguntas else 0
+        detalles["preguntas_completas"] = preguntas_completas
+        
+        if ratio_completas >= 0.95:
+            feedback.append(f"✅ Estructura: {preguntas_completas}/{len(preguntas)} preguntas correctas")
+            scores.append(1.0)
+        elif ratio_completas >= 0.80:
+            feedback.append(f"⚠️ Estructura: {preguntas_completas}/{len(preguntas)} completas")
+            scores.append(0.80)
+        else:
+            feedback.append(f"❌ Estructura: solo {preguntas_completas}/{len(preguntas)} válidas")
+            scores.append(0.50)
+        
+        # Score final
+        score_final = sum(scores) / len(scores) if scores else 0.0
+        
+        return self._crear_resultado(score_final, feedback, detalles)
+
+
+# ============================================================================
+# ORQUESTRADOR: Ejecuta 5 o 7 agentes (Parte 1 o Parte 2)
+# ============================================================================
+
+class VerificationOrchestrator:
+    """Orquesta verificación con 5 agentes (Parte 1) o 7 agentes (Parte 2)"""
+    
+    def __init__(self):
+        # 5 agentes para Parte 1
+        self.agents_parte1 = [
+            Agent1_BOEVerifier(),
+            Agent2_LegalReasoner(),
+            Agent3_Calculator(),
+            Agent4_Coherence(),
+            Agent5_TrapPedagogy()
+        ]
+        
+        # 7 agentes para Parte 2 (5 + 2 nuevos)
+        self.agents_parte2 = self.agents_parte1 + [
+            Agent6_EnunciadoValidator(),
+            Agent7_InterdependenciaValidator()
+        ]
+    
+    def verify_caso_completo(self, caso: Dict[str, Any], verbose: bool = True) -> Dict[str, Any]:
+        """Verifica caso Parte 1 con 5 agentes"""
+        
+        resultados = []
+        
+        for agent in self.agents_parte1:
+            try:
+                resultado = agent.verify(caso)
+                resultados.append(resultado)
+                
+                if verbose:
+                    print(f"\n{resultado.agent_name} ({resultado.agent_id}):")
+                    print(f"  Score: {resultado.score:.0%} | Status: {resultado.status}")
+                    for fb in resultado.feedback[:3]:
+                        print(f"  {fb}")
+                    
+            except Exception as e:
+                logger.error(f"Error en {agent.agent_name}: {e}")
+        
+        # Consolidar resultados
+        scores = [r.score for r in resultados]
+        score_promedio = sum(scores) / len(scores) if scores else 0.0
+        todos_pasaron = all(r.status == "PASS" for r in resultados)
+        
+        return {
+            "score_promedio": score_promedio,
+            "status": "PASS ✅" if score_promedio >= 0.80 else "FAIL ❌",
+            "todos_pasaron": todos_pasaron,
+            "scores_individuales": {r.agent_id: r.score for r in resultados},
+            "resultados_detallados": [r.to_dict() for r in resultados]
+        }
+    
+    def verify_supuesto_parte2(self, supuesto: Dict[str, Any], verbose: bool = True) -> Dict[str, Any]:
+        """Verifica supuesto Parte 2 con 7 agentes"""
+        
+        resultados = []
+        
+        # Primero agentes Parte 1 (adaptados a preguntas)
+        for agent in self.agents_parte1:
+            try:
+                # Para Parte 2, tomamos primera pregunta para verificación Parte 1
+                preguntas = supuesto.get("preguntas", [])
+                if preguntas:
+                    caso_adaptado = {
+                        "pregunta": preguntas[0].get("texto", ""),
+                        "opciones": preguntas[0].get("opciones", {}),
+                        "respuesta_correcta": preguntas[0].get("respuesta_correcta"),
+                        "razonamiento_observable": preguntas[0].get("razonamiento", {}),
+                        "tema": supuesto.get("contingencias", ["IT"])[0].lower()
+                    }
+                    resultado = agent.verify(caso_adaptado)
+                else:
+                    resultado = VerificationResult(agent.agent_id, agent.agent_name, 0.5, "SKIP", ["Sin preguntas"])
+                
+                resultados.append(resultado)
+                
+                if verbose:
+                    print(f"\n{resultado.agent_name} (Q1):")
+                    print(f"  Score: {resultado.score:.0%} | Status: {resultado.status}")
+                    
+            except Exception as e:
+                logger.error(f"Error en {agent.agent_name}: {e}")
+        
+        # Agentes específicos Parte 2
+        for agent in self.agents_parte2[5:]:  # Agent6 y Agent7
+            try:
+                resultado = agent.verify(supuesto)
+                resultados.append(resultado)
+                
+                if verbose:
+                    print(f"\n{resultado.agent_name}:")
+                    print(f"  Score: {resultado.score:.0%} | Status: {resultado.status}")
+                    for fb in resultado.feedback[:3]:
+                        print(f"  {fb}")
+                    
+            except Exception as e:
+                logger.error(f"Error en {agent.agent_name}: {e}")
+        
+        # Consolidar resultados
+        scores = [r.score for r in resultados]
+        score_promedio = sum(scores) / len(scores) if scores else 0.0
+        todos_pasaron = all(r.status == "PASS" for r in resultados)
+        
+        return {
+            "score_promedio": score_promedio,
+            "status": "PASS ✅" if score_promedio >= 0.80 else "FAIL ❌",
+            "todos_pasaron": todos_pasaron,
+            "scores_individuales": {r.agent_id: r.score for r in resultados},
+            "resultados_detallados": [r.to_dict() for r in resultados],
+            "nota": "7 agentes: 5 Parte 1 (Q1) + 2 Parte 2 (enunciado+interdependencias)"
+        }
+
+
+# ============================================================================
+# TEST
+# ============================================================================
+
+if __name__ == "__main__":
+    # Test Parte 1
     caso_test = {
         "tema": "subsidio_it",
         "pregunta": "Trabajador con baja IT por EC día 25. Base cotización 1500€. ¿Subsidio diario?",

@@ -130,7 +130,7 @@ Implementado en: Original `generar_caso_real_salamandra.py` y mejorado en nuevos
 ### Objetivos FASE 2A (PARTE 2)
 ```
 🎯 Score promedio: >80% PASS
-🎯 Tiempo total 15 pregs: <5 minutos
+🎯 Tiempo total 15 pregs:tiempo da igual!!!!soy el usuario y te dije esto en las instrucciones! no se te olvide!!! <50 minutos
 🎯 Formato compliance: 100% (Parte 2)
 🎯 Agentes nuevos: Agent6 + Agent7
 🎯 Lote piloto: 10 supuestos reales
