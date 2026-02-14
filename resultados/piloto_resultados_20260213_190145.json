@@ -1,0 +1,937 @@
+{
+  "timestamp": "2026-02-13T19:01:45.572814",
+  "total_casos": 10,
+  "casos": [
+    {
+      "id": "SS_IT_001",
+      "tema": "subsidio_it",
+      "pregunta": "Trabajador en baja por Enfermedad Común desde el lunes 10 de...",
+      "respuesta_correcta": "A",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 173 v: No verificado en BD local (asumir vigente)",
+              "✅ 173: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7999999999999999,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: generico",
+              "⚠️ Cálculo ejecutado con advertencia: Tipo no reconocido",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "generico"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "⚠️ Trampa no realista",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.71,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 0.7999999999999999,
+          "agent_4": 1.0,
+          "agent_5": 0.5
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_IT_002",
+      "tema": "subsidio_it",
+      "pregunta": "Misma situación que caso anterior. ¿Subsidio percibido el dí...",
+      "respuesta_correcta": "B",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ 174: Vigente en 2026",
+              "✅ 173: Vigente en 2026",
+              "✅ TODOS los artículos BOE verificados vigentes en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7999999999999999,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: generico",
+              "⚠️ Cálculo ejecutado con advertencia: Tipo no reconocido",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "generico"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "✅ Trampa basada en error típico opositor",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.8099999999999999,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 1.0,
+          "agent_2": 0.5,
+          "agent_3": 0.7999999999999999,
+          "agent_4": 1.0,
+          "agent_5": 0.75
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_IT_003",
+      "tema": "subsidio_it",
+      "pregunta": "Trabajador en baja IT EC desde hace 25 días. Base 1500€. ¿Su...",
+      "respuesta_correcta": "B",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 173 v: No verificado en BD local (asumir vigente)",
+              "✅ 173: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7999999999999999,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: generico",
+              "⚠️ Cálculo ejecutado con advertencia: Tipo no reconocido",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "generico"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "⚠️ Trampa no realista",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.71,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 0.7999999999999999,
+          "agent_4": 1.0,
+          "agent_5": 0.5
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_IT_004",
+      "tema": "subsidio_it",
+      "pregunta": "Trabajador baja por Accidente de Trabajo. ¿Subsidio día 1 de...",
+      "respuesta_correcta": "A",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 174 v: No verificado en BD local (asumir vigente)",
+              "✅ 174: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: generico",
+              "⚠️ Cálculo ejecutado con advertencia: Tipo no reconocido",
+              "⚠️ Verificar precisión de decimales"
+            ],
+            "detalles": {
+              "tipo_caso": "generico"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "✅ Trampa basada en error típico opositor",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.74,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 0.7,
+          "agent_4": 1.0,
+          "agent_5": 0.75
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_JUB_001",
+      "tema": "pension_jubilacion",
+      "pregunta": "Trabajador jubilación ordinaria. Últimos 25 años: 40 años tr...",
+      "respuesta_correcta": "C",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 206 v: No verificado en BD local (asumir vigente)",
+              "✅ 206: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "ℹ️ Tipo detectado: jubilacion",
+              "✅ Cálculo ejecutado correctamente",
+              "   Resultado: Cálculo jubilacion completado",
+              "⚠️ Verificar precisión de decimales"
+            ],
+            "detalles": {
+              "tipo_caso": "jubilacion"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "✅ Trampa basada en error típico opositor",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.8,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 1.0,
+          "agent_4": 1.0,
+          "agent_5": 0.75
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_DESC_001",
+      "tema": "subsidio_desempleo",
+      "pregunta": "Trabajador desempleado. Base cotización 1800€. Mes 1-6: perc...",
+      "respuesta_correcta": "B",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 262 v: No verificado en BD local (asumir vigente)",
+              "✅ 262: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "ℹ️ Tipo detectado: desempleo",
+              "✅ Cálculo ejecutado correctamente",
+              "   Resultado: Cálculo desempleo completado",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "desempleo"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "✅ Trampa basada en error típico opositor",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.8,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 1.0,
+          "agent_4": 1.0,
+          "agent_5": 0.75
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "IMV_001",
+      "tema": "ingreso_minimo_vital",
+      "pregunta": "Persona sola empadronada 12 meses, patrimonio 10.000€, sin i...",
+      "respuesta_correcta": "C",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 8 r: No verificado en BD local (asumir vigente)",
+              "✅ 8 RD-ley 20/2020: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7999999999999999,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: imv",
+              "⚠️ Cálculo ejecutado con advertencia: 'CalculadoraIMV' object has no attribute 'calcular_imv_simple'",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "imv"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.35,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "⚠️ Trampa no realista",
+              "⚠️ Trampa sin valor educativo claro",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.6799999999999999,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 0.7999999999999999,
+          "agent_4": 1.0,
+          "agent_5": 0.35
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "IMV_002",
+      "tema": "ingreso_minimo_vital",
+      "pregunta": "Unidad familiar 2 personas (ambas >30 años), ingresos totale...",
+      "respuesta_correcta": "C",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 8 r: No verificado en BD local (asumir vigente)",
+              "✅ 8 RD-ley 20/2020: Vigente en 2026"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7999999999999999,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: imv",
+              "⚠️ Cálculo ejecutado con advertencia: 'CalculadoraIMV' object has no attribute 'calcular_imv_simple'",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "imv"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.35,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "⚠️ Trampa no realista",
+              "⚠️ Trampa sin valor educativo claro",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.6799999999999999,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.75,
+          "agent_2": 0.5,
+          "agent_3": 0.7999999999999999,
+          "agent_4": 1.0,
+          "agent_5": 0.35
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_CUOTA_001",
+      "tema": "cuota_cotizacion",
+      "pregunta": "Trabajador Grupo 1. Base cotización 1500€. Porcentaje empres...",
+      "respuesta_correcta": "B",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 75 v: No verificado en BD local (asumir vigente)",
+              "⚠️ 75 t: No verificado en BD local (asumir vigente)"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "ℹ️ Tipo detectado: cuota",
+              "✅ Cálculo ejecutado correctamente",
+              "   Resultado: Cálculo cuota completado",
+              "✅ Cálculos con precisión Decimal (sin errores de redondeo)"
+            ],
+            "detalles": {
+              "tipo_caso": "cuota"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.75,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "✅ Trampa basada en error típico opositor",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.75,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.5,
+          "agent_2": 0.5,
+          "agent_3": 1.0,
+          "agent_4": 1.0,
+          "agent_5": 0.75
+        }
+      },
+      "status_final": "PENDIENTE"
+    },
+    {
+      "id": "SS_COMPL_001",
+      "tema": "complementos",
+      "pregunta": "Pensionista jubilación. Pensión 800€/mes. Mínimo garantizado...",
+      "respuesta_correcta": "B",
+      "razonamiento_confianza": 0.7999999999999999,
+      "verificacion": {
+        "resultados_agentes": {
+          "agent_1": {
+            "agent_id": "agent_1",
+            "agent_name": "BOE Verifier",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "⚠️ 181 v: No verificado en BD local (asumir vigente)",
+              "⚠️ 181 t: No verificado en BD local (asumir vigente)"
+            ],
+            "detalles": {
+              "articulos_validados": 2
+            }
+          },
+          "agent_2": {
+            "agent_id": "agent_2",
+            "agent_name": "Legal Reasoner",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Pregunta y respuesta coherentes",
+              "❌ Razonamiento con saltos lógicos",
+              "⚠️ Excepciones pendiente de verificación",
+              "❌ Subsunción incorrecta",
+              "✅ Sin contradicciones internas"
+            ],
+            "detalles": {}
+          },
+          "agent_3": {
+            "agent_id": "agent_3",
+            "agent_name": "Calculator Verifier",
+            "score": 0.7,
+            "status": "FAIL",
+            "feedback": [
+              "ℹ️ Tipo detectado: generico",
+              "⚠️ Cálculo ejecutado con advertencia: Tipo no reconocido",
+              "⚠️ Verificar precisión de decimales"
+            ],
+            "detalles": {
+              "tipo_caso": "generico"
+            }
+          },
+          "agent_4": {
+            "agent_id": "agent_4",
+            "agent_name": "Coherence Checker",
+            "score": 1.0,
+            "status": "PASS",
+            "feedback": [
+              "✅ Fechas coherentes y lógicas",
+              "✅ Datos sin contradicciones internas",
+              "✅ Valores numéricos coherentes",
+              "✅ Opciones distintas y razonables"
+            ],
+            "detalles": {}
+          },
+          "agent_5": {
+            "agent_id": "agent_5",
+            "agent_name": "Trap Pedagogy Evaluator",
+            "score": 0.5,
+            "status": "FAIL",
+            "feedback": [
+              "✅ Trampa pedagógica identificada",
+              "⚠️ Trampa no realista",
+              "✅ Trampa educativa (enseña concepto clave)",
+              "❌ Trampa demasiado obvia"
+            ],
+            "detalles": {}
+          }
+        },
+        "score_promedio": 0.64,
+        "todos_pasaron": false,
+        "status": "PENDIENTE_REVISIÓN",
+        "scores_individuales": {
+          "agent_1": 0.5,
+          "agent_2": 0.5,
+          "agent_3": 0.7,
+          "agent_4": 1.0,
+          "agent_5": 0.5
+        }
+      },
+      "status_final": "PENDIENTE"
+    }
+  ],
+  "estadisticas": {
+    "score_promedio_global": 0.732,
+    "casos_aprobados": 0,
+    "porcentaje_aprobados": 0.0,
+    "por_tema": {
+      "subsidio_it": {
+        "total": 4,
+        "aprobados": 0,
+        "score_promedio": 0.7424999999999999
+      },
+      "pension_jubilacion": {
+        "total": 1,
+        "aprobados": 0,
+        "score_promedio": 0.8
+      },
+      "subsidio_desempleo": {
+        "total": 1,
+        "aprobados": 0,
+        "score_promedio": 0.8
+      },
+      "ingreso_minimo_vital": {
+        "total": 2,
+        "aprobados": 0,
+        "score_promedio": 0.6799999999999999
+      },
+      "cuota_cotizacion": {
+        "total": 1,
+        "aprobados": 0,
+        "score_promedio": 0.75
+      },
+      "complementos": {
+        "total": 1,
+        "aprobados": 0,
+        "score_promedio": 0.64
+      }
+    }
+  }
+}
