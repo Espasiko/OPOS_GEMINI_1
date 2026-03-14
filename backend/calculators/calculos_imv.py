@@ -50,21 +50,22 @@ class CalculadoraIMV:
     Período: Febrero 2026 (actualizado por IPC)
     """
     
-    # Importes base 2026 (actualizados con IPC)
+    # Importes base 2026 (actualizados con BOE IPC 11.4%)
     IMPORTES_BASE_2026 = {
-        TipoUnidadFamiliar.PERSONA_SOLA: Decimal("564.60"),
-        TipoUnidadFamiliar.DOS_PERSONAS: Decimal("847.15"),
-        TipoUnidadFamiliar.TRES_PERSONAS: Decimal("1102.80"),
-        TipoUnidadFamiliar.CUATRO_PERSONAS: Decimal("1356.45"),
-        TipoUnidadFamiliar.CINCO_PERSONAS: Decimal("1610.10"),
-        TipoUnidadFamiliar.SEIS_O_MAS: Decimal("1863.75"),  # Aproximado
+        TipoUnidadFamiliar.PERSONA_SOLA: Decimal("733.60"),
+        TipoUnidadFamiliar.DOS_PERSONAS: Decimal("954.10"),
+        TipoUnidadFamiliar.TRES_PERSONAS: Decimal("1174.23"),
+        TipoUnidadFamiliar.CUATRO_PERSONAS: Decimal("1394.45"),
+        TipoUnidadFamiliar.CINCO_PERSONAS: Decimal("1614.59"),
+        TipoUnidadFamiliar.SEIS_O_MAS: Decimal("1614.59"),  # Tope general hogares 5 o más
     }
     
     # Incremento si ambos miembros > 30 años
     INCREMENTO_AMBOS_MAYORES_30 = Decimal("0.50")  # 50%
     
-    # Límite de patrimonio general
-    LIMITE_PATRIMONIO = Decimal("15965.50")
+    # Límite de patrimonio general 2026 (aprox 3x renta anual garantizada)
+    LIMITE_PATRIMONIO = Decimal("26409.60")
+
     
     # Tasa de contabilización de ingresos (50%)
     TASA_INGRESOS = Decimal("0.50")

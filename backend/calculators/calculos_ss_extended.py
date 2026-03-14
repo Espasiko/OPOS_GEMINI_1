@@ -30,8 +30,9 @@ Fecha: 13/02/2026
 from dataclasses import dataclass, field
 from decimal import Decimal, ROUND_HALF_UP
 from enum import Enum
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from datetime import date, timedelta
+import calendar
 
 
 # ============================================================================
@@ -82,6 +83,7 @@ class ResultadoIPT:
 class ResultadoJubilacion:
     """Resultado cálculo Jubilación."""
     edad: int
+    edad_ordinaria: float  # Edad legal de jubilación ordinaria calculada
     semanas_cotizadas: int
     base_reguladora_mensual: Decimal
     factor_anticipacion: Decimal  # <0.8 si anticipada
@@ -212,6 +214,35 @@ class CalculadoraIPT:
             explicacion=f"IPT: Base reguladora {base_reg}€ × 55% = {pension_mensual}€/mes (mínimo aplicable)"
         )
 
+# ============================================================================
+# CALCULADORA 1.1: INCAPACIDAD PERMANENTE PARCIAL (IPP)
+# ============================================================================
+
+class CalculadoraIPP:
+    """
+    Calcula la indemnización a tanto alzado de la IPP.
+    
+    Normativa: TRLGSS Art. 194.1.a y Art. 196.1
+    Requisitos:
+      - Disminución no inferior al 33% en rendimiento normal para profesión habitual.
+      - NO impide la realización de las tareas fundamentales de la misma.
+    Cuantía: 24 mensualidades de la base reguladora.
+    """
+    
+    @staticmethod
+    def calcular_ipp(base_reguladora_mensual: Decimal) -> Dict[str, Any]:
+        base_reg = Decimal(str(base_reguladora_mensual))
+        indemnizacion = base_reg * Decimal("24")
+        
+        return {
+            "grado": "Parcial (IPP)",
+            "requisito_principal": "Disminución rendimiento >= 33%",
+            "cuantia_indemnizacion": float(indemnizacion.quantize(Decimal("0.01"))),
+            "mensualidades": 24,
+            "articulo": "Art. 196.1 TRLGSS",
+            "explicacion": f"IPP: Pago único de 24 mensualidades (Base {base_reg}€ × 24 = {indemnizacion}€)."
+        }
+
 
 # ============================================================================
 # CALCULADORA 2: JUBILACIÓN
@@ -219,98 +250,258 @@ class CalculadoraIPT:
 
 class CalculadoraJubilacion:
     """
-    Calcula Pensión de Jubilación.
+    Calcula Pensión de Jubilación Ordinaria y Anticipada con tabla transitoria 2026.
     
-    Normativa: TRLGSS Art. 161-166 - Factor edad + años cotizados
-    Requisitos:
-      - Edad mínima: 67 años (flexible 65 con 38,5 años cotizados)
-      - Mínimo 15 años cotizados (180 meses)
-      - Base reguladora = promedio últimos 25 años
+    Normativa: TRLGSS Art. 161-166 y Disposición Transitoria 4ª.
+    Requisitos 2026:
+      - Edad legal: 67 años si < 38 años y 6 meses cotizados.
+      - Edad legal: 65 años si >= 38 años y 6 meses cotizados.
+      - Carencia mínima: 15 años (2 de ellos en los últimos 15 años).
+      - BR: Promedio bases últimos 300 meses (25 años) / 350.
     """
     
-    # Cuantías vigentes 2026
-    PENSION_MINIMA_JUBILACION = Decimal("656.10")
-    PENSION_MAXIMA_JUBILACION = Decimal("2819.54")
-    EDAD_MINIMA = 67
-    EDAD_FLEXIBLE = 65
-    ANOS_FLEX_REQUERIDOS = 38
+    # Valores 2026
+    PENSION_MINIMA_JUBILACION = Decimal("783.10") # Con cónyuge no a cargo
+    PENSION_MAXIMA_JUBILACION = Decimal("3175.04") # Tope máximo 2026
+    IPREM_2026_MENSUAL = Decimal("610.00")
     
+    @staticmethod
+    def obtener_edad_legal_2026(anos_cotizados: float) -> float:
+        """
+        Determina la edad legal de jubilación según la DT 7ª del TRLGSS para el año 2026.
+        Umbral Crítico: 38 años y 3 meses (38.25 años).
+        """
+        if anos_cotizados >= 38.25: 
+            # >= 38 años y 3 meses
+            return 65.0
+        # < 38 años y 3 meses -> 66 años y 10 meses
+        return 66.83333333333333 
+
+    @staticmethod
+    def calcular_porcentaje_por_anos(anos: float) -> Decimal:
+        """
+        Calcula el porcentaje de la BR según años cotizados (TRLGSS Art. 210).
+        - Primeros 15 años: 50%
+        - Por cada mes adicional entre el mes 1 y el 49: +0.21%
+        - Por cada mes adicional a partir del mes 50: +0.19%
+        """
+        if anos < 15:
+            return Decimal("0")
+        
+        porcentaje = Decimal("50.0")
+        meses_adicionales = int((anos - 15) * 12)
+        
+        if meses_adicionales <= 0:
+            return porcentaje
+            
+        # Tramo 1: Meses 1 al 49 adicionales (+0.21% cada uno)
+        tramo1 = min(meses_adicionales, 49)
+        porcentaje += Decimal(str(tramo1)) * Decimal("0.21")
+        
+        # Tramo 2: Meses 50 en adelante (+0.19% cada uno)
+        if meses_adicionales > 49:
+            tramo2 = meses_adicionales - 49
+            porcentaje += Decimal(str(tramo2)) * Decimal("0.19")
+            
+        return min(porcentaje, Decimal("100.0"))
+
     @staticmethod
     def calcular_jubilacion(
         base_reguladora_mensual: Decimal,
-        edad_solicitud: int,
-        anos_cotizados: int,
-        anticipada: bool = False
+        edad_solicitud: float,
+        anos_cotizados: float,
+        es_anticipada: bool = False,
+        tipo_anticipada: str = "voluntaria" # "voluntaria" o "involuntaria"
     ) -> ResultadoJubilacion:
         """
-        Calcula pensión de Jubilación.
-        
-        Args:
-            base_reguladora_mensual: Base reguladora euros/mes
-            edad_solicitud: Edad al solicitar jubilación
-            anos_cotizados: Años de cotización acumulados
-            anticipada: Si es jubilación anticipada
-        
-        Returns:
-            ResultadoJubilacion con detalles
+        Calcula pensión de Jubilación real con coeficientes reductores por mes.
         """
         base_reg = Decimal(str(base_reguladora_mensual))
-        semanas_cotizadas = anos_cotizados * 52
+        edad_legal = CalculadoraJubilacion.obtener_edad_legal_2026(anos_cotizados)
         
-        # Factor edad: se calcula por semanas cotizadas
-        # Hasta 25 años: 50%, después suma 0.2% por trimestre adicional
-        if semanas_cotizadas >= 1300:  # 25 años
-            porcentaje_base = Decimal("50")
-            trimestres_extra = (semanas_cotizadas - 1300) // 13
-            porcentaje_base += (trimestres_extra * Decimal("0.2"))
-        else:
-            # Menos de 25 años: proporcional
-            porcentaje_base = (semanas_cotizadas / 1300) * Decimal("50")
+        # 1. Porcentaje por años cotizados
+        porcentaje_base = CalculadoraJubilacion.calcular_porcentaje_por_anos(anos_cotizados)
+        pension_inicial = base_reg * (porcentaje_base / Decimal("100"))
         
-        # Límite máximo: 100%
-        porcentaje_base = min(porcentaje_base, Decimal("100"))
+        # 2. Coeficientes reductores si es anticipada (Cómputo por meses)
+        factor_reductivo = Decimal("1.0")
+        if es_anticipada and edad_solicitud < edad_legal:
+            meses_anticipo = int((edad_legal - edad_solicitud) * 12)
+            if tipo_anticipada == "voluntaria":
+                # Escalas de la Ley 21/2021 (simplificado lineal mensual entre max y min)
+                if anos_cotizados < 38.25:
+                    max_red, min_red = 0.21, 0.0281
+                elif anos_cotizados < 41.5:
+                    max_red, min_red = 0.19, 0.0267
+                elif anos_cotizados < 44.5:
+                    max_red, min_red = 0.17, 0.0253
+                else:
+                    max_red, min_red = 0.13, 0.0188
+                
+                # Interpolación lineal para 24 meses
+                reduccion = max_red - ((24 - meses_anticipo) * ((max_red - min_red) / 23)) if meses_anticipo <= 24 else max_red
+            else: # involuntaria
+                if anos_cotizados < 38.25:
+                    max_red, min_red = 0.30, 0.005
+                elif anos_cotizados < 41.5:
+                    max_red, min_red = 0.28, 0.0047
+                elif anos_cotizados < 44.5:
+                    max_red, min_red = 0.26, 0.0044
+                else:
+                    max_red, min_red = 0.24, 0.004
+                
+                # Interpolación para 48 meses
+                reduccion = max_red - ((48 - meses_anticipo) * ((max_red - min_red) / 47)) if meses_anticipo <= 48 else max_red
+
+            reduccion = max(Decimal(str(min_red)), min(Decimal(str(max_red)), Decimal(str(reduccion))))
+            factor_reductivo = Decimal("1.0") - reduccion
         
-        # Factor por anticipación
-        factor_anticipacion = Decimal("1")
-        if anticipada:
-            # Por cada mes de anticipación antes de edad legal: -0.375%
-            meses_anticipacion = (CalculadoraJubilacion.EDAD_MINIMA - edad_solicitud) * 12
-            factor_anticipacion = Decimal("1") - (
-                Decimal(str(meses_anticipacion)) * Decimal("0.00375")
-            )
+        pension_final = pension_inicial * factor_reductivo
         
-        # Calcular pensión
-        pension_bruta = base_reg * (porcentaje_base / Decimal("100"))
-        pension_con_anticipacion = pension_bruta * factor_anticipacion
+        # 3. Límites Mínimo/Máximo
+        complemento_minimo = Decimal("0")
+        if pension_final < CalculadoraJubilacion.PENSION_MINIMA_JUBILACION:
+            complemento_minimo = CalculadoraJubilacion.PENSION_MINIMA_JUBILACION - pension_final
+            pension_final = CalculadoraJubilacion.PENSION_MINIMA_JUBILACION
+            
+        pension_final = min(pension_final, CalculadoraJubilacion.PENSION_MAXIMA_JUBILACION)
         
-        # Aplicar mínimos y máximos
-        if pension_con_anticipacion < CalculadoraJubilacion.PENSION_MINIMA_JUBILACION:
-            pension_con_anticipacion = CalculadoraJubilacion.PENSION_MINIMA_JUBILACION
-        
-        if pension_con_anticipacion > CalculadoraJubilacion.PENSION_MAXIMA_JUBILACION:
-            pension_con_anticipacion = CalculadoraJubilacion.PENSION_MAXIMA_JUBILACION
-        
-        incrementos = {}
-        if edad_solicitud > 67:
-            increment_edad = (edad_solicitud - 67) * Decimal("0.4")
-            incrementos["Por edad superior a 67"] = increment_edad
+        explicacion = (
+            f"Jubilación 2026: Edad legal {edad_legal} años. Solicitada a los {edad_solicitud}. "
+            f"Cotizados {anos_cotizados} años → {porcentaje_base}% de la BR. "
+        )
+        if es_anticipada:
+            explicacion += f"Anticipo de {int((edad_legal - edad_solicitud)*12)} meses aplica coeficiente {factor_reductivo:.4f}. "
         
         return ResultadoJubilacion(
-            edad=edad_solicitud,
-            semanas_cotizadas=semanas_cotizadas,
+            edad=int(edad_solicitud),
+            edad_ordinaria=float(edad_legal),
+            semanas_cotizadas=int(anos_cotizados * 52),
             base_reguladora_mensual=base_reg,
-            factor_anticipacion=factor_anticipacion,
-            porcentaje_acumulado=porcentaje_base.quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
-            ),
-            pension_base=pension_bruta.quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
-            ),
-            incrementos=incrementos,
-            pension_neta=pension_con_anticipacion.quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
-            ),
-            explicacion=f"Jubilación: {anos_cotizados} años → {porcentaje_base:.2f}% → {pension_con_anticipacion}€/mes"
+            factor_anticipacion=factor_reductivo,
+            porcentaje_acumulado=porcentaje_base,
+            pension_base=pension_inicial.quantize(Decimal("0.01")),
+            pension_neta=pension_final.quantize(Decimal("0.01")),
+            complemento_minimo=complemento_minimo.quantize(Decimal("0.01")),
+            explicacion=explicacion
+        )
+
+class CalculadoraJubilacionParcial:
+    """
+    Calcula Jubilación Parcial según RDL 11/2024.
+    
+    Requisitos RDL 11/2024 (Manufacturera):
+      - Antigüedad: 6 años en la empresa.
+      - Cotización: 33 años (25 en discapacidad >33%).
+      - Reducción: 25% a 67% (o 80% si hay contrato de relevo indefinido).
+      - Vigencia: Prórroga hasta 2029.
+    """
+    
+    @staticmethod
+    def calcular_parcial(
+        base_reguladora_mensual: Decimal,
+        edad: int,
+        anos_cotizados: int,
+        antiguedad_empresa: int,
+        es_manufacturera: bool = False,
+        reduccion_jornada: float = 0.50
+    ) -> Dict[str, Any]:
+        base_reg = Decimal(str(base_reguladora_mensual))
+        reduccion = Decimal(str(reduccion_jornada))
+        
+        # Validaciones de requisitos
+        errores = []
+        if antiguedad_empresa < 6:
+            errores.append("Antigüedad insuficiente (mínimo 6 años)")
+        
+        carencia_min = 33
+        if es_manufacturera:
+            # RDL 11/2024 específico
+            if anos_cotizados < 33:
+                errores.append("Carencia insuficiente para sector manufacturero RDL 11/2024 (mínimo 33 años)")
+        else:
+            if anos_cotizados < 15:
+                errores.append("Carencia mínima general no alcanzada (15 años)")
+                
+        # Porcentaje de pensión es el inverso de la reducción (simplificado)
+        porcentaje_pension = reduccion * 100
+        pension_mensual = base_reg * reduccion
+        
+        return {
+            "pension_mensual": float(pension_mensual.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)),
+            "reduccion_aplicada": f"{reduccion*100}%",
+            "es_manufacturera": es_manufacturera,
+            "cumple_requisitos": len(errores) == 0,
+            "errores": errores,
+            "normativa": "RDL 11/2024" if es_manufacturera else "TRLGSS Art. 215",
+            "explicacion": f"Jubilación parcial con reducción del {reduccion*100}%. Cuantía: {pension_mensual}€."
+        }
+
+
+# ============================================================================
+# CALCULADORA 2.1: PENSIÓN NO CONTRIBUTIVA (PNC)
+# ============================================================================
+
+@dataclass
+class ResultadoPNC:
+    """Resultado cálculo Pensión No Contributiva."""
+    tipo: str # "Jubilación" / "Invalidez"
+    cuantia_anual_integra: Decimal
+    cuantia_mensual: Decimal
+    complemento_alquiler: Decimal
+    cumple_requisitos: bool
+    explicacion: str
+
+class CalculadoraPNC:
+    """
+    Calcula Pensión No Contributiva (PNC) - Jubilación e Invalidez 2026.
+    
+    Normativa: TRLGSS Art. 363-372. Modificación 2026 según previsiones.
+    """
+    CUANTIA_INTEGRA_2026 = Decimal("8803.20") # Anual 2026
+    LIMITE_RENTAS_SOLO = Decimal("8803.20")
+    COMPLEMENTO_ALQUILER = Decimal("525.00") # Anual
+    
+    @staticmethod
+    def calcular_pnc(
+        tipo: str, 
+        ingresos_anuales: Decimal, 
+        edad: int, 
+        grado_discapacidad: int = 0,
+        residencia_anios: int = 0,
+        vive_solo: bool = True
+    ) -> ResultadoPNC:
+        """Calcula PNC atendiendo a edad, residencia y rentas."""
+        cumple = True
+        motivos = []
+        
+        # 1. Requisitos de edad y residencia
+        if tipo == "Jubilación":
+            if edad < 65: cumple = False; motivos.append("Falta edad (min 65)")
+            if residencia_anios < 10: cumple = False; motivos.append("Residencia insuficiente (min 10 años)")
+        else: # Invalidez
+            if edad < 18 or edad > 65: cumple = False; motivos.append("Edad fuera de rango (18-65)")
+            if grado_discapacidad < 65: cumple = False; motivos.append("Discapacidad insuficiente (min 65%)")
+            if residencia_anios < 5: cumple = False; motivos.append("Residencia insuficiente (min 5 años)")
+            
+        # 2. Cómputo de rentas
+        if ingresos_anuales >= CalculadoraPNC.LIMITE_RENTAS_SOLO:
+            cumple = False
+            motivos.append(f"Exceso de rentas (max {CalculadoraPNC.LIMITE_RENTAS_SOLO}€)")
+            
+        if not cumple:
+            return ResultadoPNC(tipo, Decimal("0"), Decimal("0"), Decimal("0"), False, "Denegada: " + ", ".join(motivos))
+            
+        # 3. Cuantía (Mínimo del 25% de la íntegra si hay rentas altas)
+        cuantia_mensual = (CalculadoraPNC.CUANTIA_INTEGRA_2026 / Decimal("14")).quantize(Decimal("0.01"))
+        
+        return ResultadoPNC(
+            tipo=tipo,
+            cuantia_anual_integra=CalculadoraPNC.CUANTIA_INTEGRA_2026,
+            cuantia_mensual=cuantia_mensual,
+            complemento_alquiler=CalculadoraPNC.COMPLEMENTO_ALQUILER,
+            cumple_requisitos=True,
+            explicacion=f"PNC de {tipo} aprobada. Cuantía mensual de {cuantia_mensual}€. Sujeta a revisión anual de rentas."
         )
 
 
@@ -320,84 +511,89 @@ class CalculadoraJubilacion:
 
 class CalculadoraDesempleo:
     """
-    Calcula Subsidio por Desempleo.
+    Calcula Subsidio por Desempleo (Prestación Contributiva) con topes 2026.
     
-    Normativa: TRLGSS Art. 275-285 - 70% primer 180 días, 60% resto
-    Requisitos:
-      - 12 meses cotización últimos 72 meses
-      - Situación de desempleo involuntario
-      - Duración según semanas cotizadas
+    Normativa: TRLGSS Art. 262-273.
+    Topes IPREM 2026:
+      - Sin hijos: Mín 560€ / Máx 1225€
+      - 1 hijo: Mín 749€ / Máx 1400€
+      - 2 o más: Máx 1575€
     """
     
-    # Cuantías vigentes 2026
-    BASE_REGULADORA_MINIMA = Decimal("1229.09")
-    BASE_REGULADORA_MAXIMA = Decimal("4070.10")
+    # Valores 2026
+    IPREM_2026_MENSUAL = Decimal("610.00")
     
+    @staticmethod
+    def obtener_topes(hijos_a_cargo: int) -> Dict[str, Decimal]:
+        """Calcula topes según IPREM y situación familiar."""
+        if hijos_a_cargo == 0:
+            return {"min": Decimal("560.00"), "max": Decimal("1225.00")}
+        elif hijos_a_cargo == 1:
+            return {"min": Decimal("749.00"), "max": Decimal("1400.00")}
+        else:
+            return {"min": Decimal("749.00"), "max": Decimal("1575.00")}
+
     @staticmethod
     def calcular_subsidio_desempleo(
         base_reguladora_diaria: Decimal,
-        dias_cotizados_180: int,  # Cotización en últimos 180 días
+        dias_cotizados_total: int,
+        hijos_a_cargo: int = 0,
         vigencia_desde: Optional[date] = None
     ) -> ResultadoDesempleo:
         """
-        Calcula subsidio por desempleo.
-        
-        Args:
-            base_reguladora_diaria: Base diaria en euros
-            dias_cotizados_180: Días cotizados en últimos 180 días
-            vigencia_desde: Fecha inicio del subsidio
-        
-        Returns:
-            ResultadoDesempleo con cálculo
+        Calcula subsidio contributivo atendiendo a la BR y los topes por hijos.
         """
         base_reg_d = Decimal(str(base_reguladora_diaria))
-        vigencia = vigencia_desde or date.today()
+        base_reg_m = base_reg_d * Decimal("30")
         
-        # Determinar duración según cotización
-        if dias_cotizados_180 >= 120:  # Más de 4 meses
-            duracion_dias = 180  # 6 meses al 70%
-            tipo = TipoDesempleo.NIVEL_70
-            porcentaje = Decimal("0.70")
+        # 1. Porcentaje (70% primeros 180 días, 60% después)
+        # Se devuelve el cálculo medio para un periodo dado o se especifica el tramo
+        porcentaje = Decimal("0.70") 
+        prestacion_mensual = base_reg_m * porcentaje
+        
+        # 2. Aplicación de topes
+        topes = CalculadoraDesempleo.obtener_topes(hijos_a_cargo)
+        if prestacion_mensual < topes["min"]:
+            prestacion_mensual = topes["min"]
+        elif prestacion_mensual > topes["max"]:
+            prestacion_mensual = topes["max"]
+            
+        subsidio_diario = (prestacion_mensual / Decimal("30")).quantize(Decimal("0.01"))
+        
+        # 3. Duración (Cómputo según escala TRLGSS)
+        if dias_cotizados_total < 360:
+            duracion_dias = 0 # No llega al mínimo contributivo
         else:
-            duracion_dias = 90  # 3 meses al 60%
-            tipo = TipoDesempleo.NIVEL_60
-            porcentaje = Decimal("0.60")
-        
-        # Calcular subsidio
-        subsidio_diario = (base_reg_d * porcentaje).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        subsidio_total = subsidio_diario * Decimal(str(duracion_dias))
-        
-        vigencia_hasta = vigencia + timedelta(days=duracion_dias)
+            # Escala simplificada: cada 2 años cotizados ~ 8 meses
+            duracion_dias = int((dias_cotizados_total / 3) * 0.66) # Aproximación
+            duracion_dias = min(duracion_dias, 720) # Máx 2 años
+            
+        vigencia = vigencia_desde or date.today()
         
         return ResultadoDesempleo(
             base_reguladora_diaria=base_reg_d,
             porcentaje_aplicable=porcentaje,
             duracion_dias=duracion_dias,
             subsidio_diario=subsidio_diario,
-            subsidio_total=subsidio_total.quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
-            ),
-            tipo_subsidio=tipo,
+            subsidio_total=(subsidio_diario * Decimal(str(duracion_dias))).quantize(Decimal("0.01")),
+            tipo_subsidio=TipoDesempleo.NIVEL_70,
             vigencia_desde=vigencia,
-            vigencia_hasta=vigencia_hasta,
-            explicacion=f"Desempleo: {base_reg_d}€/día × {porcentaje:.0%} × {duracion_dias} días = {subsidio_total}€"
+            vigencia_hasta=vigencia + timedelta(days=duracion_dias),
+            explicacion=f"Desempleo: BR {base_reg_m}€ → {porcentaje*100}% = {prestacion_mensual}€/mes (sujeto a topes: {topes['min']}€-{topes['max']}€ para {hijos_a_cargo} hijos)."
         )
 
 
 # ============================================================================
-# CALCULADORA 4: MATERNIDAD/PATERNIDAD
+# CALCULADORA 4: MATERNIDAD/PATERNIDAD (NACIMIENTO Y CUIDADO MENOR)
 # ============================================================================
 
 class CalculadoraMaternidad:
     """
-    Calcula prestaciones de Maternidad y Paternidad.
+    Calcula prestaciones por Nacimiento y Cuidado de Menor.
     
-    Normativa: TRLGSS Art. 177-178, Ley 9/2009 (igualdad M/P)
+    Normativa: TRLGSS Art. 177-178
     Requisitos:
-      - Afiliación y cotización en SS
-      - Comunicación con antelación
+      - 16 semanas intransferibles (6 obligatorias ininterrumpidas tras parto)
     """
     
     @staticmethod
@@ -408,22 +604,13 @@ class CalculadoraMaternidad:
         fecha_inicio: Optional[date] = None
     ) -> ResultadoMaternidad:
         """
-        Calcula prestación de Maternidad/Paternidad.
-        
-        Args:
-            base_reguladora_diaria: Base diaria para el cálculo
-            semanas_solicitadas: Semanas de la prestación (16-18 posibles)
-            es_paternidad: Si es prestación de paternidad
-            fecha_inicio: Fecha inicio de la prestación
-        
-        Returns:
-            ResultadoMaternidad con detalles
+        Calcula prestación por nacimiento y cuidado.
         """
         base_reg_d = Decimal(str(base_reguladora_diaria))
-        tipo_prestacion = "Paternidad" if es_paternidad else "Maternidad"
+        tipo_prestacion = "Cuidado del Menor (Otro progenitor)" if es_paternidad else "Cuidado del Menor (Madre biológica)"
         
-        # Semanas: Mínimo 16 (Maternidad), máximo 18 (compartidas)
-        semanas_util = min(max(semanas_solicitadas, 16), 18)
+        # Semanas: Normal = 16
+        semanas_util = min(semanas_solicitadas, 16)
         dias_totales = semanas_util * 7
         
         # Prestación = 100% de base reguladora diaria
@@ -435,7 +622,7 @@ class CalculadoraMaternidad:
         
         return ResultadoMaternidad(
             tipo_prestacion=tipo_prestacion,
-            semanas_disponibles=18,
+            semanas_disponibles=16,
             semanas_utilizadas=semanas_util,
             base_reguladora_diaria=base_reg_d,
             prestacion_diaria=prestacion_diaria.quantize(
@@ -547,6 +734,96 @@ class CalculadoraComplementos:
 # ============================================================================
 # CALCULADORA 6: CUOTA COTIZACIÓN
 # ============================================================================
+
+# ============================================================================
+# CALCULADORA 5.1: AUTÓNOMOS (RETA) - INGRESOS REALES 2025/2026
+# ============================================================================
+
+@dataclass
+class ResultadoAutonomos:
+    """Resultado cálculo cotización autónomos."""
+    tramo_aplicable: str
+    ingresos_netos: Decimal
+    base_cotizacion_elegida: Decimal
+    cuota_mensual: Decimal
+    desglose: Dict[str, Decimal]
+    explicacion: str
+
+class CalculadoraAutonomos:
+    """
+    Calcula la cuota de autónomos según el sistema de ingresos reales (RDL 13/2022).
+    """
+    
+    # Tabla reducida de tramos 2025/2026 (Simplificación de los 15 tramos legales)
+    TRAMOS_2026 = [
+        {"max_ing": Decimal("670.00"), "base_min": Decimal("653.59"), "cuota_min": Decimal("200.00")},
+        {"max_ing": Decimal("900.00"), "base_min": Decimal("751.63"), "cuota_min": Decimal("230.00")},
+        {"max_ing": Decimal("1166.70"), "base_min": Decimal("849.67"), "cuota_min": Decimal("260.00")},
+        {"max_ing": Decimal("1300.00"), "base_min": Decimal("950.98"), "cuota_min": Decimal("291.00")},
+        {"max_ing": Decimal("1500.00"), "base_min": Decimal("960.78"), "cuota_min": Decimal("294.00")},
+        {"max_ing": Decimal("1700.00"), "base_min": Decimal("960.78"), "cuota_min": Decimal("294.00")},
+        {"max_ing": Decimal("1850.00"), "base_min": Decimal("1013.07"), "cuota_min": Decimal("310.00")},
+        {"max_ing": Decimal("2030.00"), "base_min": Decimal("1029.41"), "cuota_min": Decimal("315.00")},
+        {"max_ing": Decimal("2330.00"), "base_min": Decimal("1045.75"), "cuota_min": Decimal("320.00")},
+        {"max_ing": Decimal("2760.00"), "base_min": Decimal("1078.43"), "cuota_min": Decimal("330.00")},
+        {"max_ing": Decimal("3190.00"), "base_min": Decimal("1143.79"), "cuota_min": Decimal("350.00")},
+        {"max_ing": Decimal("3620.00"), "base_min": Decimal("1209.15"), "cuota_min": Decimal("370.00")},
+        {"max_ing": Decimal("4050.00"), "base_min": Decimal("1274.51"), "cuota_min": Decimal("390.00")},
+        {"max_ing": Decimal("6000.00"), "base_min": Decimal("1372.55"), "cuota_min": Decimal("420.00")},
+        {"max_ing": Decimal("999999.00"), "base_min": Decimal("1633.99"), "cuota_min": Decimal("500.00")}
+    ]
+    
+    TIPO_TOTAL_RETA = Decimal("0.314") # Comunes 28.3% + Prof 1.3% + Cese 0.9% + Formación 0.1% + MEI 2026 (0.9%)
+    
+    @staticmethod
+    def calcular_cuota_autonomo(
+        ingresos_brutos_anuales: Decimal,
+        gastos_deducibles_anuales: Decimal,
+        base_personalizada: Optional[Decimal] = None
+    ) -> ResultadoAutonomos:
+        """
+        Calcula la cuota de autónomos tras aplicar la deducción por gastos genéricos (7%).
+        """
+        ingr_b = Decimal(str(ingresos_brutos_anuales))
+        gastos = Decimal(str(gastos_deducibles_anuales))
+        
+        # 1. Rendimiento Neto Anual
+        rendimiento_neto = ingr_b - gastos
+        # 2. Deducción gastos genéricos (7%)
+        rendimiento_computable_mensual = (rendimiento_neto * Decimal("0.93")) / Decimal("12")
+        
+        # 3. Localizar tramo
+        tramo_info = CalculadoraAutonomos.TRAMOS_2026[-1]
+        for t in CalculadoraAutonomos.TRAMOS_2026:
+            if rendimiento_computable_mensual <= t["max_ing"]:
+                tramo_info = t
+                break
+        
+        # 4. Base de cotización
+        base_basica = tramo_info["base_min"]
+        if base_personalizada and base_personalizada > base_basica:
+            base_final = base_personalizada
+        else:
+            base_final = base_basica
+            
+        # 5. Cuota (Base * 31.4%)
+        cuota = (base_final * CalculadoraAutonomos.TIPO_TOTAL_RETA).quantize(Decimal("0.01"))
+        
+        return ResultadoAutonomos(
+            tramo_aplicable=f"Hasta {tramo_info['max_ing']}€",
+            ingresos_netos=rendimiento_computable_mensual.quantize(Decimal("0.01")),
+            base_cotizacion_elegida=base_final,
+            cuota_mensual=cuota,
+            desglose={
+                "Contingencias Comunes": (base_final * Decimal("0.283")).quantize(Decimal("0.01")),
+                "Contingencias Profesionales": (base_final * Decimal("0.013")).quantize(Decimal("0.01")),
+                "Cese Actividad": (base_final * Decimal("0.009")).quantize(Decimal("0.01")),
+                "Formación Profesional": (base_final * Decimal("0.001")).quantize(Decimal("0.01")),
+                "MEI (2026)": (base_final * Decimal("0.009")).quantize(Decimal("0.01"))
+            },
+            explicacion=f"RETA 2026: Rendimiento mensual computable {rendimiento_computable_mensual:.2f}€. Tramo aplicado: {tramo_info['max_ing']}€. Cuota base: {cuota}€ (31.4%)."
+        )
+
 
 class CalculadoraCuota:
     """
@@ -856,135 +1133,850 @@ class CalculadoraBonificacion:
             explicacion=f"Bonificación {tipo_bonificacion}: {cuota:.2f}€ - {porcentaje:.0f}% = {cuota_bonificada:.2f}€"
         )
 
-if __name__ == "__main__":
-    print("=" * 70)
-    print("CALCULADORAS EXTENDIDAS SEGURIDAD SOCIAL - TEST BÁSICOS")
-    print("=" * 70)
-    print()
+# ============================================================================
+# CALCULADORA 10: VIUDEDAD
+# ============================================================================
 
-    # TEST 1: Incapacidad Permanente Total
-    print("✅ TEST 1: Incapacidad Permanente Total")
-    print("-" * 70)
-    resultado_ipt = CalculadoraIPT.calcular_ipt(
-        base_reguladora_mensual=Decimal("1500"),
-        tipo_incapacidad=TipoIncapacidad.TOTAL
-    )
-    print(f"  Base reguladora: 1.500,00€/mes")
-    print(f"  Pensión IPT (55%): {resultado_ipt.pension_mensual}€/mes")
-    print(f"  Vigencia: {resultado_ipt.vigencia_desde}")
-    print(f"  Ley: {resultado_ipt.aplicacion_ley}")
-    print()
+@dataclass
+class ResultadoViudedad:
+    """Resultado cálculo pensión de viudedad."""
+    base_reguladora_mensual: Decimal
+    porcentaje_aplicado: Decimal
+    pension_mensual: Decimal
+    tiene_cargas_familiares: bool
+    articulo_aplicable: str
+    explicacion: str
 
-    # TEST 2: Jubilación
-    print("✅ TEST 2: Jubilación a Edad Legal")
-    print("-" * 70)
-    resultado_jubilacion = CalculadoraJubilacion.calcular_jubilacion(
-        base_reguladora_mensual=Decimal("1800"),
-        edad_solicitud=67,
-        anos_cotizados=40
-    )
-    print(f"  Edad: {resultado_jubilacion.edad} años")
-    print(f"  Años cotizados: {resultado_jubilacion.semanas_cotizadas // 52}")
-    print(f"  Porcentaje: {resultado_jubilacion.porcentaje_acumulado}%")
-    print(f"  Pensión: {resultado_jubilacion.pension_neta}€/mes")
-    print()
 
-    # TEST 3: Desempleo
-    print("✅ TEST 3: Subsidio Desempleo")
-    print("-" * 70)
-    resultado_desempleo = CalculadoraDesempleo.calcular_subsidio_desempleo(
-        base_reguladora_diaria=Decimal("40.97"),
-        dias_cotizados_180=150
-    )
-    print(f"  Base diaria: {resultado_desempleo.base_reguladora_diaria}€")
-    print(f"  Porcentaje: {resultado_desempleo.porcentaje_aplicable:.0%}")
-    print(f"  Duración: {resultado_desempleo.duracion_dias} días")
-    print(f"  Subsidio diario: {resultado_desempleo.subsidio_diario}€")
-    print(f"  Total: {resultado_desempleo.subsidio_total}€")
-    print()
+class CalculadoraViudedad:
+    """
+    Calcula Pensión de Viudedad.
+    
+    Normativa: TRLGSS Art. 231 - 52% base reguladora (general)
+      - 60% si > 65 años sin otra pensión
+      - 70% si cargas familiares + ingresos < umbral
+    """
+    
+    PORCENTAJE_GENERAL = Decimal("0.52")
+    PORCENTAJE_MAYOR_65 = Decimal("0.60")
+    PORCENTAJE_CARGAS = Decimal("0.70")
+    PENSION_MINIMA_VIUDEDAD = Decimal("558.00")  # 2026
+    
+    @staticmethod
+    def calcular_viudedad(
+        base_reguladora_mensual: float,
+        tiene_cargas_familiares: bool = False,
+        mayor_65_sin_otra_pension: bool = False
+    ) -> ResultadoViudedad:
+        """
+        Calcula pensión de viudedad.
+        
+        Args:
+            base_reguladora_mensual: Base reguladora en euros/mes
+            tiene_cargas_familiares: Si tiene hijos a cargo + ingresos bajos
+            mayor_65_sin_otra_pension: Si > 65 años sin otra pensión
+        
+        Returns:
+            ResultadoViudedad con cálculo
+        """
+        base_reg = Decimal(str(base_reguladora_mensual))
+        
+        if tiene_cargas_familiares:
+            porcentaje = CalculadoraViudedad.PORCENTAJE_CARGAS
+            motivo = "70% (cargas familiares)"
+        elif mayor_65_sin_otra_pension:
+            porcentaje = CalculadoraViudedad.PORCENTAJE_MAYOR_65
+            motivo = "60% (>65 sin otra pensión)"
+        else:
+            porcentaje = CalculadoraViudedad.PORCENTAJE_GENERAL
+            motivo = "52% (general)"
+        
+        pension = (base_reg * porcentaje).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        
+        # Aplicar mínimo
+        if pension < CalculadoraViudedad.PENSION_MINIMA_VIUDEDAD:
+            pension = CalculadoraViudedad.PENSION_MINIMA_VIUDEDAD
+        
+        return ResultadoViudedad(
+            base_reguladora_mensual=base_reg,
+            porcentaje_aplicado=porcentaje,
+            pension_mensual=pension,
+            tiene_cargas_familiares=tiene_cargas_familiares,
+            articulo_aplicable="Art. 231 TRLGSS",
+            explicacion=f"Viudedad: {base_reg}€ × {motivo} = {pension}€/mes"
+        )
 
-    # TEST 4: Maternidad
-    print("✅ TEST 4: Prestación Maternidad")
-    print("-" * 70)
-    resultado_maternidad = CalculadoraMaternidad.calcular_maternidad(
-        base_reguladora_diaria=Decimal("50.00"),
-        semanas_solicitadas=16
-    )
-    print(f"  Base diaria: {resultado_maternidad.base_reguladora_diaria}€")
-    print(f"  Semanas: {resultado_maternidad.semanas_utilizadas}")
-    print(f"  Prestación diaria: {resultado_maternidad.prestacion_diaria}€")
-    print(f"  Total: {resultado_maternidad.prestacion_total}€")
-    print()
 
-    # TEST 5: Complemento Mínimo
-    print("✅ TEST 5: Complemento Mínimo Pensión")
-    print("-" * 70)
-    resultado_complemento = CalculadoraComplementos.calcular_complemento_minimo(
-        pension_actual=Decimal("600"),
-        tipo_pension="Jubilación"
-    )
-    print(f"  Pensión actual: 600,00€")
-    print(f"  Mínimo legal: {CalculadoraComplementos.COMPLEMENTO_MINIMO_JUBILACION}€")
-    print(f"  Complemento: {resultado_complemento.importe_total}€")
-    print()
+# ============================================================================
+# CALCULADORA 11: ORFANDAD
+# ============================================================================
 
-    # TEST 6: Cuota Cotización
-    print("✅ TEST 6: Cuota de Cotización")
-    print("-" * 70)
-    resultado_cuota = CalculadoraCuota.calcular_cuota(
-        salario_bruto_mensual=Decimal("2000"),
-        tipo_contrato="Indefinido"
-    )
-    print(f"  Salario bruto: {resultado_cuota.salario_base}€")
-    print(f"  Aportación trabajador: {resultado_cuota.aportacion_empleado}€")
-    print(f"  Aportación empresa: {resultado_cuota.aportacion_empresario}€")
-    print(f"  Total cuota: {resultado_cuota.aportacion_total}€")
-    print()
+@dataclass
+class ResultadoOrfandad:
+    """Resultado cálculo pensión de orfandad."""
+    base_reguladora_mensual: Decimal
+    porcentaje_por_hijo: Decimal
+    numero_hijos: int
+    pension_por_hijo: Decimal
+    pension_total: Decimal
+    es_orfandad_absoluta: bool
+    articulo_aplicable: str
+    explicacion: str
 
-    # TEST 7: Devolución por No Derecho
-    print("✅ TEST 7: Devolución por No Derecho")
-    print("-" * 70)
-    resultado_devolucion = CalculadoraDevolucion.calcular_devolucion(
-        importe_indebido=Decimal("1000"),
-        periodos_afectados=3,
-        aplicar_interes=True
-    )
-    print(f"  Importe indebido: {resultado_devolucion.importe_indebido}€")
-    print(f"  Interés legal (3.5%): {resultado_devolucion.interes_legal}€")
-    print(f"  Total a devolver: {resultado_devolucion.total_devoluciones}€")
-    print()
 
-    # TEST 8: Ayuda por Hijo a Cargo
-    print("✅ TEST 8: Ayuda por Hijo a Cargo")
-    print("-" * 70)
-    resultado_ayuda_hijo = CalculadoraAyudaHijo.calcular_ayuda_hijo(
-        numero_hijos=2,
-        ingresos_grupo_familiar=Decimal("15000"),
-        edades_hijos=[8, 12]
-    )
-    print(f"  Número de hijos: {resultado_ayuda_hijo.numero_hijos}")
-    print(f"  Importe unitario: {resultado_ayuda_hijo.importe_unitario}€")
-    print(f"  Ayuda total: {resultado_ayuda_hijo.importe_total}€")
-    print(f"  Cumple requisitos: {resultado_ayuda_hijo.requisitos_cumplidos}")
-    print()
+class CalculadoraOrfandad:
+    """
+    Calcula Pensión de Orfandad.
+    
+    Normativa: TRLGSS Art. 232-233
+      - 20% BR por cada huérfano
+      - Orfandad absoluta: 20% + incremento (hasta 52% BR repartido)
+      - Suma viudedad+orfandad no puede superar 100% BR
+    """
+    
+    PORCENTAJE_POR_HIJO = Decimal("0.20")
+    PENSION_MINIMA_ORFANDAD = Decimal("233.60")  # 2026 por huérfano
+    
+    @staticmethod
+    def calcular_orfandad(
+        base_reguladora_mensual: float,
+        numero_hijos: int = 1,
+        es_orfandad_absoluta: bool = False
+    ) -> ResultadoOrfandad:
+        """
+        Calcula pensión de orfandad.
+        
+        Args:
+            base_reguladora_mensual: Base reguladora del causante
+            numero_hijos: Número de hijos huérfanos
+            es_orfandad_absoluta: Si ambos progenitores han fallecido
+        
+        Returns:
+            ResultadoOrfandad con cálculo
+        """
+        base_reg = Decimal(str(base_reguladora_mensual))
+        porcentaje = CalculadoraOrfandad.PORCENTAJE_POR_HIJO
+        
+        pension_por_hijo = (base_reg * porcentaje).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        
+        # Orfandad absoluta: reparto del 52% de viudedad entre huérfanos
+        incremento_absoluta = Decimal("0")
+        if es_orfandad_absoluta and numero_hijos > 0:
+            viudedad_repartida = (base_reg * Decimal("0.52")) / Decimal(str(numero_hijos))
+            incremento_absoluta = viudedad_repartida.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            pension_por_hijo += incremento_absoluta
+        
+        # Aplicar mínimo
+        if pension_por_hijo < CalculadoraOrfandad.PENSION_MINIMA_ORFANDAD:
+            pension_por_hijo = CalculadoraOrfandad.PENSION_MINIMA_ORFANDAD
+        
+        pension_total = pension_por_hijo * Decimal(str(numero_hijos))
+        
+        detalle = f"Orfandad: {base_reg}€ × 20% = {pension_por_hijo}€/hijo"
+        if es_orfandad_absoluta:
+            detalle += f" (absoluta: +{incremento_absoluta}€ reparto viudedad)"
+        
+        return ResultadoOrfandad(
+            base_reguladora_mensual=base_reg,
+            porcentaje_por_hijo=porcentaje,
+            numero_hijos=numero_hijos,
+            pension_por_hijo=pension_por_hijo,
+            pension_total=pension_total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            es_orfandad_absoluta=es_orfandad_absoluta,
+            articulo_aplicable="Art. 232-233 TRLGSS",
+            explicacion=detalle
+        )
 
-    # TEST 9: Bonificación en Cuotas
-    print("✅ TEST 9: Bonificación en Cuotas")
-    print("-" * 70)
-    resultado_bonificacion = CalculadoraBonificacion.calcular_bonificacion(
-        cuota_empresarial=Decimal("598"),
-        tipo_bonificacion="Joven hasta 30",
-        duracion_meses=12
-    )
-    print(f"  Cuota original: {resultado_bonificacion.cuota_original}€")
-    print(f"  Porcentaje bonificación: {resultado_bonificacion.porcentaje_bonificacion}%")
-    print(f"  Importe bonificado: {resultado_bonificacion.importe_bonificacion}€")
-    print(f"  Cuota bonificada: {resultado_bonificacion.cuota_bonificada}€")
-    print()
 
-    print("=" * 70)
-    print("✅ TODOS LOS TESTS BÁSICOS COMPLETADOS")
-    print("=" * 70)
-print("=" * 70)
-print("✅ TODOS LOS TESTS BÁSICOS COMPLETADOS")
-print("=" * 70)
+# ============================================================================
+# CALCULADORA 12: INCAPACIDAD PERMANENTE ABSOLUTA (IPA)
+# ============================================================================
+
+@dataclass
+class ResultadoIPA:
+    """Resultado cálculo Incapacidad Permanente Absoluta."""
+    base_reguladora_mensual: Decimal
+    porcentaje_pension: Decimal
+    pension_mensual: Decimal
+    es_gran_invalidez: bool
+    complemento_gran_invalidez: Decimal
+    pension_total_mensual: Decimal
+    articulo_aplicable: str
+    explicacion: str
+
+
+class CalculadoraIPA:
+    """
+    Calcula Pensión de Incapacidad Permanente Absoluta y Gran Invalidez.
+    
+    Normativa: TRLGSS Art. 196
+      - IPA: 100% de base reguladora
+      - Gran Invalidez: 100% BR + complemento (mín 45% BR + 30% BR = +50%~)
+    """
+    
+    PORCENTAJE_IPA = Decimal("1.00")  # 100% BR
+    # Gran Invalidez: complemento = 45% base mínima cotización + 30% última BR
+    # Simplificado: ~50% adicional sobre la pensión
+    COMPLEMENTO_GI_MIN_PORCENTAJE = Decimal("0.45")
+    COMPLEMENTO_GI_MAX_PORCENTAJE = Decimal("0.30")
+    BASE_MINIMA_COTIZACION_2026 = Decimal("1323.00")
+    
+    @staticmethod
+    def calcular_ipa(
+        base_reguladora_mensual: float,
+        es_gran_invalidez: bool = False
+    ) -> ResultadoIPA:
+        """
+        Calcula pensión de IPA o Gran Invalidez.
+        
+        Args:
+            base_reguladora_mensual: Base reguladora en euros/mes
+            es_gran_invalidez: Si es Gran Invalidez (100% + complemento)
+        
+        Returns:
+            ResultadoIPA con cálculo
+        """
+        base_reg = Decimal(str(base_reguladora_mensual))
+        
+        # IPA: 100% BR
+        pension = (base_reg * CalculadoraIPA.PORCENTAJE_IPA).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        
+        complemento_gi = Decimal("0")
+        if es_gran_invalidez:
+            # Complemento GI = 45% base mínima cotización + 30% última BR
+            parte_a = CalculadoraIPA.BASE_MINIMA_COTIZACION_2026 * CalculadoraIPA.COMPLEMENTO_GI_MIN_PORCENTAJE
+            parte_b = base_reg * CalculadoraIPA.COMPLEMENTO_GI_MAX_PORCENTAJE
+            complemento_gi = (parte_a + parte_b).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+        
+        pension_total = pension + complemento_gi
+        
+        tipo = "Gran Invalidez" if es_gran_invalidez else "IPA"
+        detalle = f"{tipo}: {base_reg}€ × 100% = {pension}€/mes"
+        if es_gran_invalidez:
+            detalle += f" + complemento GI {complemento_gi}€ = {pension_total}€/mes"
+        
+        return ResultadoIPA(
+            base_reguladora_mensual=base_reg,
+            porcentaje_pension=CalculadoraIPA.PORCENTAJE_IPA,
+            pension_mensual=pension,
+            es_gran_invalidez=es_gran_invalidez,
+            complemento_gran_invalidez=complemento_gi,
+            pension_total_mensual=pension_total,
+            articulo_aplicable="Art. 196 TRLGSS",
+            explicacion=detalle
+        )
+
+
+# ============================================================================
+# CALCULADORA 13: RIESGO DURANTE EL EMBARAZO
+# ============================================================================
+
+@dataclass
+class ResultadoRiesgoEmbarazo:
+    """Resultado cálculo prestación riesgo embarazo/lactancia."""
+    base_reguladora_diaria: Decimal
+    porcentaje: Decimal
+    subsidio_diario: Decimal
+    tipo_riesgo: str
+    articulo_aplicable: str
+    explicacion: str
+
+
+class CalculadoraRiesgoEmbarazo:
+    """
+    Calcula prestación por Riesgo durante el Embarazo o Lactancia.
+    
+    Normativa: TRLGSS Art. 186-187
+      - 100% de base reguladora por contingencias profesionales
+      - No se exige período mínimo de cotización
+    """
+    
+    PORCENTAJE = Decimal("1.00")  # 100% BR contingencias profesionales
+    
+    @staticmethod
+    def calcular_riesgo_embarazo(
+        base_cotizacion_profesional_mensual: float,
+        es_lactancia: bool = False
+    ) -> ResultadoRiesgoEmbarazo:
+        """
+        Calcula subsidio por riesgo durante embarazo o lactancia.
+        
+        Args:
+            base_cotizacion_profesional_mensual: Base por cont. profesionales
+            es_lactancia: Si es riesgo durante lactancia natural (vs embarazo)
+        
+        Returns:
+            ResultadoRiesgoEmbarazo con cálculo
+        """
+        base_mensual = Decimal(str(base_cotizacion_profesional_mensual))
+        base_diaria = (base_mensual / Decimal("30")).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        
+        subsidio_diario = (base_diaria * CalculadoraRiesgoEmbarazo.PORCENTAJE).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        
+        tipo = "Riesgo Lactancia" if es_lactancia else "Riesgo Embarazo"
+        
+        return ResultadoRiesgoEmbarazo(
+            base_reguladora_diaria=base_diaria,
+            porcentaje=CalculadoraRiesgoEmbarazo.PORCENTAJE,
+            subsidio_diario=subsidio_diario,
+            tipo_riesgo=tipo,
+            articulo_aplicable="Art. 186-187 TRLGSS",
+            explicacion=f"{tipo}: {base_mensual}€/mes ÷ 30 = {base_diaria}€/día × 100% = {subsidio_diario}€/día"
+        )
+
+
+# ============================================================================
+# CALCULADORA 14: LESIONES PERMANENTES NO INVALIDANTES (LPNI)
+# ============================================================================
+
+@dataclass
+class ResultadoLPNI:
+    """Resultado cálculo indemnización LPNI."""
+    tipo_lesion: str
+    indemnizacion: Decimal
+    es_baremo: bool
+    articulo_aplicable: str
+    explicacion: str
+
+
+class CalculadoraLPNI:
+    """
+    Calcula Indemnización por Lesiones Permanentes No Invalidantes.
+    
+    Normativa: TRLGSS Art. 201, Orden ESS/66/2013
+      - Indemnización a tanto alzado (pago único)
+      - Solo para AT o EP (no contingencia común)
+      - Baremo oficial con cantidades fijas por tipo de lesión
+    """
+    
+    # Baremo simplificado (Orden ESS/66/2013, actualizado)
+    BAREMO_LPNI = {
+        "perdida_falange_distal": Decimal("1080.00"),
+        "perdida_falange_media": Decimal("1620.00"),
+        "perdida_dedo_mano": Decimal("3240.00"),
+        "perdida_dedo_pie": Decimal("1620.00"),
+        "anquilosis_dedo": Decimal("1080.00"),
+        "cicatriz_cabeza": Decimal("2160.00"),
+        "cicatriz_cuerpo": Decimal("1080.00"),
+        "perdida_pieza_dental": Decimal("540.00"),
+        "hipoacusia_unilateral": Decimal("2700.00"),
+        "reduccion_movilidad_hombro": Decimal("3780.00"),
+        "reduccion_movilidad_codo": Decimal("2700.00"),
+        "reduccion_movilidad_muneca": Decimal("2160.00"),
+        "reduccion_movilidad_rodilla": Decimal("3240.00"),
+        "reduccion_movilidad_tobillo": Decimal("2160.00"),
+    }
+    
+    @staticmethod
+    def calcular_lpni(
+        tipo_lesion: str
+    ) -> ResultadoLPNI:
+        """
+        Calcula indemnización por LPNI según baremo.
+        
+        Args:
+            tipo_lesion: Clave del baremo (ver BAREMO_LPNI)
+        
+        Returns:
+            ResultadoLPNI con indemnización
+        """
+        indemnizacion = CalculadoraLPNI.BAREMO_LPNI.get(
+            tipo_lesion, Decimal("0")
+        )
+        
+        en_baremo = tipo_lesion in CalculadoraLPNI.BAREMO_LPNI
+        
+        return ResultadoLPNI(
+            tipo_lesion=tipo_lesion,
+            indemnizacion=indemnizacion,
+            es_baremo=en_baremo,
+            articulo_aplicable="Art. 201 TRLGSS + Orden ESS/66/2013",
+            explicacion=f"LPNI '{tipo_lesion}': {indemnizacion}€ (baremo)" if en_baremo
+                       else f"LPNI '{tipo_lesion}': no encontrada en baremo"
+        )
+
+    @staticmethod
+    def listar_baremo() -> Dict[str, Decimal]:
+        """Devuelve el baremo completo para consulta."""
+        return dict(CalculadoraLPNI.BAREMO_LPNI)
+
+
+# ============================================================================
+# CALCULADORA 15: AUXILIO POR DEFUNCIÓN E INDEMNIZACIONES POR MUERTE
+# ============================================================================
+
+@dataclass
+class ResultadoMuerte:
+    """Resultado cálculo auxilio defunción e indemnizaciones."""
+    tipo_prestacion: str
+    pago_unico: Decimal
+    beneficiarios: str
+    articulo_aplicable: str
+    explicacion: str
+
+class CalculadoraSupervivencia:
+    """
+    Calcula Auxilio por Defunción e Indemnizaciones por Muerte (AT/EP).
+    
+    Normativa: TRLGSS Art. 216-218
+      - Auxilio Defunción: Cuantía fija (46.50€).
+      - Indemnización Muerte (AT/EP): Pago único adicional a viudedad/orfandad.
+        * Viudo/a: 6 mensualidades BR.
+        * Huérfano: 1 mensualidad BR.
+        * Padres: 9 mensualidades (si 1 coincide) o 12 (si 2 coinciden).
+    """
+    
+    AUXILIO_DEFUNCION_FIJO = Decimal("46.50")
+    
+    @staticmethod
+    def calcular_auxilio_defuncion() -> ResultadoMuerte:
+        return ResultadoMuerte(
+            tipo_prestacion="Auxilio por Defunción",
+            pago_unico=CalculadoraSupervivencia.AUXILIO_DEFUNCION_FIJO,
+            beneficiarios="Quien haya soportado los gastos del sepelio",
+            articulo_aplicable="Art. 218 TRLGSS",
+            explicacion=f"Cuantía fija de {CalculadoraSupervivencia.AUXILIO_DEFUNCION_FIJO}€ para gastos de sepelio."
+        )
+        
+    @staticmethod
+    def calcular_indemnizacion_muerte_at_ep(
+        base_reguladora_mensual: float,
+        cantidad_huerfanos: int = 0,
+        tiene_viudo: bool = True,
+        fecha_hecho: Optional[date] = None
+    ) -> List[ResultadoMuerte]:
+        """
+        Calcula indemnizaciones a tanto alzado por accidente de trabajo o enf. profesional.
+        Incluye factor IPC +2.7% para hechos en 2026 (Ley 5/2025).
+        """
+        base = Decimal(str(base_reguladora_mensual))
+        resultados = []
+        
+        # Factor IPC 2026 (Ley 5/2025)
+        factor_ipc = Decimal("1.0")
+        if fecha_hecho and fecha_hecho.year >= 2026:
+            factor_ipc = Decimal("1.027")
+        
+        if tiene_viudo:
+            pago = (base * 6 * factor_ipc).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            resultados.append(ResultadoMuerte(
+                tipo_prestacion="Indemnización Especial Viudedad (AT/EP)",
+                pago_unico=pago,
+                beneficiarios="Cónyuge o pareja de hecho",
+                articulo_aplicable="Art. 216.2 TRLGSS / Ley 5/2025",
+                explicacion=f"6 mensualidades de la base reguladora ({base}€ x 6) + Factor IPC 2026 ({factor_ipc})."
+            ))
+            
+        if cantidad_huerfanos > 0:
+            pago_h = (base * Decimal(str(cantidad_huerfanos)) * factor_ipc).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            resultados.append(ResultadoMuerte(
+                tipo_prestacion=f"Indemnización Especial Orfandad (AT/EP) x{cantidad_huerfanos}",
+                pago_unico=pago_h,
+                beneficiarios=f"{cantidad_huerfanos} hijos huérfanos",
+                articulo_aplicable="Art. 217 TRLGSS / Ley 5/2025",
+                explicacion=f"1 mensualidad de la base reguladora por cada hijo ({base}€ x {cantidad_huerfanos}) + Factor IPC 2026 ({factor_ipc})."
+            ))
+            
+        return resultados
+
+# ============================================================================
+# CALCULADORA 16: CUIDADO DE MENORES CON CÁNCER (CUME)
+# ============================================================================
+
+class CalculadoraCUME:
+    """
+    Calcula subsidio por cuidado de menores afectados por cáncer o enf. grave.
+    Normativa: Art. 190-192 TRLGSS, RD 1148/2011 (Actualizado 2023).
+    """
+    @staticmethod
+    def calcular_cume(
+        base_reguladora_it: float,
+        porcentaje_reduccion: float = 0.50, # Mínimo 50%
+        edad_menor: int = 10,
+        tiene_discapacidad: bool = False
+    ) -> Dict[str, Any]:
+        base = Decimal(str(base_reguladora_it))
+        reduccion = Decimal(str(porcentaje_reduccion))
+        
+        if reduccion < 0.5:
+            return {"error": "La reducción de jornada debe ser de al menos el 50%."}
+            
+        prestacion_diaria = (base * reduccion).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        
+        vigencia = "Hasta 23 años (general) o 26 años (discapacidad ≥ 65%)"
+        
+        return {
+            "prestacion": "Subsidio Cuidado Menores Cáncer (CUME)",
+            "cuantia_diaria": float(prestacion_diaria),
+            "cuantia_mensual": float(prestacion_diaria * 30),
+            "reduccion_jornada": f"{reduccion*100}%",
+            "vigencia_maxima": vigencia,
+            "articulo": "Art. 190 TRLGSS / RD 677/2023",
+            "explicacion": f"100% de la BR por IT proporcional a la reducción ({reduccion*100}%). Cuantía: {prestacion_diaria}€/día."
+        }
+
+# ============================================================================
+# CALCULADORA 17: BENEFICIOS POR CUIDADO DE HIJOS (ART. 235-237 LGSS)
+# ============================================================================
+
+class CalculadoraBeneficiosHijos:
+    """
+    Calcula periodos de cotización asimilados por parto y cuidado de hijos.
+    """
+    @staticmethod
+    def calcular_periodos_asimilados(
+        num_hijos_parto: int = 1,
+        num_total_hijos: int = 1,
+        dias_excedencia: int = 0
+    ) -> Dict[str, Any]:
+        # Art. 235: Parto
+        dias_parto = 112 + (14 * max(0, num_hijos_parto - 1))
+        
+        # Art. 236: Cuidado (Máx 270 por hijo)
+        dias_cuidado = min(270 * num_total_hijos, 1825) # Límite total 5 años
+        
+        # Art. 237: Excedencia (Hasta 3 años por hijo)
+        dias_excedencia_comp = min(dias_excedencia, 1095) # 3 años
+        
+        return {
+            "beneficio_parto_dias": dias_parto,
+            "beneficio_cuidado_dias": dias_cuidado,
+            "beneficio_excedencia_dias": dias_excedencia_comp,
+            "limite_total_dias": 1825,
+            "articulos": "Art. 235, 236 y 237 TRLGSS",
+            "explicacion": f"Asimilación por parto: {dias_parto} días. Cuidado: hasta {dias_cuidado} días. Límite máximo global 5 años."
+        }
+
+# ============================================================================
+
+# El motor termina aquí.
+
+
+# ============================================================================
+# BLOQUE CALCULADORAS EXTRA — Ejercicio 19 (12/03/2026)
+# ============================================================================
+
+# 1. Recargos SS (Art. 27, 28 y 30 TRLGSS / Art. 10.1.b RD 1415/2004)
+def calcular_recargo_ss(cumplio_liquidacion: bool, en_periodo_ejecutivo: bool, pago_en_plazo_voluntario_reclamacion: bool) -> Dict[str, Any]:
+    """
+    Lógica exacta de recargos de la Seguridad Social.
+    
+    - 10%: Presentó docs de liquidación Y paga DENTRO del plazo voluntario de la reclamación de deuda.
+    - 35%: NO presentó docs de liquidación O paga DESPUÉS de que venza el plazo de la reclamación.
+    - 20%: Recargo de apremio estándar (notificada la providencia, aún no pagó).
+    
+    TRAMPA frecuente: "hasta el vencimiento del plazo" = no pagó en plazo = 35%.
+    """
+    if not cumplio_liquidacion:
+        return {"recargo": "35%", "porcentaje": 0.35, "base": "Cuota principal",
+                "explicacion": "35%: No presentó documentos de cotización. Art. 30.1.b TRLGSS / Art. 10.1.b RD 1415/2004."}
+    if en_periodo_ejecutivo:
+        return {"recargo": "20%", "porcentaje": 0.20, "base": "Cuota principal",
+                "explicacion": "20%: Recargo de apremio estándar. Providencia notificada y no pagada en 15 días."}
+    if pago_en_plazo_voluntario_reclamacion:
+        return {"recargo": "10%", "porcentaje": 0.10, "base": "Cuota principal",
+                "explicacion": "10%: Pago dentro del plazo voluntario concedido en la reclamación de deuda. Art. 27.1 TRLGSS."}
+    # Por defecto si presentó docs pero no pagó en plazo
+    return {"recargo": "35%", "porcentaje": 0.35, "base": "Cuota principal",
+            "explicacion": "35%: Presentó documentos pero pagó DESPUÉS de vencer el plazo voluntario de la reclamación."}
+
+# 2. Intereses de Demora SS (Distinción Principal vs Recargo)
+def calcular_intereses_demora_ss(sobre_principal: bool, dias_retraso: int) -> Dict[str, Any]:
+    """
+    Principal: intereses desde el día siguiente al vencimiento del período voluntario de pago.
+    Recargo de apremio: intereses desde el día 16 tras la notificación de la providencia
+    (los 15 primeros días son el nuevo período voluntario ejecutivo, sin intereses del recargo).
+    """
+    if sobre_principal:
+        return {
+            "inicio_devengo": "Día 1 tras finalización periodo voluntario pago principal",
+            "inicio_retraso_dias": 1,
+            "explicacion": "Intereses sobre el PRINCIPAL empiezan al día siguiente del vencimiento del período voluntario original de ingreso. Art. 27.2 TRLGSS."
+        }
+    else:
+        return {
+            "inicio_devengo": "Día 16 tras notificación de la providencia de apremio",
+            "inicio_retraso_dias": 16,
+            "explicacion": "Intereses sobre el RECARGO DE APREMIO empiezan el día 16, NO el día 1. Los 15 primeros son el plazo voluntario ejecutivo. Art. 28 TRLGSS."
+        }
+
+# 3. IT Situaciones Especiales LO 1/2023 (vigente desde 1/06/2023)
+def calcular_it_situaciones_especiales_lo1_2023(salario_base: Decimal, situacion: str) -> Dict[str, Any]:
+    """
+    LO 1/2023 — Tres situaciones especiales de IT:
+    
+    1. menstruacion: INSS desde día 1 al 60%. Sin carencia. Sin responsabilidad empresarial.
+    2. interrupcion_embarazo: Empresa paga día 1 (salario íntegro). INSS desde día 2 al 100%.
+    3. semana_39_gestacion: CON carencia general EC. Empresa día 1. INSS desde día 2.
+    """
+    situaciones_validas = {
+        "menstruacion": {
+            "carencia": "SIN carencia requerida",
+            "pagador_dia_1": "INSS (60% base reguladora)",
+            "pagador_posterior": "INSS desde día 1 (toda la IT)",
+            "responsabilidad_empresa": False,
+            "articulo": "Art. 173 bis TRLGSS (LO 1/2023)"
+        },
+        "semana_39_gestacion": {
+            "carencia": "CON carencia ordinaria de EC",
+            "pagador_dia_1": "Empresa (salario íntegro)",
+            "pagador_posterior": "INSS desde día 2 al 100%",
+            "responsabilidad_empresa": True,
+            "articulo": "Art. 173 bis TRLGSS (LO 1/2023)"
+        },
+        "interrupcion_embarazo": {
+            "carencia": "SIN carencia",
+            "pagador_dia_1": "Empresa (salario íntegro)",
+            "pagador_posterior": "INSS desde día 2 al 100%",
+            "responsabilidad_empresa": True,
+            "articulo": "Art. 173 bis TRLGSS (LO 1/2023)"
+        }
+    }
+    if situacion not in situaciones_validas:
+        return {"error": "Situación no reconocida. Use: menstruacion, semana_39_gestacion, interrupcion_embarazo"}
+    return situaciones_validas[situacion]
+
+# 4. Base Cotización Completa — Con Taxonomía Corregida de HE
+# ⚠️ CORRECCIÓN 12/03/2026: 'Estructurales' ≠ 'Fuerza Mayor'. El error era sistemático.
+TIPOS_HE = {
+    # Tipo HE : (empresa, trabajador, total)
+    "fuerza_mayor":      (0.12,   0.02,   0.14),   # Prevenir/reparar siniestros urgentes. ART. 5 ORDEN PJC/178/2025
+    "estructurales":     (0.2360, 0.0470, 0.2830), # Habituales para la producción. 28,30% TOTAL.
+    "no_estructurales":  (0.2360, 0.0470, 0.2830), # Esporádicas/voluntarias. 28,30% TOTAL.
+}
+# TRAMPA CONFIRMADA (Ejercicio 19 P5): Si el enunciado NO dice "fuerza mayor" → 28,30%.
+# "Estructurales" NO significa "fuerza mayor". La IA (Gemini incluido) lo confundía al 14%.
+
+def calcular_base_cotizacion_completa(
+    salario_base: Decimal,
+    he_cantidad: float = 0.0,
+    tipo_he: str = "no_estructurales",  # 'fuerza_mayor', 'estructurales', 'no_estructurales'
+    prorrata_extras: Decimal = Decimal("0"),
+    plus_desplazamiento_domicilio_trabajo: Decimal = Decimal("0"),  # Siempre INCLUIR en BC
+    suplidos_justificados_inwork: Decimal = Decimal("0"),            # Siempre EXCLUIR de BC
+    dietas_desplazamiento_trabajo: Decimal = Decimal("0"),           # Excluir si está dentro del límite normativo
+    vehiculo_uso_particular: Decimal = Decimal("0"),                # 20% valor mercado / 12 si uso particular
+) -> Dict[str, Any]:
+    """
+    Calcula la base de cotización completa discriminando correctamente cada concepto.
+    
+    REGLAS CRÍTICAS DEL EJERCICIO 19:
+    - Plus domicilio→trabajo: RETRIBUCIÓN → INCLUIR íntegro en BC (aunque tenga tickets/justificantes)
+    - Suplidos in-work (reunión con cliente, viaje empresa): EXCLUIR de BC
+    - Vehículo uso particular: INCLUIR (valor_mercado × 20% / 12). DEFAULT: incluir si hay disponibilidad.
+    - HE: van en base SEPARADA, no en base de CC.
+    """
+    if tipo_he not in TIPOS_HE:
+        tipo_he = "no_estructurales"
+    emp_he, trab_he, total_he = TIPOS_HE[tipo_he]
+    
+    base_cc = (Decimal(str(salario_base)) 
+               + Decimal(str(prorrata_extras)) 
+               + Decimal(str(plus_desplazamiento_domicilio_trabajo))  # SÍ suma
+               + Decimal(str(vehiculo_uso_particular)))               # SÍ suma si uso particular
+    # Suplidos in-work y dietas --> NO suman
+    
+    base_he_separada = Decimal(str(he_cantidad))
+    cuota_he_trabajador = base_he_separada * Decimal(str(trab_he))
+    cuota_he_empresa = base_he_separada * Decimal(str(emp_he))
+    
+    return {
+        "base_cotizacion_comunes": float(base_cc.quantize(Decimal("0.01"))),
+        "base_horas_extras": float(base_he_separada),
+        "tipo_he": tipo_he,
+        "cuota_he_trabajador_pct": f"{trab_he*100:.2f}%",
+        "cuota_he_trabajador": float(cuota_he_trabajador.quantize(Decimal("0.01"))),
+        "cuota_he_empresa_pct": f"{emp_he*100:.2f}%",
+        "cuota_he_empresa": float(cuota_he_empresa.quantize(Decimal("0.01"))),
+        "excluidos_de_base": {
+            "suplidos_inwork": float(suplidos_justificados_inwork),
+            "dietas": float(dietas_desplazamiento_trabajo)
+        },
+        "trampa_detectada": "Plus domicilio→trabajo: INCLUIR SIEMPRE. HE: base separada, no en CC. Vehículo uso particular: 20% valor/12 meses."
+    }
+
+# 5. Integración Lagunas RETA vs RG
+def calcular_integracion_lagunas_jubilacion(meses_laguna: int, regimen: str, genero: str = "H") -> Dict[str, Any]:
+    """RETA = 0 lagunas (Art. 313 TRLGSS). RG: hombre 100% (m1-48) + 50% (m49+). RG mujer DA 37ª: 100% (m1-60) + 80% (m61-84)."""
+    if regimen.upper() == "RETA":
+        return {"integracion": "0%", "valor_euros": 0.0,
+                "explicacion": "TRAMPA: En el RETA NO existe integración de lagunas. Los meses sin base cotizada computan con valor cero (0,00€). Art. 313 TRLGSS."}
+    else:
+        if genero.upper() == "F":
+            if meses_laguna <= 60:
+                return {"integracion": "100%", "explicacion": "RG mujer (DA 37ª TRLGSS): primeros 60 meses laguna → 100% base mínima."}
+            elif meses_laguna <= 84:
+                return {"integracion": "80%", "explicacion": "RG mujer (DA 37ª TRLGSS): meses 61-84 → 80% base mínima."}
+        if meses_laguna <= 48:
+            return {"integracion": "100%", "explicacion": "RG hombre/general: primeros 48 meses → 100% base mínima. Art. 209.1 TRLGSS."}
+        return {"integracion": "50%", "explicacion": "RG hombre/general: a partir del mes 49 → 50% base mínima. Art. 209.1 TRLGSS."}
+
+# 6. BR Jubilación DT34ª TRLGSS (Ley 21/2021 + RDL 2/2023)
+def calcular_br_jubilacion_dt34(bases_ordenadas_descendente: List[Decimal]) -> Dict[str, Any]:
+    """Recibe al menos 304 meses (25 años y 4 meses). Toma las 302 mejores / 352,33."""
+    if len(bases_ordenadas_descendente) < 304:
+        return {"error": f"Se necesitan 304 meses para aplicar DT 34ª. Bases recibidas: {len(bases_ordenadas_descendente)}"}
+    mejores_302 = sum(bases_ordenadas_descendente[:302])
+    br = mejores_302 / Decimal("352.33")
+    return {
+        "base_reguladora": float(br.quantize(Decimal("0.01"))),
+        "bases_usadas": 302,
+        "divisor": 352.33,
+        "explicacion": "DT 34ª TRLGSS (RDL 2/2023): Las 302 mejores bases de los últimos 304 meses, divididas entre 352,33."
+    }
+
+# 7. Efectos Cambio de Base RETA (RDL 13/2022 — sin ventanas trimestrales)
+def calcular_fecha_efectos_cambio_base_reta(fecha_solicitud: date) -> Dict[str, Any]:
+    """Desde ingresos reales: solicitud mes X → efectos 1 de mes X+1. Sin ventanas bimestrales."""
+    dias_en_mes = calendar.monthrange(fecha_solicitud.year, fecha_solicitud.month)[1]
+    efecto = fecha_solicitud + timedelta(days=(dias_en_mes - fecha_solicitud.day + 1))
+    return {
+        "fecha_efectos": efecto.isoformat(),
+        "mes_solicitud": f"{fecha_solicitud.year}-{fecha_solicitud.month:02d}",
+        "mes_efectos": f"{efecto.year}-{efecto.month:02d}",
+        "explicacion": "TRAMPA (H7): Desde RDL 13/2022 (ingresos reales), efectos el 1 del mes siguiente. Las 6 ventanas bimestrales ya no existen."
+    }
+
+# 8. Tipo Enajenación Subasta / Embargo Inmueble (Art. 104 RD 1415/2004)
+def calcular_tipo_enajenacion(valor_tasado: Decimal, cargas_anteriores: Decimal, cargas_posteriores: Decimal = Decimal("0")) -> Dict[str, Any]:
+    """Solo se descuentan cargas ANTERIORES al embargo TGSS. Cargas posteriores y la deuda TGSS NO se restan."""
+    tipo = Decimal(str(valor_tasado)) - Decimal(str(cargas_anteriores))
+    return {
+        "tipo_enajenacion": float(max(tipo, Decimal("0")).quantize(Decimal("0.01"))),
+        "cargas_anteriores_deducidas": float(cargas_anteriores),
+        "cargas_posteriores_NO_deducidas": float(cargas_posteriores),
+        "explicacion": "Art. 103-104 RD 1415/2004: TRAMPA: Solo se descuentan cargas ANTERIORES al embargo. Las posteriores NO. La deuda TGSS tampoco se resta del valor."
+    }
+
+# 9. Jubilación Activa — Escala RDL 11/2024 (vigente desde 01/04/2025)
+# ⚠️ CORRECCIÓN 12/03/2026: La escala anterior (4% por año) estaba DEROGADA. Esta es la correcta.
+ESCALA_JUBILACION_ACTIVA_RDL11_2024 = {
+    1: Decimal("0.45"),   # 1 año demora → 45%
+    2: Decimal("0.55"),   # 2 años → 55%
+    3: Decimal("0.65"),   # 3 años → 65%
+    4: Decimal("0.80"),   # 4 años → 80%  ← Caso Candela Ejercicio 19
+    5: Decimal("1.00"),   # ≥5 años → 100%
+}
+
+def calcular_jubilacion_activa_escala_rdl11_2024(br: Decimal, anios_demora: int, meses_en_activo_adicionales: int = 0) -> Dict[str, Any]:
+    """
+    Escala jubilación activa Art. 214.2 TRLGSS, tras RDL 11/2024 (vigente 01/04/2025).
+    
+    Paso 1: Escala por años de demora (máximo 5 años = 100%).
+    Paso 2: +5 puntos porcentuales por cada 12 meses ininterrumpidos en activo (acumulativo).
+    
+    TRAMPA (C8): La escala antigua era 50%/100% por cuenta ajena/autónomo. YA NO EXISTE.
+    TRAMPA (C6): Requisito previo = mínimo 1 año desde que se alcanzó la edad ordinaria.
+    """
+    anios_clamped = min(anios_demora, 5)
+    porcentaje_base = ESCALA_JUBILACION_ACTIVA_RDL11_2024.get(anios_clamped, Decimal("1.00"))
+    
+    # Paso 2: +5pp por cada 12 meses en activo (tras haber empezado la jubilación activa)
+    incremento_activo = Decimal("0.05") * (meses_en_activo_adicionales // 12)
+    porcentaje_final = min(porcentaje_base + incremento_activo, Decimal("1.00"))
+    
+    pension = Decimal(str(br)) * porcentaje_final
+    return {
+        "anios_demora": anios_demora,
+        "porcentaje_escala": float(porcentaje_base),
+        "incremento_activo_adicional": float(incremento_activo),
+        "porcentaje_final": float(porcentaje_final),
+        "pension_mensual": float(pension.quantize(Decimal("0.01"))),
+        "articulo": "Art. 214.2 TRLGSS (RDL 11/2024, vigente 01/04/2025)",
+        "explicacion": f"{anios_demora} años demora → {float(porcentaje_base)*100:.0f}% de la pensión calculada."
+    }
+
+# 10. Derivación Responsabilidad (Solidaria vs Subsidiaria)
+def calcular_derivacion_responsabilidad_ss(tipo_deudor: str, cuota: Decimal, recargo: Decimal, costas: Decimal = Decimal("0")) -> Dict[str, Any]:
+    """Solidaria: principal + recargo (NUNCA intereses ni costas). Subsidiaria: deuda completa en cooperativas."""
+    if tipo_deudor.lower() in ("socio_cooperativa", "cooperativa_hacia_socio"):
+        return {"tipo_derivacion": "Subsidiaria", "alcance": float(cuota + recargo + costas),
+                "explicacion": "Responsabilidad subsidiaria de cooperativas: alcanza a cuota, recargo y costas."}
+    return {"tipo_derivacion": "Solidaria", "alcance": float(cuota + recargo),
+            "costas_excluidas": float(costas),
+            "explicacion": "TRAMPA (G4): Responsabilidad solidaria derivada = SOLO principal + recargo. NUNCA intereses de demora ni costas. Art. 15 bis TRLGSS."}
+
+# 11. Cuota Contrato Corta Duración (≤8 días)
+def calcular_cuota_contrato_corta_duracion() -> Dict[str, Any]:
+    return {"cuantia_extra_fija_2026": 32.60, "tipo": "FIJO, no porcentaje",
+            "articulo": "DA 43ª TRLGSS; Orden PJC/178/2025",
+            "explicacion": "TRAMPA (I12): Contratos de ≤8 días: recargo fijo de 32,60€ por contrato. No es un porcentaje del salario."}
+
+# --- NUEVA --- 12. Pensión Máxima Anticipada Involuntaria (Art. 207.2 — Regla Especial)
+def calcular_pension_maxima_anticipada_involuntaria(
+    pension_calculada: Decimal, tope_maximo_2026: Decimal, trimestres_anticipacion: int
+) -> Dict[str, Any]:
+    """
+    REGLA ESPECIAL (C12) Art. 207.2 TRLGSS cuando pensión calculada > tope máximo.
+    
+    Regla GENERAL (pensión calculada ≤ tope): aplicar coeficiente reductor ordinario sobre pensión calculada.
+    Regla ESPECIAL (pensión calculada > tope): aplicar 0,5%/trimestre directamente sobre el TOPE MÁXIMO.
+    
+    Esta regla protege al trabajador con carreras largas: penalización menor sobre el tope
+    en lugar de penalizar sobre una pensión calculada que de todas formas quedaba limitada.
+    
+    Tope máximo 2026 = 3.175,04€/mes (2026 según Orden PJC/178/2025).
+    """
+    REDUCCION_POR_TRIMESTRE_ESPECIAL = Decimal("0.005")
+    
+    if pension_calculada > tope_maximo_2026:
+        reductor_especial = Decimal("1") - (REDUCCION_POR_TRIMESTRE_ESPECIAL * trimestres_anticipacion)
+        pension_final = tope_maximo_2026 * max(reductor_especial, Decimal("0"))
+        return {
+            "aplica_regla_especial": True,
+            "pension_calculada": float(pension_calculada),
+            "tope_maximo": float(tope_maximo_2026),
+            "trimestres_anticipacion": trimestres_anticipacion,
+            "reductor_aplicado": f"0,5% x {trimestres_anticipacion} trimestres = {float(REDUCCION_POR_TRIMESTRE_ESPECIAL*trimestres_anticipacion)*100:.1f}%",
+            "pension_final": float(pension_final.quantize(Decimal("0.01"))),
+            "articulo": "Art. 207.2 TRLGSS (segundo párrafo) — Regla especial pensión > tope",
+            "explicacion": f"Pensión calculada ({pension_calculada}€) supera el tope máximo ({tope_maximo_2026}€). Se aplica 0,5%/trimestre SOBRE EL TOPE, no sobre la pensión calculada. Pensión final: {float(pension_final.quantize(Decimal('0.01')))}€"
+        }
+    else:
+        return {"aplica_regla_especial": False, "pension_calculada": float(pension_calculada),
+                "explicacion": "Pensión calculada ≤ tope máximo. Usar regla general (coeficientes Art. 207.2 sobre pensión calculada)."}
+
+# --- NUEVA --- 13. Retribución en Especie — Vehículo de Empresa
+def calcular_retribucion_especie_vehiculo(valor_mercado: Decimal, tipo_uso: str = "particular") -> Dict[str, Any]:
+    """
+    Vehículo de empresa y Base de Cotización.
+    
+    - uso='exclusivo_laboral': EXCLUIR de BC. Solo si hay restricción EXPRESA de uso privado.
+    - uso='particular' o 'mixto': INCLUIR en BC = valor_mercado × 20% / 12 meses.
+    
+    DEFAULT: INCLUIR. La exclusión es la excepción, no la regla.
+    Art. 147.3 TRLGSS; Art. 43.1.b) LIRPF (por remisión Art. 23 RD 2064/1995).
+    """
+    if tipo_uso == "exclusivo_laboral":
+        return {"incluir_en_bc": False, "importe_mensual": 0.0,
+                "explicacion": "Uso EXCLUSIVAMENTE laboral con restricción expresa → excluir de BC. La exclusión requiere prohibición formal de uso privado."}
+    
+    importe_mensual = Decimal(str(valor_mercado)) * Decimal("0.20") / Decimal("12")
+    return {
+        "incluir_en_bc": True,
+        "tipo_uso": tipo_uso,
+        "valor_mercado": float(valor_mercado),
+        "calculo": f"{float(valor_mercado)}€ × 20% / 12 = {float(importe_mensual.quantize(Decimal('0.01')))}€/mes",
+        "importe_mensual_bc": float(importe_mensual.quantize(Decimal("0.01"))),
+        "articulo": "Art. 147.3 TRLGSS; Art. 43.1.b) LIRPF",
+        "explicacion": f"TRAMPA (F8): Si el enunciado dice 'para su uso particular' → SIEMPRE INCLUIR en BC. Importe = {float(importe_mensual.quantize(Decimal('0.01')))}€/mes."
+    }
+
+# ============================================================================
+# FIN BLOQUE CALCULADORAS — calculos_ss_extended.py
+# Última actualización: 12/03/2026
+# ============================================================================
