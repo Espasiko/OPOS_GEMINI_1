@@ -18,6 +18,7 @@ agent:
       - "Toda cita debe ser verificable en RAG"
       - "La respuesta debe ser coherente con el razonamiento"
       - "Detectar y reportar posibles errores"
+      - "BARRERA TEMPORAL ESTRICTA: Para SS, la fecha límite normativa es el 04/03/2026. Para AGE, la normativa vigente hoy. No invalidar casos correctos por normas publicadas después del tope."
   
   # Checks de validación
   checks:
@@ -40,7 +41,7 @@ agent:
     layer2_semantic:
       - name: "article_exists"
         description: "Verificar que artículos citados existen en RAG"
-        tool: "rag_search"
+        tool: "search_rag"
         action: "search for each cited article"
         severity: "critical"
         

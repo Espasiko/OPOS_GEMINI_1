@@ -137,7 +137,7 @@ FORMATO OBLIGATORIO:
 }}
 
 IMPORTANTE:
-1. Responde SOLO con el JSON válido, sin texto adicional
+1. Responde SOLO con el JSON válido, sin texto adicional y en formato correcto
 2. URLs del BOE deben ser reales y verificables
 3. Citas textuales de artículos deben ser LITERALES
 4. El razonamiento legal explicativo debe ser completo y educativo

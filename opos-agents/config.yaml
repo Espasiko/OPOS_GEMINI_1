@@ -1,35 +1,37 @@
 # OpositAIA Agent System
-# Versión inicial basada en BMAD Method
+# Versión inicial INSPIRADA en BMAD Method , pero NO ES BMAD
 
 # Configuración global
 config:
   project: "OpositAIA"
   version: "1.0.0"
   
-  # Modelos disponibles
+  # Modelos disponibles (Actualizado Marzo 2026)
   models:
     local_finetuned:
-      name: "salamandra-opos"
-      url: "https://electroyhogarpelotazo.tienda/salamandra/reason"
+      name: "salamandra"
       type: "vps"
       
-    local_base:
-      name: "salamandra-base"
-      url: "http://localhost:11434/api/generate"
-      type: "ollama"
-      
     cloud_fast:
-      name: "llama-3.3-70b-versatile"
+      name: "groq-70b" # Llama 3.3 Versatile
       provider: "groq"
       
     cloud_reasoning:
-      name: "deepseek-chat"
+      name: "deepseek-reasoner" # DeepSeek R1 (Thinking / V3.2 internals)
       provider: "deepseek"
+
+    cloud_expert:
+      name: "claude-3-5-sonnet" # Golden standard legal
+      provider: "anthropic"
+      
+    mistral_large:
+      name: "mistral-large" # Prioridad Europea / Gratis Tier
+      provider: "mistral"
   
   # RAG
   rag:
     qdrant_url: "http://localhost:6333"
-    collection: "opositaia_knowledge_hybrid_FULL"
+    collection: "opositaia_knowledge_FULL_XML"
     embedding_model: "pablosi/bge-m3-spa-law-qa-trained-2"
   
   # Anti-bias

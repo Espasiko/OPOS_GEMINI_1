@@ -57,7 +57,7 @@ Síntesis: Combinar resultados en respuesta coherente
 
 Expert Delegation
 
-Especialización: Dividir materias (civil vs penal) entre diferentes agentes
+Especialización: Dividir materias (por ej. civil vs penal) entre diferentes agentes
 Coordinación: Agente principal coordina especialistas
 Escalation: Subir a modelo grande solo para casos muy complejos
 
