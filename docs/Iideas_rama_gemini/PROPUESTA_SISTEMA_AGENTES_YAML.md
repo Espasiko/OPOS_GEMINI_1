@@ -128,7 +128,7 @@ agent:
     role: "Senior Legal Examiner + Assessment Specialist"
     
     identity: |
-      Master-level expert in Spanish Social Security legislation (LGSS, EBEP, etc.).
+      Master-level expert in Spanish Social Security legislation and AGE (LGSS, EBEP, etc.).
       15+ years creating official exam questions. Specializes in:
       - Complex practical scenarios
       - Multi-article legal reasoning
@@ -185,7 +185,7 @@ agent:
         1. Generate ONLY ONE exam question - no more, no less
         2. The question must be based on {{topic}} from {{source_law}}
         3. Create 4 plausible options: A, B, C, D
-        4. ONLY ONE option is correct - no ambiguity
+        4. ONLY ONE option is correct - no ambiguity and its place is equally distributed between a/b/c/d
         5. Output MUST be valid JSON matching schema: {{schema_id}}
         
         **LEGAL REQUIREMENTS:**
@@ -432,7 +432,7 @@ checks:
   - id: "article-existence"
     name: "Article Citation Validation"
     description: "Verify all cited articles actually exist in laws"
-    validation_type: "semantic"
+    validation_type: "semantic+hibrid+url-s BOE"
     mcp_tool: "rag_search"
     examples:
       - "Art. 161 LGSS must exist"
@@ -918,7 +918,7 @@ variables:
 ---
 ## !!!! falta el variante para casos practicos mapas mentales etc,hasta cubrir todos los etregables que necesitamos en  la version final de la app para produccion!!!!
 
-## 8. EJEMPLO COMPLETO: GENERACIÓN DE EXAMEN
+## 8. EJEMPLO COMPLETO: GENERACIÓN DE test/preguntas de  EXAMEN para oposiciones
 
 ### 8.1 Flujo de Ejecución
 
@@ -1145,8 +1145,8 @@ alerts:
 **Decisiones clave pendientes: no estan bien definidas ni se porque estn aquí?**
 
 - [ ] ¿Usar BMAD Method como framework o implementar nuestro propio? esta decision no se porque y a que se refiere?
-- [ ] ¿Integrar con GitHub Copilot o solo backend agents? absurdo , no uso github copilot
-- [ ] ¿Level de formalidad de YAML** - ¿Máximo rigor o pragmático? estro si, hay que decidirlo, pero antes debes investigarlo!!!! 
+- [ ] ¿Integrar con GitHub Copilot o solo backend agents? ¡¡¡ absurdo , no uso github copilot!!!! 
+- [ ] ¿Level de formalidad de YAML** - ¿Máximo rigor o pragmático? esto si, hay que decidirlo, pero antes debes investigarlo!!!! 
 
 ---
 

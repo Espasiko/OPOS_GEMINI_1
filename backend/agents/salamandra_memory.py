@@ -12,8 +12,15 @@ from pathlib import Path
 # Añadir backend al path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_servers.qdrant_memory_local import QdrantMemoryLocal
-from mcp_servers.legal_graph_mcp import LegalGraphMCP
+try:
+    from mcp_servers.qdrant_memory_local import QdrantMemoryLocal
+except ImportError:
+    QdrantMemoryLocal = None
+
+try:
+    from mcp_servers.legal_graph_mcp import LegalGraphMCP
+except ImportError:
+    LegalGraphMCP = None
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +33,8 @@ class SalamandraMemoryIntegration:
     def __init__(self):
         """Inicializar MCPs"""
         try:
-            self.memory_mcp = QdrantMemoryLocal()
-            self.graph_mcp = LegalGraphMCP()
+            self.memory_mcp = QdrantMemoryLocal() if QdrantMemoryLocal else None
+            self.graph_mcp = LegalGraphMCP() if LegalGraphMCP else None
             logger.info("✅ MCPs inicializados correctamente")
         except Exception as e:
             logger.error(f"❌ Error inicializando MCPs: {e}")

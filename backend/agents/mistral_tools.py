@@ -360,7 +360,7 @@ class MistralTools:
                     if edad_jubilacion and edad_jubilacion < 67:
                         trimestres_anticipados = (67 - edad_jubilacion) * 4
                         # Coeficiente según años cotizados (simplificado)
-                        if años_cotizados >= 38.5:
+                        if años_cotizados >= 38.25:
                             coef = 0.01625  # 1.625% por trimestre
                         else:
                             coef = 0.01875  # 1.875% por trimestre

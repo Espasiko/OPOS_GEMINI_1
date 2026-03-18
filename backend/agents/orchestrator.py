@@ -8,6 +8,7 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 import requests
 import logging
+from .question_generator import get_question_generator
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +105,10 @@ TEMA_MAPPING = {
     
     # IMV
     "ingreso.*minimo.*vital|imv|renta.*minima": TemaSSEnum.INGRESO_MINIMO_VITAL,
+    
+    # NUEVOS TEMAS AGE (Ley 39/2015)
+    "lpac|ley 39|procedimiento administrativo|notificaciones|silencio|recurso|alzada|reposicion": "age_procedimiento",
+    "trebep|empleo publico|funcionario|disciplinario|permisos|vacaciones": "age_trebep",
 }
 
 # MAPA TEMAS → ARTÍCULOS TRLGSS
@@ -330,6 +335,14 @@ class Orchestrator:
             "kwargs": kwargs,
             "status": "delegado"
         }
+
+    async def generate_exam_question(self, query: str) -> Dict[str, Any]:
+        """
+        Punto de entrada para generar preguntas con trampa COSMIC.
+        """
+        norm = self.normalize_query(query)
+        generator = get_question_generator()
+        return await generator.generate_question(norm["tema"], norm["dificultad"])
 
 
 if __name__ == "__main__":

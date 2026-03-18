@@ -11,7 +11,6 @@ import logging
 from calculators.calculos_ss import calcular_subsidio_it
 from agents.rag_helper import get_rag_helper
 from agents.salamandra_memory import get_memory_integration
-from agents.generate_salamandra import SalamandraGenerator
 
 logger = logging.getLogger(__name__)
 

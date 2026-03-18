@@ -18,7 +18,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 2G
     healthcheck:
       disable: true
 
@@ -85,6 +85,30 @@ services:
       - ./backend:/app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
+  # Neo4j Graph Database (Community Edition)
+  neo4j:
+    image: neo4j:5-community
+    container_name: opositaia-neo4j
+    ports:
+      - "7474:7474" # Browser HTTP
+      - "7687:7687" # Bolt
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    environment:
+      - NEO4J_AUTH=neo4j/opositaia2026
+      - NEO4J_PLUGINS=["apoc"]
+    restart: unless-stopped
+    networks:
+      - opositaia-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "opositaia2026", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 networks:
   opositaia-network:
     driver: bridge
@@ -93,5 +117,13 @@ volumes:
   qdrant_storage:
     driver: local
   postgres_data:
+    driver: local
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_import:
+    driver: local
+  neo4j_plugins:
     driver: local
 

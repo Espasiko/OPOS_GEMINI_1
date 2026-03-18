@@ -1,155 +1,146 @@
 {
     "workflow_version": "1.2.0",
     "timestamps": {
-        "started": "2026-02-05T20:33:26+01:00",
-        "last_updated": "2026-02-05T20:52:00+01:00"
+        "started": "2026-02-28T14:41:59+01:00",
+        "last_updated": "2026-02-28T14:55:00+01:00"
     },
-    "mode": "full_rescan",
-    "scan_level": "exhaustive",
+    "mode": "initial_scan",
+    "scan_level": "deep",
     "project_root": "/home/spas/OPOS_GEMINI_1",
     "output_folder": "/home/spas/OPOS_GEMINI_1/docs",
+    "repository_type": "multi-part",
+    "project_types": [
+        {
+            "part_id": "backend",
+            "project_type_id": "backend",
+            "display_name": "FastAPI Backend (Python)"
+        },
+        {
+            "part_id": "frontend",
+            "project_type_id": "web",
+            "display_name": "Vite + React 19 Frontend (TypeScript)"
+        },
+        {
+            "part_id": "mcp-server",
+            "project_type_id": "backend",
+            "display_name": "MCP Server (Node.js/TypeScript)"
+        },
+        {
+            "part_id": "opos-agents",
+            "project_type_id": "data",
+            "display_name": "Agent Definitions (YAML)"
+        }
+    ],
     "completed_steps": [
         {
             "step": "step_1",
             "status": "completed",
-            "timestamp": "2026-02-05T20:52:00+01:00",
-            "summary": "Project classification updated with critical documentation review"
+            "timestamp": "2026-02-28T14:42:30+01:00",
+            "summary": "Classified as multi-part with 4 parts"
+        },
+        {
+            "step": "step_2",
+            "status": "completed",
+            "timestamp": "2026-02-28T14:43:00+01:00",
+            "summary": "Found 50+ existing docs"
+        },
+        {
+            "step": "step_3",
+            "status": "completed",
+            "timestamp": "2026-02-28T14:45:00+01:00",
+            "summary": "Tech stack: FastAPI+Vite+React+Qdrant+Postgres"
+        },
+        {
+            "step": "step_4",
+            "status": "completed",
+            "timestamp": "2026-02-28T14:48:00+01:00",
+            "summary": "Conditional analysis complete: 9 routers, 3 calculator modules, 25 agents"
+        },
+        {
+            "step": "step_5",
+            "status": "completed",
+            "timestamp": "2026-02-28T14:50:00+01:00",
+            "summary": "Source tree documented"
+        },
+        {
+            "step": "step_6",
+            "status": "completed",
+            "timestamp": "2026-02-28T14:52:00+01:00",
+            "summary": "Dev/deployment guides extracted"
+        },
+        {
+            "step": "step_8",
+            "status": "completed",
+            "timestamp": "2026-02-28T14:54:00+01:00",
+            "summary": "Architecture docs written"
         }
     ],
-    "current_step": "step_2",
+    "current_step": "step_10",
     "findings": {
-        "project_classification": {
-            "repository_type": "multi-part",
-            "parts_count": 6,
-            "primary_tech": "React + FastAPI + Qdrant + Multi-LLM",
-            "project_purpose": "SaaS educativo para oposiciones de Seguridad Social española con IA especializada",
-            "key_differentiators": [
-                "RAG V2 con embeddings especializados en legislación española",
-                "Multi-proveedor LLM (Groq, Gemini, DeepSeek, Mistral local)",
-                "Sistema de agentes en diseño (opos-agents/)",
-                "Datasets masivos generados (12k+ casos, 5k+ tests)",
-                "VPS con Salamandra 7B fine-tuned",
-                "MCP Server para integración externa"
-            ]
-        },
-        "project_types": [
-            {
-                "part_id": "frontend",
-                "project_type_id": "web",
-                "display_name": "Frontend Web App (React 19 + Vite + TypeScript)",
-                "entry_point": "index.tsx → App.tsx",
-                "components_count": "20+",
-                "key_features": [
-                    "ChatInterface con RAG",
-                    "PracticalCaseGenerator",
-                    "MockExamGenerator",
-                    "MindMapGenerator",
-                    "FlashcardsGenerator",
-                    "StudyPlanGenerator"
+        "project_classification": "Multi-part AI-powered exam prep platform",
+        "technology_stack": {
+            "backend": {
+                "framework": "FastAPI 0.115",
+                "language": "Python 3.12",
+                "database": [
+                    "PostgreSQL 15",
+                    "Qdrant 1.12"
+                ],
+                "key_deps": [
+                    "sentence-transformers 3.3",
+                    "pydantic 2.9",
+                    "ollama 0.4",
+                    "google-generativeai 0.8",
+                    "cohere 5.11"
                 ]
             },
-            {
-                "part_id": "backend",
-                "project_type_id": "backend",
-                "display_name": "Backend API (FastAPI + Python + Qdrant + Multi-LLM)",
-                "entry_point": "main.py",
-                "routers_count": 8,
-                "key_features": [
-                    "RAG V2 con 2 capas (normativa + materiales)",
-                    "Chat streaming con SSE",
-                    "9 funciones IA (/ai/*)",
-                    "Multi-proveedor LLM (Groq, Gemini, DeepSeek, Mistral)",
-                    "BOE API integration",
-                    "MCP Gateway"
+            "frontend": {
+                "framework": "Vite 6.2 + React 19",
+                "language": "TypeScript 5.8",
+                "key_deps": [
+                    "@excalidraw/excalidraw 0.18",
+                    "@google/genai 1.29",
+                    "html-to-image 1.11"
                 ]
             },
-            {
-                "part_id": "mcp-server",
-                "project_type_id": "backend",
-                "display_name": "MCP Server (Node.js + TypeScript + Express)",
-                "entry_point": "dist/index.js",
-                "purpose": "Gateway MCP para permitir acceso externo al RAG de OpositaIA"
+            "mcp_server": {
+                "language": "TypeScript",
+                "runtime": "Node.js"
             },
-            {
-                "part_id": "dataset_generator",
-                "project_type_id": "data",
-                "display_name": "Dataset Generation Pipeline (Python + Multi-LLM)",
-                "scripts_count": 126,
-                "key_features": [
-                    "Generación de casos prácticos con DeepSeek, Groq, Mistral, Claude",
-                    "Generación de Q&A con múltiples modelos",
-                    "Consolidación y verificación de datasets",
-                    "Exportación a formatos de fine-tuning"
-                ]
-            },
-            {
-                "part_id": "opos-agents",
-                "project_type_id": "infra",
-                "display_name": "Sistema de Agentes (Diseño YAML + Workflows)",
-                "status": "En diseño, no implementado",
-                "key_features": [
-                    "Config YAML para agentes especializados",
-                    "Workflows definidos",
-                    "Documentación de diseño en docs_ideas_sistema_agentes/"
-                ]
-            },
-            {
-                "part_id": "golden_dataset",
-                "project_type_id": "data",
-                "display_name": "Golden Dataset (JSONL validado para fine-tuning)",
-                "files_count": 9,
-                "key_features": [
-                    "Datasets consolidados y validados",
-                    "Exámenes oficiales enriquecidos",
-                    "Casos premium de múltiples modelos"
+            "infrastructure": {
+                "docker": "docker-compose v3.8",
+                "services": [
+                    "qdrant:v1.12.0",
+                    "postgres:15-alpine",
+                    "FastAPI backend"
                 ]
             }
-        ],
-        "critical_documentation": [
-            "ARQUITECTURA_ACTUAL_20_01_26.md - 1072 líneas, análisis completo del sistema",
-            "ARQUITECTURA_COMPLETA_DETALLADA_22_01_26.md - 1447 líneas, documentación enterprise-grade",
-            "PLAN_DESARROLLO_2026.md - 310 líneas, roadmap 2026 con metodología BMAD",
-            "PLAN_EJECUTIVO_FINAL_21_01_26.md - 287 líneas, plan post-brainstorming con 50 modelos de negocio",
-            "11 planes adicionales en gastos_tokens/PLANES_2026/"
-        ],
-        "infrastructure": {
-            "databases": [
-                "Qdrant (2 colecciones): opositaia_knowledge_v2 (48,866 chunks), opositaia_leyes_master (54 leyes)",
-                "PostgreSQL: ELIMINADO - Todo en Qdrant"
-            ],
-            "vps": {
-                "provider": "Hostinger",
-                "domain": "electroyhogarpelotazo.tienda",
-                "services": [
-                    "Salamandra 7B (Q4_K_M, 4.85 GB) en llama.cpp",
-                    "Nginx reverse proxy",
-                    "Puerto 8080"
-                ]
-            },
-            "llm_providers": [
-                "Groq (Llama 3.3 70B/8B)",
-                "Gemini (2.5 Pro, Flash)",
-                "DeepSeek (V3 Reasoner)",
-                "Mistral (local VPS)"
-            ]
         },
-        "datasets": {
-            "generated_cases": "~12,000+ casos prácticos",
-            "generated_tests": "~5,000+ preguntas tipo test",
-            "master_datasets": [
-                "MASTER_DATASET_v11_UTF8_FIXED.jsonl",
-                "MASTER_DATASET_v12_PLATINUM.jsonl",
-                "MASTER_DATASET_v12_SUPPLEMENT.jsonl"
+        "api_endpoints": {
+            "routers": [
+                "rag (legacy)",
+                "rag_v2 (RoBERTalex)",
+                "chat (Mistral+RAG)",
+                "upload (file/URL)",
+                "ai_functions (multi-provider)",
+                "user (management)",
+                "boe (API oficial)",
+                "mcp_gateway (external AI)",
+                "casos_practicos (Salamandra)"
             ],
-            "golden_dataset_files": [
-                "final_v2_ready_to_train.jsonl",
-                "official_exams_qa_FINAL_V3.jsonl",
-                "groq_500_qa_verified.jsonl"
-            ]
-        }
+            "total": 9
+        },
+        "calculators": {
+            "calculos_ss.py": "4.6KB - SS básicas",
+            "calculos_ss_extended.py": "49.6KB - 27+ calculadoras SS extendidas",
+            "calculos_imv.py": "10.9KB - Calculadora IMV completa",
+            "dispatcher.py": "4KB - Router de calculadoras"
+        },
+        "agents_count": 25,
+        "root_files_debt": 149
     },
     "outputs_generated": [
         "project-scan-report.json"
     ],
-    "resume_instructions": "Step 1 completed - Project classification updated with critical documentation. Ready for Step 2: Technology stack scanning."
+    "resume_instructions": "Continue from step 10"
 }

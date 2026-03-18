@@ -85,7 +85,6 @@ app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
 app.include_router(user.router)  # Sprint 11: User management
 app.include_router(boe.router)  # API oficial datos abiertos BOE
 app.include_router(mcp_gateway.router)  # MCP Gateway para otras IAs
-app.include_router(casos_practicos.router)  # Casos prácticos con Salamandra
 
 # Root endpoint
 @app.get("/")

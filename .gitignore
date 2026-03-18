@@ -55,10 +55,26 @@ scripts/tests/test_mistral_nueva_key.py
 # DATASETS & GENERATORS (Large Files)
 dataset_generator/
 gastos_ tokens/
+EXAMENES_GENERADOS/
+extracted_texts/
+gastos_tokens/
+golden_dataset/
+golden_dataset_seguro/
 
-# IDE
+# IDE & AI Tools
 .vscode/
 .idea/
+.agent/
+.agents/
+.claude/
+.cline/
+.continue/
+.cursor/
+.opencode/
+.roo/
+.trae/
+.windsurf/
+_bmad/
 *.swp
 *.swo
 
@@ -123,6 +139,9 @@ backend/backend/
 # Dataset outputs
 dataset_output/
 dataset_output_seguro/
+dataset_generator/
+data/
+conceptual_materials/
 
 # Script caches
 scripts/maintenance/__pycache__/
@@ -142,6 +161,7 @@ lora_model/
 *.gguf
 *.safetensors
 checkpoint-*/
+de_raiz_backup/
 
 # Modelfiles (no subir - se instalan localmente)
 Modelfile.salamandra-*
@@ -174,4 +194,68 @@ Mistral_guuf/
 # Kaggle dataset folders (user-specific)
 kaggle_dataset/
 kaggle_kernel/
+
+
+# Auto-generated entries
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+.env.backend
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Sensitive files (auto-detected)
+run_output_v3_ultimate.log
+run_output_v3_r1_definitive.log
+run_v11_deepseek.log
+run_output_v4_definitivo_v3.log
+run_output_v3_execution.log
+run_output_v4_definitive_v7.log
+run_output_v4_definitivo_v2.log
+run_output_v3_final_final.log
+run_output_v4_definitive.log
+run_output_v3_final_corregido.log
+run_output_v4_definitivo_v6.log
+.env.example
+run_output_v3_r1_final.log
+run_output_v4_definitivo_v4.log
+run_output_v4_definitive_v10.log
+run_v11_mistral.log
+.env.backend.example
+run_output_v4_final.log
+run_output_v3_success.log
+.env
+fastapi_host2.log
+run_output_v11_silent.log
+run_output_v4_definitivo_v5.log
+run_output_v4_definitive_v9.log
+run_output_v4.log
+node_modules
+fastapi_host.log
+run_output_v4_unbuffered.log
 

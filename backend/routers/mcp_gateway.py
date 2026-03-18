@@ -100,8 +100,15 @@ class MCPClient:
             logger.error(f"MCP call error: {e}")
             raise Exception(f"MCP call failed: {str(e)}")
 
-# Global MCP client
-mcp_client = MCPClient()
+# Global MCP client (Lazy)
+_mcp_client = None
+
+def get_mcp_client():
+    """Retorna la instancia global del cliente MCP, creándola si es necesario."""
+    global _mcp_client
+    if _mcp_client is None:
+        _mcp_client = MCPClient()
+    return _mcp_client
 
 # ============================================================================
 # ENDPOINTS
@@ -111,7 +118,7 @@ mcp_client = MCPClient()
 async def search_rag(request: SearchRAGRequest):
     """Buscar en el RAG usando MCP"""
     try:
-        result = await mcp_client.call_tool("mcp_opositaia_search_rag", {
+        result = await get_mcp_client().call_tool("mcp_opositaia_search_rag", {
             "query": request.query,
             "limit": request.limit,
             "score_threshold": request.score_threshold
@@ -124,7 +131,7 @@ async def search_rag(request: SearchRAGRequest):
 async def list_collections():
     """Listar colecciones Qdrant"""
     try:
-        result = await mcp_client.call_tool("mcp_opositaia_list_collections", {})
+        result = await get_mcp_client().call_tool("mcp_opositaia_list_collections", {})
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -137,7 +144,7 @@ async def verify_boe(request: VerifyBOERequest):
         if request.articulo:
             args["articulo"] = request.articulo
             
-        result = await mcp_client.call_tool("mcp_opositaia_verify_boe", args)
+        result = await get_mcp_client().call_tool("mcp_opositaia_verify_boe", args)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -146,7 +153,7 @@ async def verify_boe(request: VerifyBOERequest):
 async def search_jurisprudence(request: SearchJurisprudenceRequest):
     """Buscar jurisprudencia"""
     try:
-        result = await mcp_client.call_tool("mcp_opositaia_search_jurisprudence", {
+        result = await get_mcp_client().call_tool("mcp_opositaia_search_jurisprudence", {
             "query": request.query,
             "tribunal": request.tribunal,
             "limit": request.limit
@@ -159,7 +166,7 @@ async def search_jurisprudence(request: SearchJurisprudenceRequest):
 async def get_law_summary(request: GetLawSummaryRequest):
     """Obtener resumen de ley"""
     try:
-        result = await mcp_client.call_tool("mcp_opositaia_get_law_summary", {
+        result = await get_mcp_client().call_tool("mcp_opositaia_get_law_summary", {
             "ley_name": request.ley_name
         })
         return result
@@ -170,7 +177,7 @@ async def get_law_summary(request: GetLawSummaryRequest):
 async def ingest_new_law(request: IngestNewLawRequest):
     """Ingestar nueva ley del BOE"""
     try:
-        result = await mcp_client.call_tool("mcp_opositaia_ingest_new_law", {
+        result = await get_mcp_client().call_tool("mcp_opositaia_ingest_new_law", {
             "boe_id": request.boe_id
         })
         return result
@@ -182,7 +189,7 @@ async def mcp_health():
     """Health check del MCP gateway"""
     try:
         # Test básico - listar colecciones
-        result = await mcp_client.call_tool("mcp_opositaia_list_collections", {})
+        result = await get_mcp_client().call_tool("mcp_opositaia_list_collections", {})
         return {
             "status": "healthy",
             "mcp_server": "connected",
@@ -222,7 +229,7 @@ async def webhook_search(request: dict):
             raise HTTPException(status_code=400, detail="Query is required")
         
         # Buscar en RAG
-        result = await mcp_client.call_tool("mcp_opositaia_search_rag", {
+        result = await get_mcp_client().call_tool("mcp_opositaia_search_rag", {
             "query": query,
             "limit": limit
         })

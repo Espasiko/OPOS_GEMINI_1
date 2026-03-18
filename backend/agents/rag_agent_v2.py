@@ -1,26 +1,30 @@
 """
 RAG Agent V2 - Sistema de 2 capas con Pablosi (bge-m3-spa-law-qa-trained-2)
 Capa 1: Normativa Oficial (Leyes BOE)
-Capa 3: Materiales de Estudio
+Capa 3: Materiales de Estudio (DESACTIVADO - Foco en Exámenes Oficiales)
 
 MODELO ÚNICO: pablosi/bge-m3-spa-law-qa-trained-2 (1024 dims)
 NO usar RoBERTalex ni otros modelos para embeddings.
+
+BÚSQUEDA: HÍBRIDA (Dense + BM25 sparse) con fusión RRF
+La colección opositaia_knowledge_FULL_XML fue creada con ambos vectores.
 """
 
 import os
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from datetime import datetime
-from qdrant_client import QdrantClient
-from sentence_transformers import SentenceTransformer
+from qdrant_client import QdrantClient, models
+# from sentence_transformers import SentenceTransformer  # Movido a lazy import
 import time
-# import cohere  # TODO: Descomentar cuando se use reranking
 
 logger = logging.getLogger(__name__)
 
 class RAGAgentV2:
     """
-    Agente RAG con arquitectura de 2 capas y reranking jerárquico
+    Agente RAG centrado en normativa oficial (BOE) usando la colección FULL_XML.
+    Búsqueda HÍBRIDA: Dense (semántico) + BM25 sparse (léxico) fusionados con RRF.
+    Metadatos completos del XML BOE expuestos al LLM.
     """
     
     def __init__(
@@ -33,295 +37,283 @@ class RAGAgentV2:
     ):
         # Leer desde variables de entorno si no se proporcionan
         self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
-        self.collection_name = collection_name or os.getenv("COLLECTION_NAME", "opositaia_knowledge")
+        # Colección Maestra: opositaia_knowledge_FULL_XML
+        self.collection_name = collection_name or os.getenv("COLLECTION_NAME", "opositaia_knowledge_FULL_XML")
         # Modelo pablosi para embeddings especializados en legislación española
         self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "pablosi/bge-m3-spa-law-qa-trained-2")
         self.use_local_embeddings = use_local_embeddings if use_local_embeddings is not None else True
         api_key = api_key or os.getenv("QDRANT_API_KEY")
         
-        logger.info("Initializing RAG Agent V2")
+        logger.info("Initializing RAG Agent V2 (Hybrid Edition)")
         logger.info(f"  Qdrant URL: {self.qdrant_url}")
         logger.info(f"  Collection: {self.collection_name}")
         logger.info(f"  Embedding Model: {self.embedding_model}")
-        logger.info(f"  Local embeddings: {self.use_local_embeddings}")
+        logger.info(f"  Search Mode: HYBRID (Dense + BM25)")
         
         # Initialize Qdrant client
         try:
             if api_key:
                 self.qdrant_client = QdrantClient(url=self.qdrant_url, api_key=api_key, timeout=30)
-                logger.info("  Connected to Qdrant Cloud with API key")
+                logger.info("  Connected to Qdrant Cloud")
             else:
                 self.qdrant_client = QdrantClient(url=self.qdrant_url, timeout=30)
-                logger.info("  Connected to Qdrant (local)")
+                logger.info("  Connected to Qdrant Local")
         except Exception as e:
             logger.error(f"Failed to connect to Qdrant: {e}")
             raise
         
-        # Initialize embedding model (local) si procede
+        # Initialize embedding model (local)
         if self.use_local_embeddings:
-            logger.info(f"Loading embedding model: {self.embedding_model}")
-            self.model = SentenceTransformer(self.embedding_model)
+            self.model = None  # Lazy load in generate_embedding
         else:
             self.model = None
             
-        # Initialize Cohere client for Reranking
-        self.co_key = os.getenv("COHERE_API_KEY")
-        if self.co_key:
-            try:
-                self.co = cohere.ClientV2(self.co_key)
-                logger.info("  Cohere Rerank initialized")
-            except Exception as e:
-                logger.error(f"  Failed to init Cohere: {e}")
-                self.co = None
-        else:
-            self.co = None
-        
-        logger.info("✅ RAG Agent V2 initialized successfully")
+        logger.info("✅ RAG Agent V2 Híbrido inicializado")
     
     def generate_embedding(self, text: str) -> List[float]:
-        """Genera embedding usando bge-m3-spa-law-qa local o endpoint externo"""
-        if self.use_local_embeddings and self.model:
+        """Genera embedding denso usando bge-m3-spa-law-qa local"""
+        if self.use_local_embeddings:
+            if self.model is None:
+                logger.info(f"Cargando modelo de embeddings {self.embedding_model} (Lazy Load)...")
+                from sentence_transformers import SentenceTransformer
+                self.model = SentenceTransformer(self.embedding_model)
+                logger.info("Modelo de embeddings cargado.")
+            
             embedding = self.model.encode([text], convert_to_numpy=True)[0]
             return embedding.tolist()
-        else:
-            # Usar endpoint externo (ejemplo Ollama)
-            import httpx
-            ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
-            try:
-                with httpx.Client(timeout=30.0) as client:
-                    response = client.post(
-                        f"{ollama_url}/api/embeddings",
-                        json={
-                            "model": self.embedding_model,
-                            "prompt": text
-                        }
-                    )
-                    response.raise_for_status()
-                    data = response.json()
-                    return data.get("embedding", [])
-            except Exception as e:
-                logger.error(f"Error generating embedding via Ollama: {e}")
-                return []
+        return []
+
+    def _generate_sparse_vector(self, text: str) -> models.SparseVector:
+        """
+        Genera vector sparse BM25-compatible a partir del texto.
+        Usa tokenización simple (word tokens -> índices hash) compatible 
+        con el vocab BM25 creado durante la ingestión.
+        """
+        words = text.lower().split()
+        word_freq: Dict[int, float] = {}
+        for word in words:
+            idx = hash(word) % 100000  # mismo rango que en el ingestor
+            word_freq[idx] = word_freq.get(idx, 0) + 1.0
+        if not word_freq:
+            return models.SparseVector(indices=[0], values=[0.0])
+        return models.SparseVector(
+            indices=list(word_freq.keys()),
+            values=list(word_freq.values())
+        )
     
     async def search_documents(
         self,
         query: str,
         top_k: int = 5,
-        min_score: float = 0.5,
-        layer_filter: Optional[int] = None,
+        min_score: float = 0.35,
         apply_reranking: bool = True
     ) -> List[Dict]:
         """
-        Busca documentos con filtro opcional por capa
-        
-        Args:
-            query: Consulta del usuario
-            top_k: Número de resultados
-            min_score: Score mínimo (0-1)
-            layer_filter: Filtrar por capa (1=Normativa, 3=Materiales)
-            apply_reranking: Aplicar reranking jerárquico
-        
-        Returns:
-            Lista de documentos con score y metadata
+        Busca documentos usando búsqueda HÍBRIDA (Dense + BM25) con fusión RRF.
+        Si el vector sparse no está disponible en la colección, hace fallback a dense.
         """
         try:
-            # 1. Generar embedding
-            query_embedding = self.generate_embedding(query)
+            # 1. Generar embeddings
+            query_dense = self.generate_embedding(query)
+            query_sparse = self._generate_sparse_vector(query)
             
-            # 2. Preparar filtro por capa
-            search_filter = None
-            if layer_filter:
-                search_filter = {
-                    "must": [{"key": "layer", "match": {"value": layer_filter}}]
-                }
+            # 2. Intentar búsqueda HÍBRIDA con prefetch + RRF
+            try:
+                search_results = self.qdrant_client.query_points(
+                    collection_name=self.collection_name,
+                    prefetch=[
+                        models.Prefetch(
+                            query=query_dense,
+                            using="dense",
+                            limit=top_k * 3,  # Traer más para la fusión
+                        ),
+                        models.Prefetch(
+                            query=query_sparse,
+                            using="text",  # Nombre del sparse vector en FULL_XML
+                            limit=top_k * 3,
+                        ),
+                    ],
+                    query=models.FusionQuery(fusion=models.Fusion.RRF),  # Fusión RRF
+                    limit=top_k * 2,
+                    with_payload=True,
+                ).points
+                logger.info(f"✅ Búsqueda HÍBRIDA (Dense+BM25 RRF): {len(search_results)} resultados")
+            except Exception as hybrid_err:
+                # Fallback a dense si la colección no tiene sparse o hay error
+                logger.warning(f"Búsqueda híbrida fallida ({hybrid_err}), usando dense solo")
+                search_results = self.qdrant_client.query_points(
+                    collection_name=self.collection_name,
+                    query=query_dense,
+                    limit=top_k,
+                    using="dense",
+                    with_payload=True,
+                ).points
             
-            # 3. Buscar en Qdrant (obtener más para reranking)
-            search_results = self.qdrant_client.query_points(
-                collection_name=self.collection_name,
-                query=query_embedding,
-                limit=top_k * 2 if apply_reranking else top_k,
-                query_filter=search_filter,
-                using="dense"  # Named vector for opositaia_knowledge collection
-            ).points
-            
-            # 4. Filtrar por min_score
-            search_results = [r for r in search_results if r.score >= min_score]
-            
-            # 5. Aplicar reranking jerárquico inicial (Nivel de Ley)
-            if apply_reranking and not layer_filter:
-                search_results = sorted(search_results, key=lambda x: (
-                    -x.payload.get('nivel_jerarquia', 999),  # Menor = mayor prioridad
-                    -x.score
-                ))
-            
-            # 6. Aplicar COHERE RERANK (Si está disponible)
-            # TODO: Descomentar cuando se use Cohere
-            # if apply_reranking and self.co:
-            #     try:
-            #         logger.info("  Applying Cohere Rerank...")
-            #         documents_to_rerank = [r.payload.get("text", "") for r in search_results]
-            #         if documents_to_rerank:
-            #             rerank_response = self.co.rerank(
-            #                 model="rerank-v3.5",
-            #                 query=query,
-            #                 documents=documents_to_rerank,
-            #                 top_n=top_k
-            #             )
-            #             # Reordenar resultados basados en el índice devuelto por cohere
-            #             new_results = []
-            #             for result in rerank_response.results:
-            #                 idx = result.index
-            #                 orig_r = search_results[idx]
-            #                 orig_r.score = result.relevance_score # Actualizar score
-            #                 new_results.append(orig_r)
-            #             search_results = new_results
-            #     except Exception as e:
-            #         logger.error(f"  Cohere Rerank error: {e}")
-            
-            # 7. Tomar top_k después de reranking
-            search_results = search_results[:top_k]
-            
-            # 7. Formatear resultados - INCLUIR SIEMPRE TODOS LOS CAMPOS
+            # 3. Formatear resultados con TODOS los metadatos disponibles
             documents = []
             for result in search_results:
-                layer = result.payload.get('layer', 0)
+                if hasattr(result, 'score') and result.score < min_score:
+                    continue
+                    
+                payload = result.payload or {}
                 
-                # SIEMPRE incluir campos básicos del payload (independiente de layer)
+                # --- METADATOS BÁSICOS ---
+                boe_id = payload.get('boe_id', '')
+                url_boe = payload.get('url_boe') or payload.get('url') or f"https://www.boe.es/buscar/act.php?id={boe_id}"
+                
+                # --- VIGENCIA Y ESTADO LEGAL --- (campos clave para no alucinar)
+                vigente = payload.get('vigente', True)
+                estatus_derogacion = payload.get('estatus_derogacion', 'N')
+                estado_consolidacion = payload.get('estado_consolidacion', '')
+                
+                # --- ORGANISMO Y RANGO ---
+                organismo_emisor = payload.get('organismo_emisor', '')
+                rango = payload.get('rango', '')
+                
+                # --- FECHAS ---
+                fecha_publicacion = payload.get('fecha_publicacion', '')
+                fecha_vigencia = payload.get('fecha_vigencia', '')
+                
+                # --- MATERIAS (del análisis XML) ---
+                materias = payload.get('materias', [])
+                
+                # --- METADATOS XML COMPLETOS (analisis del BOE) ---
+                metadata_xml = payload.get('metadata_xml', {})
+                analisis_xml = metadata_xml.get('analisis', {}) if metadata_xml else {}
+                
+                # Construir metadata completa para el LLM
                 metadata = {
-                    "layer": layer,
-                    "boe_id": result.payload.get('boe_id', ''),
-                    "law_name": result.payload.get('law_name', ''),
-                    "article_id": result.payload.get('article_id', ''),
-                    "chunk_index": result.payload.get('chunk_index', 0),
-                    "parent_id": result.payload.get('parent_id', ''),
-                    "nivel_jerarquia": result.payload.get('nivel_jerarquia', 3),
-                    "is_smart_chunk": result.payload.get('is_smart_chunk', False)
+                    # Identificación
+                    "boe_id": boe_id,
+                    "law_name": payload.get('law_name', ''),
+                    "article_id": payload.get('article_id', ''),
+                    "article_title": payload.get('article_title', ''),
+                    # Estado legal
+                    "vigente": vigente,
+                    "estatus_derogacion": estatus_derogacion,  # 'N'=vigente, 'S'=derogado
+                    "estado_consolidacion": estado_consolidacion,
+                    # Fechas
+                    "fecha_publicacion": fecha_publicacion,
+                    "fecha_vigencia": fecha_vigencia,
+                    # Emisor
+                    "organismo_emisor": organismo_emisor,
+                    "rango": rango,  # ej: "Ley", "Real Decreto", "Orden"
+                    # URLs
+                    "url": url_boe,
+                    "url_eli": payload.get('url_eli', ''),
+                    # Materias del análisis
+                    "materias": materias,
+                    # Análisis XML completo (derogaciones, modificaciones, relaciones)
+                    "analisis_boe": analisis_xml,
+                    # Score
+                    "score": float(result.score) if hasattr(result, 'score') else 0.0,
                 }
                 
-                # Añadir metadata anidado si existe
-                if 'metadata' in result.payload and isinstance(result.payload['metadata'], dict):
-                    metadata['metadata_nested'] = result.payload['metadata']
-                
-                # Campos adicionales según tipo de documento
-                if layer == 1 or layer == "article_chunk":
-                    # Normativa / article_chunk
-                    metadata.update({
-                        "tipo": result.payload.get('tipo', ''),
-                        "norma_nombre": result.payload.get('norma_nombre', result.payload.get('law_name', '')),
-                        "norma_completa": result.payload.get('norma_completa', ''),
-                        "articulo": result.payload.get('articulo', result.payload.get('article_id', '')),
-                        "fecha": result.payload.get('fecha', '')
-                    })
-
-                    # LOGICA ROBUSTA: Construir URL desde BOE ID si es necesario
-                    url = ""
-                    boe_id = result.payload.get('boe_id', '')
-                    
-                    # 1. Intentar sacar de metadata_nested (si existe)
-                    if 'metadata' in result.payload and 'data' in result.payload['metadata']:
-                         try:
-                             url = result.payload['metadata']['data']['metadatos']['url_html_consolidada']['_text']
-                         except:
-                             pass
-                    
-                    # 2. Si falla, construirla usando el patrón oficial
-                    if not url and boe_id and boe_id.startswith('BOE'):
-                        url = f"https://www.boe.es/buscar/act.php?id={boe_id}"
-                        logger.info(f"🔗 URL Construida desde ID: {url}")
-                    
-                    metadata["url"] = url
-                elif layer == 3:
-                    # Materiales
-                    metadata.update({
-                        "tipo": result.payload.get('tipo', ''),
-                        "material_nombre": result.payload.get('material_nombre', ''),
-                        "material_descripcion": result.payload.get('material_descripcion', ''),
-                        "fuente": result.payload.get('fuente', ''),
-                        "tiene_respuestas": result.payload.get('tiene_respuestas', False)
-                    })
-                
-                doc = {
+                documents.append({
                     "id": str(result.id),
-                    "score": float(result.score),
-                    "content": result.payload.get("text", ""),
+                    "score": float(result.score) if hasattr(result, 'score') else 0.0,
+                    "content": payload.get("text") or payload.get("text_snippet") or "",
                     "metadata": metadata
-                }
-                documents.append(doc)
+                })
             
-            logger.info(f"Found {len(documents)} documents for query: {query[:50]}...")
-            return documents
+            # Ordenar por score y tomar top_k
+            documents.sort(key=lambda x: x["score"], reverse=True)
+            logger.info(f"Found {len(documents[:top_k])} documents for query: {query[:50]}...")
+            return documents[:top_k]
             
         except Exception as e:
-            logger.error(f"Error searching documents: {e}")
-            raise
+            logger.error(f"Error en búsqueda RAG: {e}")
+            return []
     
     def format_context_for_llm(self, documents: List[Dict]) -> str:
         """
-        Formatea documentos como contexto para el LLM
+        Formatea TODOS los metadatos para el prompt del LLM.
+        Incluye estado de vigencia, derogación, organismo, fechas y materias.
         """
         if not documents:
-            return "No se encontraron documentos relevantes."
+            return "No se encontró normativa aplicable relevante en el BOE."
         
-        context_parts = []
+        context_lines = ["### NORMATIVA OFICIAL (BOE) RELEVANTE:"]
         for i, doc in enumerate(documents, 1):
-            meta = doc["metadata"]
-            layer = meta.get("layer", 0)
+            m = doc["metadata"]
             
-            # Formato según la capa
-            if layer == 1:
-                # Normativa
-                source = f"{meta.get('norma_nombre', 'N/A')}"
-                if meta.get('articulo'):
-                    source += f" - Artículo {meta['articulo']}"
-                tipo = meta.get('tipo', 'ley')
-            else:
-                # Materiales
-                source = meta.get('material_descripcion', 'Material de estudio')
-                tipo = meta.get('tipo', 'material')
+            # Indicador de vigencia — MUY IMPORTANTE para el LLM
+            vigencia_tag = "✅ VIGENTE" if m.get("vigente", True) else "⚠️ DEROGADO/MODIFICADO"
+            if m.get("estatus_derogacion", "N") == "S":
+                vigencia_tag = "❌ DEROGADO"
             
-            context_parts.append(
-                f"[{i}] {source} ({tipo})\n"
-                f"Relevancia: {doc['score']:.2%}\n"
-                f"Contenido:\n{doc['content']}\n"
-                f"---"
+            # Materias
+            materias_str = ", ".join(m.get("materias", [])[:3]) if m.get("materias") else ""
+            
+            # Análisis XML — relaciones legales (normas que derogan/modifican ésta)
+            analisis = m.get("analisis_boe", {})
+            relaciones = []
+            if analisis.get("norma_modificadora"):
+                relaciones.append(f"Modificado por: {analisis['norma_modificadora']}")
+            if analisis.get("norma_derogadora"):
+                relaciones.append(f"Derogado por: {analisis['norma_derogadora']}")
+            relaciones_str = " | ".join(relaciones) if relaciones else ""
+            
+            block = (
+                f"\n--- [{i}] {m.get('law_name', 'N/A')} ---\n"
+                f"  Artículo: {m.get('article_title', 'N/A')}\n"
+                f"  Estado: {vigencia_tag}\n"
             )
+            if m.get("organismo_emisor"):
+                block += f"  Organismo: {m['organismo_emisor']}\n"
+            if m.get("rango"):
+                block += f"  Rango: {m['rango']}\n"
+            if m.get("fecha_publicacion"):
+                block += f"  Publicación BOE: {m['fecha_publicacion']}"
+                if m.get("fecha_vigencia"):
+                    block += f"  | Desde: {m['fecha_vigencia']}"
+                block += "\n"
+            if materias_str:
+                block += f"  Materias: {materias_str}\n"
+            if relaciones_str:
+                block += f"  Relaciones: {relaciones_str}\n"
+            block += (
+                f"  Contenido: {doc['content'][:600]}\n"
+                f"  Fuente: {m.get('url', 'N/A')}\n"
+            )
+            context_lines.append(block)
         
-        return "\n\n".join(context_parts)
+        context_lines.append("\n> INSTRUCCIÓN: Si el artículo aparece como DEROGADO o MODIFICADO, indícalo "
+                             "explícitamente en tu respuesta y cita la norma que lo sustituyó si está disponible.")
+        
+        return "\n".join(context_lines)
     
     async def search_and_answer(
         self,
         query: str,
         top_k: int = 5,
-        min_score: float = 0.5,
-        layer_filter: Optional[int] = None,
-        apply_reranking: bool = True
+        min_score: float = 0.35,
+        layer_filter: Optional[int] = None,  # Kept for compatibility, ignored
+        apply_reranking: bool = True         # Kept for compatibility, ignored
     ) -> Dict:
         """
-        Busca documentos y prepara respuesta completa
+        Busca documentos y prepara respuesta completa con todos los metadatos.
         
         Returns:
             {
                 "query": str,
                 "documents": List[Dict],
-                "context": str,
+                "context": str,        # Formateado con todos los metadatos
                 "metadata": Dict
             }
         """
         start_time = time.time()
         
-        # Buscar documentos
+        # Buscar documentos (búsqueda híbrida)
         documents = await self.search_documents(
             query=query,
             top_k=top_k,
             min_score=min_score,
-            layer_filter=layer_filter,
-            apply_reranking=apply_reranking
         )
         
-        # Formatear contexto
+        # Formatear contexto completo
         context = self.format_context_for_llm(documents)
         
-        # Calcular tiempo
         elapsed_ms = int((time.time() - start_time) * 1000)
         
         return {
@@ -333,23 +325,21 @@ class RAGAgentV2:
                 "top_score": documents[0]["score"] if documents else 0.0,
                 "search_time_ms": elapsed_ms,
                 "embedding_model": self.embedding_model,
-                "reranking_applied": apply_reranking,
+                "search_mode": "HYBRID (Dense + BM25 RRF)",
+                "reranking_applied": False,
                 "timestamp": datetime.now().isoformat()
             }
         }
     
     async def get_collection_stats(self) -> Dict:
-        """
-        Obtiene estadísticas de la colección
-        """
+        """Obtiene estadísticas de la colección"""
         try:
             collection_info = self.qdrant_client.get_collection(self.collection_name)
             return {
                 "collection_name": self.collection_name,
                 "total_documents": collection_info.points_count,
-                "vector_size": collection_info.config.params.vectors.size,
-                "distance": str(collection_info.config.params.vectors.distance),
-                "status": "healthy"
+                "status": "healthy",
+                "search_mode": "HYBRID (Dense + BM25 RRF)"
             }
         except Exception as e:
             logger.error(f"Error getting collection stats: {e}")
@@ -367,10 +357,5 @@ def get_rag_agent_v2() -> RAGAgentV2:
     """Get or create RAG Agent V2 singleton"""
     global _rag_agent_v2_instance
     if _rag_agent_v2_instance is None:
-        _rag_agent_v2_instance = RAGAgentV2(
-            qdrant_url=os.getenv("QDRANT_URL", "http://localhost:6333"),
-            collection_name=os.getenv("COLLECTION_NAME", "opositaia_knowledge"),  # Changed from QDRANT_COLLECTION
-            embedding_model=os.getenv("EMBEDDING_MODEL", "pablosi/bge-m3-spa-law-qa-trained-2"),
-            api_key=os.getenv("QDRANT_API_KEY")
-        )
+        _rag_agent_v2_instance = RAGAgentV2()
     return _rag_agent_v2_instance

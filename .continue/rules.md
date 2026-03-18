@@ -45,3 +45,29 @@
 - Integra con sistemas MCP cuando sea posible
 - Respeta la estructura de base de datos Qdrant
 - Considera latencia en operaciones de búsqueda
+
+## BMAD Method
+
+### Activación de Agentes
+- Cuando se invoque un agente BMAD (ej: `/bmad-master`), LEE el archivo del agente completo
+- NUNCA improvises el comportamiento de agentes
+- Sigue EXACTAMENTE las instrucciones de activación de cada agente
+- Respeta la estructura XML y los pasos de activación
+
+### Ejecución de Workflows
+- Cuando se invoque un workflow BMAD (ej: `/create-prd`), LEE el archivo del workflow completo
+- Sigue TODOS los pasos del workflow en orden
+- Usa los recursos y templates definidos en el workflow
+- Genera artefactos en la carpeta de salida configurada
+
+### Variables de Configuración
+- `{user_name}`: Spas
+- `{communication_language}`: Spanish
+- `{document_output_language}`: Spanish
+- `{output_folder}`: {project-root}/docs
+- `{project-root}`: /home/spas/OPOS_GEMINI_1
+
+### Comunicación
+- Los agentes BMAD se comunican en **español** (según {communication_language})
+- Mantén el carácter y estilo de comunicación de cada agente
+- Respeta los menús numerados y la estructura de interacción

@@ -1725,11 +1725,12 @@ def calcular_it_situaciones_especiales_lo1_2023(salario_base: Decimal, situacion
     """
     situaciones_validas = {
         "menstruacion": {
-            "carencia": "SIN carencia requerida",
-            "pagador_dia_1": "INSS (60% base reguladora)",
-            "pagador_posterior": "INSS desde día 1 (toda la IT)",
+            "carencia": "SIN carencia previa (EC especial)",
+            "pagador_dia_1": "INSS (60%)",
+            "pagador_posterior": "INSS (60%) - Toda la duración",
             "responsabilidad_empresa": False,
-            "articulo": "Art. 173 bis TRLGSS (LO 1/2023)"
+            "articulo": "Art. 173 bis TRLGSS (LO 1/2023)",
+            "nota": "B7: INSS desde día 1 al 60%. No hay días a cargo de empresa ni trabajador."
         },
         "semana_39_gestacion": {
             "carencia": "CON carencia ordinaria de EC",
@@ -1836,19 +1837,31 @@ def calcular_br_jubilacion_dt34(bases_ordenadas_descendente: List[Decimal]) -> D
         "base_reguladora": float(br.quantize(Decimal("0.01"))),
         "bases_usadas": 302,
         "divisor": 352.33,
-        "explicacion": "DT 34ª TRLGSS (RDL 2/2023): Las 302 mejores bases de los últimos 304 meses, divididas entre 352,33."
+        "explicacion": "DT 34ª TRLGSS (RDL 2/2023): Se toman las 302 mejores bases de los últimos 304 meses y se dividen entre el divisor fijo de 352,33 (P2)."
     }
 
 # 7. Efectos Cambio de Base RETA (RDL 13/2022 — sin ventanas trimestrales)
 def calcular_fecha_efectos_cambio_base_reta(fecha_solicitud: date) -> Dict[str, Any]:
-    """Desde ingresos reales: solicitud mes X → efectos 1 de mes X+1. Sin ventanas bimestrales."""
-    dias_en_mes = calendar.monthrange(fecha_solicitud.year, fecha_solicitud.month)[1]
-    efecto = fecha_solicitud + timedelta(days=(dias_en_mes - fecha_solicitud.day + 1))
+    """REGLA RDL 13/2022 (H7): El cambio de base en RETA se realiza en 6 ventanas bimestrales."""
+    month = fecha_solicitud.month
+    if month in (1, 2):
+        efecto = date(fecha_solicitud.year, 3, 1)
+    elif month in (3, 4):
+        efecto = date(fecha_solicitud.year, 5, 1)
+    elif month in (5, 6):
+        efecto = date(fecha_solicitud.year, 7, 1)
+    elif month in (7, 8):
+        efecto = date(fecha_solicitud.year, 9, 1)
+    elif month in (9, 10):
+        efecto = date(fecha_solicitud.year, 11, 1)
+    else: # 11, 12
+        efecto = date(fecha_solicitud.year + 1, 1, 1)
+        
     return {
         "fecha_efectos": efecto.isoformat(),
         "mes_solicitud": f"{fecha_solicitud.year}-{fecha_solicitud.month:02d}",
         "mes_efectos": f"{efecto.year}-{efecto.month:02d}",
-        "explicacion": "TRAMPA (H7): Desde RDL 13/2022 (ingresos reales), efectos el 1 del mes siguiente. Las 6 ventanas bimestrales ya no existen."
+        "explicacion": "CORRECCIÓN H7: El RDL 13/2022 establece 6 ventanas bimestrales para cambiar la base. Solicitud Ene-Feb → Efectos 1 Mar, etc."
     }
 
 # 8. Tipo Enajenación Subasta / Embargo Inmueble (Art. 104 RD 1415/2004)
