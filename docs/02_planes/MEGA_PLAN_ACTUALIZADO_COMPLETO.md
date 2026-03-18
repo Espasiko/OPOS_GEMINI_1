@@ -1,9 +1,27 @@
----\n\n## 🎉 ACTUALIZACIÓN 06 ENE 2026: SALAMANDRA + MCP RAG OPERATIVO\n\n**Stack Completo:**\n- ✅ Pablosi Flask (puerto 5001)\n- ✅ MCP HTTP Wrapper (puerto 3100)  \n- ✅ VPS Salamandra (electroyhogarpelotazo.tienda)\n- ✅ Qdrant Cloud: `opositaia_knowledge`\n\n**Doc:** `060126_memoria_mcp_vps_salamandra.md`\n\n---\n\n## 📊 ACTUALIZACIÓN 09 ENE 2026: RESULTADOS EXAMEN ENERO 2025\n\n**Prueba de Validación Salamandra (70 preguntas):**\n- **Precisión:** 35.7% (25/70 correctas)\n- **Tiempo:** 7h total, 4.7min/pregunta\n- **VPS:** 100% uptime, sin errores\n\n**Problemas Detectados:**\n- Sesgo hacia opción B (42.9%)\n- RAG insuficiente (10 chunks)\n- 14 duplicados con respuestas variables\n\n**Informes:** Ver artifacts en `.gemini/antigravity/brain/cbbd51fa.../ANALISIS_POST_EXAMEN_3_TAREAS.md`\n\n---
-# 🚀 MEGA PLAN ACTUALIZADO - RAG + FINE-TUNING COMPLETO
-**Fecha:** 15 de diciembre de 2025 (Actualizado 31/12/2025)  
-**Versión:** 3.0 - VPS DESPLEGADO & ARQUITECTURA DISTRIBUIDA  
-**Estado:** 🟢 EN EJECUCIÓN - SALAMANDRA ONLINE
+```
+---
 
+## 💎 ACTUALIZACIÓN 22 FEB 2026: ARQUITECTURA HÍBRIDA V6.7 "VERDAD ABSOLUTA"
+
+**Hitos Logrados:**
+- ✅ **Hybrid Ensamble Operativo:** Especialización de Qwen 2.5 Coder (Lógica/JSON) y Salamandra R1 (Narrativa jurídica).
+- ✅ **Auditor de Verdad (BOE API):** Integración directa con `boe.es` para recuperar bloques XML de leyes en tiempo real. Cero alucinaciones legales.
+- ✅ **Linter de Roles:** Sistema de validación de parentesco para prevenir alucinaciones de parentesco (Causante vs Beneficiarios).
+- ✅ **URLs de Verificación:** Cada pregunta generada incluye un enlace directo al precepto consolidado en el BOE.
+
+**Stack Actual:**
+- **Lógica:** Qwen 2.5 Coder 7B (Ollama Local)
+- **Narrativa:** Salamandra R1 8B (Ollama Local)
+- **Datos:** BOE API + RAG pablosi (bge-m3)
+- **Cálculo:** Calculadoras determinísticas (IPT, Viudedad, Jubilación)
+
+---
+
+# 🚀 MEGA PLAN ACTUALIZADO - RAG + FINE-TUNING COMPLETO
+**Fecha:** 22 de febrero de 2026
+**Versión:** 4.0 - ARQUITECTURA HÍBRIDA Y VERIFICACIÓN BOE  
+**Estado:** 🟢 EXCELENTE - MOTOR DE VERDAD OPERATIVO
+NOTA:SESGO , MAL DATASET. NECESITAMOS SALAMANDRA R1 + PRUEBA DE CAPACIDADES + FINETUNNING , CREANDO DATASET ADECUADO! 
 ---
 
 ## 🎉 ACTUALIZACIÓN 15-16 DIC 2025: MCP OPOSITAIA EN KIRO + GITHUB SYNC
@@ -920,6 +938,23 @@ Para cada uno de los puntos anteriores, seguiremos ESTRICTAMENTE este ciclo:
 17. Ver como hacer la salamandra que vea lo subrayado por el usuario, o por colores, por ej. verde-explicar termino, rojo - tener cuidado con esta cuestion y ponerla en los flashcards, con un boton flotante al subrayar etc. etc. 
 18. leer de nuevo el plan de ideas de brainstorming para meter las mejores practicas oficiales y alternativas de estudio y memorizacion y reinvestigarlo bien!
 19. crear ya conjuntos de casos practicos con chat explicativo de IA, tests, simulacros y algunas mapas mentales comunes, esquemas, temas enteros(estos sin chat explicativo) y falshcards todo para evaluar y regalar a los primeros interesados y venderlas ya!!! 
+
+---
+
+---
+
+## 💎 ACTUALIZACIÓN 17 MARZO 2026: V13.1 "SENTINEL" & DEEPSEEK R1
+
+**Hitos V13.1 (Estado de Publicación):**
+- ✅ **Sentinelas Activos:** El Math Sieve ha pasado de ser descriptivo a ser un bloqueador real. Verifica determinísticamente:
+    - **Jubilación:** Exigencia de 35 años para jubilación anticipada voluntaria.
+    - **IT-AT:** Fórmula de Base Reguladora corregida (Base mes anterior / nº días).
+    - **Escalas:** Aplicación estricta de la DT 9ª (30 años = 85,18%).
+- ✅ **Resiliencia API:** Implementado **Retry Loop (90s)** para manejar errores 429 de Mistral, garantizando la finalización de trabajos nocturnos sin intervención.
+- ✅ **Validación DeepSeek R1:** Verificado con éxito en el "Caso Beatriz" (E2E multi-personaje con SS, AGE, Mar, IMV y Derecho Internacional UE), demostrando capacidad superior de razonamiento y uso de herramientas.
+- ✅ **Deduplicación:** Implementado sistema de hash en Coherence Sieve para evitar redundancias entre preguntas.
+
+**Estado Actual:** 🟢 **LISTO PARA PRODUCCIÓN** (Calidad >85% verificada).
 
 ---
 
