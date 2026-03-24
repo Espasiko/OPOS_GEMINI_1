@@ -941,23 +941,6 @@ Para cada uno de los puntos anteriores, seguiremos ESTRICTAMENTE este ciclo:
 
 ---
 
----
-
-## 💎 ACTUALIZACIÓN 17 MARZO 2026: V13.1 "SENTINEL" & DEEPSEEK R1
-
-**Hitos V13.1 (Estado de Publicación):**
-- ✅ **Sentinelas Activos:** El Math Sieve ha pasado de ser descriptivo a ser un bloqueador real. Verifica determinísticamente:
-    - **Jubilación:** Exigencia de 35 años para jubilación anticipada voluntaria.
-    - **IT-AT:** Fórmula de Base Reguladora corregida (Base mes anterior / nº días).
-    - **Escalas:** Aplicación estricta de la DT 9ª (30 años = 85,18%).
-- ✅ **Resiliencia API:** Implementado **Retry Loop (90s)** para manejar errores 429 de Mistral, garantizando la finalización de trabajos nocturnos sin intervención.
-- ✅ **Validación DeepSeek R1:** Verificado con éxito en el "Caso Beatriz" (E2E multi-personaje con SS, AGE, Mar, IMV y Derecho Internacional UE), demostrando capacidad superior de razonamiento y uso de herramientas.
-- ✅ **Deduplicación:** Implementado sistema de hash en Coherence Sieve para evitar redundancias entre preguntas.
-
-**Estado Actual:** 🟢 **LISTO PARA PRODUCCIÓN** (Calidad >85% verificada).
-
----
-
 **Creado:** 5 de diciembre de 2025  
 **Responsable:** AI Assistant  
 **Estado:** 📋 LISTO PARA EJECUTAR  

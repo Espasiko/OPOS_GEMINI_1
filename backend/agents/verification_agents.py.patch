@@ -1,0 +1,105 @@
+--- verification_agents.py
++++ verification_agents.py
+@@ -668,91 +668,7 @@
+         # Score final
+         score_final = sum(scores) / len(scores) if scores else 0.0
+         
+         return self._crear_resultado(score_final, feedback, detalles)
+-
+-
+-# ============================================================================
+-# AGENT 7: INTERDEPENDENCIA VALIDATOR - Valida que preguntas usen enunciado
+-# ============================================================================
+-
+-class Agent7_InterdependenciaValidator(VerificationAgent):
+-    """Verifica PARTE 2 interdependencias: preguntas usan datos del enunciado (V14)"""
+-    
+-    def __init__(self):
+-        super().__init__("agent_7", "Interdependencia Validator")
+-    
+-    def verify(self, caso: Dict[str, Any]) -> VerificationResult:
+-        """Score = % de preguntas que referencian al menos 1 personaje del enunciado"""
+-        feedback = []
+-        detalles = {}
+-        
+-        # Caso puede venir empaquetado como schema CaseSchema o dict generico
+-        enunciado_texto = caso.get("enunciado", "")
+-        if isinstance(caso.get("enunciado"), dict):
+-            enunciado_texto = caso["enunciado"].get("texto", "")
+-            
+-        personajes = caso.get("personajes", [])
+-        preguntas = caso.get("preguntas", [])
+-        
+-        if not preguntas:
+-            return self._crear_resultado(1.0, ["⚠️ Sin preguntas o personajes explotables - saltando"])
+-            
+-        nombres = [p.get("nombre", "").lower() for p in personajes if p.get("nombre")]
+-        
+-        if not nombres:
+-            return self._crear_resultado(1.0, ["⚠️ Personajes sin nombre - saltando"])
+-
+-        preguntas_conectadas = 0
+-        for q in preguntas:
+-            texto_q = (q.get("pregunta", "") + " " + q.get("respuesta_correcta", "") + 
+-                      str(q.get("razonamiento", ""))).lower()
+-            
+-            # Chequea si la pregunta menciona al menos a un personaje
+-            if any(nombre in texto_q for nombre in nombres):
+-                preguntas_conectadas += 1
+-                
+-        ratio = preguntas_conectadas / len(preguntas)
+-        detalles["preguntas_conectadas"] = preguntas_conectadas
+-        detalles["total_preguntas"] = len(preguntas)
+-        
+-        if ratio >= 0.8:
+-            feedback.append(f"✅ {ratio:.0%} de preguntas referencian al enunciado (Alta interdependencia)")
+-        elif ratio >= 0.5:
+-            feedback.append(f"⚠️ {ratio:.0%} de preguntas referencian al enunciado (Interdependencia media)")
+-        else:
+-            feedback.append(f"❌ {ratio:.0%} de preguntas referencian al enunciado (Baja interdependencia)")
+-            
+-        return self._crear_resultado(ratio, feedback, detalles)
+-
+-            scores.append(0.50)
+-        
+-        # 2. Validar interdependencias: preguntas referencian personajes/datos
+-        preguntas_con_ref = 0
+-        preguntas_detalles = []
+-        
+-        for i, preg in enumerate(preguntas, 1):
+-            texto_preg = str(preg.get("texto", ""))
+-            depende_de = preg.get("depende_de", [])
+-            
+-            # Buscar referencias a personajes
+-            has_personaje_ref = False
+-            for nombre in personajes_nombres:
+-                if nombre and nombre in texto_preg:
+-                    has_personaje_ref = True
+-                    break
+-            
+-            # Si tiene referencia (explícita en metadata o texto)
+-            if depende_de or has_personaje_ref:
+-                preguntas_con_ref += 1
+-                preguntas_detalles.append(f"P{i}: ✅")
+-            else:
+-                preguntas_detalles.append(f"P{i}: ❌ (aislada)")
+-        
+-        ratio_interdependencia = preguntas_con_ref / len(preguntas)
+-        detalles["preguntas_con_ref"] = preguntas_con_ref
+-        detalles["ratio_interdependencia"] = ratio_interdependencia
+-        detalles["mapa_preguntas"] = preguntas_detalles
+-        
+-        if ratio_interdependencia >= 0.70:
+-            feedback.append(f"✅ Interdependencia alta: {ratio_interdependencia:.0%} de preguntas usan contexto")
+-            scores.append(1.0)
+-        elif ratio_interdependencia >= 0.40:
+-            feedback.append(f"⚠️ Interdependencia media: solo {ratio_interdependencia:.0%} usan contexto")
+-            scores.append(0.70)
+-        else:
+-            feedback.append(f"❌ Interdependencia baja: {ratio_interdependencia:.0%} (demasiadas preguntas aisladas)")
+-            scores.append(0.40)
+-        
+-        # Score final
+-        score_final = sum(scores) / len(scores) if scores else 0.0
+-        
+-        return self._crear_resultado(score_final, feedback, detalles)

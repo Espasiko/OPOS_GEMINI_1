@@ -168,7 +168,7 @@ class RAGHelper:
 **{art['article_id']}** - {art['titulo']}
 BOE: {art['boe_id']}
 
-{art['texto'][:500]}...
+{art['texto']}
 """.strip())
         
         return "\n\n---\n\n".join(formatted)

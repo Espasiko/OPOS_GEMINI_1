@@ -61,20 +61,9 @@ gastos_tokens/
 golden_dataset/
 golden_dataset_seguro/
 
-# IDE & AI Tools
+# IDE
 .vscode/
 .idea/
-.agent/
-.agents/
-.claude/
-.cline/
-.continue/
-.cursor/
-.opencode/
-.roo/
-.trae/
-.windsurf/
-_bmad/
 *.swp
 *.swo
 

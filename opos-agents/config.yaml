@@ -21,7 +21,7 @@ config:
       provider: "deepseek"
 
     cloud_expert:
-      name: "claude-3-5-sonnet" # Golden standard legal
+      name: "claude-sonnet-4-6" # Golden standard legal (Lanzado en 2025)
       provider: "anthropic"
       
     mistral_large:

@@ -57,11 +57,11 @@ Orquestador → Investigador (tools: search_rag + calculator)
 | E1 | `verify_boe` no declarada en `generator.yaml` | LLM genera sin verificación real | ✅ **CORREGIDO** - Ya está en tools |
 | E2 | Umbral jubilación 2026: `38.5` en lugar de `38.25` en `calculos_ss_extended.py` | Error sistemático en todas las preguntas de jubilación | ✅ **CORREGIDO 12/03** |
 | E3 | `calculos_ss.py` no diferencia quién paga IT días 4-15 (empresa) vs 16+ (INSS) | Alucinaciones en sujeto pagador | ✅ **CORREGIDO** |
-| E4 | RAG no filtra por `vigente=true` → artículos derogados contaminan resultados | LLM usa normas obsoletas | ✅ **CORREGIDO** - Priorizado en orquestador |
-| E5 | Model string Claude incorrecto en `llm_providers.py` | Confusión en qué modelo se usa | ✅ **CORREGIDO** |
-| E6 | `temperature: 0.3` para DeepSeek R1 (requiere `1.0`) | R1 se "compromete" con datos incorrectos | ✅ **CORREGIDO** |
-| E7 | `MCPClient` instanciado globalmente al importar → `FileNotFoundError` en startup | Backend cae si MCP no activo | ⚠️ Pendiente lazy init |
-| E8 | Dispatcher IT hardcodea `dia_baja=15` siempre | Ignora diferencias días 5 vs 22 vs 183 | ✅ **CORREGIDO V13.1** |
+| E4 | RAG no filtra por `vigente=true` → artículos derogados contaminan resultados | LLM usa normas obsoletas | ⚠️ **Pendiente filtro** - No implementado |
+| E5 | Model string Claude incorrecto en `llm_providers.py` | Confusión en qué modelo se usa | ✅ Documentado |
+| E6 | `temperature: 0.3` para DeepSeek R1 (requiere `1.0`) | R1 se "compromete" con datos incorrectos | ✅ **CORREGIDO** - Temperature 1.0 en llm_providers.py |
+| E7 | `MCPClient` instanciado globalmente al importar → `FileNotFoundError` en startup | Backend cae si MCP no activo | ⚠️ **Pendiente lazy init** - Instancia global en mcp_gateway.py |
+| E8 | Dispatcher IT hardcodea `dia_baja=15` siempre | Ignora diferencias días 5 vs 22 vs 183 | ⚠️ **Pendiente corrección** - Código usa <=15 en calculos_ss.py |
 
 ---
 
@@ -153,11 +153,4 @@ nuevos datos y prompt: prompt_maestro_opositaia_COSMIC.md](file:///home/spas/OPO
 5. **Agentes BMAD para codificacion en la ide**: Todos los agentes (`analyst`, `planner`, `dev`, `qa`) están instalados en `.agents/skills/`.
 6. **AGENTES QUE USA LA APLICACION** /home/spas/OPOS_GEMINI_1/backend/agents YE EL SISTEMA ESTA EN /BACKEND, ROUTERS, DISPATCHER, CALULADORAS, ETC. 
 ---
----
-
-## 7. HITOS V13.1 "SENTINEL" (17/03/2026) ✅
-- **Sieve Math Activo:** Verificación real de 35 años (Jubilación) y base mes anterior (IT-AT).
-- **DeepSeek R1 E2E:** Éxito total en el "Caso Beatriz" (Multi-personaje complex).
-- **Resiliencia:** Retry loop (90s) para errores 429 de Mistral implementado.
-
-*Firma: Antigravity AI + Claude — 17/03/2026*
+*Firma: Antigravity AI + Claude — 15/03/2026*

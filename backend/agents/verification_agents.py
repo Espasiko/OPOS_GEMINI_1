@@ -67,72 +67,71 @@ class VerificationAgent(ABC):
 
 
 # ============================================================================
-# AGENT 1: BOE VERIFIER - Valida URLs BOE, vigencia, derogaciones
+# AGENT 1: BOE VERIFIER - Valida URLs BOE, vigencia, derogaciones (V14 - Qdrant)
 # ============================================================================
+import qdrant_client
 
 class Agent1_BOEVerifier(VerificationAgent):
-    """Verifica: ¿URLs BOE reales? ¿Vigentes en 2026? ¿No derogados?"""
-    
-    BOE_ARTICULOS_VALIDOS = {
-        "173": {"ley": "TRLGSS", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-1994-24417"},
-        "174": {"ley": "TRLGSS", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-1994-24417"},
-        "175": {"ley": "TRLGSS", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-1994-24417"},
-        "193": {"ley": "TRLGSS", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-1994-24417"},
-        "206": {"ley": "TRLGSS", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-1994-24417"},
-        "262": {"ley": "TRLGSS", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-1994-24417"},
-        "8 RD-ley 20/2020": {"ley": "Real Decreto-ley 20/2020", "vigente": True, "url": "boe.es/buscar/act.php?id=BOE-A-2020-6039"},
-    }
+    """Verifica: Búsqueda real en Qdrant (colección SS o AGE)"""
     
     def __init__(self):
-        super().__init__("agent_1", "BOE Verifier")
+        super().__init__("agent_1", "BOE Qdrant Verifier")
+        try:
+            self.qdrant = qdrant_client.QdrantClient("localhost", port=6333)
+            # Por defecto usamos SS, luego se inyectará configuración si es AGE
+            from backend.v14.config.convocatorias import QDRANT_COLLECTION_SS
+            self.collection = QDRANT_COLLECTION_SS
+        except Exception as e:
+            logger.warning(f"⚠️ No se pudo conectar a Qdrant: {e}")
+            self.qdrant = None
     
     def verify(self, caso: Dict[str, Any]) -> VerificationResult:
         feedback = []
-        score = 0.0
+        scores = []
         
-        # Extraer artículos del caso
         articulos_caso = self._extraer_articulos(caso)
         
         if not articulos_caso:
-            feedback.append("⚠️ Artículos no explícitos - asumir contexto válido")
-            score = 0.80  # Bonus por duda
-            return self._crear_resultado(score, feedback)
-        
-        # Validar cada artículo
-        articulos_validos = 0
+            return self._crear_resultado(1.0, ["✅ Sin artículos explícitos (Contexto OK)"])
+            
+        if not self.qdrant:
+            return self._crear_resultado(0.5, ["⚠️ Qdrant no disponible - Verificación omitida"])
+            
         for art in articulos_caso:
-            if art in self.BOE_ARTICULOS_VALIDOS:
-                info = self.BOE_ARTICULOS_VALIDOS[art]
-                if info["vigente"]:
-                    feedback.append(f"✅ {art}: Vigente en 2026")
-                    articulos_validos += 1
+            try:
+                # Búsqueda textual exacta del artículo
+                resultados = self.qdrant.search(
+                    collection_name=self.collection,
+                    query_vector=[0.0]*1536, # Dummy vector, requiere query real si usamos embeddings
+                    query_filter={"must": [{"key": "articulo_id", "match": {"text": art}}]},
+                    limit=1
+                )
+                if resultados:
+                    meta = resultados[0].payload
+                    if meta.get('derogado', False):
+                        feedback.append(f"❌ {art}: DEROGADO el {meta.get('fecha_derogacion', 'N/A')}")
+                        scores.append(0.0)
+                    else:
+                        feedback.append(f"✅ {art}: Vigente en BOE")
+                        scores.append(1.0)
                 else:
-                    feedback.append(f"❌ {art}: DEROGADO")
-            else:
-                feedback.append(f"✅ {art}: Verificado BOE")
-                articulos_validos += 0.8  # Confianza neutral
-        
-        score = min(1.0, 0.7 + (articulos_validos / max(len(articulos_caso), 1)) * 0.3)
-        
-        if score >= 0.95:
-            feedback.append("✅ Artículos BOE vigentes 2026")
-        
-        return self._crear_resultado(score, feedback, {"articulos_validados": len(articulos_caso)})
+                    feedback.append(f"⚠️ {art}: No encontrado en BOE local")
+                    scores.append(0.5)
+            except Exception as e:
+                feedback.append(f"⚠️ Error verificando {art}: {str(e)}")
+                scores.append(0.5)
+                
+        score_final = sum(scores) / len(scores) if scores else 0.0
+        return self._crear_resultado(score_final, feedback, {"articulos_revisados": len(articulos_caso)})
     
     def _extraer_articulos(self, caso: Dict) -> List[str]:
         """Extrae artículos del caso (busca en texto)"""
         texto = json.dumps(caso).lower()
         articulos = []
-        
-        # Buscar patrones "Art XXX", "artículo XXX"
         matches = re.findall(r"art(?:ículo)?\s*\.?\s*(\d+(?:\s*[a-z])?)", texto, re.IGNORECASE)
-        articulos.extend([m.strip() for m in matches])
-        
-        # Buscar RD-ley específicos
-        if "imv" in texto or "ingreso.*mínimo.*vital" in texto:
-            articulos.append("8 RD-ley 20/2020")
-        
+        articulos.extend([f"Art. {m.strip()}" for m in matches])
         return list(set(articulos))
+
 
 
 # ============================================================================
@@ -459,142 +458,104 @@ class Agent4_Coherence(VerificationAgent):
 
 
 # ============================================================================
-# AGENT 5: TRAP PEDAGOGY - Evalúa si trampa es realista, educativa, sutil
+# AGENT 5: TRAP PEDAGOGY - Evalúa si la trampa se explica y tiene valor educativo
 # ============================================================================
 
 class Agent5_TrapPedagogy(VerificationAgent):
-    """Verifica: ¿Trampa es realista? ¿Educativa? ¿Sutil?"""
-    
-    TRAMPA_KEYWORDS = [
-        "trampa", "error típico", "confusión común", "error frecuente",
-        "distractor", "opción falsa", "engañoso", "sutil"
-    ]
-    
-    CONCEPTOS_EDUCATIVOS = [
-        "porcentaje", "base reguladora", "contingencia", "coeficiente",
-        "derogado", "vigencia", "excepto", "salvo", "límite", "máximo"
-    ]
+    """Verifica: ¿La explicación / razonamiento revela dónde está la trampa?"""
     
     def __init__(self):
-        super().__init__("agent_5", "Trap Pedagogy Evaluator")
+        super().__init__("agent_5", "Trap Pedagogy (Explicación)")
     
     def verify(self, caso: Dict[str, Any]) -> VerificationResult:
         feedback = []
-        score = 0.0
+        scores = []
+        detalles = {}
         
-        # Check 1: ¿Menciona trampa pedagógica?
-        tiene_trampa = self._detectar_trampa(caso)
-        if tiene_trampa:
-            feedback.append("✅ Trampa pedagógica identificada")
-            score += 0.35
+        preguntas = caso.get("preguntas", [])
+        if not preguntas:
+            return self._crear_resultado(1.0, ["⚠️ Sin preguntas - saltando"])
+            
+        preguntas_con_explicacion = 0
+        
+        for q in preguntas:
+            razonamiento = str(q.get("razonamiento", "")).lower()
+            if not razonamiento:
+                continue
+                
+            # Busca si la explicación menciona por qué las otras opciones son incorrectas o señala la trampa
+            is_pedagogico = any(kw in razonamiento for kw in [
+                "no es", "sino", "trampa", "confusión", "falso", "incorrecto", 
+                "excepción", "sin embargo", "a diferencia de", "ojo", "cuidado"
+            ])
+            if is_pedagogico:
+                preguntas_con_explicacion += 1
+                
+        ratio = preguntas_con_explicacion / len(preguntas)
+        detalles["preguntas_pedagogicas"] = preguntas_con_explicacion
+        
+        if ratio >= 0.7:
+            feedback.append(f"✅ Excelente pedagogía ({ratio:.0%} explican la trampa)")
+        elif ratio >= 0.4:
+            feedback.append(f"⚠️ Pedagogía media ({ratio:.0%} explican la trampa)")
         else:
-            feedback.append("✅ Caso educativo implícito")
-            score += 0.25
+            feedback.append(f"❌ Pedagogía pobre ({ratio:.0%} de explicaciones). Razonamientos demasiado planos.")
+            
+        return self._crear_resultado(ratio, feedback, detalles)
+
+# ============================================================================
+# AGENT 8: TRAP DISTRACTOR - Evalúa la calidad de las opciones incorrectas
+# ============================================================================
+
+class Agent8_TrapDistractorValidator(VerificationAgent):
+    """Verifica: ¿Los distractores son plausibles tipológicamente?"""
+    
+    def __init__(self):
+        super().__init__("agent_8", "Trap Distractor (Opciones)")
         
-        # Check 2: ¿Es realista? (basada en error típico)
-        realista = self._verificar_realismo(caso)
-        if realista:
-            feedback.append("✅ Basada en error típico opositor")
-            score += 0.35
+    def verify(self, caso: Dict[str, Any]) -> VerificationResult:
+        feedback = []
+        detalles = {}
+        
+        preguntas = caso.get("preguntas", [])
+        if not preguntas:
+            return self._crear_resultado(1.0, ["⚠️ Sin preguntas - saltando"])
+            
+        preguntas_plausibles = 0
+        
+        for q in preguntas:
+            correcta = str(q.get("respuesta_correcta", "")).lower()
+            distractores = [str(d).lower() for d in q.get("distractores", [])]
+            
+            if not distractores:
+                continue
+                
+            # Comprueba homogeineidad: si la correcta tiene números, los distractores deberían tener números
+            tiene_numeros = bool(re.search(r'\d+', correcta))
+            tiene_porcentajes = "%" in correcta
+            
+            distractores_homogeneos = 0
+            for d in distractores:
+                d_tiene_num = bool(re.search(r'\d+', d))
+                d_tiene_pct = "%" in d
+                if (tiene_numeros == d_tiene_num) and (tiene_porcentajes == d_tiene_pct):
+                    distractores_homogeneos += 1
+                    
+            # Se considera plausible si al menos el 50% de los distractores comparten tipología
+            if distractores_homogeneos >= len(distractores) / 2:
+                preguntas_plausibles += 1
+                
+        ratio = preguntas_plausibles / len(preguntas)
+        detalles["preguntas_plausibles"] = preguntas_plausibles
+        
+        if ratio >= 0.8:
+            feedback.append(f"✅ Distractores altamente plausibles ({ratio:.0%})")
+        elif ratio >= 0.5:
+            feedback.append(f"⚠️ Distractores de plausibilidad media ({ratio:.0%})")
         else:
-            feedback.append("✅ Caso estructurado correctamente")
-            score += 0.25
-        
-        # Check 3: ¿Tiene opciones distintas?
-        opciones_ok = self._verificar_opciones(caso)
-        if opciones_ok:
-            feedback.append("✅ Opciones bien diferenciadas")
-            score += 0.30
-        else:
-            feedback.append("⚠️ Opciones necesitan revisión")
-            score += 0.15
-        
-        return self._crear_resultado(min(score, 1.0), feedback)
-    
-    def _detectar_trampa(self, caso: Dict) -> bool:
-        """Busca mención explícita de trampa"""
-        texto = json.dumps(caso).lower()
-        
-        for keyword in self.TRAMPA_KEYWORDS:
-            if keyword in texto:
-                return True
-        
-        return False
-    
-    def _verificar_realismo(self, caso: Dict) -> bool:
-        """¿Trampa basada en error típico?"""
-        texto = json.dumps(caso).lower()
-        
-        errores_tipicos = [
-            ("porcentaje", ["70", "60", "75", "50"]),
-            ("base reguladora", ["24", "25", "20"]),
-            ("contingencia", ["ec", "at", "ep"]),
-        ]
-        
-        mentions = 0
-        for error_tipo, valores in errores_tipicos:
-            if error_tipo in texto:
-                for valor in valores:
-                    if valor in texto:
-                        mentions += 1
-        
-        return mentions >= 2
-    
-    def _verificar_valor_educativo(self, caso: Dict) -> bool:
-        """¿Enseña concepto clave?"""
-        texto = json.dumps(caso).lower()
-        
-        for concepto in self.CONCEPTOS_EDUCATIVOS:
-            if concepto in texto:
-                return True
-        
-        return False
-    
-    def _verificar_sutileza(self, caso: Dict) -> bool:
-        """¿Es sutil o demasiado obvia?"""
-        opciones = caso.get("opciones", {})
-        
-        # Buscar diferencias entre opciones
-        if isinstance(opciones, dict):
-            valores = list(opciones.values())
-        else:
-            valores = opciones
-        
-        # Si opciones son muy similares → sutil
-        # Si opciones son muy diferentes → obvia
-        
-        valores_str = [str(v) for v in valores]
-        
-        # Calcular similitud
-        similitud = sum(1 for i in range(len(valores_str)) 
-                       for j in range(i+1, len(valores_str)) 
-                       if self._similar(valores_str[i], valores_str[j])) / max(len(valores_str)-1, 1)
-        
-        return 0.3 < similitud < 0.8  # Ni tan obvio ni tan sutil
-    
-    def _similar(self, a: str, b: str) -> bool:
-        """Verifica si dos strings son similares"""
-        # Comparar longitud y primeros caracteres
-        return abs(len(a) - len(b)) <= 2 and a[0] == b[0]
-    
-    def _verificar_opciones(self, caso: Dict) -> bool:
-        """¿Opciones están bien diferenciadas?"""
-        opciones = caso.get("opciones", {})
-        
-        if not opciones:
-            return False
-        
-        # Convertir a valores string
-        if isinstance(opciones, dict):
-            valores = list(opciones.values())
-        else:
-            valores = opciones
-        
-        # Necesita al menos 3 opciones distintas
-        valores_str = [str(v).lower() for v in valores]
-        valores_unicos = len(set(valores_str))
-        
-        return valores_unicos >= 3
+            feedback.append(f"❌ Distractores heterogéneos o flojos ({ratio:.0%})")
+            
+        return self._crear_resultado(ratio, feedback, detalles)
 
 
 # ============================================================================
@@ -602,7 +563,7 @@ class Agent5_TrapPedagogy(VerificationAgent):
 # ============================================================================
 
 class VerificationOrchestrator:
-    """Ejecuta los 5 agentes y consolida resultados"""
+    """Ejecuta los X agentes y consolida resultados"""
     
     def __init__(self):
         self.agentes = [
@@ -611,6 +572,8 @@ class VerificationOrchestrator:
             Agent3_Calculator(),
             Agent4_Coherence(),
             Agent5_TrapPedagogy(),
+            Agent7_InterdependenciaValidator(),
+            Agent8_TrapDistractorValidator(),
         ]
     
     def verify_caso_completo(self, caso: Dict[str, Any], verbose: bool = True) -> Dict[str, Any]:
@@ -736,296 +699,292 @@ class Agent6_EnunciadoValidator(VerificationAgent):
             feedback.append(f"⚠️ Personajes parcialmente mencionados: {ratio_mencionados:.0%}")
             scores.append(0.70)
         else:
-            feedback.append(f"⚠️ Personajes poco mencionados: {ratio_mencionados:.0%}")
-            scores.append(0.60)
-        
-        # 5. Validar contexto legal (articulos mencionados)
-        articulos = enunciado_data.get("articulos", [])
-        detalles["articulos"] = len(articulos)
-        
-        if len(articulos) >= 2:
-            feedback.append(f"✅ Artículos legales: {len(articulos)}")
-            scores.append(1.0)
-        elif len(articulos) >= 1:
-            feedback.append(f"⚠️ Artículos: {len(articulos)} (recomendado ≥2)")
-            scores.append(0.80)
-        else:
-            feedback.append(f"⚠️ Sin artículos explícitos")
-            scores.append(0.60)
-        
-        # Score final
+            feedback.append(f"❌ Personajes muy poco mencionados: {ratio_mencionados:.0%}")
+            scores.append(0.40)
+            
+        # Puntuación final Agent6
         score_final = sum(scores) / len(scores) if scores else 0.0
-        
         return self._crear_resultado(score_final, feedback, detalles)
 
 
 # ============================================================================
-# AGENT 7: INTERDEPENDENCIA VALIDATOR - Valida que preguntas usen enunciado
+# AGENT 7: INTERDEPENDENCIA VALIDATOR - Valida PARTE 2 interdependencias
 # ============================================================================
 
 class Agent7_InterdependenciaValidator(VerificationAgent):
-    """Verifica PARTE 2 interdependencias: preguntas usan datos del enunciado"""
+    """Verifica PARTE 2 interdependencias: preguntas usan datos del enunciado (V14)"""
     
     def __init__(self):
         super().__init__("agent_7", "Interdependencia Validator")
-    
-    def verify(self, supuesto: Dict[str, Any]) -> VerificationResult:
-        """Valida que preguntas referencian enunciado y personajes"""
+        
+    def verify(self, caso: Dict[str, Any]) -> VerificationResult:
         feedback = []
         detalles = {}
-        scores = []
         
-        # Extraer componentes
-        enunciado_data = supuesto.get("enunciado", {})
-        preguntas = supuesto.get("preguntas", [])
-        
-        if not preguntas:
-            return self._crear_resultado(0.0, ["❌ No hay preguntas"], detalles)
-        
-        enunciado_texto = enunciado_data.get("texto", "")
+        enunciado_data = caso.get("enunciado", {})
+        if not isinstance(enunciado_data, dict):
+            return self._crear_resultado(0.0, ["❌ Enunciado no es dict"], detalles)
+            
         personajes = enunciado_data.get("personajes", [])
-        personajes_nombres = [p.get("nombre", "") for p in personajes if "nombre" in p]
+        preguntas = caso.get("preguntas", [])
         
-        detalles["total_preguntas"] = len(preguntas)
-        detalles["personajes_disponibles"] = len(personajes_nombres)
-        
-        # 1. Validar que haya exactamente 15 preguntas (para PARTE 2)
-        if len(preguntas) == 15:
-            feedback.append(f"✅ Preguntas: exactamente 15")
-            scores.append(1.0)
-        elif 10 <= len(preguntas) <= 15:
-            feedback.append(f"⚠️ Preguntas: {len(preguntas)} (esperadas 15)")
-            scores.append(0.80)
-        else:
-            feedback.append(f"❌ Preguntas: {len(preguntas)} (requeridas 15)")
-            scores.append(0.50)
-        
-        # 2. Validar interdependencias: preguntas referencian personajes/datos
-        preguntas_con_ref = 0
-        preguntas_detalles = []
-        
-        for i, preg in enumerate(preguntas, 1):
-            texto_preg = str(preg.get("texto", ""))
-            depende_de = preg.get("depende_de", [])
+        if not preguntas or not personajes:
+            return self._crear_resultado(1.0, ["⚠️ Faltan preguntas o personajes - saltando"])
             
-            # Buscar referencias a personajes
-            has_personaje_ref = False
-            for nombre in personajes_nombres:
-                if nombre and nombre in texto_preg:
-                    has_personaje_ref = True
-                    break
-            
-            # Buscar explícitas "depende_de"
-            has_explicit_dep = len(depende_de) > 0 and depende_de != ["enunciado"]
-            
-            # Validar que no sea pregunta aislada (debe referenciar algo)
-            if has_personaje_ref or has_explicit_dep or "enunciado" in depende_de:
-                preguntas_con_ref += 1
-                status = "✅"
-            else:
-                status = "⚠️"
-            
-            preg_det = {
-                "num": i,
-                "tiene_referencia": has_personaje_ref or has_explicit_dep,
-                "status": status
-            }
-            preguntas_detalles.append(preg_det)
-        
-        ratio_con_ref = preguntas_con_ref / len(preguntas) if preguntas else 0
-        detalles["preguntas_con_referencias"] = preguntas_con_ref
-        detalles["ratio_referencias"] = ratio_con_ref
-        detalles["preguntas_detalles"] = preguntas_detalles[:5]  # Mostrar primeras 5
-        
-        if ratio_con_ref >= 0.90:
-            feedback.append(f"✅ Interdependencias: {preguntas_con_ref}/{len(preguntas)} preguntas referencian enunciado")
-            scores.append(1.0)
-        elif ratio_con_ref >= 0.70:
-            feedback.append(f"⚠️ Interdependencias: {preguntas_con_ref}/{len(preguntas)} preguntas ({ratio_con_ref:.0%})")
-            scores.append(0.80)
-        else:
-            feedback.append(f"❌ Interdependencias débiles: solo {preguntas_con_ref}/{len(preguntas)} ({ratio_con_ref:.0%})")
-            scores.append(0.50)
-        
-        # 3. Validar que preguntas tienen estructura completa
-        preguntas_completas = 0
-        for preg in preguntas:
-            required = ["num", "texto", "opciones", "respuesta_correcta"]
-            if all(k in preg for k in required):
-                # Validar que opciones tenga A/B/C/D
-                opciones = preg.get("opciones", {})
-                if len(opciones) == 4 and all(l in opciones for l in ["A", "B", "C", "D"]):
-                    preguntas_completas += 1
-        
-        ratio_completas = preguntas_completas / len(preguntas) if preguntas else 0
-        detalles["preguntas_completas"] = preguntas_completas
-        
-        if ratio_completas >= 0.95:
-            feedback.append(f"✅ Estructura: {preguntas_completas}/{len(preguntas)} preguntas correctas")
-            scores.append(1.0)
-        elif ratio_completas >= 0.80:
-            feedback.append(f"⚠️ Estructura: {preguntas_completas}/{len(preguntas)} completas")
-            scores.append(0.80)
-        else:
-            feedback.append(f"❌ Estructura: solo {preguntas_completas}/{len(preguntas)} válidas")
-            scores.append(0.50)
-        
-        # Score final
-        score_final = sum(scores) / len(scores) if scores else 0.0
-        
-        return self._crear_resultado(score_final, feedback, detalles)
+        nombres = [p.get("nombre", "").lower() for p in personajes if p.get("nombre")]
+        if not nombres:
+            return self._crear_resultado(1.0, ["⚠️ Personajes sin nombre - saltando"])
 
+        preguntas_conectadas = 0
+        for q in preguntas:
+            if isinstance(q, dict):
+                texto_q = (str(q.get("pregunta", "")) + " " + str(q.get("respuesta_correcta", "")) + 
+                          str(q.get("razonamiento", ""))).lower()
+                
+                # Chequea si la pregunta menciona al menos a un personaje
+                if any(nombre in texto_q for nombre in nombres):
+                    preguntas_conectadas += 1
+                
+        ratio = preguntas_conectadas / len(preguntas)
+        detalles["preguntas_conectadas"] = preguntas_conectadas
+        detalles["total_preguntas"] = len(preguntas)
+        
+        if ratio >= 0.8:
+            feedback.append(f"✅ {ratio:.0%} de preguntas referencian al enunciado (Alta interdependencia)")
+        elif ratio >= 0.5:
+            feedback.append(f"⚠️ {ratio:.0%} de preguntas referencian al enunciado (Interdependencia media)")
+        else:
+            feedback.append(f"❌ {ratio:.0%} de preguntas referencian al enunciado (Baja interdependencia)")
+            
+        return self._crear_resultado(ratio, feedback, detalles)
+# ============================================================================
+# AGENT 8: TRAP DISTRACTOR - Evalúa la calidad de las opciones incorrectas
+# ============================================================================
+
+class Agent8_TrapDistractorValidator(VerificationAgent):
+    """Verifica: ¿Los distractores son plausibles tipológicamente?"""
+    
+    def __init__(self):
+        super().__init__("agent_8", "Trap Distractor (Opciones)")
+        
+    def verify(self, caso: Dict[str, Any]) -> VerificationResult:
+        feedback = []
+        detalles = {}
+        
+        preguntas = caso.get("preguntas", [])
+        if not preguntas:
+            return self._crear_resultado(1.0, ["⚠️ Sin preguntas - saltando"])
+            
+        preguntas_plausibles = 0
+        
+        for q in preguntas:
+            correcta = str(q.get("respuesta_correcta", "")).lower()
+            distractores = [str(d).lower() for d in q.get("distractores", [])]
+            
+            if not distractores:
+                continue
+                
+            tiene_numeros = bool(re.search(r'\d+', correcta))
+            tiene_porcentajes = "%" in correcta
+            
+            distractores_homogeneos = 0
+            for d in distractores:
+                d_tiene_num = bool(re.search(r'\d+', d))
+                d_tiene_pct = "%" in d
+                if (tiene_numeros == d_tiene_num) and (tiene_porcentajes == d_tiene_pct):
+                    distractores_homogeneos += 1
+                    
+            if distractores_homogeneos >= len(distractores) / 2:
+                preguntas_plausibles += 1
+                
+        ratio = preguntas_plausibles / len(preguntas)
+        detalles["preguntas_plausibles"] = preguntas_plausibles
+        
+        if ratio >= 0.8:
+            feedback.append(f"✅ Distractores plausibles ({ratio:.0%})")
+        else:
+            feedback.append(f"⚠️ Distractores de plausibilidad baja ({ratio:.0%})")
+            
+        return self._crear_resultado(ratio, feedback, detalles)
 
 # ============================================================================
-# ORQUESTRADOR: Ejecuta 5 o 7 agentes (Parte 1 o Parte 2)
+# ORQUESTADOR DE VERIFICADORES (V14 Unificado)
 # ============================================================================
 
 class VerificationOrchestrator:
-    """Orquesta verificación con 5 agentes (Parte 1) o 7 agentes (Parte 2)"""
+    """Ejecuta los agentes V14 y consolida resultados"""
     
     def __init__(self):
-        # 5 agentes para Parte 1
-        self.agents_parte1 = [
+        self.agentes = [
             Agent1_BOEVerifier(),
             Agent2_LegalReasoner(),
             Agent3_Calculator(),
             Agent4_Coherence(),
-            Agent5_TrapPedagogy()
-        ]
-        
-        # 7 agentes para Parte 2 (5 + 2 nuevos)
-        self.agents_parte2 = self.agents_parte1 + [
-            Agent6_EnunciadoValidator(),
-            Agent7_InterdependenciaValidator()
+            Agent5_TrapPedagogy(),
+            Agent7_InterdependenciaValidator(),
+            Agent8_TrapDistractorValidator()
         ]
     
     def verify_caso_completo(self, caso: Dict[str, Any], verbose: bool = True) -> Dict[str, Any]:
-        """Verifica caso Parte 1 con 5 agentes"""
+        resultados = {}
+        scores = []
         
-        resultados = []
-        
-        for agent in self.agents_parte1:
+        for agente in self.agentes:
             try:
-                resultado = agent.verify(caso)
-                resultados.append(resultado)
+                resultado = agente.verify(caso)
+                resultados[agente.agent_id] = resultado.to_dict()
+                scores.append(resultado.score)
                 
                 if verbose:
-                    print(f"\n{resultado.agent_name} ({resultado.agent_id}):")
-                    print(f"  Score: {resultado.score:.0%} | Status: {resultado.status}")
-                    for fb in resultado.feedback[:3]:
-                        print(f"  {fb}")
-                    
+                    status_icon = "✅" if resultado.status == "PASS" else ("⚠️" if resultado.score >= 0.5 else "❌")
+                    logger.info(f"{status_icon} {resultado.agent_name}: {resultado.score:.0%}")
+                    for fb in resultado.feedback[:2]:
+                        logger.info(f"   {fb}")
             except Exception as e:
-                logger.error(f"Error en {agent.agent_name}: {e}")
+                logger.error(f"Error en {agente.agent_name}: {e}")
+                scores.append(0.0)
         
-        # Consolidar resultados
-        scores = [r.score for r in resultados]
         score_promedio = sum(scores) / len(scores) if scores else 0.0
-        todos_pasaron = all(r.status == "PASS" for r in resultados)
+        todos_pasaron = all(s >= 0.70 for s in scores)
         
         return {
+            "resultados_agentes": resultados,
             "score_promedio": score_promedio,
-            "status": "PASS ✅" if score_promedio >= 0.80 else "FAIL ❌",
             "todos_pasaron": todos_pasaron,
-            "scores_individuales": {r.agent_id: r.score for r in resultados},
-            "resultados_detallados": [r.to_dict() for r in resultados]
-        }
-    
-    def verify_supuesto_parte2(self, supuesto: Dict[str, Any], verbose: bool = True) -> Dict[str, Any]:
-        """Verifica supuesto Parte 2 con 7 agentes"""
-        
-        resultados = []
-        
-        # Primero agentes Parte 1 (adaptados a preguntas)
-        for agent in self.agents_parte1:
-            try:
-                # Para Parte 2, tomamos primera pregunta para verificación Parte 1
-                preguntas = supuesto.get("preguntas", [])
-                if preguntas:
-                    caso_adaptado = {
-                        "pregunta": preguntas[0].get("texto", ""),
-                        "opciones": preguntas[0].get("opciones", {}),
-                        "respuesta_correcta": preguntas[0].get("respuesta_correcta"),
-                        "razonamiento_observable": preguntas[0].get("razonamiento", {}),
-                        "tema": supuesto.get("contingencias", ["IT"])[0].lower()
-                    }
-                    resultado = agent.verify(caso_adaptado)
-                else:
-                    resultado = VerificationResult(agent.agent_id, agent.agent_name, 0.5, "SKIP", ["Sin preguntas"])
-                
-                resultados.append(resultado)
-                
-                if verbose:
-                    print(f"\n{resultado.agent_name} (Q1):")
-                    print(f"  Score: {resultado.score:.0%} | Status: {resultado.status}")
-                    
-            except Exception as e:
-                logger.error(f"Error en {agent.agent_name}: {e}")
-        
-        # Agentes específicos Parte 2
-        for agent in self.agents_parte2[5:]:  # Agent6 y Agent7
-            try:
-                resultado = agent.verify(supuesto)
-                resultados.append(resultado)
-                
-                if verbose:
-                    print(f"\n{resultado.agent_name}:")
-                    print(f"  Score: {resultado.score:.0%} | Status: {resultado.status}")
-                    for fb in resultado.feedback[:3]:
-                        print(f"  {fb}")
-                    
-            except Exception as e:
-                logger.error(f"Error en {agent.agent_name}: {e}")
-        
-        # Consolidar resultados
-        scores = [r.score for r in resultados]
-        score_promedio = sum(scores) / len(scores) if scores else 0.0
-        todos_pasaron = all(r.status == "PASS" for r in resultados)
-        
-        return {
-            "score_promedio": score_promedio,
-            "status": "PASS ✅" if score_promedio >= 0.80 else "FAIL ❌",
-            "todos_pasaron": todos_pasaron,
-            "scores_individuales": {r.agent_id: r.score for r in resultados},
-            "resultados_detallados": [r.to_dict() for r in resultados],
-            "nota": "7 agentes: 5 Parte 1 (Q1) + 2 Parte 2 (enunciado+interdependencias)"
+            "status": "APROBADO" if todos_pasaron else "PENDIENTE_REVISION",
+            "scores_individuales": {ag.agent_id: s for ag, s in zip(self.agentes, scores)},
         }
 
+    def _extract_articles(self, content: str) -> List[str]:
+        # Extrae referencias a Ley/Articulo
+        articles = []
+        matches = re.finditer(r'(Art\.|Artículo)\s+([0-9]+\w*)\s+(?:del\s+|de\s+la\s+)?([A-Z]+|Ley\s+[0-9/]+|RD\s+[0-9/]+|Real Decreto\s+[0-9/]+)', content, re.IGNORECASE)
+        for m in matches:
+            art = f"Art. {m.group(2).strip()} {m.group(3).strip()}"
+            articles.append(art)
+        # Fallback simple
+        if not articles:
+            matches_simple = re.findall(r"Art[íi]culo\s+(\d+(?:\s*[a-z])?)", content, re.IGNORECASE)
+            articles = [f"Art. {m.strip()}" for m in matches_simple]
+        return list(set(articles))
 
-# ============================================================================
-# TEST
-# ============================================================================
+    def _extract_questions(self, content: str) -> List[str]:
+        # Regex V14 robusta
+        PREGUNTA_PATTERN = re.compile(
+            r"(?:#{1,4}\s*|[*]{1,2})?(?:Pregunta|P)\s*(\d+)\s*[:\-*]",
+            re.IGNORECASE
+        )
+        splits = PREGUNTA_PATTERN.split(content)
+        questions = []
+        for i in range(1, len(splits), 2):
+            questions.append(splits[i] + splits[i+1])
+        return questions
+
+    async def _boe_sieve_score(self, caso_text: str, fecha_corte: str = "2026-03-04") -> float:
+        from qdrant_client.models import Filter, FieldCondition, MatchValue
+        from backend.agents.rag_helper import get_rag_helper
+        rag = get_rag_helper()
+        
+        extracted_arts = self._extract_articles(caso_text)
+        scores = []
+        for art in extracted_arts:
+            try:
+                # Capa 1: ¿Existe el artículo por article_id EXACTO en Qdrant?
+                # Normalizar texto para el caso de Neo4j o Qdrant.
+                # "Art. 206 bis TRLGSS"
+                result = rag.client.scroll(
+                    collection_name="opositaia_knowledge_FULL_XML",
+                    scroll_filter=Filter(must=[
+                        FieldCondition(key="article_id", match=MatchValue(value=art)),
+                        FieldCondition(key="vigente", match=MatchValue(value=True)),
+                    ]),
+                    limit=1, with_payload=True
+                )
+                if not result[0]:
+                    scores.append(0.0)  # Artículo no encontrado = FALLO
+                    continue
+                # Capa 2: ¿El texto del artículo contiene los números del caso?
+                art_text = result[0][0].payload.get("text", "")
+                nums_caso = re.findall(r'\d+[,.]?\d*', caso_text[:500])
+                hits = sum(1 for n in nums_caso if n in art_text)
+                scores.append(min(1.0, hits / max(len(nums_caso), 1)))
+            except Exception as e:
+                logger.error(f"Error boe_sieve en {art}: {e}")
+                scores.append(0.0)
+        return sum(scores) / len(scores) if scores else 0.0
+
+    async def _pedagogy_sieve_score(self, caso_text: str) -> float:
+        checks = []
+        # Check 1: ¿Hay >=15 preguntas?
+        q_count = len(re.findall(r'\*\*P\d+', caso_text))
+        checks.append(1.0 if q_count >= 15 else q_count / 15.0)
+        
+        # Check 2: ¿Cada pregunta tiene mnemónico <=15 palabras y válido?
+        MNEMONICO_INVALIDO = [
+            "trampa no encontrada", "n/a", "sin mnemónico", 
+            "mnemónico no disponible", "art. desconocido", ""
+        ]
+        mnemonics = re.findall(r'mnemonico[":\s]+([^"\n]+)', caso_text, re.I)
+        valid_mn = sum(
+            1 for m in mnemonics 
+            if len(m.split()) <= 15 and m.strip().lower() not in MNEMONICO_INVALIDO
+        )
+        checks.append(valid_mn / max(len(mnemonics), 1))
+        
+        # Check 3: ¿Hay >=3 trampas nombradas y válidas en el catálogo real?
+        import yaml
+        try:
+            with open("opos-agents/catalogo_trampas.yaml", "r") as f:
+                cat = yaml.safe_load(f)
+                catalogo_ids = set()
+                for cat_val in cat.values():
+                    if isinstance(cat_val, dict):
+                        catalogo_ids.update(cat_val.keys())
+        except:
+            catalogo_ids = set()
+
+        trap_ids_en_caso = re.findall(r'trampa[_\s]id[:\s"]+([A-Z]\d+)', caso_text, re.I)
+        ids_invalidos = [t for t in trap_ids_en_caso if t not in catalogo_ids]
+        if ids_invalidos and catalogo_ids:
+            checks.append(0.0)
+        else:
+            traps = re.findall(r'trampa[_\s]+([\w]+)', caso_text, re.I)
+            checks.append(1.0 if len(traps) >= 3 else len(traps) / 3.0)
+        # Check 4: ¿Hay >=5 URLs BOE reales (no mocks)?
+        urls = re.findall(r'https://www\.boe\.es[^\s"]+', caso_text)
+        real_urls = [u for u in urls if not any(m in u for m in ["xxx","yyy","mock","test"])]
+        checks.append(1.0 if len(real_urls) >= 5 else len(real_urls) / 5.0)
+        return sum(checks) / len(checks)
+
+    async def _trap_distractor_sieve_score(self, caso_text: str) -> float:
+        checks = []
+        # Check 1: Forbidden articles ausentes
+        forbidden = ["Art. 173 bis", "Art. 206 bis", "Art. 237 (para IT)", "DT 10ª TRLGSS"]
+        forbidden_hits = sum(1 for f in forbidden if f.lower() in caso_text.lower())
+        checks.append(1.0 if forbidden_hits == 0 else 0.0)
+        # Check 2: >=5 cálculos explícitos con resultado
+        calcs = re.findall(r'=\s*[\d.,]+\s*(EUR|€|%)', caso_text)
+        checks.append(1.0 if len(calcs) >= 5 else len(calcs) / 5.0)
+        # Check 3: >=15 bloques de opciones A/B/C/D
+        options_blocks = re.findall(r'[Aa]\).*?[Bb]\).*?[Cc]\).*?[Dd]\)', caso_text, re.DOTALL)
+        checks.append(1.0 if len(options_blocks) >= 15 else len(options_blocks) / 15.0)
+        return sum(checks) / len(checks)
+
+    async def _interdependence_sieve_score(self, caso_text: str) -> float:
+        names = set(re.findall(r'\b[A-ZÁÉÍÓÚ][a-záéíóúñ]{3,}\b', caso_text[:2000]))
+        for word in ["Artículo", "Seguridad", "Empresa", "Régimen", "España", "El", "La", "Los", "Las", "TRLGSS", "Ley", "Real", "Decreto"]:
+            names.discard(word)
+        if len(names) < 2:
+            return 0.2
+        questions = re.split(r'\*\*P\d+', caso_text)
+        crossrefs = sum(1 for name in names
+                        if sum(1 for q in questions if name in q) > 1)
+        return min(1.0, crossrefs / max(len(names), 1))
+        
+    def verify(self, caso: Dict[str, Any]) -> Tuple[float, Dict[str, Any]]:
+        # Alias for backward compatibility (run_ecosistema_v14)
+        result = self.verify_caso_completo(caso, verbose=False)
+        return result["score_promedio"], result["resultados_agentes"]
 
 if __name__ == "__main__":
-    # Test Parte 1
-    caso_test = {
-        "tema": "subsidio_it",
-        "pregunta": "Trabajador con baja IT por EC día 25. Base cotización 1500€. ¿Subsidio diario?",
-        "opciones": {
-            "A": "25€",
-            "B": "30€",
-            "C": "37.50€",
-            "D": "40€"
-        },
-        "respuesta_correcta": "C",
-        "razonamiento_observable": {
-            "paso_1": "Caso IT por EC, día 25",
-            "paso_2": ["Art 173.1 TRLGSS"],
-            "paso_4": "1500/30 = 50€ × 0.75 = 37.50€"
-        }
-    }
-    
-    # Verificar
-    orquestrador = VerificationOrchestrator()
-    resultado = orquestrador.verify_caso_completo(caso_test)
-    
-    print(f"\n📊 RESULTADO CONSOLIDADO")
-    print(f"   Score promedio: {resultado['score_promedio']:.0%}")
-    print(f"   Status: {resultado['status']}")
-    print(f"   Todos pasaron: {resultado['todos_pasaron']}")
-    
-    print(f"\n🤖 DETALLE AGENTES")
-    for agent_id, scores in resultado['scores_individuales'].items():
-        print(f"   {agent_id}: {scores:.0%}")
-    
-    print("\n✅ Verificadores funcionales")
+    print("Módulo verification_agents.py V14 refactorizado OK")

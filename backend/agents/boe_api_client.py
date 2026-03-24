@@ -11,6 +11,7 @@ Endpoints disponibles:
 
 import httpx
 import logging
+import re
 from typing import Optional, Dict, List
 from datetime import datetime
 import xml.etree.ElementTree as ET
@@ -196,7 +197,27 @@ class BOEApiClient:
         response = self.client.get(url)
         response.raise_for_status()
         
-        return response.text
+    async def verify_article_exact(
+        self, boe_id: str, article_num: str, fecha_corte: str = "2026-03-04"
+    ) -> dict:
+        """
+        Verifica artículo EXACTO en el BOE con fecha de corte.
+        La URL ?p=AAAAMMDD da el texto consolidado en esa fecha exacta.
+        """
+        url = f"https://www.boe.es/buscar/act.php?id={boe_id}&p={fecha_corte.replace('-','')}&tn=1"
+        try:
+            async with httpx.AsyncClient(timeout=8.0) as session:
+                resp = await session.get(url)
+                if resp.status_code == 404:
+                    return {"exists": False, "vigente": False, "texto": ""}
+                html = resp.text
+                # Buscar el artículo específico en el HTML
+                art_pattern = rf"Art[íi]culo\s+{re.escape(article_num)}\b"
+                found = bool(re.search(art_pattern, html, re.IGNORECASE))
+                return {"exists": found, "vigente": found, "texto": html[:2000] if found else ""}
+        except Exception:
+            # Fallback (opcional si falla red)
+            return {"exists": False, "vigente": False, "texto": ""}
     
     # ==========================================
     # SUMARIOS BOE

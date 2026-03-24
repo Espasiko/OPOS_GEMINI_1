@@ -156,3 +156,58 @@ def calcular_subsidio_it(base: float, contingencia: str, dia: int, bases_3_meses
         "explicacion": resultado.explicacion,
         "regla_br": "RDL 11/2024" if bases_3_meses else "Obsoleta"
     }
+
+
+def calcular_adicional_solidaridad(retribucion_mensual: float,
+                                    base_maxima: float = 5101.20) -> dict:
+    """
+    Cotización Adicional de Solidaridad 2026 (Art. 19 ter TRLGSS).
+    Solo aplica a la retribución que SUPERA la base máxima de cotización.
+    Tramo I (<+10%): 1,15% | Tramo II (+10% a +50%): 1,25% | Tramo III (>+50%): 1,46%
+    """
+    exceso = max(0.0, retribucion_mensual - base_maxima)
+    if exceso == 0:
+        return {"tramo": None, "cuota_total": 0.0, "empresa": 0.0, "trabajador": 0.0}
+
+    limite_t1 = base_maxima * 1.10   # 5.611,32€
+    limite_t2 = base_maxima * 1.50   # 7.651,80€
+
+    if retribucion_mensual <= limite_t1:
+        tipo, empresa_pct, trabajador_pct, tramo = 0.0115, 0.0096, 0.0019, "I"
+    elif retribucion_mensual <= limite_t2:
+        tipo, empresa_pct, trabajador_pct, tramo = 0.0125, 0.0104, 0.0021, "II"
+    else:
+        tipo, empresa_pct, trabajador_pct, tramo = 0.0146, 0.0122, 0.0024, "III"
+
+    return {
+        "tramo": tramo,
+        "exceso_sobre_base_max": round(exceso, 2),
+        "tipo_total_pct": round(tipo * 100, 2),
+        "cuota_total": round(exceso * tipo, 2),
+        "empresa": round(exceso * empresa_pct, 2),
+        "trabajador": round(exceso * trabajador_pct, 2),
+    }
+
+
+def calcular_br_dual_jubilacion(bases_historicas: list) -> dict:
+    """
+    Base Reguladora DUAL jubilación 2026 (Art. 209 TRLGSS mod. RDL 2/2023).
+    Devuelve la fórmula MÁS BENEFICIOSA entre las dos opciones.
+    """
+    if len(bases_historicas) < 300:
+        raise ValueError(f"Se necesitan ≥300 bases. Aportadas: {len(bases_historicas)}")
+
+    # Opción 1: últimas 300 bases / 350
+    br1 = sum(bases_historicas[-300:]) / 350.0
+
+    # Opción 2: mejores 302 de las últimas 304 / 352,33
+    ultimas_304 = bases_historicas[-304:] if len(bases_historicas) >= 304 else bases_historicas
+    br2 = sum(sorted(ultimas_304, reverse=True)[:302]) / 352.33
+
+    return {
+        "br_opcion_1_tradicional": round(br1, 2),
+        "br_opcion_2_nuevas": round(br2, 2),
+        "br_aplicable": round(max(br1, br2), 2),
+        "formula_ganadora": "opcion_2_nuevas" if br2 > br1 else "opcion_1_tradicional",
+        "diferencia": round(abs(br2 - br1), 2),
+    }

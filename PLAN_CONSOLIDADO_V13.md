@@ -31,11 +31,4 @@ Este plan es el resultado de la revisión y actualización de los siguientes doc
 *   **[walkthrough_v13_ss.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/walkthrough_v13_ss.md):** Resumen de pruebas ejecutadas satisfactoriamente.
 
 ---
-## 4. Evolución V13.1 "SENTINEL" (17/03/2026)
-Tras las pruebas finales, la V13 evoluciona a la V13.1 con:
-*   **Sentinelas Activos:** Bloqueo real de casos con errores en la Base Reguladora de IT-AT y en los años de cotización para jubilación.
-*   **Resiliencia API:** Soportado error 429 con retry loop de 90s.
-*   **Validación R1:** DeepSeek R1 confirmado para casos multi-personaje complejos.
-
----
-**Firmado:** Antigravity (Bmad Agent) - 17/03/2026
+**Firmado:** Antigravity (Bmad Agent) - 14/03/2026

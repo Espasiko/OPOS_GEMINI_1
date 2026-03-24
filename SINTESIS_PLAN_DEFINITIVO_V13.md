@@ -110,11 +110,5 @@ EntradaCorrecciónH7"6 ventanas BIMESTRALES (no mensual): oct → nov; nov-dic �
     - BR Jubilación: Divisor 352,33 para 302 mejores bases (RDL 2/2023).
 - **Inventario Actualizado:** Corregidos IDs oficiales en el archivo de 79 Leyes.
 
-## 9. Actualización V13.1 (17/03/2026) 💎
-- **Hito de Calidad:** Superado el score real del 85% gracias a los **Sentinelas Activos**.
-- **Refuerzo Math Sieve:** Bloqueo automático de errores en el divisor de jubilación y en la base reguladora de IT por accidente de trabajo.
-- **Validación R1 E2E:** DeepSeek R1 integrado con éxito en el orquestador para resolución de casos de 7 personajes.
-- **Resiliencia:** Mitigada la inestabilidad de la API de Mistral mediante lógica de reintento sistemática.
-
 ---
-**Firma:** Antigravity (Bmad Agent) - 17/03/2026
+**Firma:** Antigravity (Bmad Agent)
