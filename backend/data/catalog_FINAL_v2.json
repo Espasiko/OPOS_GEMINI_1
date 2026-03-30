@@ -1,0 +1,572 @@
+[
+  {
+    "boe_id": "BOE-A-1967-2876",
+    "siglas": "Orden 13/02/1967",
+    "titulo": "Orden de 13 de febrero de 1967 por el que se establecen normas para la aplicación y desarrollo de las prestaciones por muerte y supervivencia en el Régimen General de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1994-1565",
+    "siglas": "TRLGSS 1994",
+    "titulo": "Real Decreto Legislativo 1/1994, de 20 de junio, por el que se aprueba el Texto Refundido de la Ley General de la Seguridad Social.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-2002-23038",
+    "siglas": "RD 1132/2002",
+    "titulo": "Real Decreto 1132/2002, de 31 de octubre, de desarrollo de la Ley 35/2002 (jubilación flexible).",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2012-13420",
+    "siglas": "RD 1191/2012",
+    "titulo": "Real Decreto 1191/2012, de 3 de agosto, sobre normas para la determinación de los complementos para pensiones inferiores a la mínima.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2013-11881",
+    "siglas": "RD 1196/2013",
+    "titulo": "Real Decreto 1196/2013, de 11 de octubre, por el que se regulan los convenios especiales en el sistema de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1992-24743",
+    "siglas": "RD 1221/1992",
+    "titulo": "Real Decreto 1221/1992, de 9 de octubre, sobre el patrimonio de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2003-19458",
+    "siglas": "RD 1273/2003",
+    "titulo": "Real Decreto 1273/2003, de 10 de octubre, por el que se regula la cobertura de las contingencias profesionales de los trabajadores por cuenta propia o autónomos.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2006-22169",
+    "siglas": "RD 1299/2006",
+    "titulo": "Real Decreto 1299/2006, de 10 de noviembre, por el que se aprueba el cuadro de enfermedades profesionales en el sistema de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1982-9983",
+    "siglas": "LISMI",
+    "titulo": "Ley 13/1982, de 7 de abril, de Integración Social de los Minusválidos.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1996-29117",
+    "siglas": "Ley 13/1996",
+    "titulo": "Ley 13/1996, de 30 de diciembre, de Medidas Fiscales, Administrativas y del Orden Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2010-18651",
+    "siglas": "RDL 13/2010",
+    "titulo": "Real Decreto-ley 13/2010, de 3 de diciembre, de actuaciones en el ámbito fiscal, laboral y liberalizadoras.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2005-19151",
+    "siglas": "RD 1335/2005",
+    "titulo": "Real Decreto 1335/2005, de 11 de noviembre, por el que se regulan las prestaciones familiares de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2019-15790",
+    "siglas": "RDL 14/2019",
+    "titulo": "Real Decreto-ley 14/2019, de 31 de octubre, por el que se adoptan medidas urgentes por razones de seguridad pública.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1983-15758",
+    "siglas": "RD 1451/1983",
+    "titulo": "Real Decreto 1451/1983, de 11 de mayo, empleo selectivo minusválidos.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1996-3691",
+    "siglas": "RD 148/1996",
+    "titulo": "Real Decreto 148/1996, de 5 de febrero, por el que se regula el procedimiento especial para el reintegro de prestaciones indebidas.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2003-23401",
+    "siglas": "RD 1539/2003",
+    "titulo": "Real Decreto 1539/2003, de 5 de diciembre, por el que se establecen coeficientes reductores de la edad de jubilación a favor de los trabajadores minusválidos.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1990-29784",
+    "siglas": "RD 1576/1990",
+    "titulo": "Real Decreto 1576/1990, de 7 de diciembre, pensiones extraordinarias terrorismo.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1972-944",
+    "siglas": "Decreto 1646/1972",
+    "titulo": "Decreto 1646/1972, de 15 de junio, por el que se regulan las prestaciones de muerte y supervivencia.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1997-24163",
+    "siglas": "RD 1647/1997",
+    "titulo": "Real Decreto 1647/1997, de 31 de octubre, por el que se desarrollan determinadas disposiciones de la Ley 24/1997.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2025-3780",
+    "siglas": "Orden PJC/178/2025",
+    "titulo": "Orden PJC/178/2025, de 24 de febrero, por la que se desarrollan las normas legales de cotización a la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2007-13409",
+    "siglas": "LETA",
+    "titulo": "Ley 20/2007, de 11 de julio, del Estatuto del trabajo autónomo.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2009-20412",
+    "siglas": "RD 1851/2009",
+    "titulo": "Real Decreto 1851/2009, de 4 de diciembre, sobre jubilación anticipada de trabajadores con discapacidad en grado igual o superior al 45 por ciento.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2009-20652",
+    "siglas": "RD 1855/2009",
+    "titulo": "Real Decreto 1855/2009, de 4 de diciembre, por el que se regula el Consejo Territorial de Servicios Sociales y del SAAD.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1963-22667",
+    "siglas": "Ley de Bases 1963",
+    "titulo": "Ley 193/1963, de 28 de diciembre, sobre bases de la Seguridad Social.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1995-26716",
+    "siglas": "RD 1993/1995",
+    "titulo": "Real Decreto 1993/1995, de 7 de diciembre, por el que se aprueba el Reglamento sobre colaboración de las Mutuas.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2024-10235",
+    "siglas": "RDL 2/2024",
+    "titulo": "Real Decreto-ley 2/2024, de 21 de mayo, medidas urgentes para la simplificación y mejora del nivel asistencial de la protección por desempleo.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2025-8567",
+    "siglas": "Ley 2/2025",
+    "titulo": "Ley 2/2025, de 29 de abril, de medidas urgentes complementarias (incapacidad permanente).",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1974-1165",
+    "siglas": "TRLGSS 1974",
+    "titulo": "Decreto 2065/1974, de 30 de mayo, por el que se aprueba el Texto Refundido de la Ley General de la Seguridad Social.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-2013-13617",
+    "siglas": "Ley 23/2013",
+    "titulo": "Ley 23/2013, de 23 de diciembre, reguladora del Factor de Sostenibilidad y del Índice de Revalorización de las pensiones.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1985-806",
+    "siglas": "RD 2366/1984",
+    "titulo": "Real Decreto 2366/1984, de 26 de diciembre, reducción edad jubilación mineros.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1972-907",
+    "siglas": "Ley 24/1972",
+    "titulo": "Ley 24/1972, de 21 de junio, de financiación y perfeccionamiento de la acción protectora del Régimen General.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1997-15688",
+    "siglas": "Ley 24/1997",
+    "titulo": "Ley 24/1997, de 15 de julio, de Consolidación y Racionalización del Sistema de Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1970-1000",
+    "siglas": "Decreto 2530/1970",
+    "titulo": "Decreto 2530/1970, de 20 de agosto, por el que se regula el Régimen Especial de la Seguridad Social de los trabajadores por cuenta propia o autónomos.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1985-16119",
+    "siglas": "Ley 26/1985",
+    "titulo": "Ley 26/1985, de 31 de julio, de medidas urgentes para la racionalización de la estructura y de la acción protectora de la SS.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1986-33763",
+    "siglas": "RD 2621/1986",
+    "titulo": "Real Decreto 2621/1986, de 24 de diciembre, de integración de diversos Regímenes Especiales.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2011-15038",
+    "siglas": "Ley 28/2011",
+    "titulo": "Ley 28/2011, de 22 de septiembre, por la que se procede a la integración del Régimen Especial Agrario en el Régimen General.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2003-19281",
+    "siglas": "Orden TAS/2865/2003",
+    "titulo": "Orden TAS/2865/2003, de 13 de octubre, por la que se regula el convenio especial en el Sistema de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2003-21147",
+    "siglas": "Orden RED",
+    "titulo": "Orden TAS/2865/2003, de 13 de octubre, por la que se regula el sistema de remisión electrónica de datos (RED).",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1973-282",
+    "siglas": "Decreto 298/1973",
+    "titulo": "Decreto 298/1973, de 8 de febrero, sobre actualización del Régimen Especial de la Seguridad Social para la Minería del Carbón.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-2019-3244",
+    "siglas": "Ley 3/2019 Orfandad",
+    "titulo": "Ley 3/2019, de 1 de marzo, de mejora de la situación de orfandad de los hijos de víctimas de violencia de género.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2021-1529",
+    "siglas": "RDL 3/2021",
+    "titulo": "Real Decreto-ley 3/2021, de 2 de febrero, medidas para la reducción de la brecha de género.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1981-16216",
+    "siglas": "Ley 30/1981",
+    "titulo": "Ley 30/1981, de 7 de julio, por la que se modifica la regulación del matrimonio en el Código Civil.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1966-21116",
+    "siglas": "Decreto 3158/1966",
+    "titulo": "Decreto 3158/1966, de 23 de diciembre, por el que se aprueba el Reglamento General de Accidentes de Trabajo.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-2010-12628",
+    "siglas": "Ley 32/2010 CATA",
+    "titulo": "Ley 32/2010, de 5 de agosto, por la que se establece un sistema específico de protección por cese de actividad de los trabajadores autónomos.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2002-13972",
+    "siglas": "Ley 35/2002",
+    "titulo": "Ley 35/2002, de 12 de julio, de medidas para el establecimiento de un sistema de jubilación gradual y flexible.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1978-28739",
+    "siglas": "RDL 36/1978",
+    "titulo": "Real Decreto-ley 36/1978, de 16 de noviembre, sobre gestión institucional de la Seguridad Social, la salud y el empleo.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1973-51",
+    "siglas": "Decreto 3772/1972",
+    "titulo": "Decreto 3772/1972, de 23 de diciembre, Reglamento General del Régimen Especial Agrario.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1999-21568",
+    "siglas": "Ley 39/1999",
+    "titulo": "Ley 39/1999, de 5 de noviembre, para promover la conciliación de la vida familiar y laboral.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2006-22865",
+    "siglas": "Ley 42/2006",
+    "titulo": "Ley 42/2006, de 28 de diciembre, de Presupuestos Generales del Estado para el año 2007 (D.A. 4ª).",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2015-11430",
+    "siglas": "ET",
+    "titulo": "Real Decreto Legislativo 2/2015, de 23 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto de los Trabajadores.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1960-12344",
+    "siglas": "Ley 45/1960",
+    "titulo": "Ley 45/1960, de 21 de julio, por la que se crean determinados Fondos Nacionales para la aplicación social de la Riqueza y el Ahorro.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1969-123",
+    "siglas": "Ley 45/1969",
+    "titulo": "Ley 45/1969, de 30 de diciembre, reguladora del Fondo Nacional de Asistencia Social.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1977-24931",
+    "siglas": "Ley 46/1977",
+    "titulo": "Ley 46/1977, de 15 de octubre, de Amnistía.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2015-11346",
+    "siglas": "Ley 47/2015 Mar",
+    "titulo": "Ley 47/2015, de 21 de octubre, reguladora de la protección social de las personas trabajadoras del sector marítimo-pesquero.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2000-15060",
+    "siglas": "LISOS",
+    "titulo": "Real Decreto Legislativo 5/2000, de 4 de agosto, por el que se aprueba el texto refundido de la Ley sobre Infracciones y Sanciones en el Orden Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1998-30155",
+    "siglas": "Ley 50/1998",
+    "titulo": "Ley 50/1998, de 30 de diciembre, de medidas fiscales, administrativas y del orden social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2007-8419",
+    "siglas": "RD 504/2007",
+    "titulo": "Real Decreto 504/2007, de 20 de abril, por el que se aprueba el baremo de valoración de la situación de dependencia.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2003-22716",
+    "siglas": "Ley 52/2003",
+    "titulo": "Ley 52/2003, de 10 de diciembre, disposiciones específicas en materia de Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2007-9690",
+    "siglas": "RD 615/2007",
+    "titulo": "Real Decreto 615/2007, de 11 de mayo, por el que se regula la Seguridad Social de los cuidadores de las personas en situación de dependencia.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1985-18544",
+    "siglas": "RD 625/1985 Desempleo",
+    "titulo": "Real Decreto 625/1985, de 2 de abril, por la que se desarrolla la Ley 31/1984, de 2 de agosto, de Protección por Desempleo.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2018-9030",
+    "siglas": "RD 696/2018",
+    "titulo": "Real Decreto 696/2018, de 29 de junio, por el que se aprueba el Reglamento general de la gestión financiera de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2023-11645",
+    "siglas": "Orden Cotización 2023",
+    "titulo": "Orden PCM/74/2023, de 30 de enero, por la que se desarrollan las normas legales de cotización a la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2008-1067",
+    "siglas": "RD 8/2008",
+    "titulo": "Real Decreto 8/2008, de 11 de enero, por el que se regula el régimen jurídico y el sistema de prestaciones por razón de necesidad a favor de los españoles residentes en el exterior.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2019-4676",
+    "siglas": "RDL 8/2019",
+    "titulo": "Real Decreto-ley 8/2019, de 8 de marzo, de medidas urgentes de protección social y de lucha contra la precariedad laboral en la jornada de trabajo.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1966-10707",
+    "siglas": "Decreto 907/1966",
+    "titulo": "Decreto 907/1966, de 21 de abril, por el que se aprueba el texto articulado de la Ley de Bases de la Seguridad Social.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-1998-12816",
+    "siglas": "RD 928/1998",
+    "titulo": "Real Decreto 928/1998, de 14 de mayo, por el que se aprueba el Reglamento general sobre procedimientos para la imposición de sanciones.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2022-10656",
+    "siglas": "RD 504/2022",
+    "titulo": "Real Decreto 504/2022, de 27 de junio, por el que se modifican el Reglamento General sobre inscripción de empresas y afiliación, altas, bajas y variaciones de datos de trabajadores en la Seguridad Social, y el Reglamento General sobre Cotización para actualizar su regulación respecto a los trabajadores por cuenta propia o autónomos.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1969-8263",
+    "siglas": "Orden IT 1969",
+    "titulo": "Orden de 15 de abril de 1969, por la que se establecen normas para la aplicación y desarrollo de las prestaciones por incapacidad laboral transitoria en el Régimen General de la Seguridad Social.",
+    "historica": true
+  },
+  {
+    "boe_id": "BOE-A-2024-10237",
+    "siglas": "RD 501/2024",
+    "titulo": "Real Decreto 501/2024, de 21 de mayo, por el que se desarrolla la estructura orgánica básica del Ministerio de Inclusión, Seguridad Social y Migraciones.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2022-14630",
+    "siglas": "LO 10/2022",
+    "titulo": "Ley Orgánica 10/2022, de 6 de septiembre, de garantía integral de la libertad sexual.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1999-15681",
+    "siglas": "Ley 27/1999 Cooperativas",
+    "titulo": "Ley 27/1999, de 16 de julio, de Cooperativas.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2007-21092",
+    "siglas": "Ley 40/2007",
+    "titulo": "Ley 40/2007, de 4 de diciembre, de medidas en materia de Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2018-10397",
+    "siglas": "RD 900/2018",
+    "titulo": "Real Decreto 900/2018, de 20 de julio, de desarrollo de la disposición adicional trigésima de la Ley 27/2011, en materia de pensión de viudedad.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2015-11724",
+    "siglas": "TRLGSS",
+    "titulo": "Real Decreto Legislativo 8/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley General de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1978-31229",
+    "siglas": "CE",
+    "titulo": "Constitución Española.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2015-11719",
+    "siglas": "TREBEP",
+    "titulo": "Real Decreto Legislativo 5/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto Básico del Empleado Público.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1996-4447",
+    "siglas": "RD 84/1996",
+    "titulo": "Real Decreto 84/1996, de 26 de enero, por el que se aprueba el Reglamento General sobre inscripción de empresas y afiliación, altas, bajas y variaciones de datos de trabajadores en la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1996-1579",
+    "siglas": "RD 2064/1995",
+    "titulo": "Real Decreto 2064/1995, de 22 de diciembre, por el que se aprueba el Reglamento General sobre Cotización y Liquidación de otros Derechos de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2004-11836",
+    "siglas": "RD 1415/2004",
+    "titulo": "Real Decreto 1415/2004, de 11 de junio, por el que se aprueba el Reglamento General de Recaudación de la Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2014-7684",
+    "siglas": "RD 625/2014",
+    "titulo": "Real Decreto 625/2014, de 18 de julio, por el que se regulan determinados aspectos de la gestión y control de los procesos por incapacidad temporal.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2009-4724",
+    "siglas": "RD 295/2009",
+    "titulo": "Real Decreto 295/2009, de 6 de marzo, por el que se regulan las prestaciones económicas del sistema de la Seguridad Social por maternidad, paternidad, riesgo durante el embarazo y riesgo durante la lactancia natural.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2011-13119",
+    "siglas": "RD 1148/2011",
+    "titulo": "Real Decreto 1148/2011, de 29 de julio, para la aplicación y desarrollo, en el sistema de la Seguridad Social, de la prestación económica por cuidado de menores afectados por cáncer u otra enfermedad grave.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1995-19848",
+    "siglas": "RD 1300/1995",
+    "titulo": "Real Decreto 1300/1995, de 21 de julio, por el que se desarrolla, en materia de incapacidades laborales del sistema de la Seguridad Social, la Ley 42/1994.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1991-7270",
+    "siglas": "RD 357/1991",
+    "titulo": "Real Decreto 357/1991, de 15 de marzo, por el que se desarrolla, en materia de pensiones no contributivas, la Ley 26/1990.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2021-21007",
+    "siglas": "Ley 19/2021 IMV",
+    "titulo": "Ley 19/2021, de 20 de diciembre, por la que se establece el ingreso mínimo vital.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1995-24292",
+    "siglas": "Ley 31/1995 PRL",
+    "titulo": "Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-1997-1853",
+    "siglas": "RD 39/1997",
+    "titulo": "Real Decreto 39/1997, de 17 de enero, por el que se aprueba el Reglamento de los Servicios de Prevención.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2000-323",
+    "siglas": "LEC",
+    "titulo": "Ley 1/2000, de 7 de enero, de Enjuiciamiento Civil.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2022-12482",
+    "siglas": "RDL 13/2022",
+    "titulo": "Real Decreto-ley 13/2022, de 26 de julio, por el que se establece un nuevo sistema de cotización para los trabajadores por cuenta propia o autónomos.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2011-13242",
+    "siglas": "Ley 27/2011",
+    "titulo": "Ley 27/2011, de 1 de agosto, sobre actualización, adecuación y modernización del sistema de Seguridad Social.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2021-21652",
+    "siglas": "Ley 21/2021",
+    "titulo": "Ley 21/2021, de 28 de diciembre, de garantía del poder adquisitivo de las pensiones y de otras medidas de refuerzo de la sostenibilidad financiera y social del sistema público de pensiones.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2023-5364",
+    "siglas": "RDL 2/2023",
+    "titulo": "Real Decreto-ley 2/2023, de 16 de marzo, de medidas urgentes para la ampliación de derechos de los pensionistas, la reducción de la brecha de género y el establecimiento de un nuevo marco de sostenibilidad del sistema público de pensiones.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2015-10565",
+    "siglas": "LPAC",
+    "titulo": "Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común de las Administraciones Públicas.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2015-10566",
+    "siglas": "LRJSP",
+    "titulo": "Ley 40/2015, de 1 de octubre, de Régimen Jurídico del Sector Público.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2017-12902",
+    "siglas": "LCSP",
+    "titulo": "Ley 9/2017, de 8 de noviembre, de Contratos del Sector Público.",
+    "historica": false
+  }
+]
