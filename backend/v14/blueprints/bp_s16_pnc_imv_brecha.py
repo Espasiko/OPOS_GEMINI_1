@@ -23,6 +23,7 @@ BP_S16 = TopicBlueprint(
         "Arts. 363-376 TRLGSS — Prestaciones no contributivas SS",
         "Art. 60 TRLGSS — Complemento brecha de género",
         "Ley 19/2021 — Ingreso Mínimo Vital",
+        "RD 1415/2004 Art. 10 — Recargos en cuotas de Seguridad Social",
         "RD límites revalorización pensiones 2026",
     ],
 
@@ -103,6 +104,19 @@ BP_S16 = TopicBlueprint(
             "mnemonico": "PNC jubilación: 10 años residencia (2 inmediatos). No son 5 años.",
         },
         {
+            "pregunta": "Los recargos por impago de cuotas de Seguridad Social (RD 1415/2004 Art. 10) son:",
+            "respuesta_correcta": "10% si se paga dentro del plazo de reclamación y 20% si se paga después de la providencia",
+            "distractores": [
+                "3% dentro del primer mes, 5% hasta 3 meses, 10% hasta 12 meses, 20% después",
+                "5% siempre que se pague voluntariamente",
+                "15% si se paga antes de la providencia y 25% después",
+                "30% si el impago es superior a 6 meses",
+            ],
+            "articulo": "RD 1415/2004 Art. 10",
+            "trampa_id": "DM26-T12-01",
+            "mnemonico": "Recargos: 10% dentro plazo, 20% después providencia (no escala 3/5/10/20)",
+        },
+        {
             "pregunta": "El Ingreso Mínimo Vital es incompatible con:",
             "respuesta_correcta": "Ser administrador de una sociedad de capital (SL, SA) con retribución o con control del 50%+",
             "distractores": [
@@ -114,6 +128,18 @@ BP_S16 = TopicBlueprint(
             "trampa_id": "C32",
             "mnemonico": "IMV incompatible con administrador SL con retribución. Trampa clásica.",
         },
+        {
+            "pregunta": "Cuando el empresario no cotiza al trabajador, el principio de automaticidad (Art. 167 TRLGSS) establece que:",
+            "respuesta_correcta": "El trabajador NO pierde el derecho a prestaciones. El INSS anticipa y luego reclama al empresario.",
+            "distractores": [
+                "El trabajador pierde el derecho a todas las prestaciones hasta que el empresario regularice",
+                "El trabajador debe esperar a que el empresario pague para poder solicitar prestaciones",
+                "El trabajador solo tiene derecho a asistencia sanitaria, no a prestaciones económicas",
+            ],
+            "articulo": "Art. 167 TRLGSS",
+            "trampa_id": "N1",
+            "mnemonico": "Automaticidad: No pierden prestaciones. INSS anticipa y reclama.",
+        },
     ],
 
     notas=(
@@ -123,3 +149,90 @@ BP_S16 = TopicBlueprint(
         "no necesariamente la madre. Su naturaleza es CONTRIBUTIVA (Art. 60.4 TRLGSS)."
     ),
 )
+
+
+def generar_briefing_s16(dispatcher) -> dict:
+    """
+    Genera un caso PNC/IMV/brecha de género con situación personal aleatoria.
+    """
+    import random
+    import sys
+    sys.path.insert(0, '/home/spas/OPOS_GEMINI_1/backend')
+    from v14.nombres_pool import (nombre_completo_aleatorio, ciudad)
+
+    rng = random.Random()
+
+    tipo_caso = rng.choice(["pnc_jubilacion", "imv", "complemento_brecha"])
+
+    nombre, genero = nombre_completo_aleatorio(rng)
+    ciudad_caso = ciudad(rng)
+
+    if tipo_caso == "pnc_jubilacion":
+        edad = rng.randint(65, 80)
+        anios_residencia = rng.choice([10, 12, 15, 20, 25, 30])
+        ingresos_anuales = rng.choice([0, 1500, 3000, 5000, 6000])
+        cuantia_pnc_mensual = 628.80
+        elegible = anios_residencia >= 10
+        descripcion = (
+            f"{nombre}, de {edad} años, residente en {ciudad_caso} "
+            f"con {anios_residencia} años de residencia legal acreditada en España. "
+            f"Nunca ha cotizado a la Seguridad Social. "
+            f"Solicita pensión no contributiva de jubilación."
+        )
+        calculos = {
+            "tipo": "PNC Jubilación",
+            "anios_residencia": anios_residencia,
+            "cuantia_mensual_2026": f"{cuantia_pnc_mensual:.2f}€ × 14 pagas = {cuantia_pnc_mensual*14:.2f}€/año",
+            "elegible": str(elegible),
+            "requisito_residencia": "10 años (2 inmediatos anteriores a solicitud)",
+        }
+
+    elif tipo_caso == "imv":
+        num_miembros = rng.randint(1, 5)
+        ingresos_unidad = rng.choice([0, 2000, 4000, 6000, 8000])
+        es_administrador_sl = rng.random() < 0.3
+        descripcion = (
+            f"{nombre}, en {ciudad_caso}, solicita el Ingreso Mínimo Vital "
+            f"para una unidad de convivencia de {num_miembros} miembro(s). "
+            f"Ingresos anuales de la unidad: {ingresos_unidad}€."
+            + (" Es administrador/a de una SL con participación superior al 50%." if es_administrador_sl else "")
+        )
+        calculos = {
+            "tipo": "IMV",
+            "num_miembros": num_miembros,
+            "ingresos_unidad_anual": ingresos_unidad,
+            "incompatibilidad_sl": str(es_administrador_sl),
+            "nota": "IMV incompatible con ser administrador SL con retribución o control ≥50%",
+        }
+
+    else:
+        pension_progenitor_1 = round(rng.uniform(700, 2500), 2)
+        pension_progenitor_2 = round(rng.uniform(700, 2500), 2)
+        quien_cobra = "progenitor/a con pensión más baja"
+        pension_baja = min(pension_progenitor_1, pension_progenitor_2)
+        descripcion = (
+            f"{nombre} y su pareja, ambos con pensión contributiva en {ciudad_caso}. "
+            f"Pensión de {nombre}: {pension_progenitor_1:.2f}€/mes. "
+            f"Pensión de la pareja: {pension_progenitor_2:.2f}€/mes. "
+            f"Han tenido hijos en común."
+        )
+        calculos = {
+            "tipo": "Complemento Brecha de Género",
+            "complemento_2026": "36,90€/mes",
+            "a_quien_corresponde": f"{quien_cobra} ({pension_baja:.2f}€/mes)",
+            "naturaleza": "CONTRIBUTIVA (Art. 60.4 TRLGSS)",
+            "trampa_clasica": "No es siempre la madre — es quien tenga la pensión más baja",
+        }
+
+    return {
+        "personaje": nombre,
+        "ciudad": ciudad_caso,
+        "genero": genero,
+        "tipo_caso": tipo_caso,
+        "tema": "pnc_imv_brecha",
+        "descripcion": descripcion,
+        "calculos_verificados": calculos,
+    }
+
+
+BP_S16.generar_briefing = generar_briefing_s16

@@ -106,3 +106,84 @@ BP_S05 = TopicBlueprint(
         "Los 3 tramos del Adicional de Solidaridad son una trampa clásica de examen 2026."
     ),
 )
+
+
+def generar_briefing_s05(dispatcher) -> dict:
+    """
+    Genera un caso de cotización 2026 con salario, HE y beneficios en especie aleatorios.
+    """
+    import random
+    import sys
+    sys.path.insert(0, '/home/spas/OPOS_GEMINI_1/backend')
+    from v14.nombres_pool import (nombre_completo_aleatorio, nombre_empresa,
+                                   base_cotizacion_aleatoria, ciudad, sector)
+
+    rng = random.Random()
+
+    nombre, genero = nombre_completo_aleatorio(rng)
+    empresa = nombre_empresa(rng)
+    ciudad_caso = ciudad(rng)
+    sector_empresa = sector(rng)
+    edad = rng.randint(25, 55)
+
+    salario_base = base_cotizacion_aleatoria(rng, minimo=1500.0, maximo=4500.0)
+    tiene_he = rng.random() < 0.5
+    tipo_he = rng.choice(["estructurales", "fuerza_mayor"]) if tiene_he else None
+    horas_he = rng.choice([4, 8, 12, 16, 20]) if tiene_he else 0
+    valor_he = round(horas_he * rng.choice([10.0, 12.0, 14.0, 16.0]), 2) if tiene_he else 0
+
+    tiene_vehiculo = rng.random() < 0.35
+    valor_vehiculo = rng.choice([18000, 22000, 25000, 30000, 35000, 40000]) if tiene_vehiculo else 0
+    retribucion_especie_vehiculo = round(valor_vehiculo * 0.20 / 12, 2) if tiene_vehiculo else 0
+
+    bc_total = round(salario_base + valor_he + retribucion_especie_vehiculo, 2)
+    base_max = 5101.20
+    bc_computable = min(bc_total, base_max)
+
+    mei_empresa = round(bc_computable * 0.0075, 2)
+    mei_trabajador = round(bc_computable * 0.0015, 2)
+    mei_total = round(bc_computable * 0.009, 2)
+
+    solidaridad_desc = None
+    if bc_total > base_max:
+        exceso = bc_total - base_max
+        solidaridad_desc = (
+            f"Exceso sobre base máxima: {exceso:.2f}€/mes → "
+            f"Adicional Solidaridad Tramo I (hasta 5.611,32€): 1,15%"
+        )
+
+    tipo_he_desc = (
+        f"HE {tipo_he}: {horas_he}h × tarifa = {valor_he:.2f}€ "
+        f"(tipo cotización: {'28,30%' if tipo_he == 'estructurales' else '14%'})"
+    ) if tiene_he else "Sin horas extraordinarias"
+
+    return {
+        "personaje": nombre,
+        "empresa": empresa,
+        "ciudad": ciudad_caso,
+        "sector": sector_empresa,
+        "genero": genero,
+        "edad": edad,
+        "salario_base_mensual": salario_base,
+        "horas_extraordinarias": {"tipo": tipo_he, "valor": valor_he} if tiene_he else None,
+        "vehiculo_empresa": {"valor_mercado": valor_vehiculo, "retribucion_especie": retribucion_especie_vehiculo} if tiene_vehiculo else None,
+        "tema": "cotizacion",
+        "descripcion": (
+            f"{nombre}, de {edad} años, trabaja en {empresa} ({ciudad_caso}), "
+            f"sector {sector_empresa}. Salario base: {salario_base:.2f}€/mes."
+            + (f" Realiza {horas_he}h de HE {tipo_he} valoradas en {valor_he:.2f}€." if tiene_he else "")
+            + (f" Dispone de vehículo de empresa (VM: {valor_vehiculo}€)." if tiene_vehiculo else "")
+        ),
+        "calculos_verificados": {
+            "bc_contingencias_comunes": bc_computable,
+            "mei_empresa": mei_empresa,
+            "mei_trabajador": mei_trabajador,
+            "mei_total": mei_total,
+            "base_maxima_2026": base_max,
+            "he_descripcion": tipo_he_desc,
+            "solidaridad": solidaridad_desc,
+        }
+    }
+
+
+BP_S05.generar_briefing = generar_briefing_s05

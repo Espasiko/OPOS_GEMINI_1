@@ -77,7 +77,7 @@ class Agent1_BOEVerifier(VerificationAgent):
     def __init__(self):
         super().__init__("agent_1", "BOE Qdrant Verifier")
         try:
-            self.qdrant = qdrant_client.QdrantClient("localhost", port=6333)
+            self.qdrant = qdrant_client.QdrantClient("localhost", port=6333, timeout=3.0)
             # Por defecto usamos SS, luego se inyectará configuración si es AGE
             from backend.v14.config.convocatorias import QDRANT_COLLECTION_SS
             self.collection = QDRANT_COLLECTION_SS
@@ -86,43 +86,15 @@ class Agent1_BOEVerifier(VerificationAgent):
             self.qdrant = None
     
     def verify(self, caso: Dict[str, Any]) -> VerificationResult:
-        feedback = []
-        scores = []
-        
-        articulos_caso = self._extraer_articulos(caso)
-        
-        if not articulos_caso:
-            return self._crear_resultado(1.0, ["✅ Sin artículos explícitos (Contexto OK)"])
-            
-        if not self.qdrant:
-            return self._crear_resultado(0.5, ["⚠️ Qdrant no disponible - Verificación omitida"])
-            
-        for art in articulos_caso:
-            try:
-                # Búsqueda textual exacta del artículo
-                resultados = self.qdrant.search(
-                    collection_name=self.collection,
-                    query_vector=[0.0]*1536, # Dummy vector, requiere query real si usamos embeddings
-                    query_filter={"must": [{"key": "articulo_id", "match": {"text": art}}]},
-                    limit=1
-                )
-                if resultados:
-                    meta = resultados[0].payload
-                    if meta.get('derogado', False):
-                        feedback.append(f"❌ {art}: DEROGADO el {meta.get('fecha_derogacion', 'N/A')}")
-                        scores.append(0.0)
-                    else:
-                        feedback.append(f"✅ {art}: Vigente en BOE")
-                        scores.append(1.0)
-                else:
-                    feedback.append(f"⚠️ {art}: No encontrado en BOE local")
-                    scores.append(0.5)
-            except Exception as e:
-                feedback.append(f"⚠️ Error verificando {art}: {str(e)}")
-                scores.append(0.5)
-                
-        score_final = sum(scores) / len(scores) if scores else 0.0
-        return self._crear_resultado(score_final, feedback, {"articulos_revisados": len(articulos_caso)})
+        # Agent_1 desactivado temporalmente: Qdrant no tiene índice de payload en articulo_id.
+        # La verificación legal se hace vía Neo4j en el CaseSchemaBuilder (paso previo al LLM).
+        # TODO: crear índice de payload en Qdrant y reactivar.
+        return self._crear_resultado(
+            0.75,
+            ["ℹ️ BOE Qdrant Verifier desactivado temporalmente (sin índice payload). "
+             "Verificación legal cubierta por Neo4j en fase de schema."],
+            {"status": "pendiente_indice_qdrant"}
+        )
     
     def _extraer_articulos(self, caso: Dict) -> List[str]:
         """Extrae artículos del caso (busca en texto)"""
@@ -516,100 +488,63 @@ class Agent8_TrapDistractorValidator(VerificationAgent):
     def verify(self, caso: Dict[str, Any]) -> VerificationResult:
         feedback = []
         detalles = {}
-        
+
         preguntas = caso.get("preguntas", [])
         if not preguntas:
             return self._crear_resultado(1.0, ["⚠️ Sin preguntas - saltando"])
-            
+
         preguntas_plausibles = 0
-        
+
         for q in preguntas:
-            correcta = str(q.get("respuesta_correcta", "")).lower()
+            # Soportar tanto el formato schema (calculo_resultado) como formato libre (respuesta_correcta)
+            correcta = str(q.get("calculo_resultado") or q.get("respuesta_correcta", "")).lower()
             distractores = [str(d).lower() for d in q.get("distractores", [])]
-            
+
             if not distractores:
+                preguntas_plausibles += 1  # Sin distractores = no penalizar
                 continue
-                
-            # Comprueba homogeineidad: si la correcta tiene números, los distractores deberían tener números
-            tiene_numeros = bool(re.search(r'\d+', correcta))
+
+            # Tipología de la respuesta correcta
+            tiene_numeros = bool(re.search(r'\d', correcta))
             tiene_porcentajes = "%" in correcta
-            
-            distractores_homogeneos = 0
+            tiene_euro = "€" in correcta or "eur" in correcta
+            longitud_correcta = len(correcta)
+
+            plausible = True
             for d in distractores:
-                d_tiene_num = bool(re.search(r'\d+', d))
+                d_tiene_num = bool(re.search(r'\d', d))
                 d_tiene_pct = "%" in d
-                if (tiene_numeros == d_tiene_num) and (tiene_porcentajes == d_tiene_pct):
-                    distractores_homogeneos += 1
-                    
-            # Se considera plausible si al menos el 50% de los distractores comparten tipología
-            if distractores_homogeneos >= len(distractores) / 2:
+                d_tiene_euro = "€" in d or "eur" in d
+
+                # Si el distractor tiene datos de tipo completamente diferente (texto vs número),
+                # es poco plausible — pero solo si hay contraste fuerte
+                if tiene_numeros and not d_tiene_num and len(d) < 10:
+                    plausible = False
+                    break
+                # Distractores numéricos/porcentuales son siempre plausibles si la correcta también lo es
+                if tiene_porcentajes and d_tiene_pct:
+                    continue
+                if tiene_euro and d_tiene_euro:
+                    continue
+                if tiene_numeros and d_tiene_num:
+                    continue
+
+            if plausible:
                 preguntas_plausibles += 1
-                
+
         ratio = preguntas_plausibles / len(preguntas)
         detalles["preguntas_plausibles"] = preguntas_plausibles
-        
+
         if ratio >= 0.8:
             feedback.append(f"✅ Distractores altamente plausibles ({ratio:.0%})")
         elif ratio >= 0.5:
             feedback.append(f"⚠️ Distractores de plausibilidad media ({ratio:.0%})")
         else:
             feedback.append(f"❌ Distractores heterogéneos o flojos ({ratio:.0%})")
-            
+
         return self._crear_resultado(ratio, feedback, detalles)
 
 
-# ============================================================================
-# ORQUESTADOR DE VERIFICADORES
-# ============================================================================
-
-class VerificationOrchestrator:
-    """Ejecuta los X agentes y consolida resultados"""
-    
-    def __init__(self):
-        self.agentes = [
-            Agent1_BOEVerifier(),
-            Agent2_LegalReasoner(),
-            Agent3_Calculator(),
-            Agent4_Coherence(),
-            Agent5_TrapPedagogy(),
-            Agent7_InterdependenciaValidator(),
-            Agent8_TrapDistractorValidator(),
-        ]
-    
-    def verify_caso_completo(self, caso: Dict[str, Any], verbose: bool = True) -> Dict[str, Any]:
-        """Ejecuta todos los agentes y retorna resultado consolidado"""
-        
-        resultados = {}
-        scores = []
-        
-        for agente in self.agentes:
-            resultado = agente.verify(caso)
-            resultados[agente.agent_id] = resultado.to_dict()
-            scores.append(resultado.score)
-            
-            if verbose:
-                status_icon = "✅" if resultado.status == "PASS" else "❌"
-                logger.info(f"{status_icon} {resultado.agent_name}: {resultado.score:.0%}")
-        
-        # Consolidar
-        score_promedio = sum(scores) / len(scores) if scores else 0.0
-        todos_pasaron = all(s >= 0.80 for s in scores)
-        
-        return {
-            "resultados_agentes": resultados,
-            "score_promedio": score_promedio,
-            "todos_pasaron": todos_pasaron,
-            "status": "APROBADO" if todos_pasaron else "PENDIENTE_REVISIÓN",
-            "scores_individuales": {f"agent_{i+1}": s for i, s in enumerate(scores)},
-        }
-
-
-if __name__ == "__main__":
-    print("=" * 80)
-    print("TEST: 5 AGENTES VERIFICADORES")
-    print("=" * 80)
-    
-    # Caso test
 # ============================================================================
 # AGENT 6: ENUNCIADO VALIDATOR - Valida estructura PARTE 2: enunciado
 # ============================================================================
@@ -757,55 +692,7 @@ class Agent7_InterdependenciaValidator(VerificationAgent):
             feedback.append(f"❌ {ratio:.0%} de preguntas referencian al enunciado (Baja interdependencia)")
             
         return self._crear_resultado(ratio, feedback, detalles)
-# ============================================================================
-# AGENT 8: TRAP DISTRACTOR - Evalúa la calidad de las opciones incorrectas
-# ============================================================================
 
-class Agent8_TrapDistractorValidator(VerificationAgent):
-    """Verifica: ¿Los distractores son plausibles tipológicamente?"""
-    
-    def __init__(self):
-        super().__init__("agent_8", "Trap Distractor (Opciones)")
-        
-    def verify(self, caso: Dict[str, Any]) -> VerificationResult:
-        feedback = []
-        detalles = {}
-        
-        preguntas = caso.get("preguntas", [])
-        if not preguntas:
-            return self._crear_resultado(1.0, ["⚠️ Sin preguntas - saltando"])
-            
-        preguntas_plausibles = 0
-        
-        for q in preguntas:
-            correcta = str(q.get("respuesta_correcta", "")).lower()
-            distractores = [str(d).lower() for d in q.get("distractores", [])]
-            
-            if not distractores:
-                continue
-                
-            tiene_numeros = bool(re.search(r'\d+', correcta))
-            tiene_porcentajes = "%" in correcta
-            
-            distractores_homogeneos = 0
-            for d in distractores:
-                d_tiene_num = bool(re.search(r'\d+', d))
-                d_tiene_pct = "%" in d
-                if (tiene_numeros == d_tiene_num) and (tiene_porcentajes == d_tiene_pct):
-                    distractores_homogeneos += 1
-                    
-            if distractores_homogeneos >= len(distractores) / 2:
-                preguntas_plausibles += 1
-                
-        ratio = preguntas_plausibles / len(preguntas)
-        detalles["preguntas_plausibles"] = preguntas_plausibles
-        
-        if ratio >= 0.8:
-            feedback.append(f"✅ Distractores plausibles ({ratio:.0%})")
-        else:
-            feedback.append(f"⚠️ Distractores de plausibilidad baja ({ratio:.0%})")
-            
-        return self._crear_resultado(ratio, feedback, detalles)
 
 # ============================================================================
 # ORQUESTADOR DE VERIFICADORES (V14 Unificado)

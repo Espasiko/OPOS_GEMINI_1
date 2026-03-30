@@ -1,98 +1,152 @@
-Leyes en Neo4j:
- - Ley Orgánica 6/1985, de 1 de julio, del Poder Judicial.
- - Ley 29/1998, de 13 de julio, reguladora de la Jurisdicción Contencioso-administrativa.
- - Real Decreto 2064/1995, de 22 de diciembre, por el que se aprueba el Reglamento General sobre Cotización y Liquidación de otros Derechos de la Seguridad Social.
- - RDL 13/2022 Nuevo sistema de cotización para autónomos (Ingresos Reales)
- - Real Decreto 4/2010, de 8 de enero, por el que se regula el Esquema Nacional de Interoperabilidad en el ámbito de la Administración Electrónica.
- - Ley 27/2011, de 1 de agosto, sobre actualización, adecuación y modernización del sistema de Seguridad Social.
- - Ley 7/1985, de 2 de abril, Reguladora de las Bases del Régimen Local
- - Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el Reglamento electrotécnico para baja tensión.
- - Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales.
- - Real Decreto Legislativo 8/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley General de la Seguridad Social.
- - Real Decreto Legislativo 2/2015, de 23 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto de los Trabajadores.
- - Ley 9/2017, de 8 de noviembre, de Contratos del Sector Público, por la que se transponen al ordenamiento jurídico español las Directivas del Parlamento Europeo y del Consejo 2014/23/UE y 2014/24/UE, de 26 de febrero de 2014.
- - Sentencia 31/2010 (Estatuto de Autonomía de Cataluña)
- - Real Decreto Legislativo 1/2013, de 29 de noviembre, por el que se aprueba el Texto Refundido de la Ley General de derechos de las personas con discapacidad y de su inclusión social.
- - Real Decreto 3/2010, de 8 de enero, por el que se regula el Esquema Nacional de Seguridad en el ámbito de la Administración Electrónica.
- - Constitución Española.
- - Ley 9/1987, de 12 de junio, de Organos de Representación, Determinación de las Condiciones de Trabajo y Participación del Personal al Servicio de las Administraciones Públicas.
- - Ley 30/1984, de 2 de agosto, de medidas para la reforma de la Función Pública.
- - Ley 50/1997, de 27 de noviembre, del Gobierno.
- - Ley 4/2023, de 28 de febrero, para la igualdad real y efectiva de las personas trans y para la garantía de los derechos de las personas LGTBI.
- - Ley 36/2011 Reguladora Jurisdicción Social
- - RDL 16/2022 Mejora condiciones trabajadoras del hogar
- - Norma BOE-A-2000-12140
- - Ley 1/2000, de 7 de enero, de Enjuiciamiento Civil.
- - LO 1/2023 Salud sexual y reproductiva (IT Menstruación)
- - Ley Orgánica 3/2007, de 22 de marzo, para la igualdad efectiva de mujeres y hombres.
- - Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común de las Administraciones Públicas.
- - Ley 19/2021, de 20 de diciembre, por la que se establece el ingreso mínimo vital.
- - Real Decreto Legislativo 5/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto Básico del Empleado Público.
- - Ley 40/2015, de 1 de octubre, de Régimen Jurídico del Sector Público.
- - Ley 9/1996, de 15 de enero, por la que se adoptan medidas extraordinarias, excepcionales y urgentes en materia de abastecimientos hidráulicos como consecuencia de la persistencia de la sequía.
- - Norma BOE-A-1996-4447
- - Real Decreto 84/1996, de 26 de enero, por el que se aprueba el Reglamento General sobre inscripción de empresas y afiliación, altas, bajas y variaciones de datos de trabajadores en la Seguridad Social.
- - Real Decreto 203/2021, de 30 de marzo, por el que se aprueba el Reglamento de actuación y funcionamiento del sector público por medios electrónicos.
- - Ley BOE-A-2024-26917 (PDF Import)
- - Ley 11/2007, de 22 de junio, de acceso electrónico de los ciudadanos a los Servicios Públicos.
- - Ley Orgánica 2/1982, de 12 de mayo, del Tribunal de Cuentas.
- - Real Decreto 504/2022, de 27 de junio, por el que se modifican el Reglamento General sobre inscripción de empresas y afiliación, altas, bajas y variaciones de datos de trabajadores en la Seguridad Social, aprobado por el Real Decreto 84/1996, de 26 de enero, y el Reglamento General sobre Cotización y Liquidación de otros Derechos de la Seguridad Social, aprobado por el Real Decreto 2064/1995, de 22 de diciembre, para actualizar su regulación respecto a los trabajadores por cuenta propia o autónomos.
- - Ley 38/2003, de 17 de noviembre, General de Subvenciones.
- - Ley 6/1997, de 14 de abril, de Organización y Funcionamiento de la Administración General del Estado.
- - Ley 39/2006, de 14 de diciembre, de Promoción de la Autonomía Personal y Atención a las personas en situación de dependencia.
- - Real Decreto 1971/1999, de 23 de diciembre, de procedimiento para el reconocimiento, declaración y calificación del grado de minusvalía.
- - Real Decreto 887/2006, de 21 de julio, por el que se aprueba el Reglamento de la Ley 38/2003, de 17 de noviembre, General de Subvenciones.
- - RD 1415/2004 Reglamento General de Recaudación de la Seguridad Social
- - Ley Orgánica 2/1979, de 3 de octubre, del Tribunal Constitucional.
- - Norma BOE-A-1985-16660
- - Norma BOE-A-2003-7527
- - Ley 47/2003, de 26 de noviembre, General Presupuestaria.
- - RDL 2/2023 Medidas urgentes para la ampliación de derechos de los pensionistas
- - RD 4/2010 Esquema Nacional de Interoperabilidad
- - Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales.
- - Ley Orgánica 1/2004, de 28 de diciembre, de Medidas de Protección Integral contra la Violencia de Género.
- - Norma BOE-A-1996-1579
- - RD 139/2020 Estructura Orgánica AGE
- - Real Decreto-ley 20/2020, de 29 de mayo, por el que se establece el ingreso mínimo vital.
- - Norma BOE-A-2007-19814
- - Ley 19/2013, de 9 de diciembre, de transparencia, acceso a la información pública y buen gobierno.
- - Norma BOE-A-2014-7684
- - Real Decreto-ley 11/2024, de 23 de diciembre, para la mejora de la compatibilidad de la pensión de jubilación con el trabajo.
- - Ley 21/2021 de garantía del poder adquisitivo de las pensiones
- - Norma BOE-A-2015-8168
- - Orden HAC/1517/2025, de 18 de diciembre, por la que se publican los límites de los distintos tipos de contratos a efectos de la contratación del sector público a partir del 1 de enero de 2026.
- - Norma BOE-A-2020-5493
- - Real Decreto 375/2003, de 28 de marzo, por el que se aprueba el Reglamento General del Mutualismo Administrativo.
- - Real Decreto 39/1997, de 17 de enero, por el que se aprueba el Reglamento de los Servicios de Prevención.
- - Ley 7/1988, de 5 de abril, de Funcionamiento del Tribunal de Cuentas.
- - Real Decreto 311/2022, de 3 de mayo, por el que se regula el Esquema Nacional de Seguridad.
- - RD 203/2021 Administración Electrónica
- - Ley 27/2013, de 27 de diciembre, de racionalización y sostenibilidad de la Administración Local.
- - RD 364/1995 Ingreso Personal AGE
- - Norma BOE-A-1987-14115
- - Ley Orgánica 2/2012, de 27 de abril, de Estabilidad Presupuestaria y Sostenibilidad Financiera.
- - Real Decreto 357/1991, de 15 de marzo, por el que se desarrolla, en materia de pensiones no contributivas, la Ley 26/1990, de 20 de diciembre, por la que se establecen en la Seguridad Social prestaciones no contributivas.
- - Norma BOE-A-2022-7191
- - Real Decreto 295/2009, de 6 de marzo, por el que se regulan las prestaciones económicas del sistema de la Seguridad Social por maternidad, paternidad, riesgo durante el embarazo y riesgo durante la lactancia natural.
- - Ley Orgánica 11/1985, de 2 de agosto, de Libertad Sindical.
- - Ley 23/2015, de 21 de julio, Ordenadora del Sistema de Inspección de Trabajo y Seguridad Social.
- - Real Decreto 1430/2009, de 11 de septiembre, por el que se desarrolla reglamentariamente la Ley 40/2007, de 4 de diciembre, de medidas en materia de Seguridad Social, en relación con la prestación de incapacidad temporal.
- - Ley Orgánica 3/1981, de 6 de abril, del Defensor del Pueblo.
- - Real Decreto-ley 6/2019, de 1 de marzo, de medidas urgentes para garantía de la igualdad de trato y de oportunidades entre mujeres y hombres en el empleo y la ocupación.
- - Real Decreto 1300/1995, de 21 de julio, por el que se desarrolla, en materia de incapacidades laborales del sistema de la Seguridad Social, la Ley 42/1994, de 30 de diciembre, de medidas fiscales, administrativas y de orden social.
- - Ley 20/2007, de 11 de julio, del Estatuto del trabajo autónomo.
- - Real Decreto 1369/2006, de 24 de noviembre, por el que se regula el programa de renta activa de inserción para desempleados con especiales necesidades económicas y dificultad para encontrar empleo.
- - Real Decreto 1009/2023, de 5 de diciembre, por el que se establece la estructura orgánica básica de los departamentos ministeriales.
- - Real Decreto 625/2014, de 18 de julio, por el que se regulan determinados aspectos de la gestión y control de los procesos por incapacidad temporal en los primeros trescientos sesenta y cinco días de su duración.
- - Ley 37/2007, de 16 de noviembre, sobre reutilización de la información del sector público.
- - Norma BOE-A-2015-7731
- - Real Decreto 1148/2011, de 29 de julio, para la aplicación y desarrollo, en el sistema de la Seguridad Social, de la prestación económica por cuidado de menores afectados por cáncer u otra enfermedad grave.
- - Real Decreto Legislativo 4/2000, de 23 de junio, por el que se aprueba el texto refundido de la Ley sobre Seguridad Social de los Funcionarios Civiles del Estado.
- - Ley BOE-A-2002-58 (PDF Import)
- - Ley BOE-A-2009-15931 (PDF Import)
- - RD 365/1995 Situaciones Administrativas AGE
- - Resolución de 10 de septiembre de 2009, de la Secretaría General de Industria, por la que se publica el Convenio de colaboración, entre el Ministerio de Industria, Turismo y Comercio y la Comunidad Autónoma de Extremadura, para la realización del día del emprendedor en el marco de la iniciativa "Emprendemos Juntos" 2009.
- - Resolución de 5 de marzo de 1981, de la Tesorería General de la Seguridad Social, por la que se publica la relación de funcionarios que se integran en el Cuerpo de Intervención y Contabilidad de la Seguridad Social de acuerdo con lo establecido en la Orden del Ministerio de Sanidad y Seguridad Social de 15 de enero de 1981.
- - STC 31/2010 (Estatuto de Autonomía de Cataluña)
- - Pleno. Sentencia 31/2010, de 28 de junio de 2010. Recurso de inconstitucionalidad 8045-2006. Interpuesto por noventa y nueve Diputados del Grupo Parlamentario Popular del Congreso en relación con diversos preceptos de la Ley Orgánica 6/2006, de 19 de julio, de reforma del Estatuto de Autonomía de Cataluña. Función y contenido constitucional del Estatuto de Autonomía: Estatuto de Autonomía y sistema de fuentes; bloque de constitucionalidad, valor interpretativo del Estatuto de Autonomía; fundamento de la autonomía; derechos fundamentales y derechos estatutarios; sistema institucional autonómico, organización territorial y gobierno local; Poder Judicial; delimitación del contenido funcional y material de las competencias; relaciones de la Generalitat de Cataluña con el Estado y la Unión Europea; acción exterior; financiación autonómica y local; reforma del Estatuto de Autonomía. Eficacia jurídica del preámbulo; nulidad parcial e interpretación de preceptos legales. Votos particulares.
- - Real Decreto 99/1986, de 17 de enero, por el que se concede la Gran Cruz de San Hermenegildo al General de Brigada Honorario de Artillería, Caballero Mutilado Permanente de Guerra, don Ricardo López Francos y Sanz.
+# LISTA LEYES NEO4J — Auditoría cruzada 30/03/2026
+
+> Cruce triple: **Neo4j** (ingested) vs **catalog_FINAL_v2.json** (68 entradas) vs **PLAN_MAESTRO v3** (47 normas)
+> Fecha de corte normativa: 04/03/2026
+
+---
+
+## ✅ SECCIÓN 1: En Neo4j Y necesarias para PLAN_MAESTRO (25 — núcleo OK)
+
+| # | Siglas | Nombre completo | En Catálogo |
+|---|--------|----------------|-------------|
+| 1 | **TRLGSS** | RDL 8/2015, Ley General de la Seguridad Social | No (ya en Neo4j) |
+| 2 | **CE** | Constitución Española | No (ya en Neo4j) |
+| 3 | **ET** | RDL 2/2015, Estatuto de los Trabajadores | No (ya en Neo4j) |
+| 4 | **TREBEP** | RDL 5/2015, Estatuto Básico del Empleado Público | No (ya en Neo4j) |
+| 5 | **LPAC** | Ley 39/2015, Procedimiento Administrativo Común | No (ya en Neo4j) |
+| 6 | **LRJSP** | Ley 40/2015, Régimen Jurídico del Sector Público | No (ya en Neo4j) |
+| 7 | **LCSP** | Ley 9/2017, Contratos del Sector Público | No (ya en Neo4j) |
+| 8 | **LETA** | Ley 20/2007, Estatuto del Trabajo Autónomo | Sí (BOE-A-2007-13409) |
+| 9 | **RD 84/1996** | Reglamento General Afiliación | No (ya en Neo4j) |
+| 10 | **RD 2064/1995** | Reglamento General Cotización | No (ya en Neo4j) |
+| 11 | **RD 1415/2004** | Reglamento General Recaudación SS | No (ya en Neo4j) |
+| 12 | **RD 1300/1995** | Desarrollo IP/EVI (Ley 42/1994) | No (ya en Neo4j) |
+| 13 | **RD 625/2014** | Gestión y control IT (primeros 365 días) | No (ya en Neo4j) |
+| 14 | **RD 295/2009** | Prestaciones maternidad/paternidad/riesgo embarazo | No (ya en Neo4j) |
+| 15 | **RD 1430/2009** | Desarrollo Ley 40/2007 — IT | No (ya en Neo4j) |
+| 16 | **RDL 2/2023** | MEI + solidaridad + BR dual | No (ya en Neo4j) |
+| 17 | **RDL 11/2024** | Compatibilidad jubilación-trabajo | No (ya en Neo4j) |
+| 18 | **RDL 13/2022** | Cotización autónomos por ingresos reales | No (ya en Neo4j) |
+| 19 | **LO 1/2023** | Salud sexual y reproductiva (IT menstruación) | No (ya en Neo4j) |
+| 20 | **Ley 19/2021** | Ingreso Mínimo Vital | No (ya en Neo4j) |
+| 21 | **Ley 27/2011** | Actualización y modernización SS | No (ya en Neo4j) |
+| 22 | **Ley 21/2021** | Garantía poder adquisitivo pensiones | No (ya en Neo4j) |
+| 23 | **RD 1148/2011** | CUME (cáncer/enfermedad grave menor) | No (ya en Neo4j) |
+| 24 | **RD 504/2022** | Modifica RD 84/1996 y RD 2064/1995 (autónomos) | Sí (BOE-A-2022-10656) |
+| 25 | **RD 1009/2023** | Estructura orgánica ministerios | No (ya en Neo4j) |
+
+---
+
+## ⏳ SECCIÓN 2: En Catálogo PENDIENTES de ingestar a Neo4j (necesarias para PLAN_MAESTRO) (17)
+
+| # | Siglas catálogo | BOE-ID catálogo | Histórica | Uso en PLAN_MAESTRO |
+|---|----------------|-----------------|-----------|---------------------|
+| 1 | Decreto 1646/1972 | BOE-A-1972-1262 | Sí | MS prestaciones muerte/supervivencia |
+| 2 | Decreto 298/1973 | BOE-A-1973-282 | Sí | RE Minería Carbón |
+| 3 | Decreto 3158/1966 | BOE-A-1966-21116 | Sí | AT reglamento prestaciones |
+| 4 | Ley 42/2006 | BOE-A-2006-22874 | No | DA 4ª tarifa primas AT/EP |
+| 5 | Ley 47/2015 Mar | BOE-A-2015-11346 | No | RE Mar protección social |
+| 6 | Ley 2/2025 | BOE-A-2025-8567 | No | Reforma IP/gran invalidez |
+| 7 | Orden PJC/178/2025 | BOE-A-2025-1393 | No | Cotización 2025 |
+| 8 | Orden RED | BOE-A-2003-21147 | No | Sistema RED (TAS/2865/2003) |
+| 9 | RD 1221/1992 | BOE-A-1992-17154 | No | Patrimonio SS |
+| 10 | RD 1273/2003 | BOE-A-2003-19281 | No | Contingencias profesionales autónomos |
+| 11 | RD 1299/2006 | BOE-A-2006-22169 | No | Cuadro enfermedades profesionales |
+| 12 | RD 1335/2005 | BOE-A-2005-19151 | No | Prestaciones familiares |
+| 13 | RD 1539/2003 | BOE-A-2003-23363 | No | Jubilación anticipada discapacidad |
+| 14 | RD 1647/1997 | BOE-A-1997-24163 | No | Desarrollo Ley 24/1997 |
+| 15 | RD 501/2024 | BOE-A-2024-10237 | No | Estructura MISSMI |
+| 16 | RD 615/2007 | BOE-A-2007-9878 | No | SS cuidadores dependencia |
+| 17 | Decreto 2530/1970 | BOE-A-1970-1066 | Sí | RETA original |
+
+---
+
+## ❌ SECCIÓN 3: FALTAN en Neo4j Y en Catálogo — HAY QUE AÑADIR AL CATÁLOGO (5)
+
+| # | Norma | Por qué la necesita PLAN_MAESTRO | Acción |
+|---|-------|----------------------------------|--------|
+| 1 | **LO 10/2022** — Garantía integral libertad sexual | Bloque LO (LO01-LO08 trampas) | Añadir al catálogo |
+| 2 | **Ley 27/1999** — Cooperativas | Bloque COOP (COOP01-COOP08 trampas) | Añadir al catálogo |
+| 3 | **Ley 40/2007** — Medidas MS/IT | RD 1430/2009 la desarrolla (está en Neo4j), pero la ley misma no | Añadir al catálogo |
+| 4 | **RD 900/2018** — Partes médicos IT (nuevo regl.) | Trampas IT en PLAN_MAESTRO | Añadir al catálogo |
+| 5 | **LISOS (RDL 5/2000)** — Infracciones y Sanciones Orden Social | Trampas recaudación/sanciones | Ya en catálogo (BOE-A-2000-15060) pero NO en Neo4j → ingestar |
+
+---
+
+## ⚠️ SECCIÓN 4: Legislación 2025/2026 — pendiente publicación BOE consolidado
+
+| # | Norma | Estado |
+|---|-------|--------|
+| 1 | **Ley 5/2025** (IPREM 2026) | Pendiente BOE consolidado |
+| 2 | **RD 126/2026** (SMI 2026) | Pendiente BOE consolidado |
+| 3 | **RD 3/2026** (Bases cotización 2026) | Pendiente BOE consolidado |
+
+> Estas normas se referencian en COR01/COR02 del PLAN_MAESTRO pero no se pueden ingestar hasta tener XML BOE.
+
+---
+
+## 🗑️ SECCIÓN 5: En Neo4j pero NO relevantes / BASURA (limpiar)
+
+| # | Entrada en Neo4j | Problema |
+|---|-------------------|----------|
+| 1 | RD 842/2002 (Reglamento electrotécnico baja tensión) | NO es SS ni administrativo relevante |
+| 2 | Ley 9/1996 (sequía hidráulica) | NO es SS ni administrativo relevante |
+| 3 | Resolución emprendedores 2009 (Extremadura) | BASURA — resolución de subvención |
+| 4 | Resolución TGSS 1981 (integración funcionarios) | BASURA — resolución administrativa puntual |
+| 5 | RD 99/1986 (Gran Cruz San Hermenegildo) | BASURA — concesión de condecoración |
+| 6 | STC 31/2010 (Estatut Catalunya) | DUPLICADA (aparece 2 veces) + marginal |
+| 7 | Norma BOE-A-2000-12140 | Sin identificar — verificar si es necesaria |
+| 8 | Norma BOE-A-1985-16660 | Sin identificar — verificar si es necesaria |
+| 9 | Norma BOE-A-2003-7527 | Sin identificar — verificar si es necesaria |
+| 10 | Norma BOE-A-2007-19814 | Sin identificar — verificar si es necesaria |
+| 11 | Norma BOE-A-2015-8168 | Sin identificar — verificar si es necesaria |
+| 12 | Norma BOE-A-2015-7731 | Sin identificar — verificar si es necesaria |
+| 13 | Norma BOE-A-2020-5493 | Sin identificar — verificar si es necesaria |
+| 14 | Norma BOE-A-2022-7191 | Sin identificar — verificar si es necesaria |
+| 15 | Norma BOE-A-1987-14115 | Sin identificar — verificar si es necesaria |
+| 16 | Norma BOE-A-1996-1579 | Sin identificar — verificar si es necesaria |
+| 17 | Norma BOE-A-2014-7684 | Probablemente RD 625/2014 (ya está con título, duplicado) |
+
+---
+
+## 📊 SECCIÓN 6: Leyes en Neo4j útiles para bloque GENERAL (no SS específico, pero sí oposición)
+
+| # | Siglas | Para qué |
+|---|--------|----------|
+| 1 | LO 6/1985 (LOPJ) | Bloque General — Poder Judicial |
+| 2 | Ley 29/1998 (LJCA) | Bloque General — Contencioso |
+| 3 | Ley 36/2011 (LRJS) | Bloque General — Jurisdicción Social |
+| 4 | LO 3/2018 (LOPDGDD) | Bloque General — Protección datos |
+| 5 | RDL 1/2013 (Discapacidad) | Bloque Específico — inclusión social |
+| 6 | Ley 50/1997 (Gobierno) | Bloque General |
+| 7 | Ley 4/2023 (Trans/LGTBI) | Bloque General |
+| 8 | RDL 16/2022 (Hogar) | Bloque Específico — integración empleadas hogar |
+| 9 | Ley 1/2000 (LEC) | Art. 607 embargo salarios |
+| 10 | LO 3/2007 (Igualdad) | Bloque General + SS |
+| 11 | Ley 31/1995 (PRL) | Bloque Específico — riesgos laborales |
+| 12 | RD 39/1997 (Serv. Prevención) | Bloque Específico |
+| 13 | RD 357/1991 (PNC) | Bloque Específico — pensiones no contributivas |
+| 14 | RD 1369/2006 (RAI) | Bloque Específico — renta activa inserción |
+| 15 | LO 1/2004 (Violencia género) | Bloque General + prestaciones |
+| 16 | Ley 23/2015 (Inspección Trabajo) | Bloque Específico |
+| 17 | RDL 6/2019 (Igualdad empleo) | Bloque General + SS |
+| 18 | RDL 20/2020 (IMV primera versión) | Sustituido por Ley 19/2021 (ya en Neo4j) |
+| 19 | RDL 4/2000 (SS Funcionarios Civiles) | Bloque Específico |
+| 20 | RD 375/2003 (Mutualismo Administrativo) | Bloque Específico |
+| 21 | Orden HAC/1517/2025 (Límites contratos) | LCSP actualizado |
+
+---
+
+## RESUMEN EJECUTIVO
+
+| Categoría | Cantidad | Estado |
+|-----------|----------|--------|
+| ✅ En Neo4j + necesarias PLAN_MAESTRO | **25** | OK — núcleo cubierto |
+| ⏳ En catálogo pendientes ingestión | **17** | Ejecutar ingest_neo4j_v15 |
+| ❌ Faltan en catálogo (añadir) | **4** | LO 10/2022, Ley 27/1999, Ley 40/2007, RD 900/2018 |
+| ❌ En catálogo pero no en Neo4j | **1** | LISOS (BOE-A-2000-15060) → ingestar |
+| ⚠️ Legislación 2026 pendiente BOE | **3** | Ley 5/2025, RD 126/2026, RD 3/2026 |
+| 🗑️ Basura/duplicados en Neo4j | **5+12** | Limpiar en próxima reingestión |
+| 📊 Útiles bloque general | **21** | Mantener |
+
+**Conclusión:** El núcleo SS del PLAN_MAESTRO (25 leyes fundamentales) está en Neo4j. Faltan **4 normas por añadir al catálogo** + **18 del catálogo por ingestar** = **22 normas pendientes** antes de implementación completa.

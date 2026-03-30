@@ -25,6 +25,7 @@ BP_S11 = TopicBlueprint(
         "Art. 184 TRLGSS — Subsidio no contributivo nacimiento",
         "Art. 186 TRLGSS — Riesgo durante embarazo",
         "Art. 188 TRLGSS — Riesgo durante lactancia",
+        "Art. 190.5 TRLGSS — Cotización durante reducción jornada cuidado menor",
         "Art. 237.3 TRLGSS — (aplica a nacimiento, NO a IT)",
     ],
 
@@ -49,6 +50,7 @@ BP_S11 = TopicBlueprint(
         "C11",         # Art. 237.3 aplica a NACIMIENTO, NO a IT
         "C12",         # Lactancia: extinción a 9 meses (no 12)
         "C13",         # Riesgo embarazo: NO pago delegado
+        "DM26-T11-01", # Art. 190.5: Cotización al 100% durante reducción jornada cuidado menor
     ],
 
     cambios_dm_2026=get_cambios_para_blueprint("BP-S11"),
@@ -83,16 +85,30 @@ BP_S11 = TopicBlueprint(
             "mnemonico": "Subsidio NC nacimiento 2026: también hombres. Sin mínimo cotización.",
         },
         {
+            "pregunta": "Durante la reducción de jornada por cuidado de menor con cáncer (Art. 190.5 TRLGSS), la cotización se calcula sobre:",
+            "respuesta_correcta": "El 100% de la base reguladora anterior a la reducción (no se reduce proporcionalmente)",
+            "distractores": [
+                "Se reduce proporcionalmente a la jornada reducida",
+                "Se calcula sobre la base mínima de cotización",
+                "Se exonera totalmente durante el cuidado",
+                "Se calcula sobre el 50% de la base anterior",
+            ],
+            "articulo": "Art. 190.5 TRLGSS",
+            "trampa_id": "DM26-T11-01",
+            "mnemonico": "Reducción jornada cuidado menor: cotización 100% base anterior",
+        },
+        {
             "pregunta": "El Art. 237.3 TRLGSS (asimilación a cotizado de períodos de excedencia) aplica a:",
-            "respuesta_correcta": "La prestación de NACIMIENTO y cuidado del menor — NO a la IT",
+            "respuesta_correcta": "La prestación de NACIMIENTO y cuidado del menor — NO a la Incapacidad Temporal",
             "distractores": [
                 "La Incapacidad Temporal en todos sus grados",
-                "Tanto a la IT como al nacimiento",
-                "Solo al desempleo contributivo",
+                "Solo a la IT por enfermedad común",
+                "A la IT por accidente de trabajo",
+                "A las prestaciones por desempleo",
             ],
             "articulo": "Art. 237.3 TRLGSS",
             "trampa_id": "C11",
-            "mnemonico": "Art 237.3: para NACIMIENTO, nunca para IT. Trampa clásica.",
+            "mnemonico": "Art. 237.3: solo aplica a NACIMIENTO, no a IT",
         },
         {
             "pregunta": "La prestación por riesgo durante la lactancia natural se extingue cuando:",
@@ -114,3 +130,68 @@ BP_S11 = TopicBlueprint(
         "lactancia 9 meses (no 12), subsidio NC también hombres."
     ),
 )
+
+
+def generar_briefing_s11(dispatcher) -> dict:
+    """
+    Genera un caso de nacimiento/cuidado del menor con situación familiar aleatoria.
+    """
+    import random
+    import sys
+    sys.path.insert(0, '/home/spas/OPOS_GEMINI_1/backend')
+    from v14.nombres_pool import (nombre_completo_aleatorio, nombre_empresa,
+                                   ciudad)
+
+    rng = random.Random()
+
+    nombre, genero = nombre_completo_aleatorio(rng)
+    empresa = nombre_empresa(rng)
+    ciudad_caso = ciudad(rng)
+    edad = rng.randint(26, 42)
+
+    tipo_familia = rng.choice(["biparental", "monoparental", "multiple_biparental"])
+    num_hijos = 1 if tipo_familia != "multiple_biparental" else rng.choice([2, 3])
+    discapacidad = rng.random() < 0.25
+    discapacidad_pct = rng.choice([33, 45, 65]) if discapacidad else 0
+
+    if tipo_familia == "monoparental":
+        semanas = 32
+        desc_familia = "familia monoparental"
+    elif tipo_familia == "multiple_biparental":
+        semanas_base = 19
+        semanas_extra = (num_hijos - 1) * 2
+        semanas = semanas_base + semanas_extra
+        desc_familia = f"parto múltiple ({num_hijos} hijos)"
+    else:
+        semanas = 19
+        desc_familia = "familia biparental"
+
+    semanas_disc = semanas + 2 if discapacidad and discapacidad_pct >= 33 else semanas
+
+    return {
+        "personaje": nombre,
+        "empresa": empresa,
+        "ciudad": ciudad_caso,
+        "genero": genero,
+        "edad": edad,
+        "tipo_familia": tipo_familia,
+        "num_hijos": num_hijos,
+        "discapacidad_hijo": discapacidad,
+        "discapacidad_pct": discapacidad_pct,
+        "tema": "nacimiento_cuidado_menor",
+        "descripcion": (
+            f"{nombre}, de {edad} años, empleada/o en {empresa} ({ciudad_caso}), "
+            f"tiene un {'parto' if num_hijos == 1 else f'parto múltiple de {num_hijos} hijos'} "
+            f"en situación de {desc_familia}."
+            + (f" Uno de los recién nacidos tiene una discapacidad reconocida del {discapacidad_pct}%." if discapacidad else "")
+        ),
+        "calculos_verificados": {
+            "semanas_prestacion": semanas_disc,
+            "tipo_familia": desc_familia,
+            "semanas_base_2026": "19 semanas (Art. 182 TRLGSS)",
+            "semanas_monoparental_2026": "32 semanas",
+        }
+    }
+
+
+BP_S11.generar_briefing = generar_briefing_s11

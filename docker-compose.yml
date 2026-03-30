@@ -85,9 +85,9 @@ services:
       - ./backend:/app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Neo4j Graph Database (Community Edition)
+  # Neo4j Graph Database (Community Edition) — upgraded 2026.02 for Cypher 25 + SEARCH + in-index vector filtering
   neo4j:
-    image: neo4j:5-community
+    image: neo4j:2026-community
     container_name: opositaia-neo4j
     ports:
       - "7474:7474" # Browser HTTP

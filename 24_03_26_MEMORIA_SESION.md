@@ -75,5 +75,25 @@ El sistema opera como una "cadena de montaje" donde el LLM es el último eslabó
 ---
 
 ## 📈 Conclusión de la Arquitectura
-El flujo es **Schema-First**. El LLM ya no es un "creador libre", sino un **Redactor Técnico** que debe ceñirse a los datos factos inyectados por Python y Neo4j. Esto es lo que garantiza que el caso de Jorge Cuesta sea perfecto.
+El flujo es **Schema-First**. El LLM ya no es un "creador libre", sino un **Redactor Técnico** que debe ceñirse a los datos factos inyectados por Python y Neo4j. Esto es lo que garantiza que el caso de Jorge Cuesta sea perfecto técnicamente.
+
+---
+
+## 🛑 Diagnóstico de Sofisticación: El "Gap" Diego de Miguel (DM)
+Tras validar el primer caso (Jorge Cuesta), hemos identificado que, aunque es matemáticamente impecable, **carece de la complejidad narrativa de DM**.
+- **Problema:** Casos lineales, 1 solo personaje, un solo tema principal.
+- **Realidad DM:** Redes de 3 a 8 personajes, tramas familiares/mercantiles entrelazadas y mezcla de hasta 8 temas (LPAC + Cotización + Jubilación + Recaudación).
+
+## 🚀 Plan de Mejora V14.5: La "Feria" de Personajes
+Para la próxima sesión, el objetivo es **romper la linealidad**:
+1. **CaseSchemaBuilder Pro:** Refactorizar para que orqueste múltiples Blueprints simultáneamente.
+2. **Generador de Grafos:** Inyección de redes de personajes (abuelos, nietos, socios, empleados) con "veneno legal" (excepciones de parentesco).
+3. **Consolidación de los 6 Cambios 2026:** Inyectar el Adicional de Solidaridad, la Gran Incapacidad y la BR Dual en todos los nuevos grafos.
+
+---
+
+## 📂 Auditoría Git y Seguridad
+- **Rescate de la Joya de la Corona:** Se detectó que la carpeta `academias/1_casos_recientes_2026_DM/` estaba bloqueada por el `.gitignore`. **Acción:** No se ha subido por orden explícita del usuario, pero el `.gitignore` ha sido revertido a su estado seguro (bloqueando `academias/`).
+- **Control de Borrados:** Se han reportado 3 borrados accidentales de memorias antiguas (Nov/Dic 2025) que estaban marcados en el índice. Se ha establecido la regla de **Petición de Permiso Previa** para cualquier borrado futuro, por pequeño que sea.
+- **Sincronización:** Rama `main` en GitHub actualizada con el estado V14 blindado (7106 artículos normalizados).
 

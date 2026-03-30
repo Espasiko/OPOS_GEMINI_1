@@ -117,3 +117,75 @@ BP_S10 = TopicBlueprint(
         "Mnemónico obligatorio: 'adaptar → reubicar → extinguir (solo si imposible)'."
     ),
 )
+
+
+def generar_briefing_s10(dispatcher) -> dict:
+    """
+    Genera un caso de IP con grado, contingencia y datos aleatorios legalmente válidos.
+    """
+    import random
+    import sys
+    sys.path.insert(0, '/home/spas/OPOS_GEMINI_1/backend')
+    from v14.nombres_pool import (nombre_completo_aleatorio, nombre_empresa,
+                                   base_cotizacion_aleatoria, ciudad)
+
+    rng = random.Random()
+
+    nombre, genero = nombre_completo_aleatorio(rng)
+    empresa = nombre_empresa(rng)
+    ciudad_caso = ciudad(rng)
+
+    grado = rng.choice(["IPP", "IPT", "IPA", "Gran Incapacidad"])
+    contingencia = rng.choice(["contingencias comunes", "accidente de trabajo"])
+    anos_cotizados = rng.randint(8, 40)
+    edad = rng.randint(30, 58)
+    ultima_bc = base_cotizacion_aleatoria(rng, minimo=1323.0, maximo=3500.0)
+    base_minima = 1323.0
+
+    if grado == "IPP":
+        pension_desc = f"Indemnización a tanto alzado: 24 mensualidades de la BR"
+    elif grado == "IPT":
+        br = round(ultima_bc * 12 / 14, 2)
+        pension_mensual = round(br * 0.55, 2)
+        pension_desc = f"55% de la BR ({pension_mensual:.2f}€/mes)"
+    elif grado == "IPA":
+        br = round(ultima_bc * 12 / 14, 2)
+        pension_mensual = round(br * 1.00, 2)
+        pension_desc = f"100% de la BR ({pension_mensual:.2f}€/mes)"
+    else:
+        br = round(ultima_bc * 12 / 14, 2)
+        complemento = round(base_minima * 0.50 + ultima_bc * 0.25, 2)
+        pension_desc = (
+            f"100% de la BR + complemento GI: "
+            f"50% BMin ({base_minima*0.50:.2f}€) + 25% última BC ({ultima_bc*0.25:.2f}€) "
+            f"= complemento {complemento:.2f}€/mes"
+        )
+
+    articulo_trabajador = "El trabajador" if genero == "masculino" else "La trabajadora"
+
+    return {
+        "personaje": nombre,
+        "empresa": empresa,
+        "ciudad": ciudad_caso,
+        "genero": genero,
+        "edad": edad,
+        "anos_cotizados": anos_cotizados,
+        "ultima_bc": ultima_bc,
+        "grado_ip": grado,
+        "tipo_contingencia": contingencia,
+        "tema": "incapacidad_permanente",
+        "descripcion": (
+            f"{nombre}, de {edad} años, trabaja en {empresa} ({ciudad_caso}) "
+            f"y acredita {anos_cotizados} años de cotización. "
+            f"Tras agotar el período máximo de IT por {contingencia}, "
+            f"el INSS emite dictamen-propuesta reconociendo una {grado}."
+        ),
+        "calculos_verificados": {
+            "grado_reconocido": grado,
+            "contingencia": contingencia,
+            "pensión_descripcion": pension_desc,
+        }
+    }
+
+
+BP_S10.generar_briefing = generar_briefing_s10

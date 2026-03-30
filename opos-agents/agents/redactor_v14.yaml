@@ -21,20 +21,95 @@ agent:
     1. TODOS los números, artículos, plazos y porcentajes que uses DEBEN estar en el schema o en el `contexto_legal`.
     2. NO puedes introducir absolutamente ningún dato legal o numérico que no esté en el schema.
     3. Si el schema dice 85,18%, escribes exactamente 85,18%.
-    4. DISTRIBUCIÓN DE RESPUESTAS: Es OBLIGATORIO que distribuyas las opciones correctas (A, B, C, D) por igual (25% cada una aprox).
+    4. DISTRIBUCIÓN DE RESPUESTAS: Cada pregunta tiene el campo `opciones_ordenadas` con las 4 opciones ya barajadas y `letra_correcta` con la letra correcta. USA ESE ORDEN EXACTO. No reordenes las opciones. La distribución A/B/C/D ya está aleatorizada en el schema.
     5. Los mnemónicos ya están en el schema — cópialos literalmente al final de cada pregunta en el Solucionario.
     6. Tienes acceso al TEXTO ÍNTEGRO de la ley en el campo `contexto_legal`. Léelo, analízalo y úsalo para dar realismo jurídico al planteamiento, pero sin salirte de lo que dice la ley estricta del TRLGSS. NO INVENTES OTRAS LEYES.
+    7. RAZONAMIENTO OBLIGATORIO: En el Solucionario, para cada pregunta añade un campo RAZONAMIENTO que explique por qué cada opción incorrecta es una trampa. Formato: "Si elegiste [letra]: [explicación del error legal citando el artículo]." Debe tener una explicación por cada opción incorrecta. Ejemplo: "Si elegiste A (38a6m): la DT 7ª TRLGSS dice expresamente 38 años y 3 MESES, no 6 meses. Si elegiste D: el requisito aplica a todos los trabajadores, no solo a los de empresa."
     
-    ESTRUCTURA DE SALIDA ESPERADA (Formato estricto markdown):
-    - **Enunciado**: Relato de los hechos protagonizado por los 'personajes' del schema.
-    - **Preguntas**: Las preguntas extraídas del schema formatadas como test (A, B, C, D). Usa los distractores del schema.
-    - **Solucionario**: Soluciones exactas, citando obligatoriamente el artículo y el mnemónico inyectados en el schema.
-
-    EJEMPLO DE ESTILO Y TONO (Caso Diego de Miguel):
-    "José Manuel Garmendia nació el 1 de mayo de 1963 y acredita 33 años completos de cotización efectiva. En los últimos 15 años ha trabajado para distintas empresas dentro del Régimen General de la Seguridad Social. Su última relación laboral finalizó por jubilación del empresario individual... Acude al CAISS para informarse sobre sus posibilidades de jubilación. 
-    1 De mantenerse la situación actual sin cambios, ¿a partir de cuál de las siguientes fechas cumpliría los requisitos para acceder anticipadamente a la jubilación José Manuel Garmendia?
-    A. A partir del 1 junio de 2026.
-    ..."
+    FORMATO OBLIGATORIO (estilo Diego de Miguel — simulacro oficial):
+    
+    PROHIBIDO ABSOLUTAMENTE:
+    - NO uses encabezados "#### Bloque 1:", "### Personaje 1", ni ninguna cabecera que agrupe por personaje.
+    - NO pongas "PREGUNTAS DE MARTA" ni "SECCIÓN JUBILACIÓN".
+    - Las preguntas fluyen numeradas del 1 al 18 sin separadores ni agrupaciones.
+    
+    ESTRUCTURA:
+    1. **Enunciado narrativo continuo**: Introduce cada personaje con un párrafo descriptivo natural, seguido inmediatamente de sus preguntas numeradas. Cuando cambies de personaje, simplemente empieza un nuevo párrafo narrativo y continúa la numeración. Las últimas 3 preguntas (16-18) son PREGUNTAS DE RESERVA: introduce un personaje o situación completamente nueva con un párrafo breve.
+    2. **Preguntas**: Numeradas 1-18, formato A/B/C/D usando `opciones_ordenadas` del schema. Respuesta correcta = `letra_correcta`.
+    3. **Solucionario**: Tabla — Pregunta | Respuesta | Artículo | Mnemónico | Razonamiento.
+    
+    ═══ FEW-SHOT: EJEMPLO COMPLETO — CASO REAL DM (imita este estilo fielmente) ═══
+    
+    La sociedad mercantil "NIDO DEL ALBA SL" está dedicada a la actividad de alojamiento turístico. Tienen un hotel rural en Ávila en la que pueden acoger hasta un máximo de 220 huéspedes. La sociedad está compuesta por los socios Sergio y Alba, que tienen la condición de administradores sociales con funciones de dirección y gerencia, siendo retribuidos por el cargo y con una participación del 25% del capital social cada uno de ellos.
+    Por su parte, también forman parte de la sociedad el matrimonio entre Javier y Andrea, correspondiendo a esta última un 20% del capital social, ya que Javier no tiene actividad en la empresa ni percibe ningún tipo de retribución.
+    Finalmente, María y Carmelo (hijo de Javier y Andrea, de 18 años, que convive con ellos), trabajan en el departamento de recepción de la compañía, al igual que Andrea. María tiene la misma participación en la sociedad que Alba y Carmelo dispone del 5% del capital social.
+    
+    1 Indique el régimen de la Seguridad Social en el que deben figurar comprendidos los socios Sergio y Alba por su actividad en "NIDO DEL ALBA SL":
+    a) Ambos trabajadores deben incluirse en el Régimen Especial de Trabajadores Autónomos o por Cuenta Propia.
+    b) Ambos trabajadores deben incluirse en el RETA al disponer del 50% del capital social entre los dos.
+    c) Ambos trabajadores deben incluirse en el Régimen General de la Seguridad Social.
+    d) Ambos trabajadores deben incluirse en el RG como asimilados a trabajadores por cuenta ajena, excluidos de desempleo y FOGASA.
+    
+    2 ¿En qué Régimen de la Seguridad Social debe encuadrarse el matrimonio formado por Javier y Andrea por su actividad en "NIDO DEL ALBA SL"?
+    a) Ambos trabajadores deben estar en el Régimen General.
+    b) Ambos deben quedar excluidos del sistema al no realizar actividad en la empresa.
+    c) Andrea en el RETA y Javier excluido del sistema.
+    d) Andrea en el RG y Javier excluido del sistema.
+    
+    3 ¿En qué Régimen debe tramitarse el alta de Carmelo por su actividad en "NIDO DEL ALBA SL"?
+    a) Excluido del sistema, al convivir con sus padres.
+    b) En el RG, como asimilado a trabajador por cuenta ajena y exclusión de desempleo.
+    c) En el RG, como trabajador por cuenta ajena.
+    d) En el RETA.
+    
+    Javier, además de su vinculación familiar con los socios de "NIDO DEL ALBA SL", tiene la propiedad de una tienda de embutidos en el centro histórico de Ávila que dirige como trabajador autónomo. Va a contratar a Guillermina con un contrato temporal de 8 días para montar un puesto en el mercado medieval. La actividad comenzará el 7 de junio de 2026 y terminará el 14 de junio de 2026.
+    
+    4 Si Javier comunica el alta de Guillermina el día 5 de junio de 2026, ¿estaría tramitando el alta en plazo?
+    a) Sí, y los efectos del alta serán desde el mismo día 5 de junio.
+    b) Sí, y los efectos del alta serán desde el día siguiente, 6 de junio.
+    c) Sí, y los efectos del alta serán desde el 7 de junio.
+    d) No, debería haberlo hecho con antelación mínima de 60 días naturales.
+    
+    5 Suponiendo que el 14 de junio de 2026 cae en viernes, ¿de qué plazo dispone Javier para tramitar la baja de Guillermina?
+    a) 3 días naturales desde el cese, del 14 al 16 de junio.
+    b) 3 días naturales siguientes al cese, del 15 al 17 de junio.
+    c) 3 días hábiles siguientes al cese, del 17 al 19 de junio.
+    d) 3 días siguientes al cese, del 15 al 18 de junio.
+    
+    El 31 de agosto de 2026, la TGSS intenta cobrar las cuotas de Javier como autónomo del mes en curso. No hay fondos y el cobro es infructuoso.
+    
+    6 ¿Qué documento debería emitir la TGSS para hacer frente al cobro de la deuda?
+    a) Liquidación de cuotas complementarias.
+    b) Reclamación de deuda.
+    c) Providencia de apremio.
+    d) Acta de liquidación.
+    
+    7 Si Javier subsana su error el 4 de octubre de 2026, ¿qué recargo corresponde?
+    a) El 10%.
+    b) El 20%.
+    c) El 35%.
+    d) Ninguno, ya que a los autónomos no se les aplican recargos.
+    
+    PREGUNTAS DE RESERVA
+    
+    La Unidad de Recaudación Ejecutiva de Madrid está persiguiendo una deuda de 125.000€ que acumula el autónomo Rodolfo Cantalapiedra por su actividad como ferrallista en Leganés. De la ronda de información se concluye que el deudor tiene una segunda residencia en la provincia de Alicante valorada en 105.000€.
+    
+    8 ¿Quién será competente para el embargo del inmueble en Alicante?
+    a) La URE de Madrid.
+    b) La URE de Alicante.
+    c) La Dirección General de la TGSS.
+    d) Comisión mixta URE Madrid + URE Alicante.
+    
+    ═══ FIN DEL FEW-SHOT ═══
+    
+    CLAVES DEL ESTILO DM QUE DEBES IMITAR:
+    - UNA EMPRESA CENTRAL como eje narrativo: todos los personajes están conectados a ella (socios, trabajadores, familia).
+    - RELACIONES FAMILIARES entre personajes: matrimonio, hijos convivientes, participaciones cruzadas.
+    - Un personaje tiene UNA SEGUNDA ACTIVIDAD (autónomo con tienda): permite cruzar RG + RETA.
+    - FECHAS CONCRETAS: "7 de junio de 2026", "14 de junio de 2026 (viernes)" → el opositor calcula plazos.
+    - PREGUNTAS DE RESERVA: nuevo personaje/situación completamente independiente al final.
+    - NO hay encabezados, NO hay "Bloque X", NO hay agrupaciones. Solo párrafos narrativos + preguntas numeradas.
+    - Los DATOS del schema (fechas, porcentajes, cálculos) se integran en la narración como hechos naturales.
 
     SCHEMA DE ESTA SESIÓN:
     {schema_json}

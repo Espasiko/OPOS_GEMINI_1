@@ -119,30 +119,76 @@ BP_S12 = TopicBlueprint(
     ),
 )
 
+def _calcular_porcentaje_pension(anos_cotizados: float) -> float:
+    """Art. 210 TRLGSS: escala de porcentaje según años cotizados."""
+    meses = int(anos_cotizados * 12)
+    if meses < 180:
+        return 50.0
+    adicionales = meses - 180
+    pct = 50.0 + min(adicionales, 49) * 0.21
+    if adicionales > 49:
+        pct += (adicionales - 49) * 0.19
+    return min(round(pct, 2), 100.0)
+
+
+def _calcular_eoj(anos_cotizados: float) -> str:
+    """DT 7ª TRLGSS: EOJ 2026."""
+    return "65 años" if anos_cotizados * 12 >= 459 else "66 años y 10 meses"
+
+
 def generar_briefing_s12(dispatcher) -> dict:
-    '''
-    Ejecuta calculadoras reales para generar un caso 100% determinístico y legal.
-    '''
-    anos_cotizados = 30
-    bc_mensual = 2500.00
-    edad_jubilacion = 66
-    
-    pct = 85.18
-    br = bc_mensual * 300 / 350
+    """
+    Genera un caso de jubilación con datos aleatorios pero legalmente correctos.
+    Cada llamada produce un caso diferente.
+    """
+    import random
+    import sys
+    sys.path.insert(0, '/home/spas/OPOS_GEMINI_1/backend')
+    from v14.nombres_pool import (nombre_completo_aleatorio, nombre_empresa,
+                                   base_cotizacion_aleatoria, ciudad)
+
+    rng = random.Random()
+
+    nombre, genero = nombre_completo_aleatorio(rng)
+    empresa = nombre_empresa(rng)
+    ciudad_caso = ciudad(rng)
+
+    opciones_anos = [15, 18, 20, 22, 25, 27, 30, 32, 35, 37, 38.5, 40, 42, 45]
+    anos_cotizados = rng.choice(opciones_anos)
+    bc_mensual = base_cotizacion_aleatoria(rng, minimo=1323.0, maximo=4000.0)
+    edad_jubilacion = 65 if anos_cotizados * 12 >= 459 else 67
+
+    pct = _calcular_porcentaje_pension(anos_cotizados)
+    br = round(bc_mensual * 300 / 350, 2)
     pension = round(br * (pct / 100), 2)
-    
+    eoj = _calcular_eoj(anos_cotizados)
+
+    pronombre = "él" if genero == "masculino" else "ella"
+    articulo = "El trabajador" if genero == "masculino" else "La trabajadora"
+
     return {
-        "personaje": "Jorge Cuesta",
-        "empresa": "Desengaño 21 SL",
+        "personaje": nombre,
+        "empresa": empresa,
+        "ciudad": ciudad_caso,
+        "genero": genero,
         "edad": edad_jubilacion,
         "anos_cotizados": anos_cotizados,
         "bc_mensual": bc_mensual,
+        "tema": "jubilacion",
+        "descripcion": (
+            f"{nombre}, de {edad_jubilacion} años, ha trabajado {anos_cotizados} años "
+            f"en el Régimen General como empleado/a de {empresa} en {ciudad_caso}. "
+            f"Su base de cotización mensual es de {bc_mensual:.2f}€. "
+            f"Acude al CAISS para informarse sobre su pensión de jubilación."
+        ),
         "calculos_verificados": {
-            "eoj_requerida_65": "38 años y 3 meses",
-            "br_calculada": round(br, 2),
+            "eoj_aplicable": eoj,
+            "br_calculada": br,
             "porcentaje_pension": pct,
-            "pension_resultante": pension
+            "pension_resultante": pension,
+            "umbral_100pct": "36 años y 6 meses (DT 9ª 2026)",
         }
     }
+
 
 BP_S12.generar_briefing = generar_briefing_s12
