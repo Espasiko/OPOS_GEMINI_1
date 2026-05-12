@@ -248,3 +248,38 @@ node_modules
 fastapi_host.log
 run_output_v4_unbuffered.log
 
+
+# ─── EXCLUIDOS 12/05/2026: Contienen API keys, credenciales o datos sensibles ───
+# CRÍTICO: Backups de config con 7+ API keys en texto plano
+backend/escritor_configs_backup/
+
+# MEDIO: Obsidian REST API Key expuesta
+24_04_2026_MEMORIA_OBSIDIAN_API_agentes.md
+
+# BAJO: Scripts con credenciales Neo4j hardcodeadas
+check_codigo_ss.py
+check_new_laws.py
+check_ss_critical_laws.py
+check_ss_exam_laws.py
+consulta_directa_neo4j.py
+verificar_neo4j.py
+scratch/test_neo4j_conn.py
+09_04_26_NEO4J_MEMORIA.md
+
+# BAJO: Scripts de ingesta con fallback de password Neo4j
+backend/scripts/ingest_neo4j_v17.py
+backend/scripts/load_valores_2026.py
+
+# ─── EXCLUIDOS 12/05/2026: Contienen API keys, credenciales o datos sensibles ───
+backend/escritor_configs_backup/
+24_04_2026_MEMORIA_OBSIDIAN_API_agentes.md
+check_codigo_ss.py
+check_new_laws.py
+check_ss_critical_laws.py
+check_ss_exam_laws.py
+consulta_directa_neo4j.py
+verificar_neo4j.py
+scratch/test_neo4j_conn.py
+09_04_26_NEO4J_MEMORIA.md
+backend/scripts/ingest_neo4j_v17.py
+backend/scripts/load_valores_2026.py

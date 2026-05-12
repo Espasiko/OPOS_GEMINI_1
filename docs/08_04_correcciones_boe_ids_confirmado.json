@@ -1,0 +1,115 @@
+{
+  "_meta": {
+    "descripcion": "Correcciones de BOE-IDs del catalog_FINAL_v2.json",
+    "fecha_verificacion": "2026-03-31",
+    "fuente": "Verificación manual contra BOE oficial",
+    "notas": "RD 1196/2013 no existe como norma - usar Orden TAS/2865/2003"
+  },
+  "correcciones": [
+    {
+      "ley": "RD 504/2022 (afiliación autónomos)",
+      "boe_id_incorrecto": "BOE-A-2022-10656",
+      "boe_id_correcto": "BOE-A-2022-10677",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2022-10677",
+      "xml_disponible": true
+    },
+    {
+      "ley": "RD 1196/2013 (convenios especiales)",
+      "boe_id_incorrecto": "BOE-A-2013-11881",
+      "boe_id_correcto": "BOE-A-2003-19281",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2003-19281",
+      "xml_disponible": true,
+      "nota": "RD 1196/2013 no existe. Norma correcta: Orden TAS/2865/2003"
+    },
+    {
+      "ley": "Orden TAS/2865/2003 (sistema RED)",
+      "boe_id_incorrecto": "BOE-A-2003-21147",
+      "boe_id_correcto": "BOE-A-2003-19281",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2003-19281",
+      "xml_disponible": true,
+      "nota": "Misma norma que convenios especiales - ya corregido arriba"
+    },
+    {
+      "ley": "RD 1851/2009 (jubilación discapacidad)",
+      "boe_id_incorrecto": "BOE-A-2009-20412",
+      "boe_id_correcto": "BOE-A-2009-20652",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2009-20652",
+      "xml_disponible": true
+    },
+    {
+      "ley": "RD 504/2007 (baremo dependencia)",
+      "boe_id_incorrecto": "BOE-A-2007-8419",
+      "boe_id_correcto": "BOE-A-2007-8350",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2007-8350",
+      "xml_disponible": true
+    },
+    {
+      "ley": "RDL 8/2019 (protección social/precariedad)",
+      "boe_id_incorrecto": "BOE-A-2019-4676",
+      "boe_id_correcto": "BOE-A-2019-3481",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2019-3481",
+      "xml_disponible": true
+    },
+    {
+      "ley": "RD 625/1985 Desempleo",
+      "boe_id_incorrecto": "BOE-A-1985-18544",
+      "boe_id_correcto": "BOE-A-1985-8124",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1985-8124",
+      "xml_disponible": true,
+      "nota": "RD de desarrollo Ley 31/1984 Desempleo. RD Afiliación es BOE-A-1996-4447 (ya en catálogo)"
+    },
+    {
+      "ley": "Decreto 3772/1972 (Régimen Agrario)",
+      "boe_id_incorrecto": "BOE-A-1973-51",
+      "boe_id_correcto": "BOE-A-1973-234",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1973-234",
+      "xml_disponible": false,
+      "nota": "Solo PDF disponible, no XML consolidado"
+    },
+    {
+      "ley": "RD 8/2008 (españoles exterior)",
+      "boe_id_incorrecto": "BOE-A-2008-1067",
+      "boe_id_correcto": "BOE-A-2008-1264",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2008-1264",
+      "xml_disponible": true
+    },
+    {
+      "ley": "Ley 32/2010 CATA (paro autónomos)",
+      "boe_id_incorrecto": "BOE-A-2010-12628",
+      "boe_id_correcto": "BOE-A-2010-12616",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2010-12616",
+      "xml_disponible": true
+    },
+    {
+      "ley": "RD 1576/1990 (pensiones terrorismo)",
+      "boe_id_incorrecto": "BOE-A-1990-29784",
+      "boe_id_correcto": "BOE-A-1990-29699",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1990-29699",
+      "xml_disponible": true
+    },
+    {
+      "ley": "RD 1451/1983 (empleo minusválidos)",
+      "boe_id_incorrecto": "BOE-A-1983-15758",
+      "boe_id_correcto": "BOE-A-1983-15813",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1983-15813",
+      "xml_disponible": true
+    },
+    {
+      "ley": "Decreto 907/1966 (Ley Bases SS)",
+      "boe_id_incorrecto": "BOE-A-1966-10707",
+      "boe_id_correcto": "BOE-A-1966-6647",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1966-6647",
+      "xml_disponible": false,
+      "nota": "Antiguo, probablemente solo PDF"
+    }
+  ],
+  "ids_correctos_sin_cambio": [
+    "BOE-A-2025-8567",
+    "BOE-A-1985-16119",
+    "BOE-A-1963-22667",
+    "BOE-A-1972-907",
+    "BOE-A-1960-12344",
+    "BOE-A-1969-123",
+    "BOE-A-1969-8263"
+  ]
+}
