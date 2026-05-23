@@ -1,8 +1,0 @@
-{
-  "files_processed": 10,
-  "files_with_pii": 9,
-  "qa_processed": 4075,
-  "qa_cleaned": 75,
-  "qa_removed": 0,
-  "pii_replacements": 99
-}

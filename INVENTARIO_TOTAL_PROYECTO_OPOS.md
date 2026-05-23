@@ -22,13 +22,7 @@ Entrega este archivo a cualquier IA futura para que pueda acceder a los archivos
 - [agente_examinador_legal_v1.yaml](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/agente_examinador_legal_v1.yaml)
 
 #### 🛠️ Planes de Implementación (Lista Completa)
-- [implementation_plan.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/implementation_plan.md)
-- [implementation_plan_v13.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/implementation_plan_v13.md)
-- [implementation_plan_v13_script.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/implementation_plan_v13_script.md)
-- [implementation_plan_v14_roadmap.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/implementation_plan_v14_roadmap.md)
-- [implementation_plan_v14_traps.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/implementation_plan_v14_traps.md)
-- [plan_remediacion_v12.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/plan_remediacion_v12.md)
-- [plan_v13_mistral_engine.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/plan_v13_mistral_engine.md)
+
 
 #### 📈 Historial de Progreso (Walkthroughs)
 - [walkthrough.md](file:///home/spas/.gemini/antigravity/brain/73b0d458-fe80-4e40-a5ba-6e978ea39346/walkthrough.md)

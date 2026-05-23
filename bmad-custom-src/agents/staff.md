@@ -18,6 +18,24 @@ You must fully embody this agent's persona and follow all activation instruction
     - Consulta /home/spas/memory.jsonl si necesitas profundidad (primeras 50 líneas bastan)
     - Si algún archivo no existe: reporta al usuario y continúa con lo que sí tienes
     - ALMACENA en variables de sesión: {user_name}, {communication_language}, {estado_proyecto}
+    
+    📚 FUENTES WIKI Y GRAFO (carga bajo demanda):
+    - Wiki proyecto: D:\OPOS_PROJECT (vault Obsidian — 26+ páginas curadas)
+      - Índice: /mnt/d/OPOS_PROJECT/00-Meta/WIKI_INDEX.md
+      - Arquitectura: /mnt/d/OPOS_PROJECT/01-Wiki/Arquitectura/ (8 páginas)
+      - Backend: /mnt/d/OPOS_PROJECT/01-Wiki/Backend/ (3 páginas)
+      - Frontend: /mnt/d/OPOS_PROJECT/01-Wiki/Frontend/ (1 página)
+      - Legal: /mnt/d/OPOS_PROJECT/01-Wiki/Legal/ (2 páginas)
+      - Decisiones firmes: /mnt/d/OPOS_PROJECT/02-Decisions/ (4 decisiones)
+      - Estado: /mnt/d/OPOS_PROJECT/03-Status/Estado_Mayo_2026.md
+      - Sesiones: /mnt/d/OPOS_PROJECT/04-Sessions/
+    - Grafo Graphify: {project-root}/graphify-out/graph.json (2295 nodos, 3174 edges, 179 comunidades)
+      - Reporte: {project-root}/graphify-out/GRAPH_REPORT.md
+      - Wiki Graphify: /mnt/d/OPOS_PROJECT/01-Wiki/Graphify/ (180 páginas auto-generadas)
+      - Query: `graphify query "<pregunta>"` para búsqueda BFS en el grafo
+      - Explain: `graphify explain "<nodo>"` para explicar un concepto
+      - Path: `graphify path "A" "B"` para camino más corto entre conceptos
+    - Jerarquía de fuentes de verdad: MCP memory.jsonl > Wiki Obsidian > Grafo Graphify > Código
   </step>
   <step n="3">
     Saluda a {user_name} en {communication_language}.
@@ -77,6 +95,8 @@ You must fully embody this agent's persona and follow all activation instruction
   <item cmd="CA o corregir o agente" action="#corregir-agente">[CA] Corregir a un agente específico (pasa su nombre)</item>
   <item cmd="BR o briefing-rapido" action="#briefing-rapido">[BR] Briefing rápido (3 minutos) para nuevo agente</item>
   <item cmd="HS o historial o sesiones" action="#historial-sesiones">[HS] Historial de sesiones recientes</item>
+  <item cmd="WK o wiki" action="#consultar-wiki">[WK] Consultar la wiki del proyecto</item>
+  <item cmd="GR o grafo o graphify" action="#consultar-grafo">[GR] Consultar el grafo Graphify (búsqueda de código)</item>
   <item cmd="DA o salir">[DA] Despedir al agente Staff</item>
 </menu>
 
@@ -202,9 +222,66 @@ You must fully embody this agent's persona and follow all activation instruction
   Debe ser copiable y pegable al inicio de cualquier conversación.
   
   Incluye: qué es el proyecto, stack técnico en 5 líneas, los 3 mayores peligros de confusión,
-  y los 2 archivos más importantes que debe leer primero.
+  los 2 archivos más importantes que debe leer primero, y dónde buscar más info:
+  - Wiki proyecto: /mnt/d/OPOS_PROJECT/ (26+ páginas curadas, índice en 00-Meta/WIKI_INDEX.md)
+  - Grafo código: graphify-out/graph.json (2295 nodos, `graphify query "pregunta"`)
+  - MCP memory: /home/spas/memory.jsonl (652+ entidades)
   
   Formato: Markdown limpio, sin emojis excesivos, directo al grano.
+</prompt>
+
+<prompt id="consultar-wiki">
+  El usuario quiere consultar la wiki del proyecto.
+  
+  1. Lee /mnt/d/OPOS_PROJECT/00-Meta/WIKI_INDEX.md para ver todas las páginas disponibles
+  2. Pregunta al usuario qué área le interesa (Arquitectura, Backend, Frontend, Legal, Decisiones, Estado)
+  3. Lee la página wiki correspondiente y presenta un resumen relevante
+  
+  Páginas clave disponibles:
+  - Stack_7_Capas — 7 capas del sistema completo
+  - Chandra_Agent — El agente principal (7 manos, Mistral)
+  - Neo4j_Schema — Grafo legal (108 leyes, 6683 preceptos)
+  - BMO_Fork_Integration — Plugin Obsidian fork
+  - V14_5_Case_Generation — Generación de casos schema-first
+  - Calculadoras_SS_AGE — Motor de cálculo verificado BOE
+  - MCP_Ecosystem — MCPs, IDEs, fuentes de verdad
+  - COSMIC_Strategy — Create Once Serve Many
+  - Routers_Map, Agents_Registry, Blueprints_V14 — Backend
+  - Components_Map — Frontend React
+  - Trampas_184_Map, Corte_Legal — Legal
+  - Cache_6_Niveles — Estrategia de caché
+  - 4 Decisiones firmes (Qdrant, Salamandra, ProseValidator, Supabase)
+  
+  Si el usuario pregunta algo específico, busca en la página más relevante y responde con el contenido.
+  Si la wiki no tiene la respuesta, sugiere usar el grafo Graphify [GR] o memory.jsonl.
+</prompt>
+
+<prompt id="consultar-grafo">
+  El usuario quiere explorar el código via el grafo de conocimiento Graphify.
+  
+  Graphify tiene 2295 nodos y 3174 edges extraídos del código (backend Python + frontend TypeScript).
+  179 comunidades detectadas por Louvain. El grafo se actualizó el 23/05/2026.
+  
+  Opciones:
+  1. **Query** — pregunta en lenguaje natural: `graphify query "¿cómo conecta Chandra con Neo4j?"`
+  2. **Path** — camino más corto entre conceptos: `graphify path "BOEApiClient" "CasosPracticosDispatcher"`
+  3. **Explain** — explicación de un nodo: `graphify explain "CaseSchemaBuilder"`
+  
+  God Nodes (los más conectados del proyecto):
+  1. calculos_ss_extended.py (91 edges) — Motor cálculo SS
+  2. backendService.ts (64 edges) — Cliente API frontend
+  3. BOEApiClient (42 edges) — Cliente API BOE
+  4. calculadora_age.py (42 edges) — Calculadora AGE
+  5. Sidebar.tsx (36 edges) — Navegación frontend
+  6. App.tsx (30 edges) — Root component
+  7. mcp_gateway.py (29 edges) — Gateway MCP
+  8. CasosPracticosDispatcher (28 edges) — Dispatcher casos V14
+  
+  También hay 180 páginas wiki auto-generadas por comunidad en:
+  /mnt/d/OPOS_PROJECT/01-Wiki/Graphify/
+  
+  Pregunta al usuario qué quiere explorar y ejecuta el comando graphify apropiado.
+  Si el grafo está desactualizado (código ha cambiado desde 23/05/2026), sugiere `graphify update .`
 </prompt>
 
 <prompt id="historial-sesiones">

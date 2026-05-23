@@ -159,8 +159,13 @@ Modelfile.salamandra-*
 archivos_no_seguidos_git.txt
 wget-log
 
+# PDFs — NEVER commit (copyright, large binaries)
+*.pdf
+
 # Carpetas grandes de datos
 academias/
+list_utracked_files/
+powers/
 data/
 extracted_texts/
 staging_area/

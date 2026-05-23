@@ -65,11 +65,11 @@ Carpeta Raw: No existe. Se propone crearla siguiendo el modelo de Karpathy.
 Wiki como Compilado: No usar RAG tradicional (búsqueda de fragmentos), sino hacer que la IA "compile" y mantenga un Wiki de markdown interconectado.
 Tres Capas:
 raw/: Fuentes inmutables (el borrador sin tocar).
-wiki/: Páginas de personajes, temas y mundo mantenidas por la IA.
+wiki/: Páginas de personajes, temas, tme lines, succesos, lineas narrativas, relaciones, enigmas, mapas,  y mundo mantenidas por la IA.
 schema/: Instrucciones de cómo la IA debe operar sobre el wiki.
 Hot Cache: Tener un archivo index.md o context.md que la IA lee siempre para no perder el hilo.
-Crítica Zettelkasten: Algunos desarrolladores proponen notas atómicas inmutables para evitar que la IA "alucine" al reescribir páginas largas.
-Automatización Mecánica: Delegar tareas de fontanería (hashing, listado de archivos) a scripts locales para ahorrar tokens.
+Crítica Zettelkasten: Algunos desarrolladores proponen notas atómicas inmutables para evitar que la IA "alucine" al reescribir páginas o capitulos largos.
+Automatización Mecánica: Delegar tareas de fontanería (hashing, listado de archivos) a scripts o plugins (dataview, smart, bases etc.) locales para ahorrar tokens.
 Tarea 2: Configuración para Nina (Libro en Búlgaro)
 Se creará un nuevo perfil de BMO optimizado para el libro y para la usuaria final.
 
@@ -78,7 +78,9 @@ Nina_Editor.md
 Saludo: "Здравей Нина" (Zdravei Nina) en cirílico.
 Idioma: Búlgaro estricto para las respuestas.
 Modelo: mistral-large-latest.
-Instrucciones: Manejo de glosario de términos míticos/inventados.
+Instrucciones: Manejo de glosario de términos míticos/inventados, time lines, fichas de personajes, suscesos etc.
+
+TAREA INVESTIGACIÓN: INVESTIGAR KUZU Y NEO4J DE NATE DE OPEN MIND COMO ALTERNATIVAS Y EMPAQUETADO PARA QUEDARSE TODO EN LOCAL, O CON USO DE APIKEYS DISTINTOS! 
 
 Tarea 3: Actualización del Plan Maestro v2.1
 [MODIFY] 
