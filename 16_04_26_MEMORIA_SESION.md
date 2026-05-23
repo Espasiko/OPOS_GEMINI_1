@@ -23,7 +23,9 @@
 - Integrar OCR para los Esquemas DM (fotos).
 - Implementar calculadoras SS restantes (`recargo_ss`, `it_situaciones_especiales`).
 - Validar trampa I19 en simulacros DM reales.
-
+-AUDITAR LOS CASOS Y SIMULACROS NUEVOS PARA TRAMPAS Y TIPOS DE CASOS, EXCEPCIONES ET.
+- CREAR CALCULADORA Y BLUEPRINTS FALTANTES
+-PROBAR OTRAS LLM-S APARTE DE MISTRAL CON CREACION DE CASOS , MEJORAR NARRATIVA DE NARRADOR , PROMPTS SISTEMICOS, CREAR CASOS Y REVISAR CON OPUS 4.7 DE CLAUDE
 ---
 **Firma:** Antigravity AI (Google Deepmind)
 **Fecha:** 16-04-2026

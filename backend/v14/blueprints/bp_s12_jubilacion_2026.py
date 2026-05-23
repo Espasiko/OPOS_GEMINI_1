@@ -30,6 +30,7 @@ BP_S12 = TopicBlueprint(
 
     articulos_obligatorios=[
         "Art. 204 TRLGSS",
+        "Art. 205 TRLGSS",  # Acceso a la jubilación ordinaria — requisitos
         "Art. 209 TRLGSS",
         "Art. 210 TRLGSS",
         "DT 9ª TRLGSS",

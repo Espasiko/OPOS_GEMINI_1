@@ -1,6 +1,101 @@
 # OpositAIA — Project Overview (Brownfield Documentation)
 
-> **Generado:** 03/03/2026 | **Workflow:** BMAD document-project v1.2.0 | **Scan Level:** Reconciliado (100% Real)
+> **Generado:** 03/03/2026 · **Addendum:** 19/05/2026 | **Workflow:** BMAD document-project v1.2.0 | **Scan Level:** Reconciliado (100% Real) · Revisión 19/05 Graph Intelligence
+
+---
+
+> ## 🔄 ADDENDUM 19/05/2026 — Graph Intelligence
+>
+> ### Neo4j — Estado real 19/05/2026
+> - **108 leyes, 6.683 preceptos, 6.683 embeddings** (catálogo v17.6)
+> - **Louvain Community Detection:** 517 comunidades calculadas (Python networkx+louvain). Prop `communityId` en cada Precepto.
+> - **Búsqueda híbrida nativa:** Vector HNSW 1024d + Fulltext spanish + Cypher graph traversal. Qdrant NO necesario.
+> - **Multi-hop reasoning:** `consultar_neo4j` de Chandra ejecuta queries multi-relación.
+> - **RD 1413/2005** (capitalización desempleo) ingestado: 4 preceptos + relaciones Art. 262/296 TRLGSS.
+> - **Docker Compose:** 4 servicios (Qdrant + Postgres + Backend + Neo4j). Ollama corre directo en WSL.
+>
+> ### Correcciones al overview
+> - **BMO SÍ conecta a Neo4j** vía Chandra mano #4. Cadena: BMO → Mistral API → :8080 → Chandra → Neo4j.
+> - **Bóveda OPOS** = `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/` (vault pruebas). OPOS_GEMINI_1 = repo de desarrollo.
+> - **PII** = materiales de academias (copyright/nombres), NO leyes públicas.
+> - **Contadores corregidos:** Ley→108, Precepto→6683 (era 4742 en addendum 01/05).
+>
+> ---
+>
+> ## 🔄 ADDENDUM 01/05/2026 — Chandra 7 Manos + Obsidian Integration
+>
+> ### Chandra Agente Legal (NUEVO — no estaba en este overview)
+>
+> - **Chandra es un agente legal de 7 herramientas** integrado en Obsidian vía BMO/Copilot
+> - **7 herramientas:** tavily_search, search_boe, get_law_text_block, consultar_neo4j, calcular_ss, buscar_vault, **escribir_vault** (NUEVA 01/05/2026)
+> - **Archivo modificado:** `backend/agents/chandra_tools.py` — Schema + implementación + dispatcher actualizados
+> - **Solución de red:** Backend movido a puerto 8080 para evitar ERR_CONNECTION_REFUSED en Windows/WSL2
+> - **Alucinación temporal resuelta:** Inyección dinámica de fecha actual en system prompt (datetime.now())
+> - **Integración Obsidian:** BMO Chatbot y Copilot conectados a Chandra vía http://127.0.0.1:8080/opos/v1
+> - **Tool escribir_vault (01/05/2026):** Chandra puede crear notas automáticamente en el vault sin copiar/pegar manual
+> - **Backend endpoint:** `/mcp/vault/write` ya existía en `mcp_gateway.py` (implementado 24/04/2026)
+>
+> ### LiteLLM Fallback Multi-Cloud (NUEVO — de implementation_plan.md.resolved)
+>
+> - **Resiliencia anti-bloqueos:** LiteLLM permite fallback automático entre Mistral → Gemini → Groq
+> - **Groq modelos disponibles:** GPT OSS 120B, GPT OSS 20B, Llama 4 Scout, Qwen 3 32B (function calling + reasoning)
+> - **Batch API Groq:** 50% descuento para procesamiento masivo (54K preguntas banco)
+>
+> ### Tauri Desktop App (NUEVO — de IDEAS_MAESTRAS_OPOSITAIA_2026.md.resolved)
+>
+> - **Empaquetado:** Frontend React + Backend Python (chandra.exe) usando Tauri + Sidecar
+> - **BYOV (Bring Your Own Vault):** App distribuye limpia, usuario instala Obsidian + Vault ZIP por separado
+>
+> ### Componentes NUEVOS no documentados aquí (17/04/2026)
+>
+> - **V14.5 "Narrativa en Red"** (`/backend/v14/`): `CaseSchemaBuilder` (28.5KB), `prose_validator.py` (10KB), `cambios_dm_2026.py` (13KB), `nombres_pool.py` (4.8KB), 10 blueprints activos S02-S16 en `/backend/v14/blueprints/`.
+> - **Agentes YAML (11)** en `/opos-agents/agents/`: orchestrator, generator, examiner, redactor_v13, redactor_v14, investigator_v13, intent, compile, resumidor, validator, generator_r1.
+> - **mcp_gateway.py** (`/backend/routers/mcp_gateway.py`, 9.4KB) — gateway REST multi-IA (formatos Claude/OpenAI/Mistral).
+> - **Constantes 2026** (`/backend/calculators/constantes_2026.py`, 6KB) — SMI, IPREM, topes, pensiones actualizados.
+> - **Catálogo trampas** (`catalogo_trampas.yaml` + `catalogo_trampas_adicional.yaml`) — ~100 trampas A-T.
+> - **Temario 2026 troceado** (`/academias/.../temario_troceado_v2026/`) — 13 temas con correcciones Marzo.
+> - **Calculadora presupuesto** (`calculadora_presupuesto.py`, 18.6KB) — NO mencionada en §4.2.
+>
+> ### Contadores corregidos
+>
+> | Valor en este doc | Valor real Abril 2026 |
+> |---|---|
+> | Qdrant Cloud 48.866 chunks | ❌ Qdrant descartado. Neo4j: 4.742 preceptos + 6.334 embeddings |
+> | 31 calculadoras SS + 33 AGE = 64 | **60+ reales confirmadas por grep** (calculos_ss_extended 30+ funciones, calculadora_age 30+ funciones) |
+> | 25 agentes backend | **27 archivos en `/backend/agents/`** (diff = 2 nuevos) |
+> | Salamandra R1 operativo | ❌ **Descartado** en producción |
+> | 9 routers | Ya 10 (añadido `casos_practicos`) |
+> | 6 MCP tools | 5 (`list_collections` opcional) |
+>
+> ### Trampas codificadas en docstrings (descubrimiento Abril)
+>
+> Las funciones de `calculos_ss_extended.py` **tienen las trampas DM documentadas inline**:
+> - `calcular_derivacion_responsabilidad_ss` → TRAMPA G4
+> - `calcular_fecha_efectos_cambio_base_reta` → TRAMPA H7
+> - `calcular_cuota_contrato_corta_duracion` → TRAMPA I12
+> - `calcular_base_cotizacion_completa` → trampa "estructurales ≠ fuerza mayor"
+>
+> Estas pueden extraerse automáticamente por parsing AST para alimentar la wiki Obsidian.
+>
+> ### Bugs corregidos (no reflejados antes)
+>
+> - `PENSION_MAXIMA_JUBILACION_2026` = **3.359,60 €/mes** (14 pagas) — era incorrecto 3.175,04 €
+> - `SMI_2026` = **1.221,00 €** (RD 126/2026) — era 1.184,00 €
+> - `Art. IT menstruación` = **Art. 173** (no 173bis) — pendiente en docs legales
+>
+> ### Docs estratégicos nuevos (imprescindibles para sesiones futuras)
+>
+> 1. **`/17_04_26_ESTRATEGIA_EXTRACCION_SABIDURIA.md`** — pipeline 5 fases, 9 patrones DM, cómo la wiki recuerda
+> 2. **`/academias/1_casos_recientes_2026_DM/temario_troceado/PLAN_CLD+_OBCIDIAN_AL.md` v3** — plan Obsidian (arquitectura, plugins, skills)
+> 3. **`/academias/1_casos_recientes_2026_DM/PLAN_MAESTRO_CASOS_SIMULACROS.md` v4** — 1157 líneas, 8K-10K preguntas objetivo
+> 4. **`/ANALISIS_SOFISTICACION_DM_VS_V14.md`** — gap V14 vs DM real (personajes, salto régimen)
+>
+> ### Gaps pendientes para el roadmap
+>
+> - **TREBEP, LPAC, LRJSP, LCSP** infrarrepresentados en banco de preguntas
+> - **V14.5**: necesita red de 3-8 personajes (hoy solo 1) y saltos de régimen
+> - **149 archivos sueltos en raíz** → candidatos para limpieza o absorción por la wiki
+> - **Settings BYOK**: `SettingsView.tsx` sigue como placeholder (confirmado §3.1 fila 14)
 
 ---
 
@@ -259,7 +354,7 @@ Ruta: `/conceptual_materials/`
 | **Simulacros** (timer + temas) | ✅ | ✅ | Operativo |
 | **Progress Tracking** (filtros temporales) | ✅ | ✅ | Operativo (localStorage) |
 | **Settings/Config** page | ⚠️ | ✅ | Solo UI placeholder, BYOK disabled |
-| Docker Compose | ✅ | ✅ | Qdrant + PG + Backend |
+| Docker Compose | ✅ | ✅ | Qdrant + PG + Backend + Neo4j |
 | MCP Server (6 tools) | ✅ | ✅ | Operativo |
 | Qdrant Cloud | ✅ | ✅ | 48,866 chunks + 54 leyes |
 | Qdrant Local Híbrido | ✅ | ✅ | 1,272 chunks (Dense + BM25) |
@@ -267,7 +362,7 @@ Ruta: `/conceptual_materials/`
 | Golden Datasets | ✅ | ✅ | v12 + premium + enriched |
 | Sistema Multi-Agente BMAD bridge | ✅ | ✅ | BMAD V6 Integrado |
 | Pipeline COSMIC integrado | ✅ | ✅ | Scripts operativos |
-| Neo4j (grafos) | ❌ | ✅ | Pendiente Docker local |
+| Neo4j (grafos) | ✅ | ✅ | 108 leyes, 6683 preceptos, Louvain 517 comunidades |
 | Auth (Clerk/Lucia) | ❌ | ✅ | Pendiente decisión |
 | Stripe (pagos) | ❌ | ✅ | Pendiente |
 | Repetición espaciada Leitner | ❌ | ✅ | Algoritmo diseñado, no implementado |

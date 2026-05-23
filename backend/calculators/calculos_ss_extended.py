@@ -262,7 +262,7 @@ class CalculadoraJubilacion:
     
     # Valores 2026
     PENSION_MINIMA_JUBILACION = Decimal("783.10") # Con cónyuge no a cargo
-    PENSION_MAXIMA_JUBILACION = Decimal("3175.04") # Tope máximo 2026
+    PENSION_MAXIMA_JUBILACION = Decimal("3359.60") # Tope máximo 2026 (RDL 3/2026 + Orden PJC/297/2026)
     IPREM_2026_MENSUAL = Decimal("610.00")
     
     @staticmethod
@@ -1755,7 +1755,7 @@ def calcular_it_situaciones_especiales_lo1_2023(salario_base: Decimal, situacion
 # ⚠️ CORRECCIÓN 12/03/2026: 'Estructurales' ≠ 'Fuerza Mayor'. El error era sistemático.
 TIPOS_HE = {
     # Tipo HE : (empresa, trabajador, total)
-    "fuerza_mayor":      (0.12,   0.02,   0.14),   # Prevenir/reparar siniestros urgentes. ART. 5 ORDEN PJC/178/2025
+    "fuerza_mayor":      (0.12,   0.02,   0.14),   # Prevenir/reparar siniestros urgentes. Tipos prorrogados por RDL 16/2025 (BOE 24/12/2025); Art. 5 Orden PJC/178/2025 vigente a 04/03/2026
     "estructurales":     (0.2360, 0.0470, 0.2830), # Habituales para la producción. 28,30% TOTAL.
     "no_estructurales":  (0.2360, 0.0470, 0.2830), # Esporádicas/voluntarias. 28,30% TOTAL.
 }
@@ -1811,11 +1811,47 @@ def calcular_base_cotizacion_completa(
     }
 
 # 5. Integración Lagunas RETA vs RG
-def calcular_integracion_lagunas_jubilacion(meses_laguna: int, regimen: str, genero: str = "H") -> Dict[str, Any]:
-    """RETA = 0 lagunas (Art. 313 TRLGSS). RG: hombre 100% (m1-48) + 50% (m49+). RG mujer DA 37ª: 100% (m1-60) + 80% (m61-84)."""
+def calcular_integracion_lagunas_jubilacion(
+    meses_laguna: int,
+    regimen: str,
+    genero: str = "H",
+    post_cese_actividad_reta: bool = False,
+) -> Dict[str, Any]:
+    """Integración de lagunas en BR jubilación según régimen y excepción Art. 322 TRLGSS.
+
+    REGLA GENERAL:
+      - RETA: 0% (Art. 313 TRLGSS) — meses sin cotización valen 0€.
+      - RG hombre/general (Art. 209.1): meses 1-48 → 100% base mínima; mes 49+ → 50%.
+      - RG mujer (DA 37ª): meses 1-60 → 100%; meses 61-84 → 80%.
+
+    EXCEPCIÓN RETA — Art. 322 TRLGSS (RDL 2/2023, vigente desde 01/01/2026):
+      Cuando el autónomo ha extinguido la prestación por cese de actividad,
+      los 6 MESES SIGUIENTES a esa extinción SÍ se integran (al 100% base mínima
+      grupo correspondiente). Activar con post_cese_actividad_reta=True.
+    """
     if regimen.upper() == "RETA":
-        return {"integracion": "0%", "valor_euros": 0.0,
-                "explicacion": "TRAMPA: En el RETA NO existe integración de lagunas. Los meses sin base cotizada computan con valor cero (0,00€). Art. 313 TRLGSS."}
+        if post_cese_actividad_reta and meses_laguna <= 6:
+            return {
+                "integracion": "100%",
+                "explicacion": (
+                    "EXCEPCIÓN Art. 322 TRLGSS (RDL 2/2023, vigente 01/01/2026): "
+                    "los 6 meses siguientes a la extinción de la prestación por cese de "
+                    "actividad SÍ se integran al 100% de la base mínima del grupo. "
+                    "TRAMPA INVERSA: la regla genérica RETA = 0% NO aplica en esta ventana."
+                ),
+                "articulo": "Art. 322 TRLGSS (modif. RDL 2/2023)",
+            }
+        return {
+            "integracion": "0%",
+            "valor_euros": 0.0,
+            "explicacion": (
+                "TRAMPA: En el RETA NO existe integración de lagunas (regla general). "
+                "Los meses sin base cotizada computan con valor cero (0,00€). Art. 313 TRLGSS. "
+                "EXCEPCIÓN: si la laguna está dentro de los 6 meses siguientes a la "
+                "extinción de la prestación por cese de actividad → activar post_cese_actividad_reta=True."
+            ),
+            "articulo": "Art. 313 TRLGSS",
+        }
     else:
         if genero.upper() == "F":
             if meses_laguna <= 60:
@@ -1914,19 +1950,66 @@ def calcular_jubilacion_activa_escala_rdl11_2024(br: Decimal, anios_demora: int,
     }
 
 # 10. Derivación Responsabilidad (Solidaria vs Subsidiaria)
-def calcular_derivacion_responsabilidad_ss(tipo_deudor: str, cuota: Decimal, recargo: Decimal, costas: Decimal = Decimal("0")) -> Dict[str, Any]:
-    """Solidaria: principal + recargo (NUNCA intereses ni costas). Subsidiaria: deuda completa en cooperativas."""
+def calcular_derivacion_responsabilidad_ss(
+    tipo_deudor: str,
+    cuota: Decimal,
+    recargo: Decimal,
+    intereses: Decimal = Decimal("0"),
+    costas: Decimal = Decimal("0"),
+    titulo_ejecutivo_ya_contiene_intereses_costas: bool = False,
+) -> Dict[str, Any]:
+    """Alcance de la derivación de responsabilidad (Art. 18.3 + 142 + 168 TRLGSS + Art. 13 RGRSS).
+
+    REGLA MATIZADA (actualizada 2026-04-18 tras verificación simulacro febrero DM):
+    - Solidaria ORDINARIA (derivación antes de generarse intereses/costas):
+        → principal + recargo (no incluye intereses ni costas).
+    - Solidaria con TÍTULO EJECUTIVO YA FORMADO (ya existen intereses/costas al momento
+      de la derivación, p.ej. tras providencia de apremio):
+        → el responsable solidario asume el título ejecutivo COMPLETO.
+    - Subsidiaria (cooperativa hacia socio, tras insolvencia del socio):
+        → deuda completa incluyendo intereses y costas.
+
+    Citas correctas: Art. 18.3 TRLGSS (responsables cuotas) + Art. 142 TRLGSS
+    (sujeto responsable) + Art. 168.2 TRLGSS (supuestos especiales) + Art. 13
+    RGRSS (RD 1415/2004) (alcance concreto de la derivación).
+    NO es 'Art. 15 bis TRLGSS' — ese precepto no existe en el TRLGSS vigente
+    (RDLeg 8/2015); es herencia obsoleta de la LGSS-1994.
+    """
     if tipo_deudor.lower() in ("socio_cooperativa", "cooperativa_hacia_socio"):
-        return {"tipo_derivacion": "Subsidiaria", "alcance": float(cuota + recargo + costas),
-                "explicacion": "Responsabilidad subsidiaria de cooperativas: alcanza a cuota, recargo y costas."}
-    return {"tipo_derivacion": "Solidaria", "alcance": float(cuota + recargo),
-            "costas_excluidas": float(costas),
-            "explicacion": "TRAMPA (G4): Responsabilidad solidaria derivada = SOLO principal + recargo. NUNCA intereses de demora ni costas. Art. 15 bis TRLGSS."}
+        return {
+            "tipo_derivacion": "Subsidiaria",
+            "alcance": float(cuota + recargo + intereses + costas),
+            "articulo": "Art. 142 + 168 TRLGSS; Art. 14 RGRSS (RD 1415/2004)",
+            "explicacion": "Responsabilidad subsidiaria de cooperativas (tras insolvencia del socio): cuota + recargo + intereses + costas.",
+        }
+    if titulo_ejecutivo_ya_contiene_intereses_costas:
+        return {
+            "tipo_derivacion": "Solidaria (título ejecutivo formado)",
+            "alcance": float(cuota + recargo + intereses + costas),
+            "articulo": "Art. 18.3 + 142 TRLGSS; Art. 13 RGRSS (RD 1415/2004)",
+            "explicacion": (
+                "El responsable solidario asume el título ejecutivo COMPLETO cuando "
+                "la derivación se produce tras generarse intereses y costas "
+                "(coincide con la respuesta oficial del simulacro febrero 2026)."
+            ),
+        }
+    return {
+        "tipo_derivacion": "Solidaria (ordinaria)",
+        "alcance": float(cuota + recargo),
+        "intereses_excluidos": float(intereses),
+        "costas_excluidas": float(costas),
+        "articulo": "Art. 18.3 + 142 TRLGSS; Art. 13 RGRSS (RD 1415/2004)",
+        "explicacion": (
+            "TRAMPA (G4) regla simplificada: solidaria ordinaria = principal + recargo. "
+            "Matiz: si el título ejecutivo ya incluye intereses/costas al derivar, "
+            "se reclaman también. Usar titulo_ejecutivo_ya_contiene_intereses_costas=True."
+        ),
+    }
 
 # 11. Cuota Contrato Corta Duración (≤8 días)
 def calcular_cuota_contrato_corta_duracion() -> Dict[str, Any]:
     return {"cuantia_extra_fija_2026": 32.60, "tipo": "FIJO, no porcentaje",
-            "articulo": "DA 43ª TRLGSS; Orden PJC/178/2025",
+            "articulo": "DA 43ª TRLGSS; cuantías 2026 fijadas por RDL 16/2025 (BOE 24/12/2025)",
             "explicacion": "TRAMPA (I12): Contratos de ≤8 días: recargo fijo de 32,60€ por contrato. No es un porcentaje del salario."}
 
 # --- NUEVA --- 12. Pensión Máxima Anticipada Involuntaria (Art. 207.2 — Regla Especial)
@@ -1942,7 +2025,7 @@ def calcular_pension_maxima_anticipada_involuntaria(
     Esta regla protege al trabajador con carreras largas: penalización menor sobre el tope
     en lugar de penalizar sobre una pensión calculada que de todas formas quedaba limitada.
     
-    Tope máximo 2026 = 3.175,04€/mes (2026 según Orden PJC/178/2025).
+    Tope máximo 2026 = 3.359,60€/mes (RDL 3/2026 + RDL 16/2025, vigentes a 04/03/2026).
     """
     REDUCCION_POR_TRIMESTRE_ESPECIAL = Decimal("0.005")
     
@@ -1990,6 +2073,385 @@ def calcular_retribucion_especie_vehiculo(valor_mercado: Decimal, tipo_uso: str 
     }
 
 # ============================================================================
+# BLOQUE NUEVO — calculadoras añadidas el 29/04/2026 (sesión Spas + Cascade)
+# Todas las fuentes BOE ≤ 04/03/2026 (fecha de corte del examen).
+# ============================================================================
+
+# 14. Subsidio Cese de Actividad RETA (Art. 339 TRLGSS, RDL 13/2022)
+# Trampa R5 del vault: BR 12m, 70%, duración 4-24m, topes IPREM 175%/107%.
+def calcular_subsidio_cese_actividad_reta(
+    bases_cotizacion_12m: List[Decimal],
+    meses_cotizados_48m: int,
+    tiene_responsabilidades_familiares: bool = False,
+    iprem_2026_mensual: Decimal = Decimal("610.00"),
+) -> Dict[str, Any]:
+    """Prestación por Cese de Actividad para RETA (Art. 327-339 TRLGSS).
+
+    Reglas vigentes a 04/03/2026 (modif. RDL 13/2022):
+      - BR = promedio de 12 bases más recientes.
+      - Cuantía = 70% de la BR.
+      - Topes IPREM (incrementado en 1/6, igual que subsidio paro Art. 270):
+          * Sin responsabilidades familiares: máx 175% IPREM × 7/6.
+          * Con 1 hijo: máx 200% IPREM × 7/6.
+          * Con ≥2 hijos: máx 225% IPREM × 7/6.
+          * Mínimo: 80% IPREM × 7/6 (sin hijos) / 107% IPREM × 7/6 (con).
+      - Duración por meses cotizados en últimos 48m:
+          12-17m → 4m / 18-23m → 6m / 24-29m → 8m / 30-35m → 10m
+          36-42m → 12m / 43-47m → 16m / ≥48m → 24m
+
+    Trampa R5: el RDL 13/2022 cambió el cálculo de la BR — antes era media base
+    de cotización fija, ahora es promedio de los rendimientos netos × tablas.
+    """
+    if len(bases_cotizacion_12m) < 12:
+        return {"error": "Se requieren las 12 bases inmediatamente anteriores."}
+    if meses_cotizados_48m < 12:
+        return {"error": "Carencia mínima incumplida: se exigen 12 meses cotizados en los últimos 48."}
+
+    base_reguladora = sum(bases_cotizacion_12m) / Decimal("12")
+    cuantia_bruta = base_reguladora * Decimal("0.70")
+
+    iprem_con_paga_extra = iprem_2026_mensual * Decimal("7") / Decimal("6")  # IPREM × 7/6
+    if tiene_responsabilidades_familiares:
+        tope_max = iprem_con_paga_extra * Decimal("2.00")  # 200% para 1 hijo
+        tope_min = iprem_con_paga_extra * Decimal("1.07")  # 107%
+    else:
+        tope_max = iprem_con_paga_extra * Decimal("1.75")  # 175%
+        tope_min = iprem_con_paga_extra * Decimal("0.80")  # 80%
+
+    cuantia_final = max(min(cuantia_bruta, tope_max), tope_min)
+
+    # Tabla de duración (meses cotizados → meses prestación)
+    tabla = [(48, 24), (43, 16), (36, 12), (30, 10), (24, 8), (18, 6), (12, 4)]
+    duracion_meses = next((d for c, d in tabla if meses_cotizados_48m >= c), 0)
+
+    return {
+        "base_reguladora": float(base_reguladora.quantize(Decimal("0.01"))),
+        "porcentaje": "70%",
+        "cuantia_bruta": float(cuantia_bruta.quantize(Decimal("0.01"))),
+        "tope_min": float(tope_min.quantize(Decimal("0.01"))),
+        "tope_max": float(tope_max.quantize(Decimal("0.01"))),
+        "cuantia_final_mensual": float(cuantia_final.quantize(Decimal("0.01"))),
+        "duracion_meses": duracion_meses,
+        "tiene_responsabilidades_familiares": tiene_responsabilidades_familiares,
+        "iprem_referencia": float(iprem_2026_mensual),
+        "articulo": "Arts. 327-339 TRLGSS (modif. RDL 13/2022)",
+        "explicacion": (
+            f"Cese actividad RETA: BR {float(base_reguladora):.2f}€ × 70% = "
+            f"{float(cuantia_bruta):.2f}€. Topes IPREM × 7/6 "
+            f"({'con' if tiene_responsabilidades_familiares else 'sin'} cargas): "
+            f"mín {float(tope_min):.2f}€ / máx {float(tope_max):.2f}€. "
+            f"Cuantía final {float(cuantia_final):.2f}€/mes durante {duracion_meses} meses."
+        ),
+    }
+
+
+# 15. Permiso Nacimiento y Cuidado del Menor 2026 (Art. 177-190 TRLGSS modificado)
+# Trampa Q2 del vault: 19 semanas para 2026 (NO 16 del 2025). Aplicable también a RGSS.
+# Fuente verificada: cambios_dm_2026.py (academia DM, FUENTE DE VERDAD).
+def calcular_permiso_nacimiento_2026(
+    progenitor: str = "biologico",        # 'biologico' | 'no_biologico' | 'adopcion'
+    familia_monoparental: bool = False,
+    parto_multiple_n_hijos: int = 1,      # 1 = parto simple, 2+ = múltiple
+    discapacidad_menor: bool = False,     # ≥33% del menor
+) -> Dict[str, Any]:
+    """Permiso por nacimiento y cuidado de menor 2026 (RGSS y Funcionarios AGE).
+
+    DISTRIBUCIÓN OFICIAL 2026 (cambios_dm_2026.py NACIMIENTO_2026):
+      - **19 semanas** estándar para cada progenitor (madre y otro):
+          • 6 semanas OBLIGATORIAS tras parto, jornada completa, ininterrumpidas
+          • 11 semanas a jornada parcial o completa, hasta los 12 meses del menor
+          • 2 semanas adicionales hasta que el menor cumpla 8 años
+      - **32 semanas** familia monoparental (acumula los dos permisos):
+          • 6 semanas obligatorias tras parto, jornada completa
+          • 22 semanas hasta 12 meses
+          • 4 semanas hasta 8 años
+      - +1 semana adicional por cada hijo a partir del 2º en parto múltiple
+      - +1 semana adicional por discapacidad ≥33% del menor
+
+    NORMA: Art. 177-190 TRLGSS (modificados); Art. 49.a EBEP para funcionarios.
+    Norma transposición: RDL 5/2023 + RDL 9/2025 (Directiva UE 2019/1158).
+
+    TRAMPA Q2: confundir con las 16 semanas del 2025 (regla anterior).
+    """
+    if familia_monoparental:
+        semanas_total = Decimal("32")
+        desglose = {
+            "obligatorias_tras_parto_jornada_completa": 6,
+            "hasta_12m_jornada_parcial_o_completa": 22,
+            "hasta_8_anios": 4,
+        }
+    else:
+        semanas_total = Decimal("19")
+        desglose = {
+            "obligatorias_tras_parto_jornada_completa": 6,
+            "hasta_12m_jornada_parcial_o_completa": 11,
+            "hasta_8_anios": 2,
+        }
+
+    extras = []
+    if parto_multiple_n_hijos > 1:
+        extra = parto_multiple_n_hijos - 1
+        semanas_total += Decimal(str(extra))
+        extras.append(f"+{extra} semana(s) por parto múltiple ({parto_multiple_n_hijos} hijos)")
+    if discapacidad_menor:
+        semanas_total += Decimal("1")
+        extras.append("+1 semana por discapacidad ≥33% del menor")
+
+    return {
+        "progenitor": progenitor,
+        "tipo_familia": "monoparental" if familia_monoparental else "biparental",
+        "semanas_total_2026": float(semanas_total),
+        "distribucion": desglose,
+        "ampliaciones_aplicadas": extras,
+        "trampa_examen": "Usar 16 semanas (regla 2025) en lugar de 19 → FALSO desde 2026",
+        "articulos": "Arts. 177-190 TRLGSS (modificado); Art. 49.a EBEP; RDL 5/2023 (BOE 29/06/2023); RDL 9/2025 (BOE 29/07/2025)",
+        "explicacion": (
+            f"Permiso nacimiento 2026 = {float(semanas_total)} semanas "
+            f"({'monoparental' if familia_monoparental else 'biparental'}). "
+            f"Distribución: {desglose}."
+        ),
+    }
+
+
+# Alias mantenido para compatibilidad con código que llamaba a la función anterior:
+def calcular_permiso_nacimiento_funcionarios_age(*args, **kwargs):
+    """Alias deprecado — usa calcular_permiso_nacimiento_2026 (aplicable a RGSS y FP)."""
+    return calcular_permiso_nacimiento_2026(*args, **kwargs)
+
+
+# 16. Alias terminológico Ley 2/2025: Gran Invalidez → Gran Incapacidad
+# La Ley 2/2025 (BOE 30/04/2025) cambia la terminología en TRLGSS y ET.
+# Mantenemos compatibilidad: ambos términos refieren al mismo concepto.
+GRADO_GRAN_INCAPACIDAD = "Gran Incapacidad"  # Terminología vigente Ley 2/2025
+GRADO_GRAN_INVALIDEZ_LEGACY = "Gran Invalidez"  # Pre-Ley 2/2025 (mantener para outputs antiguos)
+
+
+def normalizar_grado_incapacidad(grado_legacy: str) -> str:
+    """Convierte terminología pre-Ley 2/2025 a la vigente.
+
+    Mapeo:
+      'Gran Invalidez' → 'Gran Incapacidad' (Ley 2/2025, BOE 30/04/2025)
+      'Invalidez Permanente' → 'Incapacidad Permanente'
+      Resto → sin cambios.
+    """
+    mapping = {
+        "Gran Invalidez": GRADO_GRAN_INCAPACIDAD,
+        "gran invalidez": GRADO_GRAN_INCAPACIDAD,
+        "Invalidez Permanente": "Incapacidad Permanente",
+        "invalidez permanente": "Incapacidad Permanente",
+    }
+    return mapping.get(grado_legacy, grado_legacy)
+
+
+# 17. Pensión No Contributiva (PNC) — Cuantías 2026 (RDL 16/2025)
+# Norma fuente: Real Decreto-ley 16/2025, de 23 de diciembre (BOE 24/12/2025).
+def calcular_pnc_jubilacion_invalidez(
+    tipo: str = "jubilacion",  # 'jubilacion' | 'invalidez'
+    rentas_anuales_unidad_familiar: Decimal = Decimal("0"),
+    miembros_unidad_familiar: int = 1,
+    tiene_movilidad_reducida: bool = False,  # solo PNC invalidez
+) -> Dict[str, Any]:
+    """Calcula PNC de jubilación o invalidez (Arts. 363-372 TRLGSS).
+
+    Cuantías 2026 (RDL 16/2025, BOE 24/12/2025):
+      - PNC base íntegra mensual: 628,80 €/mes (8.803,20 €/año, 14 pagas).
+      - Complemento movilidad reducida (PNC invalidez): 67,15 €/mes adicional.
+      - Complemento alquiler vivienda: 525 €/año adicional (si vive de alquiler).
+
+    Requisitos:
+      - Edad ≥65 años (jubilación) o discapacidad ≥65% (invalidez).
+      - 10 años residencia legal (5 si invalidez).
+      - Carencia rentas: la suma rentas + cuantía PNC NO supere el límite
+        de acumulación familiar (8.803,20 € individual, escala según miembros).
+    """
+    pnc_anual_individual = Decimal("8803.20")
+    pnc_mensual_base = Decimal("628.80")
+
+    # Límite acumulación familiar: PNC individual + 70% por cada miembro adicional
+    limite_acumulacion = pnc_anual_individual * (
+        Decimal("1") + Decimal("0.70") * Decimal(str(max(0, miembros_unidad_familiar - 1)))
+    )
+
+    # Si la suma de rentas supera el límite, la PNC se reduce o no se cobra
+    rentas_totales = rentas_anuales_unidad_familiar + pnc_anual_individual
+    if rentas_totales > limite_acumulacion:
+        diferencia = rentas_totales - limite_acumulacion
+        cuantia_anual_ajustada = max(pnc_anual_individual - diferencia, Decimal("0"))
+        cuantia_mensual = (cuantia_anual_ajustada / Decimal("14")).quantize(Decimal("0.01"))
+        return {
+            "tipo": tipo,
+            "cuantia_mensual": float(cuantia_mensual),
+            "cuantia_anual": float(cuantia_anual_ajustada.quantize(Decimal("0.01"))),
+            "ajuste_aplicado": float(diferencia.quantize(Decimal("0.01"))),
+            "limite_acumulacion": float(limite_acumulacion.quantize(Decimal("0.01"))),
+            "explicacion": (
+                f"PNC ajustada: rentas + PNC ({float(rentas_totales):.2f}€) superan "
+                f"el límite ({float(limite_acumulacion):.2f}€). Reducción {float(diferencia):.2f}€."
+            ),
+        }
+
+    cuantia_final_mensual = pnc_mensual_base
+    extras = []
+    if tipo == "invalidez" and tiene_movilidad_reducida:
+        cuantia_final_mensual += Decimal("67.15")
+        extras.append("complemento movilidad reducida +67,15€")
+
+    return {
+        "tipo": tipo,
+        "cuantia_mensual": float(cuantia_final_mensual.quantize(Decimal("0.01"))),
+        "cuantia_anual_14_pagas": float((cuantia_final_mensual * Decimal("14")).quantize(Decimal("0.01"))),
+        "complementos": extras,
+        "limite_acumulacion_familiar": float(limite_acumulacion.quantize(Decimal("0.01"))),
+        "miembros_unidad_familiar": miembros_unidad_familiar,
+        "articulos": "Arts. 363-372 TRLGSS; cuantías 2026 fijadas por RDL 16/2025 (BOE 24/12/2025)",
+        "explicacion": (
+            f"PNC {tipo} 2026: {float(cuantia_final_mensual):.2f}€/mes "
+            f"({float(cuantia_final_mensual * 14):.2f}€/año). RDL 16/2025."
+        ),
+    }
+
+
+# 18. Subsidio No Contributivo de Nacimiento 2026 (DM26-T9-02)
+# Antes 2025: solo mujeres. Ahora 2026: ambos sexos sin mínimo cotización.
+# Norma: Art. 184 TRLGSS (modificado); cuantías 2026 RDL 16/2025.
+def calcular_subsidio_nc_nacimiento_2026(
+    sexo_solicitante: str = "mujer",       # 'mujer' | 'hombre' (NUEVO 2026: ambos)
+    es_afiliado_alta_o_asimilada: bool = True,
+    cumple_otros_requisitos_no_carencia: bool = True,
+    iprem_2026_mensual: Decimal = Decimal("610.00"),
+    semanas: int = 19,                     # según calcular_permiso_nacimiento_2026
+    es_familia_monoparental: bool = False,
+) -> Dict[str, Any]:
+    """Subsidio No Contributivo por Nacimiento y Cuidado de Menor 2026.
+
+    NOVEDAD 2026 (DM26-T9-02):
+      - Antes 2025: solo trabajadoras MUJERES.
+      - Desde 2026: trabajadoras Y trabajadores afiliados en alta/asimilada
+        que cumplan TODOS los requisitos de la prestación contributiva
+        SALVO el período mínimo de cotización (carencia).
+      - Cubre nacimiento y adopción.
+      - Cuantía = 100% del IPREM diario × días de duración.
+
+    Trampa DM26-T9-02: decir que el subsidio NC nacimiento sigue siendo solo
+    para mujeres → FALSO desde 2026.
+    """
+    if not es_afiliado_alta_o_asimilada:
+        return {"acceso": False, "motivo": "Requisito incumplido: no afiliado en alta o asimilada al alta."}
+    if not cumple_otros_requisitos_no_carencia:
+        return {"acceso": False, "motivo": "Incumple otros requisitos (residencia legal, edad, etc.)."}
+
+    if semanas < 1 or semanas > 32:
+        return {"error": f"Duración fuera de rango (1-32 semanas). Recibido: {semanas}."}
+
+    iprem_diario = iprem_2026_mensual / Decimal("30")
+    dias_subsidio = semanas * 7
+    if es_familia_monoparental and semanas == 19:
+        # Si era una solicitud monoparental con 19 semanas, ajustar a 32
+        dias_subsidio = 32 * 7
+        semanas_efectivas = 32
+    else:
+        semanas_efectivas = semanas
+
+    cuantia_total = (iprem_diario * Decimal(str(dias_subsidio))).quantize(Decimal("0.01"))
+
+    return {
+        "acceso": True,
+        "sexo_solicitante": sexo_solicitante,
+        "novedad_2026": "Acceso ampliado a hombres" if sexo_solicitante == "hombre" else "Acceso histórico mujeres + ampliación 2026 a hombres",
+        "iprem_diario_2026": float(iprem_diario.quantize(Decimal("0.01"))),
+        "semanas": semanas_efectivas,
+        "dias_subsidio": dias_subsidio,
+        "cuantia_total": float(cuantia_total),
+        "cuantia_diaria": float(iprem_diario.quantize(Decimal("0.01"))),
+        "trampa": "Decir que el subsidio NC nacimiento sigue siendo solo para mujeres → FALSO desde 2026",
+        "articulos": "Art. 184 TRLGSS (modificado); cuantías 2026 RDL 16/2025 (BOE 24/12/2025)",
+        "explicacion": (
+            f"Subsidio NC nacimiento {sexo_solicitante}: {semanas_efectivas} semanas × 7 días × "
+            f"{float(iprem_diario):.2f}€/día (IPREM diario 2026) = {float(cuantia_total):.2f}€ totales."
+        ),
+    }
+
+
+# 19. Complemento Brecha de Género 2026 (DM26-T10-02)
+# Cuantía 2025: 34,80€ → 2026: 36,90€/mes (subida 6%).
+# Trampa: titular = progenitor con pensión MÁS BAJA (NO siempre la madre).
+COMPLEMENTO_BRECHA_GENERO_MENSUAL_2026 = Decimal("36.90")
+COMPLEMENTO_BRECHA_GENERO_ANUAL_2026 = Decimal("516.60")  # 36.90 × 14 pagas
+
+def calcular_complemento_brecha_genero(
+    pension_progenitor_a: Decimal,
+    pension_progenitor_b: Decimal,
+    n_hijos: int = 1,
+    es_progenitor_a_la_madre: bool = True,
+) -> Dict[str, Any]:
+    """Complemento de pensiones contributivas para reducir la brecha de género.
+
+    Cuantía 2026: **36,90€/mes × 14 pagas = 516,60€/año**, por hijo, hasta 4 hijos máx.
+
+    REGLAS (Art. 60 TRLGSS):
+      1. Se reconoce al PROGENITOR CON LA PENSIÓN MÁS BAJA, sea hombre o mujer.
+         (Tras STJUE C-450/18 que extendió a hombres lo que antes era solo madres.)
+      2. Si ambos progenitores tienen pensión, se da al de menor cuantía.
+      3. Aplicable a pensiones contributivas de jubilación, IP o viudedad.
+      4. Naturaleza CONTRIBUTIVA a todos los efectos (Art. 60.4 TRLGSS).
+      5. Tope: 4 hijos máximo (4 × 36.90€ = 147,60€/mes).
+
+    Trampa DM26-T10-02:
+      - Decir que el complemento es siempre para la madre → FALSO.
+      - Usar la cuantía 2025 (34,80€) en lugar de 36,90€ → FALSO.
+    """
+    if n_hijos < 1:
+        return {"acceso": False, "motivo": "Requisito incumplido: debe haber ≥1 hijo."}
+
+    n_hijos_efectivos = min(n_hijos, 4)  # tope 4 hijos
+
+    # Determinar el titular = el de menor pensión
+    if pension_progenitor_a < pension_progenitor_b:
+        titular = "progenitor A"
+        es_madre_titular = es_progenitor_a_la_madre
+    elif pension_progenitor_b < pension_progenitor_a:
+        titular = "progenitor B"
+        es_madre_titular = not es_progenitor_a_la_madre
+    else:
+        # Empate → la madre (regla supletoria)
+        titular = "progenitor A" if es_progenitor_a_la_madre else "progenitor B"
+        es_madre_titular = True
+
+    cuantia_mensual = COMPLEMENTO_BRECHA_GENERO_MENSUAL_2026 * Decimal(str(n_hijos_efectivos))
+    cuantia_anual = COMPLEMENTO_BRECHA_GENERO_ANUAL_2026 * Decimal(str(n_hijos_efectivos))
+
+    return {
+        "titular": titular,
+        "es_la_madre": es_madre_titular,
+        "n_hijos_efectivos": n_hijos_efectivos,
+        "n_hijos_solicitados": n_hijos,
+        "cuantia_por_hijo_mensual": float(COMPLEMENTO_BRECHA_GENERO_MENSUAL_2026),
+        "cuantia_total_mensual": float(cuantia_mensual),
+        "cuantia_total_anual_14_pagas": float(cuantia_anual),
+        "naturaleza": "contributiva",
+        "trampa_examen": [
+            "Decir que el complemento es siempre para la madre → FALSO (es para quien tenga la pensión más baja).",
+            "Usar 34,80€ (cuantía 2025) en lugar de 36,90€ (cuantía 2026) → FALSO.",
+        ],
+        "articulos": "Art. 60 TRLGSS; cuantía 2026 RDL 16/2025 (BOE 24/12/2025)",
+        "explicacion": (
+            f"Complemento brecha género 2026: titular = {titular} "
+            f"({'madre' if es_madre_titular else 'padre'}), "
+            f"{n_hijos_efectivos} hijo(s) × 36,90€/mes = {float(cuantia_mensual):.2f}€/mes "
+            f"({float(cuantia_anual):.2f}€/año en 14 pagas)."
+        ),
+    }
+
+
+# ============================================================================
 # FIN BLOQUE CALCULADORAS — calculos_ss_extended.py
-# Última actualización: 12/03/2026
+# Última actualización: 29/04/2026
+#   - 4 fixes textuales (constantes:70 jubilación + referencias normativas)
+#   - 5 GAPs implementados (cese RETA, permiso 19s, lagunas Art. 322, Gran Inc, PNC)
+#   - BUGs #4-#8 detectados al cruzar con cambios_dm_2026.py:
+#     #4 Adicional Solidaridad (constantes corregidas: 1.15/1.25/1.46%)
+#     #5 BR DUAL ya estaba en calculos_ss.py (verificado funcionando)
+#     #6 Distribución 19 semanas corregida (6+11+2 / monoparental 32)
+#     #7 Subsidio NC nacimiento ambos sexos (función nueva)
+#     #8 Complemento brecha género 36,90€ 2026 (constante + función nuevas)
 # ============================================================================

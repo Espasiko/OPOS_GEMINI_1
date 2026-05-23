@@ -1,74 +1,266 @@
-# RESUMEN MAESTRO: Trampas Pedagógicas y Errores Normativos (Casos Diego de Miguel 2026)
+# 📘 CASOS Y TRAMPAS DM 2026 — Índice Maestro
 
-Este documento compila de forma exhaustiva todos los trucos y "trampas" empleados en los casos prácticos de alto nivel (como los del preparador Diego de Miguel), así como los errores normativos y conceptuales más comunes cometidos por las IA y los opositores, analizados a fecha 10/03/2026.
+> **Fuente única de verdad**: `@/home/spas/OPOS_GEMINI_1/academias/1_casos_recientes_2026_DM/trampas_unificadas_v2_CURADO.yaml`
+>
+> **Última actualización**: 18/04/2026 (18:57) | **Total trampas**: 184 | **Verificadas BOE**: 55 | **Con corrección aplicada**: 7 | **Obsoletas marcadas**: 1
+>
+> ✅ **Estado**: **0 trampas `[INVENTADA-DM]` restantes** — todas verificadas y procesadas el 18/04/2026.
 
-## PARTE 1 — Catálogo Exhaustivo de Trampas Pedagógicas (Método DM)
+---
 
-### A. Trampas de Encuadramiento
-1. **Administración Local ≠ MUFACE**: Los funcionarios de Ayuntamientos van al Régimen General (RD 480/1993). La trampa es asumir que, por ser funcionario, va a MUFACE.
-2. **El porcentaje de capital sin cargo no activa RETA**: Para activar la presunción del 25%, se debe tener también el cargo de administrador con funciones de dirección/gerencia. Si no hay cargo, se requiere ≥33%. De lo contrario, Régimen General.
-3. **La razón correcta frente a justificación inventada**: Dos opciones de respuesta pueden dar el mismo régimen final (ej. RETA), pero una incluye una justificación legal errónea (ej. sumar los % de dos socios no convivientes).
-4. **Art. 12 (Familiares Colaboradores) no aplica a Sociedades Mercantiles**: La presunción de familiar colaborador solo aplica si el titular es un autónomo persona física, no a familiares de socios de una SL.
-5. **Familiares con Discapacidad**: Pueden estar en el Régimen General aunque convivan, pero con exclusión de la cobertura por desempleo.
-6. **Límite del parentesco RETA**: El primo es cuarto grado de consanguinidad, queda fuera de la presunción de los familiares de hasta segundo grado (va al RG, no al RETA).
-7. **Comunidad de vecinos ≠ Hogar Familiar**: Empleado de limpieza de una comunidad va al Régimen General ordinario, no al Sistema Especial de Empleados de Hogar.
-8. **100% de capital es RETA obligatorio**: No es presunción "iuris tantum", sino obligatorio por ser el titular absoluto y tener control efectivo absoluto.
+## 🎯 Cómo usar este documento
 
-### B. Trampas de Incapacidad Temporal (IT)
-1. **Tres sujetos pagadores en Enfermedad Común (EC)**: Días 1-3 (nadie), 4-15 (Empresa, obligación directa), a partir del 16 (INSS o Mutua).
-2. **Dos sujetos en Accidente de Trabajo (AT)**: Día de la baja (empresa paga salario), a partir del día siguiente (Mutua/INSS).
-3. **La huelga bloquea el inicio de la IT**: Si un Accidente No Laboral ocurre en huelga, el subsidio no se cobra hasta que finaliza la huelga. Si fuera AT, sí se cobraría.
-4. **Manifestación sindical ≠ Trabajo**: Daño en manifestación es Accidente No Laboral (ANL), no Accidente de Trabajo.
-5. **Sin carencia para IP por accidente**: Para IP de cualquier accidente (AT o ANL) no se exige carencia, a diferencia de la Enfermedad Común.
-6. **Calculadoras especiales LO 1/2023**: Menstruación incapacitante (paga INSS desde el día 1, sin carencia). Semana 39 gestación (Empresa día 1, INSS resto).
+Este documento es un **índice ejecutivo**. Las trampas completas (con regla, artículo, mnemónico) viven en el YAML. Para navegar:
 
-### C. Trampas de Jubilación
-1. **Umbral dinámico (DT 7ª)**: En 2026 el umbral es 38 años y 3 meses (38,25), no 38,5 años (que es para 2027). La IA falla mucho aquí usando el 38.5.
-2. **Edad ordinaria dinámica**: En 2026 es 66 años y 10 meses (no 66 y 8, que era 2025).
-3. **Avanzar años de tabla**: Cumplir años y seguir trabajando permite alcanzar el umbral del *año siguiente* antes que la edad ordinaria del actual. Exige cruzar dos columnas de la DT 7ª.
-4. **Jubilación anticipada voluntaria**: Es 2 años antes de la edad ordinaria aplicable al trabajador, no una edad estática.
-5. **Jubilación Activa**: La reforma eliminó el requisito de tener el 100% de la Base Reguladora. La trampa es ponerlo como requisito.
-6. **El "Año de espera" de Jubilación Activa**: SÍ es obligatorio que pase 1 año desde que se cumple la edad ordinaria y los requisitos plenos.
-7. **Jubilación Demorada Activa Secuencial**: Las bonificaciones se aplican por fases. Primero el % de demora, luego el +5% de activa por año, de manera secuencial, no sumando porcentajes ciegamente.
-8. **Lagunas en RETA**: En el RETA no hay integración de lagunas (es cero). En Régimen General sí hay.
+1. **Buscar trampa por tema**: usa la tabla de categorías ↓
+2. **Buscar por artículo legal**: `grep "Art. 233" trampas_unificadas_v2_CURADO.yaml`
+3. **Ver pendientes de verificar**: sección §4 de este documento
+4. **Integrar en Obsidian**: usar script `scripts/trampas_yaml_to_obsidian.py` (pendiente Y HAY MAS SCRIPTS REGENERAR VAULT. PY ETC. )
 
-### D. Trampas de Incapacidad Permanente (IP)
-1. **IPP vs IPT**: El 33% de disminución del rendimiento es exclusivo de la Incapacidad Permanente PARCIAL. La Total (IPT) es la inhabilidad para tareas fundamentales, no va por porcentaje de rendimiento.
-2. **Formato del beneficio de la IPP**: Es una indemnización de 24 mensualidades a tanto alzado, no una pensión vitalicia.
-3. **Falta de datos en BR de IP**: Intentar calcular la prestación de IP usando solo la Base Reguladora de IT (son fórmulas diferentes). Sin años suficientes de cotización descritos, no se puede calcular.
+---
 
-### E. Trampas de Procedimiento Administrativo
-1. **Recurso de Alzada (plazos)**: Interposición = 1 mes (Art. 121 LPAC). Resolución = 3 meses (Art. 122.2 LPAC). Se suelen confundir en las preguntas.
-2. **Silencio administrativo**: Solicitudes = Positivo por regla general. Recursos = SIEMPRE negativo.
-3. **Vía procesal para SS**: Para prestaciones SS (INSS) se usa la Ley Reguladora de la Jurisdicción Social (LRJS) (reclamación previa de 30 días), NO el recurso de alzada de la LPAC que es aplicable a la AGE y otras instancias administrativas generales.
-4. **Deudas de Administraciones Públicas**: Siguen el "procedimiento de deducción" presupuestaria, no la vía de apremio.
-5. **Garantías en aplazamiento**: Las AAPP están exentas de garantías sin importar la cuantía de la deuda.
-6. **Competencia URE Embargos**: Inmuebles, la competencia de la 'Unidad de Recaudación Ejecutiva' es donde radica el inmueble, no donde esté la sede de la deuda.
-7. **Notificación Embargo Cónyuge**: Obligatoria siempre que haya embargo de inmueble, sin importar el régimen matrimonial.
+## 1. 🗂️ Las 22 categorías (184 trampas)
 
-### F. Trampas de Bases de Cotización y Recargos
-1. **Prorrata de pagas extra**: Si el enunciado dice "mensual con pagas incluidas", ya están prorrateadas. Si no, obligatoriamente se suma la parte proporcional mensual.
-2. **Horas Extraordinarias**: Van en base separada. Jamás a la Base de Contingencias Comunes.
-3. **Suplidos vs. Retribuciones Puras**: Los gastos in itinere (domicilio-trabajo), aunque tengan tickets, son retribución e incrementan Base CC. Los gastos durante la jornada por labor encomendada (viajar a cliente) son suplidos y se excluyen completamente.
-4. **Base Reguladora IT EC (Desde abril 2025)**: Promedio bases de cotización de 3 meses anteriores dividido por días naturales. (Derogado "mes anterior / 30" para hechos causantes nuevos por RDL 11/2024).
-5. **Base Solidaridad**: Se aplica al exceso de la base máxima de *ese* año. (En 2026 es el exceso sobre 5.101,20€).
-6. **Reglas de Recargos Domiciliaciones y Liquidaciones**:
-   - 35%: No presenta documentos de liquidación.
-   - 20%: Presentó documentos en plazo pero no pagó. Aplica también una vez notificada la providencia de apremio tras 15 días, o al notificar si no paga (o cuota reducida de apremio del 20%).
-   - 10%: Pagó antes de la providencia o en plazo voluntario tras recibir "Reclamación de Deuda".
-   - *El intento de cobro fallido por banco RETA equivale a no pago, pero SÍ hubo presentación previa de datos, procede apremio en lugar de reclamación si había domiciliación que falló pura.*
-7. **Plazos SS vs LPAC**: Los plazos en Seguridad Social dados en días (ej. variaciones y altas que son 3 días) son *NATURALES*, sin prórroga por fin de semana o festivo. Los administrativos (LPAC) sí se prorrogan si terminan en inhábil.
+### Base principal (160 trampas — 🟢 fiables)
 
-## PARTE 2 — Estructura del Prompt "Nivel Tribunal Diego de Miguel"
+| Cat | Nombre | Nº | Foco temático |
+|---|---|---|---|
+| **A** | Encuadramiento | 10 | RGSS vs RETA vs MUFACE vs SE Hogar |
+| **B** | Incapacidad Temporal | 8 | Pagadores, carencias, huelga, LO 1/2023 |
+| **C** | Jubilación | 15 | Edad ordinaria, anticipada, demorada, activa, DT 7ª/34ª |
+| **D** | Incapacidad Permanente | 4 | IPP vs IPT, BR, revisión grado |
+| **E** | Procedimiento administrativo | 8 | Alzada, silencio, vía social, URE |
+| **F** | Bases de cotización y recargos | 12 | Prorrata, HE, suplidos, base solidaridad |
+| **G** | Recargos | 4 | 10/20/35%, intereses vs recargo |
+| **H** | Plazos SS | 8 | Días naturales vs hábiles, alta previa |
+| **I** | Otras (recaudación, pluriactividad) | 19 | Subastas, embargo, IGSS, automaticidad |
+| **J** | Muerte y supervivencia | 14 | Viudedad 52/60/70%, orfandad, pareja hecho |
+| **K** | Desempleo | 6 | BR, duración máxima, excedencia voluntaria |
+| **L** | Complementos / No contributivas | 4 | Mínimos, PNC, brecha género |
+| **M** | Jubilación parcial y relevo | 4 | Relevista 65%, fijos discontinuos ×1,5 |
+| **N** | Procedimiento LPAC | 7 | Nulidad/anulabilidad, revisión oficio |
+| **O** | Ingreso Mínimo Vital | 5 | Renta año anterior, administrador SL |
+| **P** | Tiempo parcial y fijos discontinuos | 4 | Horas complementarias, SE Hogar <60h |
+| **Q** | Función pública AGE | 11 | Trienios, exámenes, IT, servicios especiales |
+| **R** | RETA y sistemas especiales | 16 | No IPP, IPT cualificada +20%, grupos Mar |
+| **CA** | Cálculo avanzado | 6 | GI complemento, recargo AT/EP, subsidio +52 |
+| **N₂** | Automaticidad (solo 1 trampa) | 1 | Empresario no cotiza → INSS anticipa |
 
-Para replicar este nivel, la IA generadora debe pasar de un enfoque *Zero-Shot* o *Chain-of-Thought* estándar a un **Protocolo Obligatorio Multietapa Rígido**:
+### Ampliación v2 curada (25 trampas — mezcla de estados)
 
-- **Fase 0 (Pre-cálculo de Datos Inmutables)**: Antes de idear trama, la IA DEBE invocar explícita y forzosamente las calculadoras (Edad, Bases, IT) y el RAG, sacando los hechos irrefutables de las leyes aplicables al año del examen (2026).
-- **Fase 1 (Trama cronológica conectada)**: Personajes y plazos encadenados (Ej: el mes que no paga la empresa desencadena la deuda, embargan el local a su dueño y hay que seguir el calendario). Todo hilado causalmente y temporalmente alineado.
-- **Fase 2 (Destrucción del alumno - Distractores reales)**: Las respuestas incorrectas deben basarse en:
-   - Excepciones a la regla que se aplicaban en la regla general de otro régimen (ej. confundir IT AT con IT EC).
-   - Conceptos no actualizados (ej. edad de jubilación de 2025 aplicada en 2026).
-   - Trampas de calendario procesal contra calendario civil/natural.
-- **Fase 3 (Explicación constructiva y correctiva)**: El razonamiento de la solución nombra anticipadamente el error ("Cuidado si marcaste la A, significa que aplicaste la regla antigua de..."), menciona un truco o regla mnemotécnica, y aporta el artículo de ley exacto desde las fuentes.
+| Cat_+ | Origen | Nº | Estado |
+|---|---|---|---|
+| A+ (A11-A15) | INVESTIGACION | 5 | 🟡 Extraída de exámenes reales |
+| B+ (B9) | INVESTIGACION | 1 | 🟡 |
+| D+ (D5-D7) | INVESTIGACION | 3 | 🟡 |
+| F+ (F13-F14) | INVESTIGACION | 2 | 🟡 |
+| G+ (G5-G7) | INVESTIGACION + GROK | 3 | 🟡 |
+| J+ (J15-J18) | INVESTIGACION + gemini_c19 | 4 | 🟡 |
+| K+ (K7) | INVESTIGACION | 1 | 🟡 |
+| Q+ (Q12) | INVESTIGACION | 1 | 🟡 |
+| R+ (R11-R12) | **gemini_c19** (cooperativas) + INV | 2 | ⚠️ R11 corregida — ver §3 |
+| CA+ (CA7-CA8) | GROK (pluriempleo/pluriactividad) | 2 | 🟡 |
 
-*(Documento generado basado en el análisis profundo del comportamiento de los LLM evaluando exámenes de Seguridad Social del preparador Diego de Miguel).*
+---
+
+## 2. 🏷️ Leyenda de orígenes (tras verificación 18/04/2026)
+
+La etiqueta `origen:` en el YAML indica la fiabilidad de cada trampa:
+
+| Tag | Significado | Nº | ¿Usar tal cual? |
+|---|---|---|---|
+| `[BOE-DIRECTO]` | Verificada contra texto BOE literal (04/03/2026) | 23 | ✅ Sí |
+| **`[VERIFICADA-POST-FUSION-2026-04]`** | **Verificada con BOE + Iberley + doctrina el 18/04/2026 (estaban etiquetadas [INVENTADA-DM])** | **20** | ✅ **Sí** |
+| `[LEG-CONSOLIDADA]` | Verificada contra legislación consolidada BOE | 11 | ✅ Sí |
+| `[WEB]` | Doctrina, Iberley, foros, STS citadas | 17 | 🟡 Verificar artículo |
+| `[INVESTIGACION]` | Extraída con referencia de línea del doc `INVESTIGACION_MATERIALES_ACADEMIAS` (exámenes AGE 2011-2023) | 19 | 🟡 Fiable — revisar 1-1 |
+| **`[VERIFICADA-CON-CORRECCION-2026-04]`** | **Verificada pero con ajuste de artículo/matiz el 18/04/2026** | **7** | 🟡 **Sí, con `correccion:` anotada** |
+| `[VERIFICADA-BOE-2026-04-18]` | R11 cooperativas, reformulada completamente tras hallazgo GAVIOTAS | 1 | ✅ Sí |
+| `[DM-SIMULACRO]` | Confirmada con respuesta oficial en simulacro DM | 3 | ✅ Sí |
+| `[gemini_c19]`, `[GROK]`, `[NUEVA]`, `[CORREGIDA]` | Orígenes específicos | 14 | ⚠️ Ver detalle en YAML |
+| **`[OBSOLETA-RDL-2-2023-COEFICIENTE-PARCIALIDAD-DEROGADO]`** | **P4 — derogada por RDL 2/2023 (01/10/2023)** | **1** | 🔴 **NO USAR** — decisión pendiente |
+
+> 🎉 **0 trampas `[INVENTADA-DM]` pendientes** tras la verificación del 18/04/2026.
+
+---
+
+## 3. ✅ HALLAZGO CASO GAVIOTAS — CORREGIDO (18/04/2026)
+
+**Archivo**: `@/home/spas/OPOS_GEMINI_1/caso_febrerov2_DM_STYLE.md:1-189`
+**Estado**: Simulacro **local** (no existe URL externa). Generado por V14.5 + Claude.
+
+### 3.1 Errores detectados originalmente
+
+1. **Error de cita**: P2 y P3 citaban `Art. 104 TRLGSS` → **INCORRECTO** (Art. 104 regula IP parcial, no cooperativas).
+2. **Contradicción interna**: P2 decía "solidaria" pero P3 tenía respuesta D = alcance de la SUBSIDIARIA (principal + recargos + intereses + costas).
+
+### 3.2 Correcciones aplicadas (18/04/2026)
+
+En `@/home/spas/OPOS_GEMINI_1/caso_febrerov2_DM_STYLE.md`:
+
+| Elemento | Antes | Ahora |
+|---|---|---|
+| P2 cita legal | `Art. 104 TRLGSS` | `Art. 335 TRLGSS + DA 4ª TRLGSS + Art. 72 Ley 27/1999` ✅ |
+| P3 cita legal | `Art. 104 TRLGSS` | `Art. 15.3 TRLGSS` (alcance solidaria) ✅ |
+| P3 respuesta correcta | **D** (principal + recargos + intereses + costas) | **B** (principal + recargo, coherente con la solidaria) ✅ |
+
+Fuentes consultadas: **FEVECTA** (blog cooperativas); **vLex** ("responsable solidario"); **Iberley** (Art. 72 LCoop); **BOE** (texto TRLGSS consolidado 04/02/2026).
+
+### 3.3 Trampa R11 del YAML también corregida
+
+Antes:
+```yaml
+articulo: "Art. 80.4 Ley 27/1999; Art. 15 bis TRLGSS (alcance)"
+origen: "[gemini_c19 — t_cooperativa_reta_solidaria]"
+```
+
+Ahora:
+```yaml
+articulo: "Art. 335 TRLGSS; DA 4ª TRLGSS; Art. 72 Ley 27/1999; Art. 15.3 TRLGSS (alcance)"
+origen: "[VERIFICADA-BOE-2026-04-18 — gemini_c19 reformulada]"
+```
+
+Incluye `correccion:` anotando la trazabilidad del cambio.
+
+---
+
+## 4. ✅ Verificación completada (18/04/2026) — las 28 trampas `[INVENTADA-DM]` procesadas
+
+**Documento detallado**: `@/home/spas/OPOS_GEMINI_1/VERIFICACION_28_INVENTADAS.md`
+**Script trazable**: `@/home/spas/OPOS_GEMINI_1/backend/scripts/aplicar_verificacion_28.py`
+**Backup previo**: `trampas_unificadas_v2_CURADO.yaml.bak-antes-verificacion-28`
+
+### 4.1 Resumen del veredicto
+
+| Estado | Nº | % | Acción aplicada |
+|---|---|---|---|
+| ✅ **VERIFICADAS tal cual** | 20 | 71% | Tag `[VERIFICADA-POST-FUSION-2026-04]` |
+| ⚠️ **CON CORRECCIÓN aplicada** | 7 | 25% | Tag `[VERIFICADA-CON-CORRECCION-2026-04]` + campo `correccion:` |
+| ❌ **OBSOLETA** (P4 por RDL 2/2023) | 1 | 4% | Tag `[OBSOLETA-RDL-2-2023-COEFICIENTE-PARCIALIDAD-DEROGADO]` |
+
+### 4.2 Las 20 ✅ VERIFICADAS (mantener)
+
+C14, J2, J3, J5, J6, K1, K3, K4, K5, L1, L2, L3, N5, N6, P1, Q1, Q4, CA1, CA2, CA4
+
+### 4.3 Las 7 ⚠️ REFORMULADAS (con ajuste puntual)
+
+| ID | Ajuste | Motivo |
+|---|---|---|
+| **J4** | `articulo:` actualizado a `Art. 219, Art. 221 bis TRLGSS; RD 900/2018; DF 27ª Ley 40/2007` | Art. 231 no regula 60%/70% (regula "impedimento beneficiario") |
+| **N7** | `regla:` cambia "10 días hábiles" → "10 días NATURALES" | Art. 43.2 LPAC literal |
+| **Q2** | Añadido `actualizacion_2026:` | RDL 9/2025 amplió el permiso de nacimiento (Directiva UE 2019/1158) |
+| **Q3** | `articulo:` actualizado a `Art. 22 y 23.2 EBEP; LPGE anual` | Detalle operativo está en Art. 23.2 |
+| **CA5** | `articulo:` actualizado a `Art. 315 TRLGSS; RD 1273/2003; Orden TAS/1040/2005` | Art. 308 solo enumera; devengo específico en desarrollo reglamentario |
+| **CA6** | `articulo:` actualizado a `Art. 280.4 TRLGSS; Art. 274 TRLGSS` | Art. 274.4 no existía; regulación en Art. 280 |
+| **K6** | Añadido `actualizacion_2024:` | RDL 2/2024 modificó Art. 282 — verificar |
+
+### 4.4 La 1 ❌ OBSOLETA (decisión pendiente)
+
+**P4** — "Coeficiente global de parcialidad: solo carencia, no BR (Art. 247.1 TRLGSS)"
+
+**Problema**: desde el **01/10/2023** el **RDL 2/2023** DEROGÓ el coeficiente de parcialidad. Ahora cada día de alta a TP computa como 1 día cotizado completo.
+
+**Opciones**:
+- **A**: Borrar la trampa (regla ya no aplica).
+- **B**: Reescribirla como "trampa inversa" — para capturar al opositor que siga usando el coeficiente viejo.
+
+Actualmente el YAML la tiene marcada como `[OBSOLETA-RDL-2-2023-COEFICIENTE-PARCIALIDAD-DEROGADO]` con un campo `correccion_critica:` esperando decisión.
+
+### 4.5 Hallazgos metodológicos
+
+- **Claude 4.5 acertó al 71%** inventando trampas con base legal real.
+- **Errores más frecuentes**: cita de artículo específico (4 casos) y obsolescencia por reformas 2023-2025 (3 casos).
+- **0 trampas fueron "invención pura sin base legal"** — todas tenían fundamento, solo necesitaban precisión.
+
+---
+
+## 5. 📐 Arquitectura recomendada (pendiente de ejecutar)
+
+```
+/home/spas/OPOS_GEMINI_1/academias/1_casos_recientes_2026_DM/
+    ├── trampas_unificadas_v2_CURADO.yaml   🔒 FUENTE ÚNICA (única que se edita)
+    └── README_TRAMPAS.md                    📘 Manual de uso
+
+/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/wiki/trampas/   (via Syncthing a Windows)
+    ├── _INDICE.md                           📋 184 trampas con [[wiki-links]]
+    ├── A_encuadramiento.md                  📂 Índice categoría (15 trampas)
+    ├── B_IT.md                              📂 Índice categoría (9 trampas)
+    ├── [... 18 índices más ...]
+    ├── A01_funcionarios_AGE_MUFACE.md       📝 1 nota Obsidian por trampa
+    │                                            con frontmatter COSMIC
+    ├── A02_capital_25pct_sin_cargo.md
+    ├── [... 184 notas trampa ...]
+    └── PENDIENTES_VERIFICAR.md              ⚠️ Dashboard de las 28 inventadas
+
+/home/spas/OPOS_GEMINI_1/
+    └── CASOS_TRAMPAS_DM_2026.md             📊 Este documento (índice ejecutivo)
+```
+
+### Ventajas de este modelo
+1. **Un solo archivo que se edita** (el YAML). Evita deriva entre versiones.
+2. **Obsidian aprovecha al máximo** sus features: backlinks, graph, búsqueda full-text, tags.
+3. **Granularidad**: puedes abrir 1 trampa sin cargar las 184.
+4. **Diff git limpio** cuando añadas/corrijas trampas.
+5. **Regeneración barata**: script Python de ~80 líneas `yaml → md`.
+
+### Script de generación — borrador del flujo
+```python
+# backend/scripts/trampas_yaml_to_obsidian.py
+# Uso: python3 scripts/trampas_yaml_to_obsidian.py
+#
+# Lee:  trampas_unificadas_v2_CURADO.yaml
+# Crea: /mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/wiki/trampas/
+#       - _INDICE.md (184 links)
+#       - A_encuadramiento.md ... R_RETA.md (22 índices categoría)
+#       - A01_xxx.md ... CA08_xxx.md (184 notas trampa)
+#       - PENDIENTES_VERIFICAR.md (dashboard)
+# Frontmatter COSMIC por nota:
+#   tags: [trampa, categoria_A, verificado_boe]
+#   articulos: [Art. 136 TRLGSS]
+#   origen: "[BOE-DIRECTO]"
+#   peso_examen: alto
+```
+
+---
+
+## 6. 🗺️ Estado actual y próximos pasos
+
+### ✅ Completado (18/04/2026 INFO YA OBSOLETA, SE HIZO LA VERIFICACION COMPLETA!!!)
+
+- [x] **C**: Verificadas las 28 `[INVENTADA-DM]` (20 OK, 7 reformuladas, 1 obsoleta)
+- [x] **B**: Corregido caso GAVIOTAS (P2-P3) + trampa R11 del YAML
+- [x] **A**: Generadas 206 archivos Obsidian en `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/wiki/trampas/`
+  - 1 `_INDICE.md` maestro (con wiki-links a las 20 categorías)
+  - 1 `_PENDIENTES_VERIFICAR.md` dashboard (🎉 0 pendientes, 1 obsoleta)
+  - 20 índices por categoría (`_A_encuadramiento.md`, `_B_it.md`, ...)
+  - 184 notas individuales con frontmatter COSMIC + secciones estructuradas
+- [x] **Índice maestro**: este documento actualizado al estado real
+
+### ⏳ Pendientes
+
+| Opción | Acción | Tiempo | Prioridad |
+|---|---|---|---|
+| **D** | Borrar `catalogo_trampas.yaml` y `catalogo_trampas_adicional.yaml` (ya fusionados) | 1 min | 🟡 Media — usuario prefiere esperar |
+| **E** | Decidir qué hacer con P4 (borrar o reescribir como trampa inversa) | 2 min | 🟡 Media |
+| **H** | Mejorar script Obsidian: clasificar auto trampas sin `origen:` como "[DM-MAESTRO]" | 10 min | 🟡 Media |
+| **F** | Auditar las 14 trampas `[gemini_c19/GROK/NUEVA/CORREGIDA]` restantes | 30 min | 🟢 Baja |
+| **G** | Auditar las 17 `[WEB]` (verificar que los artículos citados son correctos) | 45 min | 🟢 Baja |
+| **I** | Sincronizar el vault via Syncthing al Windows del usuario | 5 min (configuración ya hecha) | 🟢 Baja |
+
+---
+
+## 7. 🎯 Archivos clave de este bloque de trabajo
+
+| Archivo | Rol | Estado |
+|---|---|---|
+| `@/home/spas/OPOS_GEMINI_1/academias/1_casos_recientes_2026_DM/trampas_unificadas_v2_CURADO.yaml` | 🔒 Fuente única (184 trampas YA VERIFICADAS CONTRA EL BOE POR CLAUDE 4.7) | ✅ |
+| `@/home/spas/OPOS_GEMINI_1/CASOS_TRAMPAS_DM_2026.md` | 📊 Este índice ejecutivo | ✅ |
+| `@/home/spas/OPOS_GEMINI_1/VERIFICACION_28_INVENTADAS.md` | 🔍 Veredicto de las 28 verificadas | ✅ |
+| `@/home/spas/OPOS_GEMINI_1/backend/scripts/aplicar_verificacion_28.py` | 🐍 Script que aplicó cambios al YAML | ✅ |
+| `@/home/spas/OPOS_GEMINI_1/backend/scripts/trampas_yaml_to_obsidian.py` | 🐍 Script `yaml → md` (reutilizable) | ✅ |
+| `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/wiki/trampas/` | 🌐 Vault Obsidian poblado (206 archivos) | ✅ |
+| `@/home/spas/OPOS_GEMINI_1/caso_febrerov2_DM_STYLE.md` | 📝 Caso GAVIOTAS corregido | ✅ |
+
+---
+
+*Documento actualizado el 18/04/2026 (19:05) tras completar tareas C (verificación 28), B (corrección GAVIOTAS + R11) y A (generación 206 archivos Obsidian). Estado: **trampas curadas, verificadas y publicadas en vault**.*

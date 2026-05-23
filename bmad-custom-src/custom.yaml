@@ -1,3 +1,8 @@
-code: my-custom-bmad
-name: "Spas-Custom-BMad: Sample Stand Alone Custom Agents and Workflows"
+code: spas-custom-bmad
+name: "OpositAIA Custom Agents — Spas"
 default_selected: true
+agents:
+  - name: staff
+    path: bmad-custom-src/agents/staff.md
+    description: "Guardián de la memoria del proyecto. Conoce el estado actual, decisiones descartadas y corrige a otros agentes."
+    skill: bmad-staff

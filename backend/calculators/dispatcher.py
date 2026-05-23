@@ -92,7 +92,7 @@ HISTORICO_SMI: Dict[int, float] = {
     2023: 1080.00,
     2024: 1134.00,
     2025: 1157.00,
-    2026: 1184.00,  # Estimado 2026 (proceso negociación)
+    2026: 1221.00,  # RD 126/2026 (confirmado Orden PJC/297/2026: base_min = SMI×7/6 = 1.424,40€)
 }
 
 # Base mínima cotización RETA por año

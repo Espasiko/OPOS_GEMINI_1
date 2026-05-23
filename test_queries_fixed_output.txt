@@ -1,0 +1,14 @@
+[25] ZERO MATCHES: (n.id CONTAINS "Art. None" OR n.id STARTS WITH "None " OR n.id = "None") AND n.id CONTAINS "2064/1995"
+[56] ZERO MATCHES: (n.id CONTAINS "Art. None" OR n.id STARTS WITH "None " OR n.id = "None") AND n.id CONTAINS "1415/2004"
+[75] ZERO MATCHES: (n.id CONTAINS "Art. None" OR n.id STARTS WITH "None " OR n.id = "None") AND n.id CONTAINS "1993/1995"
+[132] ERROR: n.id CONTAINS "Ley 50/1997" AND ((n.id CONTAINS "Art. 5" OR n.id STARTS WITH "5 " OR n.id = "5") OR (n.id CONTAINS "Art. 8" OR n.id STARTS WITH "8 " OR n.id = "8"))
+// Como el prompt lo muestra sin articulo concreto, hacemos match amplio o a los más probables.
+// Para evitar fallos en cypher, haremos un - {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Query cannot conclude with MATCH (must be a RETURN clause, a FINISH clause, an update clause, a unit subquery call, or a procedure call with no YIELD). (line 1, column 1 (offset: 0))
+"MATCH (n:Precepto) WHERE n.id CONTAINS "Ley 50/1997" AND ((n.id CONTAINS "Art. 5" OR n.id STARTS WITH "5 " OR n.id = "5") OR (n.id CONTAINS "Art. 8" OR n.id STARTS WITH "8 " OR n.id = "8"))"
+ ^} {gql_status: 42001} {gql_status_description: error: syntax error or access rule violation - invalid syntax}
+[145] ERROR: (n.id CONTAINS "Art. 48" OR n.id STARTS WITH "48 " OR n.id = "48") AND n.id CONTAINS "84/1996"
+// Se aplica al Art 47/48 en gral. - {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Query cannot conclude with MATCH (must be a RETURN clause, a FINISH clause, an update clause, a unit subquery call, or a procedure call with no YIELD). (line 1, column 1 (offset: 0))
+"MATCH (n:Precepto) WHERE (n.id CONTAINS "Art. 48" OR n.id STARTS WITH "48 " OR n.id = "48") AND n.id CONTAINS "84/1996""
+ ^} {gql_status: 42001} {gql_status_description: error: syntax error or access rule violation - invalid syntax}
+[157] ZERO MATCHES: n.id CONTAINS "Disposición final séptima" AND n.id CONTAINS "1/2004"
+[158] ZERO MATCHES: n.id CONTAINS "Disposición adicional primera" AND n.id CONTAINS "1/2004"

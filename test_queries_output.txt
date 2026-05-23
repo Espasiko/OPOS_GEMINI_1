@@ -1,0 +1,31 @@
+Conectando...
+Indices: ['articulo_numero', 'index_1b9dcc97', 'index_460996c0', 'ley_boe_id', 'ley_siglas', 'precepto_embedding', 'precepto_fulltext', 'precepto_id', 'precepto_ley_id', 'precepto_vigente', 'valor_legal_fulltext', 'valor_legal_id']
+
+>> Cálculos y Bases Reguladoras:
+[CE - 135]: Artículo 135 1. Todas las Administraciones Públicas adecuarán sus actuaciones al principio de estabi
+[TRLGSS 1994 - 19]: Artículo 19. Liquidación e ingreso de las cuotas y demás recursos. 1. Las cuotas de la Seguridad Soc
+[TRLGSS 1994 - 26]: Artículo 26. Cumplimiento de obligaciones en materia de liquidación de cuotas y compensación. 1. En 
+[TRLGSS 1994 - 30]: Artículo 30. Reclamaciones de deudas. 1. Transcurrido el plazo reglamentario sin ingreso de las cuot
+[TRLGSS 1994 - 48]: Artículo 48. Revalorización. 1. Las pensiones de la Seguridad Social en su modalidad contributiva, i
+[TRLGSS 1994 - 108]: Artículo 108. Cotización por accidentes de trabajo y enfermedades profesionales. 1. No obstante lo d
+[TRLGSS 1994 - 126]: Artículo 126. Responsabilidad en orden a las prestaciones. 1. Cuando se haya causado derecho a una p
+[TRLGSS 1994 - 140]: Artículo 140. Base reguladora de las pensiones de invalidez permanente derivada de contingencias com
+[TRLGSS 1994 - 162]: Artículo 162. Base reguladora de la pensión de jubilación. 1. La base reguladora de la pensión de ju
+[TRLGSS 1994 - 179]: Artículo 179 bis. Base reguladora de las prestaciones derivadas de contingencias comunes. Para el cá
+
+>> Recargos e Intereses:
+[CE - 157]: Artículo 157 1. Los recursos de las Comunidades Autónomas estarán constituidos por: a) Impuestos ced
+[TRLGSS 1994 - 20]: Artículo 20. Aplazamiento de pago. 1. La Tesorería General de la Seguridad Social, a solicitud del d
+[TRLGSS 1994 - 22]: Artículo 22. Prelación de créditos. Los créditos por cuotas de la Seguridad Social y conceptos de re
+[TRLGSS 1994 - 23]: Artículo 23. Devolución de ingresos indebidos, reembolso de los costes de las garantías y pago de ca
+[TRLGSS 1994 - 25]: Artículo 25. Efectos de la falta de pago en plazo reglamentario. La falta de pago de la deuda dentro
+[TRLGSS 1994 - 27]: Artículo 27. Recargos por ingreso fuera de plazo. 1. Transcurrido el plazo reglamentario establecido
+[TRLGSS 1994 - 28]: Artículo 28. Interés de demora. 1. Los intereses de demora por las deudas con la Seguridad Social se
+[TRLGSS 1994 - 29]: Artículo 29. Imputación de pagos. Sin perjuicio de las especialidades previstas en esta ley para los
+[TRLGSS 1994 - 30]: Artículo 30. Reclamaciones de deudas. 1. Transcurrido el plazo reglamentario sin ingreso de las cuot
+[TRLGSS 1994 - 31]: Artículo 31. Actas de liquidación de cuotas. 1. Procederá la formulación de actas de liquidación en 
+
+>> LISOS Sanciones:
+[LISOS - 48]: Artículo 48. Atribución de competencias sancionadoras. 1. El ejercicio de la potestad sancionadora r
+[LISOS - 40]: Artículo 40. Cuantía de las sanciones. 1. Las infracciones en materia de relaciones laborales y empl
+[LISOS - 39]: Artículo 39. Criterios de graduación de las sanciones. 1. Las sanciones por las infracciones tipific

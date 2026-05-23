@@ -1,7 +1,7 @@
 # Auditoría Brownfield Profunda — OpositAIA (OPOS_GEMINI_1)
 
-> **Fecha:** 12 Marzo 2026 · **Revisión:** 5.0 (12/05/2026 — AGENTE CHANDRA + FORK BMO + LIMPIEZA GIT)
-> **Última verificación real en código:** 12/05/2026
+> **Fecha:** 12 Marzo 2026 · **Revisión:** 6.0 (20/05/2026 — MCPs, CLAUDE.md, 12 agentes planificados, Staff)
+> **Última verificación real en código:** 20/05/2026
 
 ---
 
@@ -412,3 +412,111 @@ graph TB
 
 ---
 *Firma: Antigravity AI (en colaboración con Usuario) — 12/05/2026 19:26*
+
+---
+
+## SECCIÓN 9 — ACTUALIZACIÓN 20/05/2026: MCPs, CLAUDE.md, Ecosistema de Agentes, Staff
+
+### 9.0 Resumen Ejecutivo Mayo 2026 (estado al 20/05/2026)
+
+| Métrica | Valor |
+|---------|-------|
+| **Neo4j** | 108 leyes, 6683 preceptos, 379 EXCEPCION_A, 517 comunidades Louvain |
+| **Chandra** | ✅ 7 manos operativas · bolt://localhost:7687 · puerto backend 8080 |
+| **Calculadoras SS** | ✅ 2457 LOC · 8 bugs resueltos 29/04 · 5 gaps implementados |
+| **Calculadoras AGE** | ✅ 34 funciones LPAC + TREBEP + Transversales |
+| **BMO Chandra Edition** | ✅ fork MIT multi-chat, sidebar, header editable |
+| **MCPs Claude Code** | ✅ memory + boe + fetch + github (añadidos 20/05) |
+| **CLAUDE.md** | ✅ CREADO 20/05 — fuente de verdad para cualquier IA |
+| **Agente Staff** | ✅ CREADO 20/05 — guardián de memoria del proyecto |
+| **Plan 12 agentes** | ✅ DEFINIDO en BMAD_EXPLICADO_ADAPTADO.md |
+
+---
+
+### 9.1 Decisiones firmes (NO reabrir)
+
+| Componente | Decisión | Alternativa |
+|-----------|----------|-------------|
+| **Qdrant** | ❌ DESCARTADO para búsqueda legal | Neo4j 2026 HNSW nativo |
+| **Copilot** (Obsidian) | ❌ DESCARTADO mala licencia | BMO Chandra Edition |
+| **Salamandra** | ❌ NO producción | Solo preguntas pre-hechas COSMIC |
+| **Supabase** | ❌ DESCARTADO | Neo4j |
+| **Proxy VPS Mistral** | ❌ MUERTO en `.env.backend` | `api.mistral.ai` (forzado en código) |
+| **Puerto Neo4j 7688** | ❌ Temporal | Puerto correcto: **7687** |
+| **Nemotron** | ⏸️ Pospuesto | Mantener como opción futura gratuita |
+
+---
+
+### 9.2 Ecosistema de agentes planificado (20/05/2026)
+
+12 agentes diseñados en `BMAD_EXPLICADO_ADAPTADO.md`:
+
+| # | Nombre | Base | Estado |
+|---|--------|------|--------|
+| 1 | NEXO | orchestrator.py | Existe parcial |
+| 2 | CHANDRA | chandra_tools.py + opos_chat.py | ✅ Operativo |
+| 3 | VALERA | proxy_agente_escritor.py (base) | ❌ Pendiente |
+| 4 | EXAMINER | blueprints v14 + casos_practicos.py | Existe parcial |
+| 5 | ANTI | Neo4j EXCEPCION_A + catálogo trampas | Existe parcial |
+| 6 | MEMO | — | ❌ Pendiente |
+| 7 | PROGRESO | — | ❌ Pendiente |
+| 8 | WIKI | mcp_gateway.py (base) | Existe parcial |
+| 9 | TURCA | — | ❌ Pendiente |
+| 10 | SIMUL | — | ❌ Pendiente |
+| 11 | LECTOR | pdf_processor.py + upload.py (base) | Existe parcial |
+| 12 | PLANNER | — | ❌ Pendiente |
+
+---
+
+### 9.3 Infraestructura MCP (20/05/2026)
+
+Claude Code (`~/.claude/settings.json`) tiene ahora 4 MCPs configurados:
+- `memory` → `/home/spas/memory.jsonl` (637 entidades del proyecto)
+- `boe` → búsqueda BOE en tiempo real
+- `fetch` → HTTP externo
+- `github` → operaciones GitHub
+
+Ver inventario completo: `20_05_MCP-S_PROYECTO_IDES.md`
+
+**⚠️ Problema detectado:** memoria fragmentada en 3 archivos según IDE. Unificar todos a `/home/spas/memory.jsonl`.
+
+---
+
+### 9.4 Los dos vaults de Obsidian — aclaración definitiva
+
+| Vault | Ruta | Para qué |
+|-------|------|----------|
+| **BOVEDA_OPOS** | `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/` | Estudio SS: leyes, trampas, flashcards |
+| **OPOS_PROJECT** | `D:\OPOS_PROJECT` | Proyecto: PRD, arquitectura, sesiones |
+
+**Regla:** No mezclar contenido entre vaults. BMO solo va en BOVEDA_OPOS.
+
+---
+
+### 9.5 Nuevos archivos clave creados el 20/05/2026
+
+```
+CLAUDE.md                           ← fuente de verdad, leer primero siempre
+BMAD_EXPLICADO_ADAPTADO.md          ← arquitectura completa 12 agentes + roadmap
+20_05_MCP-S_PROYECTO_IDES.md        ← inventario MCP todos los IDEs
+bmad-custom-src/agents/staff.md     ← agente Staff (guardián memoria)
+.claude/skills/bmad-staff/SKILL.md  ← skill trigger para invocar Staff
+```
+
+---
+
+### 9.6 Pendientes prioritarios (post 20/05/2026)
+
+| Prioridad | Tarea |
+|-----------|-------|
+| 🔴 Alta | Implementar PROGRESO (Leitner + tracking usuario) |
+| 🔴 Alta | Implementar WIKI auto-update en Obsidian |
+| 🔴 Alta | 3 blueprints nuevos (IT, Desempleo, LPAC procedimientos) |
+| 🟡 Media | MEMO agente (mnemotecnias) |
+| 🟡 Media | SIMUL simulacro completo |
+| 🟡 Media | Unificar memory.jsonl entre todos los IDEs |
+| 🟢 Baja | Excalidraw / Mind maps |
+| 🟢 Baja | OPOS_PROJECT vault estructura completa |
+
+---
+*Revisión 6.0 — 20/05/2026 · Claude Sonnet 4.6 + Spas*

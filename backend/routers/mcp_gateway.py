@@ -9,6 +9,7 @@ import subprocess
 import json
 import logging
 import os
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -281,3 +282,180 @@ def format_for_mistral(result: dict) -> dict:
             for item in result.get("results", [])
         ])
     }
+
+
+# ============================================================================
+# OBSIDIAN VAULT BRIDGE (via Local REST API plugin, puerto 27124)
+# Permite leer, buscar y escribir notas en la Bóveda de Obsidian
+# ============================================================================
+
+import subprocess as _sp
+
+def _get_obsidian_url() -> str:
+    """
+    Detecta automáticamente la URL del Local REST API de Obsidian.
+    Si hay una URL fija en el .env, la usa. Si no, detecta la IP del
+    host Windows (necesaria en WSL2 sin mirrored networking).
+    """
+    # 1. Si hay URL explícita en .env, usarla
+    env_url = os.getenv("OBSIDIAN_REST_URL", "")
+    if env_url and "localhost" not in env_url:
+        return env_url
+
+    port = 27123  # HTTP plano (sin certificado autofirmado)
+
+    # 2. Intentar localhost primero (funciona con mirrored networking o Windows nativo)
+    # Lo detectaremos en runtime, no aquí — devolvemos candidatos ordenados
+    try:
+        result = _sp.run(
+            ["ip", "route", "show", "default"],
+            capture_output=True, text=True, timeout=3
+        )
+        # Línea tipo: "default via 172.26.240.1 dev eth0"
+        for line in result.stdout.splitlines():
+            if "default via" in line:
+                windows_ip = line.split("via")[1].strip().split()[0]
+                logger.info(f"[Obsidian] IP Windows detectada automáticamente: {windows_ip}")
+                return f"http://{windows_ip}:{port}"
+    except Exception as e:
+        logger.warning(f"[Obsidian] No se pudo detectar IP Windows: {e}")
+
+    # 3. Fallback a localhost (por si mirrored networking está activo)
+    return f"http://localhost:{port}"
+
+OBSIDIAN_KEY = os.getenv("OBSIDIAN_REST_API_KEY", "")
+
+def _obsidian_headers():
+    return {"Authorization": f"Bearer {OBSIDIAN_KEY}"}
+
+def _obsidian_url() -> str:
+    """Retorna la URL de Obsidian, detectándola si hace falta."""
+    return _get_obsidian_url()
+
+class VaultSearchRequest(BaseModel):
+    query: str
+    limit: int = 10
+
+class VaultReadRequest(BaseModel):
+    path: str  # Ruta relativa dentro del vault, ej: "00_Agentes/ExaminadorLegal.md"
+
+class VaultWriteRequest(BaseModel):
+    path: str
+    content: str
+    mode: str = "append"  # "append" o "overwrite"
+
+@router.post("/vault/search")
+async def vault_search(request: VaultSearchRequest):
+    """
+    Busca notas en la Bóveda de Obsidian por texto.
+    Requiere que Obsidian esté abierto con el plugin 'Local REST API' activo.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(
+                f"{_obsidian_url()}/search/simple/",
+                params={"query": request.query, "contextLength": 200},
+                headers=_obsidian_headers()
+            )
+            resp.raise_for_status()
+            results = resp.json()
+            # Limitar resultados y formatear
+            limited = results[:request.limit]
+            return {
+                "status": "ok",
+                "query": request.query,
+                "total": len(results),
+                "results": [
+                    {
+                        "filename": r.get("filename", ""),
+                        "score": r.get("score", 0),
+                        "matches": r.get("matches", [])
+                    }
+                    for r in limited
+                ]
+            }
+    except httpx.ConnectError:
+        raise HTTPException(status_code=503, detail="Obsidian no está abierto o el plugin Local REST API no está activo.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al buscar en vault: {str(e)}")
+
+
+@router.get("/vault/read")
+async def vault_read(path: str):
+    """
+    Lee el contenido de una nota específica de la Bóveda.
+    Ejemplo: /mcp/vault/read?path=00_Agentes/ExaminadorLegal.md
+    """
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(
+                f"{_obsidian_url()}/vault/{path}",
+                headers=_obsidian_headers()
+            )
+            resp.raise_for_status()
+            return {
+                "status": "ok",
+                "path": path,
+                "content": resp.text
+            }
+    except httpx.ConnectError:
+        raise HTTPException(status_code=503, detail="Obsidian no está abierto o el plugin Local REST API no está activo.")
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            raise HTTPException(status_code=404, detail=f"Nota no encontrada: {path}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/vault/write")
+async def vault_write(request: VaultWriteRequest):
+    """
+    Escribe o añade contenido a una nota de la Bóveda.
+    mode='overwrite' reemplaza el contenido. mode='append' lo añade al final.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            method = client.put if request.mode == "overwrite" else client.post
+            resp = await method(
+                f"{_obsidian_url()}/vault/{request.path}",
+                content=request.content.encode("utf-8"),
+                headers={**_obsidian_headers(), "Content-Type": "text/markdown"},
+            )
+            resp.raise_for_status()
+            return {
+                "status": "ok",
+                "path": request.path,
+                "mode": request.mode,
+                "message": f"Nota {'actualizada' if request.mode == 'overwrite' else 'actualizada (append)'} correctamente."
+            }
+    except httpx.ConnectError:
+        raise HTTPException(status_code=503, detail="Obsidian no está abierto o el plugin Local REST API no está activo.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al escribir en vault: {str(e)}")
+
+
+@router.get("/vault/health")
+async def vault_health():
+    """Verifica que el puente con Obsidian funciona correctamente."""
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(
+                f"{_obsidian_url()}/",
+                headers=_obsidian_headers()
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return {
+                "status": "ok",
+                "obsidian_connected": True,
+                "vault": data.get("vault", "desconocido"),
+                "api_version": data.get("apiVersion", "?"),
+                "tools": ["vault_search", "vault_read", "vault_write"]
+            }
+    except httpx.ConnectError:
+        return {
+            "status": "error",
+            "obsidian_connected": False,
+            "message": "Obsidian está cerrado o el plugin Local REST API no está activo."
+        }
+    except Exception as e:
+        return {"status": "error", "obsidian_connected": False, "message": str(e)}

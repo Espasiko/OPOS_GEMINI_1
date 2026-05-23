@@ -128,7 +128,6 @@ def validar_coherencia_texto(texto_llm: str, schema: CaseSchema) -> dict:
         # Buscar inconsistencias en el texto
         if genero_detectado == "femenino":
             # Buscar "padre" cerca de nombre femenino
-            import re
             patron = re.compile(rf'{re.escape(nombre)}.*?padre', re.IGNORECASE)
             if patron.search(texto_llm):
                 errores.append({
@@ -197,23 +196,35 @@ def validar_prose_vs_schema(texto_llm: str, schema: CaseSchema,
                 "error": f"Schema dice {val_schema} pero no aparece en el texto LLM",
             })
 
-    # 3. Validación de personajes
+    # 3. Validación de personajes (match parcial: cualquier palabra del nombre ≥ 4 letras)
     errores_personajes = []
     for personaje in schema.personajes:
-        if personaje.nombre not in texto_llm:
+        partes = [p for p in personaje.nombre.split() if len(p) >= 4]
+        aparece = any(parte in texto_llm for parte in partes)
+        if not aparece:
             errores_personajes.append({
                 "personaje": personaje.nombre,
-                "error": f"Personaje {personaje.nombre} no aparece en el texto LLM"
+                "error": f"Personaje {personaje.nombre} (ni ninguna de sus palabras) aparece en el texto LLM"
             })
 
-    # 4. Validación de conflictos cruzados
+    # 4. Validación de conflictos cruzados (slug normalizado + sin tildes + case-insensitive)
+    import unicodedata
+
+    def _normalizar(s: str) -> str:
+        s = s.replace('_', ' ')
+        return unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode().lower()
+
+    texto_norm = _normalizar(texto_llm)
+
     errores_conflictos = []
     if hasattr(schema, 'conflictos_cruzados'):
         for conflicto in schema.conflictos_cruzados:
-            if conflicto not in texto_llm:
+            # Comprobar que todas las palabras del conflicto aparecen en el texto
+            palabras = _normalizar(conflicto).split()
+            if not all(p in texto_norm for p in palabras if len(p) >= 4):
                 errores_conflictos.append({
                     "conflicto": conflicto,
-                    "error": f"Conflicto {conflicto} no aparece en el texto LLM"
+                    "error": f"Conflicto '{conflicto}' (palabras: {palabras}) no detectado en el texto LLM"
                 })
 
     # 5. Validación de coherencia interna (NUEVO Sprint 2.5)

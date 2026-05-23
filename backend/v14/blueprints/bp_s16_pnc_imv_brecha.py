@@ -28,9 +28,10 @@ BP_S16 = TopicBlueprint(
     ],
 
     articulos_obligatorios=[
-        "Art. 369 TRLGSS",  # Jubilación NC — 10 años residencia
-        "Art. 60 TRLGSS",   # Complemento brecha de género
-        "Art. 363 TRLGSS",  # Invalidez NC — ≥65% discapacidad
+        "Art. 369 TRLGSS",        # Jubilación NC — 10 años residencia
+        "Art. 60 TRLGSS",          # Complemento brecha de género
+        "Art. 363 TRLGSS",         # Invalidez NC — ≥65% discapacidad
+        "Art. 11 Ley 19/2021",     # IMV — incompatibilidades y requisitos (separa IMV de PNC)
     ],
     articulos_forbidden=[
         "Art. 60 bis",  # No existe

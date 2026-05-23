@@ -6,12 +6,17 @@ Genera un caso completo y valida todo el flujo end-to-end
 
 import sys
 import os
-import asyncio
 import json
+
+# ── CWD guard + path ─────────────────────────────────────────────────
+_PROJ_ROOT = os.path.abspath(os.path.dirname(__file__))
+if os.getcwd() != _PROJ_ROOT:
+    os.chdir(_PROJ_ROOT)
+    print(f"ℹ️  CWD cambiado a: {_PROJ_ROOT}")
+sys.path.insert(0, _PROJ_ROOT)
+
 from dotenv import load_dotenv
 load_dotenv()
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from mistralai import Mistral
 import yaml
@@ -50,9 +55,15 @@ def analizar_casos_dm():
     
     return casos_dm
 
-async def test_e2e_completo():
+def test_e2e_completo():
     print("🚀 TEST E2E COMPLETO V14.5 - Caso Complejo DM")
     print("=" * 60)
+
+    # ── Check MISTRAL_API_KEY antes de empezar ─────────────────────────────
+    api_key = os.environ.get("MISTRAL_API_KEY")
+    if not api_key:
+        print("❌ MISTRAL_API_KEY no encontrada en .env ni en entorno. Abortando.")
+        return
     
     # 1. Analizar casos DM reales
     casos_dm = analizar_casos_dm()
@@ -61,9 +72,9 @@ async def test_e2e_completo():
     print("\n🛠️ [1/5] GENERANDO CASO COMPLEJO V14.5...")
     try:
         builder = CaseSchemaBuilder()
+        # fecha_caso=2026-03-04: fecha de corte del examen (legislación vigente a esa fecha)
         schema = builder.build_complex(
-            blueprint_ids=["BP-S12", "BP-S10", "BP-S11", "BP-S16"],  # 4 temas
-            num_personajes=6,  # Más que DM para superar complejidad
+            blueprint_ids=["BP-S12", "BP-S10", "BP-S11", "BP-S16"],
             fecha_caso="2026-03-04"
         )
         print(f"✅ Schema generado: {schema.case_id}")
@@ -94,11 +105,6 @@ async def test_e2e_completo():
         model = config["model"]
         temperature = config["temperature"]
         
-        api_key = os.environ.get("MISTRAL_API_KEY")
-        if not api_key:
-            print("❌ MISTRAL_API_KEY no encontrada en .env")
-            return
-            
         client = Mistral(api_key=api_key)
         print(f"✅ Modelo: {model} | Temperatura: {temperature}")
         
@@ -259,4 +265,4 @@ async def test_e2e_completo():
     print(f"\n💾 Resultados completos guardados en: /tmp/test_e2e_completo_v14_5.json")
 
 if __name__ == "__main__":
-    asyncio.run(test_e2e_completo())
+    test_e2e_completo()

@@ -93,6 +93,23 @@ FORMATO RESPUESTA FINAL (todos los campos obligatorios, en este orden):
 - **Verificaciones realizadas**: listado escueto de tools usadas y resultado (ej. "get_law_text_block(BOE-A-2015-11724, a170) → texto vigente confirmado").
 - **Trampa de examen** (si la detectas): aviso explícito, 1 línea.
 - **Confianza**: ALTA / MEDIA / BAJA — baja si alguna verificación falló.
+
+PATRONES MULTI-HOP (usa Cypher en consultar_neo4j para preguntas complejas):
+
+Ejemplo 1 — Excepciones a un artículo:
+  consultar_neo4j(cypher="MATCH (p:Precepto)-[:EXCEPCION_A]->(exc:Precepto)-[:PERTENECE_A]->(l:Ley) WHERE p.id = 'Art. 169 TRLGSS' RETURN exc.id, exc.title, l.siglas LIMIT 10")
+
+Ejemplo 2 — Qué modifica una ley:
+  consultar_neo4j(cypher="MATCH (src:Ley)-[:MODIFICA]->(dst:Ley) WHERE src.siglas CONTAINS 'RDL 2/2023' RETURN dst.siglas, dst.titulo LIMIT 10")
+
+Ejemplo 3 — Preceptos de la misma comunidad temática:
+  consultar_neo4j(cypher="MATCH (p:Precepto {id: 'Art. 262 TRLGSS'}) WITH p.communityId AS cid MATCH (rel:Precepto {communityId: cid}) RETURN rel.id, rel.title, rel.ley_siglas LIMIT 15")
+
+Ejemplo 4 — Búsqueda híbrida (modo por defecto con pregunta_nl):
+  consultar_neo4j(pregunta_nl="capitalización prestación desempleo pago único autónomos")
+
+Ejemplo 5 — Cadena de chunks de un artículo largo:
+  consultar_neo4j(cypher="MATCH path=(p:Precepto {id: 'Art. 262 TRLGSS'})-[:SIGUIENTE*0..5]->(next) RETURN [n IN nodes(path) | n.id] AS cadena")
 """
 
 

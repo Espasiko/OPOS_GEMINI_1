@@ -427,7 +427,7 @@ async def proxy_chat(request: Request):
         )
 
     # SIEMPRE inyectamos el contexto crítico (fecha real + recordatorio de tools).
-    # Si el cliente (Copilot/BMO) ya mandó un system, lo combinamos: contexto crítico
+    # Si el cliente (BMO plugin) ya mandó un system, lo combinamos: contexto crítico
     # primero, luego su system. Así respetamos sus instrucciones pero garantizamos que
     # Mistral conozca la fecha y sepa que puede usar tools.
     critical = build_critical_context()

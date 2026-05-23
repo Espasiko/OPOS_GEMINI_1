@@ -30,6 +30,7 @@ except Exception as e:
 
 # Import routers
 from routers import rag, rag_v2, chat, upload, ai_functions, user, boe, mcp_gateway, casos_practicos
+from routers import opos_chat  # Chandra: OpenAI-compatible router con 6 tools
 from database.db import db
 
 
@@ -85,6 +86,7 @@ app.include_router(ai_functions.router)  # Sprint 8: AI functions multi-provider
 app.include_router(user.router)  # Sprint 11: User management
 app.include_router(boe.router)  # API oficial datos abiertos BOE
 app.include_router(mcp_gateway.router)  # MCP Gateway para otras IAs
+app.include_router(opos_chat.router)  # Chandra: OpenAI-compatible (BMO Obsidian, Open WebUI)
 
 # Root endpoint
 @app.get("/")

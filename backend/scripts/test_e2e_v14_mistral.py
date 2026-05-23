@@ -1,11 +1,19 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+# ── CWD guard: debe ejecutarse desde la raíz del proyecto ──────────────────────
+_PROJ_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+if os.getcwd() != _PROJ_ROOT:
+    os.chdir(_PROJ_ROOT)
+    print(f"ℹ️  CWD cambiado a: {_PROJ_ROOT}")
+sys.path.insert(0, _PROJ_ROOT)
+
 from dotenv import load_dotenv
 load_dotenv()
 
 import json
 import yaml
+from datetime import date
 from mistralai import Mistral
 from backend.v14.case_schema_builder import CaseSchemaBuilder
 from backend.v14.prose_validator import validar_prose_vs_schema
@@ -16,16 +24,34 @@ def run_e2e_test():
     print("==================================================")
     print("🚀 INICIANDO TEST E2E V14 CON MISTRAL LARGE")
     print("==================================================")
+
+    # ── Check MISTRAL_API_KEY antes de empezar ─────────────────────────────────
+    api_key = os.environ.get("MISTRAL_API_KEY")
+    if not api_key:
+        print("❌ MISTRAL_API_KEY no encontrada en .env ni en entorno. Abortando.")
+        return
+
     builder = CaseSchemaBuilder()
 
-    # 1. Generar Schema complejo (3 blueprints aleatorios, ~18 preguntas, personajes únicos)
-    print("\n🛠️ [1/4] CONSTRUYENDO SCHEMA COMPLEJO (Python Puro)...")
+    # 1. Generar Schema complejo (4 blueprints aleatorios, ~18 preguntas, personajes únicos)
+    fecha_caso = date.today().strftime("%Y-%m-%d")
+    print(f"\n🛠️ [1/4] CONSTRUYENDO SCHEMA COMPLEJO (Python Puro) — fecha_caso={fecha_caso}...")
     try:
-        schema = builder.build_complex(fecha_caso="2026-03-24")
+        schema = builder.build_complex(fecha_caso=fecha_caso)
         schema_json = json.dumps(dataclasses.asdict(schema), indent=2, ensure_ascii=False)
+        with open("/tmp/schema_e2e_v14.json", "w") as f:
+            f.write(schema_json)
         print(f"✅ Schema creado: {len(schema.questions)} preguntas | {len(schema.personajes)} personajes")
         print(f"   Blueprints: {schema.blueprint_ids}")
         print(f"   Personajes: {[p.nombre for p in schema.personajes]}")
+        print(f"   → /tmp/schema_e2e_v14.json")
+        # ── Verificar que contexto_legal se pobló con texto BOE real ──────────
+        n_contexto = len(schema.contexto_legal)
+        if n_contexto <= 1:
+            print(f"⚠️  contexto_legal solo tiene {n_contexto} entrada(s) — Neo4j puede NO estar devolviendo artículos.")
+        else:
+            chars_ley = sum(len(c) for c in schema.contexto_legal)
+            print(f"✅ contexto_legal: {n_contexto} bloques, {chars_ley} chars de texto BOE real.")
     except Exception as e:
         print(f"❌ Error construyendo schema: {e}")
         import traceback; traceback.print_exc()
@@ -55,7 +81,6 @@ def run_e2e_test():
     # 3. Llamar a Mistral Large
     print(f"\n🤖 [2/4] LLAMANDO A MISTRAL LARGE...")
     print(f"   Modelo: {model} | Temperatura: {temperature}")
-    api_key = os.environ.get("MISTRAL_API_KEY")
     client = Mistral(api_key=api_key)
 
     try:
@@ -78,6 +103,9 @@ def run_e2e_test():
         with open("/tmp/narrativa_e2e_v14.md", "w") as f:
             f.write(narrativa)
         print("   → /tmp/narrativa_e2e_v14.md")
+        print(f"\n── INICIO NARRATIVA (primeros 600 chars) ──────────────────────")
+        print(narrativa[:600])
+        print("── FIN PREVIEW ────────────────────────────────────────────────")
     except Exception as e:
         print(f"❌ Error en llamada al LLM Mistral: {e}")
         return

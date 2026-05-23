@@ -15,9 +15,10 @@ from v14.cambios_dm_2026 import get_cambios_para_blueprint, NACIMIENTO_2026
 
 BP_S11 = TopicBlueprint(
     id="BP-S11",
-    tema="Nacimiento y cuidado del menor 2026 (19 semanas + subsidio NC hombres)",
+    tema="Nacimiento y cuidado del menor 2026 — duración legal vigente y subsidio NC",
     temas_oficiales=["TE09"],
     normativa_base=[
+        "Art. 48 ET — Suspensión del contrato por nacimiento, adopción, guarda y acogimiento",
         "Art. 177 TRLGSS — Prestación nacimiento y cuidado del menor",
         "Art. 178 TRLGSS — Situaciones protegidas",
         "Art. 179 TRLGSS — Beneficiarios",
@@ -25,17 +26,19 @@ BP_S11 = TopicBlueprint(
         "Art. 184 TRLGSS — Subsidio no contributivo nacimiento",
         "Art. 186 TRLGSS — Riesgo durante embarazo",
         "Art. 188 TRLGSS — Riesgo durante lactancia",
-        "Art. 190.5 TRLGSS — Cotización durante reducción jornada cuidado menor",
-        "Art. 237.3 TRLGSS — (aplica a nacimiento, NO a IT)",
+        "Art. 237 TRLGSS — Asimilación a cotizado en exc. y reducciones por cuidado familiar",
     ],
 
     articulos_obligatorios=[
+        "Art. 48 ET",
+        "Art. 177 TRLGSS",
         "Art. 182 TRLGSS",
         "Art. 184 TRLGSS",
     ],
     articulos_forbidden=[
         "Art. 177 bis",  # No existe
-        "Art. 237 TRLGSS (para IT)",  # Error clásico — el 237.3 es solo para nacimiento
+        "Art. 190.5 TRLGSS",  # No existe — Art. 190 solo tiene apartados 1, 2, 3, 4
+        "Art. 237 TRLGSS",  # Error clásico de aplicación a IT (237.3 es solo nacimiento)
     ],
 
     calculadoras=[
@@ -45,12 +48,10 @@ BP_S11 = TopicBlueprint(
     ],
 
     trampas_tipicas=[
-        "DM26-T9-01",  # 19 semanas (no 16)
         "DM26-T9-02",  # Subsidio NC también hombres
         "C11",         # Art. 237.3 aplica a NACIMIENTO, NO a IT
         "C12",         # Lactancia: extinción a 9 meses (no 12)
         "C13",         # Riesgo embarazo: NO pago delegado
-        "DM26-T11-01", # Art. 190.5: Cotización al 100% durante reducción jornada cuidado menor
     ],
 
     cambios_dm_2026=get_cambios_para_blueprint("BP-S11"),

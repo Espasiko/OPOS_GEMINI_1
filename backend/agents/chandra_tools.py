@@ -104,15 +104,16 @@ CHANDRA_TOOLS_SCHEMA: List[Dict[str, Any]] = [
             "name": "consultar_neo4j",
             "description": (
                 "Consulta el grafo legal Neo4j. Útil para encontrar relaciones entre leyes, "
-                "preceptos, modificaciones, jerarquía. Si no se proporciona Cypher, se intenta "
-                "generar uno simple desde la pregunta en NL."
+                "preceptos, modificaciones, jerarquía. Con mode='hybrid' combina búsqueda "
+                "semántica (vector) + léxica (fulltext) con reranking RRF para máxima precisión."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "cypher": {"type": "string", "description": "Query Cypher directa (preferido)."},
-                    "pregunta_nl": {"type": "string", "description": "Pregunta en lenguaje natural (fallback)."},
-                    "limit": {"type": "integer", "description": "Límite resultados (1-50).", "default": 20},
+                    "cypher": {"type": "string", "description": "Query Cypher directa (preferido para traversal de relaciones)."},
+                    "pregunta_nl": {"type": "string", "description": "Pregunta en lenguaje natural → activa búsqueda híbrida automáticamente."},
+                    "mode": {"type": "string", "description": "Modo: 'hybrid' (vector+fulltext+RRF), 'cypher' (solo query directa). Default: hybrid si hay pregunta_nl.", "default": "hybrid"},
+                    "limit": {"type": "integer", "description": "Límite resultados (1-50).", "default": 10},
                 },
             },
         },
@@ -359,15 +360,30 @@ async def tool_get_law_text_block(args: Dict[str, Any]) -> Dict[str, Any]:
 
 # ---------- 4. CONSULTAR NEO4J ----------
 async def tool_consultar_neo4j(args: Dict[str, Any]) -> Dict[str, Any]:
-    """Query Cypher sobre Neo4j local (grafo de leyes y preceptos)."""
+    """Query Cypher sobre Neo4j local (grafo de leyes y preceptos).
+    
+    Modos:
+    - cypher: ejecución directa de Cypher
+    - pregunta_nl + mode='hybrid': búsqueda híbrida (vector + fulltext + RRF rerank)
+    - pregunta_nl (sin mode): heurística NL→Cypher básica
+    """
     cypher = args.get("cypher", "").strip()
     pregunta_nl = args.get("pregunta_nl", "").strip()
+    mode = args.get("mode", "").strip().lower()
     limit = min(int(args.get("limit", 20)), 50)
 
     if not cypher and not pregunta_nl:
         return {"error": "cypher o pregunta_nl requerido"}
 
-    # Si no hay cypher, generar uno simple desde NL (heurística básica)
+    # Hybrid search mode: combina vector + fulltext + RRF reranking
+    if pregunta_nl and (mode == "hybrid" or not cypher):
+        try:
+            return await _hybrid_search_neo4j(pregunta_nl, limit)
+        except Exception as e:
+            logger.warning(f"hybrid_search falló, cayendo a heurística: {e}")
+            if not cypher:
+                cypher = _nl_to_cypher_basic(pregunta_nl, limit)
+
     if not cypher:
         cypher = _nl_to_cypher_basic(pregunta_nl, limit)
 
@@ -398,6 +414,103 @@ async def tool_consultar_neo4j(args: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.exception("tool_consultar_neo4j error")
         return {"error": f"Neo4j fallo: {e}", "cypher_intentado": cypher}
+
+
+_HYBRID_MODEL = None  # Cached SentenceTransformer for hybrid search
+
+def _get_embedding_model():
+    """Lazy singleton for the embedding model (avoid reloading ~3s per call)."""
+    global _HYBRID_MODEL
+    if _HYBRID_MODEL is None:
+        from sentence_transformers import SentenceTransformer
+        _HYBRID_MODEL = SentenceTransformer("pablosi/bge-m3-spa-law-qa-trained-2")
+        logger.info("Embedding model loaded for hybrid search")
+    return _HYBRID_MODEL
+
+
+async def _hybrid_search_neo4j(query: str, limit: int = 10) -> Dict[str, Any]:
+    """Búsqueda híbrida: Vector HNSW + Fulltext + Reciprocal Rank Fusion.
+    
+    Combina resultados semánticos (embedding) con léxicos (fulltext spanish)
+    usando RRF para reranking. Devuelve top-K preceptos más relevantes.
+    """
+    from neo4j import AsyncGraphDatabase
+
+    uri = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+    user = os.getenv("NEO4J_USER", "neo4j")
+    password = os.getenv("NEO4J_PASSWORD", "")
+
+    # Generate embedding for the query (cached model)
+    model = _get_embedding_model()
+    query_embedding = model.encode(query, normalize_embeddings=True).tolist()
+
+    driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
+    try:
+        async with driver.session() as session:
+            # 1. Vector search (semantic)
+            vector_result = await session.run("""
+                CALL db.index.vector.queryNodes('precepto_embedding', $k, $embedding)
+                YIELD node, score
+                RETURN node.id AS id, node.title AS title, node.ley_siglas AS ley,
+                       substring(node.texto, 0, 400) AS extracto, score AS vector_score,
+                       node.communityId AS community
+                ORDER BY score DESC
+            """, k=limit * 2, embedding=query_embedding)
+            vector_hits = [dict(r) for r in await vector_result.data()]
+
+            # 2. Fulltext search (lexical)
+            fulltext_result = await session.run("""
+                CALL db.index.fulltext.queryNodes('precepto_fulltext', $query)
+                YIELD node, score
+                RETURN node.id AS id, node.title AS title, node.ley_siglas AS ley,
+                       substring(node.texto, 0, 400) AS extracto, score AS fulltext_score,
+                       node.communityId AS community
+                ORDER BY score DESC
+                LIMIT $k
+            """, query=query, k=limit * 2)
+            fulltext_hits = [dict(r) for r in await fulltext_result.data()]
+    finally:
+        await driver.close()
+
+    # 3. Reciprocal Rank Fusion (RRF) — k=60 standard
+    rrf_k = 60
+    scores: Dict[str, float] = {}
+    metadata: Dict[str, Dict] = {}
+
+    for rank, hit in enumerate(vector_hits):
+        doc_id = hit["id"]
+        scores[doc_id] = scores.get(doc_id, 0) + 1.0 / (rrf_k + rank + 1)
+        metadata[doc_id] = hit
+
+    for rank, hit in enumerate(fulltext_hits):
+        doc_id = hit["id"]
+        scores[doc_id] = scores.get(doc_id, 0) + 1.0 / (rrf_k + rank + 1)
+        if doc_id not in metadata:
+            metadata[doc_id] = hit
+
+    # Sort by RRF score
+    ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:limit]
+
+    results = []
+    for doc_id, rrf_score in ranked:
+        hit = metadata[doc_id]
+        results.append({
+            "id": doc_id,
+            "title": hit.get("title"),
+            "ley": hit.get("ley"),
+            "extracto": hit.get("extracto"),
+            "rrf_score": round(rrf_score, 5),
+            "community": hit.get("community"),
+        })
+
+    return {
+        "mode": "hybrid_search",
+        "query": query,
+        "n_vector_hits": len(vector_hits),
+        "n_fulltext_hits": len(fulltext_hits),
+        "n_resultados": len(results),
+        "resultados": results,
+    }
 
 
 def _nl_to_cypher_basic(pregunta: str, limit: int) -> str:

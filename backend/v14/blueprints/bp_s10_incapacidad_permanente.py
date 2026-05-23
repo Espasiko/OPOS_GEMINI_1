@@ -28,7 +28,9 @@ BP_S10 = TopicBlueprint(
     ],
 
     articulos_obligatorios=[
+        "Art. 174 TRLGSS",  # Extinción IT y propuesta IP (545 días)
         "Art. 194 TRLGSS",
+        "Art. 196 TRLGSS",  # IPP — cuantía y subsidio
         "Art. 199 TRLGSS",
         "Art. 200 TRLGSS",
     ],
@@ -48,6 +50,7 @@ BP_S10 = TopicBlueprint(
         "C8",          # Confundir grados de IP
         "C9",          # Complemento GI: 50% BMin + 25% última BC (no 45%)
         "C10",         # HC IP = alta médica con propuesta IP (no solicitud)
+        "C11",         # Tanto alzado IPT — escala por edad (OM 31-01-1970)
     ],
 
     cambios_dm_2026=get_cambios_para_blueprint("BP-S10"),
@@ -109,12 +112,33 @@ BP_S10 = TopicBlueprint(
             "trampa_id": "C8",
             "mnemonico": "IPP: profesión habitual, ≥33%. IPT: profesión habitual, cualquier tarea. IPA: cualquier trabajo.",
         },
+        {
+            "pregunta": "Un trabajador de 58 años tiene reconocida una IPT. ¿A cuántas mensualidades de la base reguladora equivale la indemnización a tanto alzado si decide sustituir la pensión vitalicia?",
+            "respuesta_correcta": "24 mensualidades de la base reguladora (escala O.M. 31-01-1970: tramo 58 años = 24 mensualidades)",
+            "distractores": [
+                "No tiene derecho; el tanto alzado solo se aplica a trabajadores menores de 54 años",
+                "60 mensualidades, cuantía estándar fijada para toda IPT sin distinción de edad",
+                "36 mensualidades, por aplicación del tramo de 57 años de la escala",
+            ],
+            "articulo": "O.M. 15-04-1969 y O.M. 31-01-1970 (escala tanto alzado IPT)",
+            "trampa_id": "C11",
+            "mnemonico": (
+                "ESCALA TANTO ALZADO IPT (O.M. 31-01-1970): "
+                "<54 años=84m | 54=72m | 55=60m | 56=48m | 57=36m | 58=24m | 59=12m | ≥60=NO. "
+                "Trampa DM: confundir el valor del caso con 55 años (60m) aplicándolo a otro tramo de edad."
+            ),
+        },
     ],
 
     notas=(
         "SPRINT 0 — cambio DM 2026 Gran Incapacidad incorporado el 22/03/2026. "
-        "TRAMPA CRÍTICA: 'extinción automática' es la trampa favorita de DM en T8. "
-        "Mnemónico obligatorio: 'adaptar → reubicar → extinguir (solo si imposible)'."
+        "TRAMPA CRÍTICA T8-01: 'extinción automática' es la trampa favorita de DM en T8. "
+        "Mnemónico: 'adaptar → reubicar → extinguir (solo si imposible)'. "
+        "TRAMPA C11 — TANTO ALZADO IPT (O.M. 31-01-1970, vigente): "
+        "la escala decrementa de 12 en 12 por cada año desde los 54: "
+        "<54=84m, 54=72m, 55=60m, 56=48m, 57=36m, 58=24m, 59=12m, >=60=no elegible. "
+        "Solo aplica a IPT (no IPA, no IPP). "
+        "Plazo para solicitarlo: antes de cumplir 60 años."
     ),
 )
 

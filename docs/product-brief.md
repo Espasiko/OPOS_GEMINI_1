@@ -1,9 +1,93 @@
 # OpositAIA V2 — Product Brief
 
-> **Fecha:** 28/02/2026  
-> **Versión:** 1.1 — Decisiones PO integradas  
-> **Estado:** ✅ APROBADO POR PO  
-> **Fuentes:** Plan Cósmico Maestro + Apéndices II–VIII + Brainstorming 12/2025 + Auditoría Brownfield 27/02/2026
+> **Fecha:** 28/02/2026 · **Última actualización:** 19/05/2026  
+> **Versión:** 1.4 (addendum 19/05 — Graph Intelligence)  
+> **Estado:** ✅ APROBADO POR PO + addendum Mayo 2026  
+> **Fuentes:** Plan Cósmico Maestro + Apéndices II–VIII + Brainstorming 12/2025 + Auditoría Brownfield 27/02/2026 + PLAN_MAESTRO_CASOS_SIMULACROS.md v4 (30/03/2026) + análisis sesión 17/04/2026 + MEMORIA FIN CHANDRA 01/05/2026 + Sesión 19/05/2026
+
+---
+
+> ## 🔄 ADDENDUM 19/05/2026 — Graph Intelligence + Correcciones
+>
+> ### Neo4j actualizado
+> - **108 leyes + 6.683 preceptos + 6.683 embeddings** (catálogo v17.6)
+> - **Louvain Community Detection:** 517 comunidades (Python networkx). Propiedad `communityId` en Precepto.
+> - **Búsqueda híbrida nativa Neo4j 2026:** Vector HNSW + Fulltext spanish + Cypher. Qdrant NO necesario.
+> - **Multi-hop reasoning:** Chandra ejecuta Cypher multi-relación vía `consultar_neo4j`.
+> - **RD 1413/2005** (capitalización desempleo) ingestado: 4 preceptos + relaciones Art. 262/296 TRLGSS.
+>
+> ### Correcciones importantes
+> - **BMO SÍ conecta a Neo4j** vía Chandra mano #4 (`consultar_neo4j`). Cadena: BMO → Mistral API → puerto 8080 → Chandra → Neo4j.
+> - **PII/Anonimización** = materiales de academias (copyright), NO leyes públicas.
+> - **Bóveda OPOS** = `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/` (vault pruebas). OPOS_GEMINI_1 = repo dev.
+> - **Docker Compose** ya tiene 4 servicios: Qdrant + Postgres + Backend + Neo4j.
+>
+> ### Usos Louvain aprobados
+> - Resúmenes por comunidad (generados por Cascade)
+> - Flashcards agrupadas por cluster temático
+> - Mapas mentales / esquemas / blueprints / checklists por comunidad
+> - Tracking progreso usuario por comunidad
+>
+> ---
+>
+> ## 🔄 ADDENDUM 01/05/2026 — Chandra 7 Manos + LiteLLM + Tauri
+>
+> ### Chandra Agente Legal (NUEVO — no estaba en este brief)
+>
+> - **Chandra es un agente legal de 7 herramientas** integrado en Obsidian vía BMO/Copilot
+> - **7 herramientas:** tavily_search, search_boe, get_law_text_block, consultar_neo4j, calcular_ss, buscar_vault, **escribir_vault** (NUEVA 01/05/2026)
+> - **Solución de red:** Backend movido a puerto 8080 para evitar ERR_CONNECTION_REFUSED en Windows/WSL2
+> - **Alucinación temporal resuelta:** Inyección dinámica de fecha actual en system prompt (datetime.now())
+> - **Integración Obsidian:** BMO Chatbot y Copilot conectados a Chandra vía http://127.0.0.1:8080/opos/v1
+> - **Tool escribir_vault (01/05/2026):** Chandra puede crear notas automáticamente en el vault sin copiar/pegar manual
+>
+> ### LiteLLM Fallback Multi-Cloud (NUEVO — de implementation_plan.md.resolved)
+>
+> - **Resiliencia anti-bloqueos:** LiteLLM permite fallback automático entre Mistral → Gemini → Groq
+> - **Groq modelos disponibles:** GPT OSS 120B, GPT OSS 20B, Llama 4 Scout, Qwen 3 32B (function calling + reasoning)
+> - **Batch API Groq:** 50% descuento para procesamiento masivo (54K preguntas banco)
+>
+> ### Tauri Desktop App (NUEVO — de IDEAS_MAESTRAS_OPOSITAIA_2026.md.resolved)
+>
+> - **Empaquetado:** Frontend React + Backend Python (chandra.exe) usando Tauri + Sidecar
+> - **BYOV (Bring Your Own Vault):** App distribuye limpia, usuario instala Obsidian + Vault ZIP por separado
+> - **Modelo Freemium BYOK:** Gratis (límite diario), Premium (9,99€/19,99€), Premium BYOK (clave propia)
+>
+> ### Ajustes a §3.2 "Qué FALTA implementar"
+>
+> - 🆕 **Chandra agente legal** (fila nueva) — ✅ COMPLETADO 01/05/2026 con 7 herramientas
+>
+> ---
+>
+> ## 🔄 ADDENDUM 17/04/2026 — Estado real tras Marzo/Abril
+>
+> ### Cambios estructurales confirmados
+>
+> - **Neo4j es la única BD vectorial** (Qdrant descartado). Estado: 103 leyes + 4.742 preceptos + 6.334 embeddings.
+> - **Salamandra descartada** en producción.
+> - **V14.5 "Narrativa en Red"** operativa (10 blueprints S02-S16, faltan S17-S18).
+> - **Calculadoras: 60+ reales** (no 64). Trampas G4/H7/I12 codificadas en docstrings.
+> - **Mini-foro** → reemplazado por concepto de **"wiki compartida"** (cada usuario tiene carpeta propia, wiki común).
+> - **Obsidian Wiki** añadida como complemento (NO sustituye el frontend React de 17 vistas).
+>
+> ### Documentos estratégicos nuevos (consultar antes de implementar)
+>
+> 1. `/17_04_26_ESTRATEGIA_EXTRACCION_SABIDURIA.md` — extracción de sabiduría de academias
+> 2. `/academias/1_casos_recientes_2026_DM/temario_troceado/PLAN_CLD+_OBCIDIAN_AL.md` v3 — plan técnico Obsidian
+> 3. `/academias/1_casos_recientes_2026_DM/PLAN_MAESTRO_CASOS_SIMULACROS.md` v4 — plan maestro simulacros
+>
+> ### Ajustes a §3.2 "Qué FALTA implementar"
+>
+> - ✅ **Sistema de agentes BMAD** (fila 1) — ya operativo en YAML
+> - ✅ **Banco de preguntas** (fila 5) — objetivo revisado a **8K-10K** (no 54K)
+> - ⚠️ **Mini-foro** (feedback) — pospuesto, reemplazado por wiki compartida en Fase 3
+> - 🆕 **Obsidian Wiki** — nueva épica (ÉPICA 7) — seed ~350 notas, 4 plugins, 1 skill maestra
+>
+> ### Ajustes a §6 Roadmap
+>
+> - **Fase 1.5** (nueva): Obsidian Wiki seed + Syncthing (2 semanas). Independiente de Fase 1/2.
+> - **Fase 2**: mantener COSMIC + Repetición espaciada + Neo4j (ya activo).
+> - **Fase 3**: Stripe + PWA + Psicotécnicos. "Mini-foro" ahora se entiende como "wiki compartida".
 
 ---
 

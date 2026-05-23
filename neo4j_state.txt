@@ -1,0 +1,14 @@
+--- Constraints ---
+ley_boe_id NODE_PROPERTY_UNIQUENESS ['Ley'] ['boe_id']
+precepto_id NODE_PROPERTY_UNIQUENESS ['Precepto'] ['id']
+valor_legal_id NODE_PROPERTY_UNIQUENESS ['ValorLegal'] ['id']
+
+--- Relaciones EXCEPCION_A ---
+Total EXCEPCION_A: 359
+Ejemplo de propiedades: ['descripcion', 'tipo', 'creado', 'senal', 'relevancia_examen']
+
+--- Relaciones TIENE_EXCEPCION_EN ---
+Total TIENE_EXCEPCION_EN: 0
+
+--- Nodo Indice ---
+No existe nodo Indice.

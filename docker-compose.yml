@@ -109,6 +109,30 @@ services:
       timeout: 10s
       retries: 3
 
+  # Neo4j para Graphify (segunda instancia aislada)
+  neo4j-graphify:
+    image: neo4j:2026-community
+    container_name: opositaia-neo4j-graphify
+    ports:
+      - "7475:7474" # Browser HTTP (diferente al 7474)
+      - "7688:7687" # Bolt (diferente al 7687)
+    volumes:
+      - neo4j_graphify_data:/data
+      - neo4j_graphify_logs:/logs
+      - neo4j_graphify_import:/var/lib/neo4j/import
+      - neo4j_graphify_plugins:/plugins
+    environment:
+      - NEO4J_AUTH=neo4j/nina12ya
+      - NEO4J_PLUGINS=["apoc"]
+    restart: unless-stopped
+    networks:
+      - opositaia-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "nina12ya", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 networks:
   opositaia-network:
     driver: bridge
@@ -125,5 +149,13 @@ volumes:
   neo4j_import:
     driver: local
   neo4j_plugins:
+    driver: local
+  neo4j_graphify_data:
+    driver: local
+  neo4j_graphify_logs:
+    driver: local
+  neo4j_graphify_import:
+    driver: local
+  neo4j_graphify_plugins:
     driver: local
 

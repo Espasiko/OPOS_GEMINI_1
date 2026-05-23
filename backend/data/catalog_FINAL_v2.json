@@ -19,14 +19,14 @@
   },
   {
     "boe_id": "BOE-A-2012-13420",
-    "siglas": "RD 1191/2012",
-    "titulo": "Real Decreto 1191/2012, de 3 de agosto, sobre normas para la determinación de los complementos para pensiones inferiores a la mínima.",
+    "siglas": "RD 1484/2012",
+    "titulo": "Real Decreto 1484/2012, de 29 de octubre, sobre las aportaciones económicas a realizar por las empresas con beneficios que realicen despidos colectivos que afecten a trabajadores de cincuenta o más años.",
     "historica": false
   },
   {
-    "boe_id": "BOE-A-2013-11881",
-    "siglas": "RD 1196/2013",
-    "titulo": "Real Decreto 1196/2013, de 11 de octubre, por el que se regulan los convenios especiales en el sistema de la Seguridad Social.",
+    "boe_id": "BOE-A-1983-15813",
+    "siglas": "RD 1451/1983",
+    "titulo": "Real Decreto 1451/1983, de 11 de mayo, por el que en cumplimiento de lo previsto en la Ley 13/1982, de 7 de abril, se regula el empleo selectivo y las medidas de fomento del empleo de los trabajadores minusválidos.",
     "historica": false
   },
   {
@@ -78,12 +78,6 @@
     "historica": false
   },
   {
-    "boe_id": "BOE-A-1983-15758",
-    "siglas": "RD 1451/1983",
-    "titulo": "Real Decreto 1451/1983, de 11 de mayo, empleo selectivo minusválidos.",
-    "historica": false
-  },
-  {
     "boe_id": "BOE-A-1996-3691",
     "siglas": "RD 148/1996",
     "titulo": "Real Decreto 148/1996, de 5 de febrero, por el que se regula el procedimiento especial para el reintegro de prestaciones indebidas.",
@@ -96,9 +90,9 @@
     "historica": false
   },
   {
-    "boe_id": "BOE-A-1990-29784",
+    "boe_id": "BOE-A-1990-29699",
     "siglas": "RD 1576/1990",
-    "titulo": "Real Decreto 1576/1990, de 7 de diciembre, pensiones extraordinarias terrorismo.",
+    "titulo": "Real Decreto 1576/1990, de 7 de diciembre, por el que se establecen pensiones extraordinarias en favor de las personas afectadas por el terrorismo.",
     "historica": false
   },
   {
@@ -126,15 +120,9 @@
     "historica": false
   },
   {
-    "boe_id": "BOE-A-2009-20412",
-    "siglas": "RD 1851/2009",
-    "titulo": "Real Decreto 1851/2009, de 4 de diciembre, sobre jubilación anticipada de trabajadores con discapacidad en grado igual o superior al 45 por ciento.",
-    "historica": false
-  },
-  {
     "boe_id": "BOE-A-2009-20652",
-    "siglas": "RD 1855/2009",
-    "titulo": "Real Decreto 1855/2009, de 4 de diciembre, por el que se regula el Consejo Territorial de Servicios Sociales y del SAAD.",
+    "siglas": "RD 1851/2009",
+    "titulo": "Real Decreto 1851/2009, de 4 de diciembre, por el que se regula el derecho a la jubilación anticipada de los trabajadores con discapacidad en grado igual o superior al 45 por ciento.",
     "historica": false
   },
   {
@@ -186,9 +174,9 @@
     "historica": true
   },
   {
-    "boe_id": "BOE-A-1997-15688",
+    "boe_id": "BOE-A-1997-15810",
     "siglas": "Ley 24/1997",
-    "titulo": "Ley 24/1997, de 15 de julio, de Consolidación y Racionalización del Sistema de Seguridad Social.",
+    "titulo": "Ley 24/1997, de 15 de julio, de Consolidación y Racionalización del Sistema de la Seguridad Social.",
     "historica": false
   },
   {
@@ -546,7 +534,7 @@
     "historica": false
   },
   {
-    "boe_id": "BOE-A-2023-5364",
+    "boe_id": "BOE-A-2023-6967",
     "siglas": "RDL 2/2023",
     "titulo": "Real Decreto-ley 2/2023, de 16 de marzo, de medidas urgentes para la ampliación de derechos de los pensionistas, la reducción de la brecha de género y el establecimiento de un nuevo marco de sostenibilidad del sistema público de pensiones.",
     "historica": false
@@ -567,6 +555,24 @@
     "boe_id": "BOE-A-2017-12902",
     "siglas": "LCSP",
     "titulo": "Ley 9/2017, de 8 de noviembre, de Contratos del Sector Público.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2013-2309",
+    "siglas": "RD 156/2013",
+    "titulo": "Real Decreto 156/2013, de 1 de marzo, por el que se regula la suscripción de convenio especial por las personas con discapacidad que tengan especiales dificultades de inserción laboral.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2011-16819",
+    "siglas": "RD 1493/2011",
+    "titulo": "Real Decreto 1493/2011, de 24 de octubre, por el que se regulan los términos y las condiciones de inclusión en el Régimen General de la Seguridad Social de las personas que participen en programas de formación.",
+    "historica": false
+  },
+  {
+    "boe_id": "BOE-A-2019-2975",
+    "siglas": "Ley 3/2019 Orfandad",
+    "titulo": "Ley 3/2019, de 1 de marzo, de mejora de la situación de orfandad de los hijos de víctimas de violencia de género.",
     "historica": false
   }
 ]

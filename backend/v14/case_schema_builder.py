@@ -196,25 +196,34 @@ class CaseSchemaBuilder:
         try:
             match = re.search(r'(\d+(?:\s*(?:bis|ter|qu[aá]ter))?)', art_id, re.I)
             num_art = match.group(0).strip() if match else art_id
-            
+
             # Extraer las siglas de la ley si existen (ej. "TRLGSS" de "Art. 204 TRLGSS")
-            ley_match = re.search(r'(TRLGSS|ET|CE|LRJS|TREBEP)', art_id.upper())
-            ley_siglas = ley_match.group(1) if ley_match else "TRLGSS" # Default a TRLGSS para oposiciones
-            
+            ley_match = re.search(r'(TRLGSS|LGSS|ET|TREBEP|LPAC|LRJS|LGP|LCSP|CE)', art_id.upper())
+            ley_siglas = ley_match.group(1) if ley_match else "TRLGSS"  # Default a TRLGSS para SS
+
+            # Normalizar alias comunes
+            _alias = {"LGSS": "TRLGSS", "SS": "TRLGSS"}
+            ley_siglas = _alias.get(ley_siglas, ley_siglas)
+
             import os
             neo4j_uri = os.getenv('NEO4J_URI', 'bolt://localhost:7687')
             neo4j_user = os.getenv('NEO4J_USER', 'neo4j')
             neo4j_password = os.getenv('NEO4J_PASSWORD', 'opositaia2026')
             driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
             with driver.session() as s:
+                # Neo4j v17: (Precepto)-[:PERTENECE_A]->(Ley)
+                # Precepto tiene ley_siglas directo — no necesita join con Ley
+                # Propiedades reales: p.numero, p.title, p.texto, p.ley_siglas, p.chunk_index
                 query = """
-                MATCH (a:Articulo) 
-                WHERE (a.id = $id OR a.title CONTAINS $num) AND (a.id CONTAINS $ley OR a.ley CONTAINS $ley)
-                RETURN a.texto AS texto, a.vigente AS vigente LIMIT 1
+                MATCH (p:Precepto)
+                WHERE p.ley_siglas = $ley
+                  AND (p.numero CONTAINS $num OR p.title CONTAINS $num)
+                RETURN p.texto AS texto
+                ORDER BY p.chunk_index ASC LIMIT 1
                 """
-                result = s.run(query, {"id": art_id, "num": num_art, "ley": ley_siglas}).single()
+                result = s.run(query, {"num": num_art, "ley": ley_siglas}).single()
             driver.close()
-            if result and result["vigente"]:
+            if result and result["texto"]:
                 return result["texto"]
             return None
         except Exception as e:
@@ -306,6 +315,9 @@ class CaseSchemaBuilder:
                     print(f"  ⚠️  Error en generar_briefing de {bp_id}: {e}")
                     personajes.append(PersonajeSchema(nombre=f"Personaje_{bp_id}", rol="trabajador"))
 
+        # Validar coherencia de personajes antes de construir el schema
+        personajes = self._validar_prerrequisitos_personajes(personajes, blueprint_ids)
+
         # --- FASE 2: Crear CaseSchema base ---
         schema = CaseSchema(
             case_id=self._generate_id(),
@@ -313,6 +325,9 @@ class CaseSchemaBuilder:
             personajes=personajes,
             fecha_caso=fecha_caso,
         )
+
+        # Conflictos cruzados entre personajes (impago, accidente, etc.)
+        schema.conflictos_cruzados = self._generar_conflictos_cruzados(personajes, blueprint_ids)
 
         # --- FASE 3: Verificar artículos en Neo4j e inyectar textos de ley ---
         articulos_encontrados = []
@@ -462,33 +477,33 @@ class CaseSchemaBuilder:
         
         personajes_validados = []
         for personaje in personajes:
-            # Validar personaje jubilable
+            anos_cotizados = personaje.datos.get("anos_cotizados", 0)
+
+            # ── Check 1: coherencia física edad/cotizados ────────────────────
+            if anos_cotizados > 0 and personaje.edad:
+                max_posible = max(0, personaje.edad - 16)  # no se puede cotizar antes de los 16
+                if anos_cotizados > max_posible:
+                    print(f"⚠️  COHERENCIA: {personaje.nombre} tiene {personaje.edad}a "
+                          f"y {anos_cotizados}a cotizados (imposible). "
+                          f"Corregido a {max_posible}a.")
+                    personaje.datos["anos_cotizados"] = max_posible
+                    anos_cotizados = max_posible
+
+            # ── Check 2: jubilable ≥60 con mínimos legales ───────────────────
             if personaje.edad and personaje.edad >= 60:
-                # Verificar si tiene años cotizados suficientes
-                anos_cotizados = personaje.datos.get("anos_cotizados", 0)
-                
-                # Requisitos jubilación ordinaria
-                if personaje.edad >= 65:
-                    # Jubilación ordinaria: 15 años mínimos
-                    if anos_cotizados < 15:
-                        print(f"⚠️ ERROR PERSONAJE: {personaje.nombre} tiene {personaje.edad} años pero solo {anos_cotizados} años cotizados")
-                        print(f"   Requisito: 15 años mínimos para jubilación ordinaria")
-                        # Ajustar años cotizados a mínimo viable
-                        personaje.datos["anos_cotizados"] = 15
-                        print(f"   ✅ Corrección: Ajustados a 15 años cotizados")
-                
-                # Validar jubilación anticipada
-                if "BP-S12" in blueprint_ids and personaje.edad >= 60:
-                    # Jubilación anticipada: 35 años mínimos
-                    if anos_cotizados < 35:
-                        print(f"⚠️ ERROR PERSONAJE: {personaje.nombre} tiene {personaje.edad} años pero solo {anos_cotizados} años cotizados")
-                        print(f"   Requisito: 35 años mínimos para jubilación anticipada")
-                        # Ajustar años cotizados a mínimo viable
-                        personaje.datos["anos_cotizados"] = 35
-                        print(f"   ✅ Corrección: Ajustados a 35 años cotizados")
-            
+                if personaje.edad >= 65 and anos_cotizados < 15:
+                    print(f"⚠️  PREREQ: {personaje.nombre} ({personaje.edad}a) necesita ≥15a "
+                          f"para jubilación ordinaria. Ajustado a 15.")
+                    personaje.datos["anos_cotizados"] = 15
+                    anos_cotizados = 15
+
+                if "BP-S12" in blueprint_ids and anos_cotizados < 35:
+                    print(f"⚠️  PREREQ: {personaje.nombre} ({personaje.edad}a) necesita ≥35a "
+                          f"para jubilación anticipada. Ajustado a 35.")
+                    personaje.datos["anos_cotizados"] = 35
+
             personajes_validados.append(personaje)
-        
+
         return personajes_validados
 
     def build(self, blueprint_id: str, briefing: dict, fecha_caso: str = "2026-03-04") -> CaseSchema:
