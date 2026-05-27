@@ -125,6 +125,58 @@ def update_obsidian_note(filename: str, content: str) -> str:
         return f"Error de conexión: {str(e)}"
 
 
+def overwrite_obsidian_note(filename: str, content: str) -> str:
+    """Reescribe completamente una nota existente con contenido nuevo.
+    CUIDADO: esto borra todo el contenido anterior de la nota."""
+    filename = filename.replace(" ", "%20")
+    if not filename.endswith(".md"): filename += ".md"
+    url = f"{OBSIDIAN_URL}/vault/{filename}"
+    try:
+        r = requests.put(url, headers=HEADERS, data=content.encode('utf-8'))
+        if r.status_code in [200, 201, 204]:
+            return f"¡Éxito! La nota {filename} fue reescrita completamente."
+        return f"Fallo al reescribir nota. Código {r.status_code}"
+    except Exception as e:
+        return f"Error de conexión: {str(e)}"
+
+
+def delete_obsidian_note(filename: str) -> str:
+    """Borra una nota del vault de Obsidian. La nota se mueve a la papelera de Obsidian."""
+    filename = filename.replace(" ", "%20")
+    if not filename.endswith(".md"): filename += ".md"
+    url = f"{OBSIDIAN_URL}/vault/{filename}"
+    try:
+        r = requests.delete(url, headers={"Authorization": HEADERS["Authorization"]})
+        if r.status_code in [200, 204]:
+            return f"¡Éxito! La nota {filename} fue eliminada."
+        elif r.status_code == 404:
+            return f"Error: La nota {filename} no existe."
+        return f"Fallo al borrar nota. Código {r.status_code}"
+    except Exception as e:
+        return f"Error de conexión: {str(e)}"
+
+
+def list_vault_files(folder: str = "/", extension: str = ".md") -> str:
+    """Lista los archivos del vault de Obsidian, opcionalmente filtrados por carpeta y extensión."""
+    url = f"{OBSIDIAN_URL}/vault/"
+    try:
+        r = requests.get(url, headers={"Authorization": HEADERS["Authorization"], "Accept": "application/json"})
+        if r.status_code != 200:
+            return f"Error listando vault. Código {r.status_code}"
+        data = r.json()
+        files = data.get("files", [])
+        if folder and folder != "/":
+            folder_clean = folder.strip("/")
+            files = [f for f in files if f.startswith(folder_clean + "/") or f.startswith(folder_clean + "\\")]
+        if extension:
+            files = [f for f in files if f.endswith(extension)]
+        if not files:
+            return f"No se encontraron archivos en '{folder}' con extensión '{extension}'."
+        return json.dumps(files[:100], ensure_ascii=False, indent=2)
+    except Exception as e:
+        return f"Error de conexión: {str(e)}"
+
+
 _TEMPORAL_KEYWORDS = (
     "hoy", "actual", "actuales", "reciente", "recientes", "esta semana",
     "este mes", "este año", "noticias", "ultim", "últim", "latest",
@@ -241,6 +293,9 @@ names_to_functions = {
     "read_obsidian_note": read_obsidian_note,
     "create_obsidian_note": create_obsidian_note,
     "update_obsidian_note": update_obsidian_note,
+    "overwrite_obsidian_note": overwrite_obsidian_note,
+    "delete_obsidian_note": delete_obsidian_note,
+    "list_vault_files": list_vault_files,
     "search_internet": search_internet,
 }
 
@@ -286,6 +341,50 @@ tools = [
                     "content": {"type": "string", "description": "El texto que añadirás al final."}
                 },
                 "required": ["filename", "content"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "overwrite_obsidian_note",
+            "description": "Reescribe completamente una nota existente con contenido nuevo. CUIDADO: borra el contenido anterior. Úsalo solo cuando el usuario pida rehacer o sustituir una nota entera.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filename": {"type": "string", "description": "Ruta y nombre de la nota a reescribir"},
+                    "content": {"type": "string", "description": "El contenido markdown completo nuevo."}
+                },
+                "required": ["filename", "content"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_obsidian_note",
+            "description": "Borra una nota del vault de Obsidian. Se mueve a la papelera de Obsidian, no se borra permanentemente.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filename": {"type": "string", "description": "Ruta y nombre de la nota a borrar"}
+                },
+                "required": ["filename"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_vault_files",
+            "description": "Lista los archivos del vault de Obsidian. Puedes filtrar por carpeta y extensión.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "folder": {"type": "string", "description": "Carpeta a listar (ej: 'Personajes/', '/'). Por defecto lista todo.", "default": "/"},
+                    "extension": {"type": "string", "description": "Extensión a filtrar (ej: '.md', '.png'). Por defecto '.md'.", "default": ".md"}
+                },
+                "required": [],
             },
         },
     },
@@ -345,6 +444,10 @@ def build_critical_context() -> str:
         "Obsidian del usuario. Úsala solo si el usuario lo pide explícitamente.\n"
         "- `read_obsidian_note(filename)` / `update_obsidian_note(filename, content)`: "
         "lee o añade contenido a una nota existente.\n"
+        "- `overwrite_obsidian_note(filename, content)`: reescribe completamente una nota "
+        "(borra el contenido anterior). Úsala solo si el usuario lo pide.\n"
+        "- `delete_obsidian_note(filename)`: borra una nota (se mueve a la papelera).\n"
+        "- `list_vault_files(folder, extension)`: lista archivos del vault por carpeta/extensión.\n"
         "Responde en el idioma del usuario (español o búlgaro).\n"
     )
 
