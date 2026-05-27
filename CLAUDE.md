@@ -8,8 +8,8 @@
 
 **OpositAIA** — plataforma IA para preparación de oposiciones de la Seguridad Social española.
 - 4 cuerpos objetivo: Aux AGE (C2), Adm AGE (C1), Adm SS (C1), Gest SS (A2)
-- Estrategia COSMIC: Create Once, Serve Many — 54.000 preguntas únicas
-- Estado: sistema funcional con agente Chandra operativo, calculadoras SS/AGE verificadas
+- Estrategia COSMIC: Create Once, Serve Many — 54.000 preguntas únicas, patres de casos practicos que se pueden incorporar y mezclar sin cambiar el sentido, de 4-8 personajes o por separado, hay 3 tipos de casos practicos! pregntas para test pos tema, partes de serie turca que se pueden modificar para distintas combinaciones de temas y parecer nuevas al usuario, con seguimiento de errores frequentes etc. 
+- Estado: sistema funcional con agente Chandra operativo, calculadoras SS/AGE verificadas. memoria actualizada en mcp memory grafo, md-s obsidian project vault en neo4j 
 
 **Developer:** Spas | **Idioma de trabajo:** Español
 
@@ -41,6 +41,7 @@ BMAD_EXPLICADO_ADAPTADO.md             ← arquitectura agentes + roadmap
 20_05_MCP-S_PROYECTO_IDES.md           ← ecosistema MCP completo
 docs/AUDITORIA_IMPLEMENTADO_VS_DISEÑO_17_03_26.md  ← auditoría técnica
 15_05_2026_BORRADOR_AUDITORIA_Y_PLAN.md ← estado y plan actualizado
+/home/spas/obsidian-bmo-chatbot-plus/docs_planes - cerebrito BMO refactorizacion+ planes
 ```
 
 ---

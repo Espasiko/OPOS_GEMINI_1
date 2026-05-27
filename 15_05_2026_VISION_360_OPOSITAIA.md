@@ -999,3 +999,104 @@ docker-compose restart neo4j-graphify
 El browser web de Neo4j tiene conflictos con múltiples instancias en localhost (localStorage/cache). Solución: usar **Neo4j Desktop** (app nativa) para conectar a `bolt://localhost:7688`.
 
 ---
+
+## ACTUALIZACION 27/05/2026 — Lo que cambio desde el 15/05
+
+> Esta seccion documenta decisiones y descubrimientos posteriores a la redaccion original del 15/05.
+
+### A1. Producto Cerebrito (nuevo, 25-26/05/2026)
+
+BMO Chatbot Plus fork evoluciona hacia **Cerebrito**: producto "segundo cerebro" universal. No es solo para OPOS — sirve para escritores, estudiantes, abogados, autonomos.
+
+**Decisiones firmes (26/05):**
+- **4 repos GitHub:** obsidian-bmo-chatbot-plus (plugin), OPOS_GEMINI_1 (backend OPOS), cerebrito-backend (NUEVO), shared-tools (submodulo comun)
+- **Puerto Cerebrito:** 27182 (numero Euler e x 10000, sin conflictos). Puerto 9000 DESCARTADO (conflictos PHP-FPM, Docker Registry, SonarQube)
+- **4 SKUs** (vs 3 en §3): Core Lite (~50MB, Kuzu), Core Privacy (~180MB, +EasyOCR local), OPOS Pack (~700MB, Neo4j Desktop), OPOS Server (~3GB, Docker)
+- **SKUs via build flags** en una sola codebase (NO branches separadas)
+- **shared-tools:** submodulo git con vault_tools, pdf_tools (cascada pypdf → Mistral OCR → EasyOCR), search_tools, capability.py, telemetry.py, verification.py
+
+**Documentacion BMAD completa:**
+- PRD v1.1: `obsidian-bmo-chatbot-plus/docs_planes/prd_cerebrito.md`
+- Product Brief: `docs_planes/product_brief_cerebrito.md`
+- Project Overview v1.1: `docs_planes/project_overview_cerebrito.md`
+- Plan refactorizacion global: `27_05_2026_PLAN_REFACTORIZACION_GLOBAL.md`
+
+### A2. Arquitectura interna BMO descubierta (25/05/2026)
+
+Se descubrio como funciona exactamente el plugin BMO:
+
+- **Flujo system prompt:** `system_role + perfil_body + referenceCurrentNote` → system message. Prompt .md se prepone al mensaje usuario.
+- **Routing:** `view.ts:527` — si modelo en `RESTAPIURLModels` → `fetchRESTAPIURLResponse()` → POST backend
+- **Codigo clave:** `main.ts:698` (`updateSettingsFromFrontMatter()`), `FetchModelResponse.ts:394` (construye system msg)
+- **Problema:** El modelo seleccionado determina el proveedor. No hay forma nativa de usar REST API con otro LLM. Solucion: prefijo `@modelo` parseado por backend.
+
+### A3. Bugs encontrados y arreglados (25/05/2026)
+
+| Bug | Causa | Fix |
+|-----|-------|-----|
+| ERR_CONNECTION_RESET en todos los vaults | svchost.exe (WSL2 port forwarding) intercepta puerto 8000 antes que AgenteEscritor.exe | Correr proxy desde WSL para dev |
+| Plugins no cargan en vault Nina | `.obsidian/app.json` era `{}` (vacio) | Restaurar desde PAQUETE_FINAL |
+| BMO envia a Mistral API directo (no al backend) | `data.json` tenia `model: mistral-large-latest` | Cambiar a `model: agente-escritor` |
+| Perfil no carga system prompt | `Nina_Editor.md` no existia en `BMO/Profiles/` | Crear el archivo con frontmatter |
+| CSS sidebar rompe layout | `margin-left: 240px` en panels estrechos Obsidian | Cambiar a overlay mode siempre |
+
+### A4. Vaults actualizados (25/05/2026)
+
+| Vault | Cambios |
+|-------|---------|
+| AgenteEscritor_Para_Nina | `app.json` restaurado, `data.json` corregido (model=agente-escritor), `Nina_Editor.md` creado, `Cerebrito.md` actualizado |
+| Todos (6 vaults) | Plugin BMO recompilado con CSS fix sidebar overlay |
+
+### A5. Workflows y Skills (pendiente disenar, 26/05/2026)
+
+**Workflows** (`*prefijo`): secuencias predefinidas de acciones. Planificados: `*modo-examen`, `*revisar-capitulo`, `*ficha-personaje`, `*resumir-pdf`, `*flashcards`, `*sesion-estudio`, `*wiki-update`.
+
+**Skills** (`#prefijo`): tools atomicas invocables directamente. Planificados: `#leer-pdf`, `#buscar`, `#neo4j`, `#calcular`, `#listar`, `#crear-nota`.
+
+Implementacion pendiente en plugin BMO (parser prefijos) + backend (dispatcher).
+
+### A6. Opciones ocultar carpeta BMO del vault
+
+- **Opcion A:** Renombrar a `.bmo/` (dot-prefix, Obsidian oculta automaticamente)
+- **Opcion B:** `userIgnoreFilters: ["BMO/"]` en `.obsidian/app.json`
+- Decision pendiente.
+
+### A7. Plan de refactorizacion global (27/05/2026)
+
+Ver documento completo: `27_05_2026_PLAN_REFACTORIZACION_GLOBAL.md`
+
+Resumen de 5 fases:
+1. **Fase 0** — Tags + branches de seguridad (30 min)
+2. **Fase 1** — Crear shared-tools con vault_tools, search_tools (2h)
+3. **Fase 2** — Limpieza legacy: 4 routers a `_legacy/`, orchestrator.py, mistral_tools.py limpio, scripts raiz organizados (1.5h)
+4. **Fase 3** — Refactor calculadoras: `prestaciones_ss/` con 10 submodulos, facade en `calculos_ss_extended.py` (2-3h)
+5. **Fase 4** — Crear cerebrito-backend repo (3h)
+6. **Fase 5** — Refactor plugin BMO: `FetchModelResponse.ts` → providers/, `ProfileManager.ts`, etc. (4-6h)
+
+Total estimado: 7-9h con paralelismo (fases 2-5 son independientes).
+
+### A8. Entidades MCP Memory nuevas (24-27/05/2026)
+
+| Entidad | Tipo | Contenido |
+|---------|------|----------|
+| `Cerebrito_Producto` | Product | Vision, vertientes, 7 fases, docs |
+| `Cerebrito_Refactorizacion` | Plan | Analisis lineas plugin + backend, estructura objetivo |
+| `BMO_Arquitectura_Interna` | Architecture | Routing, flujo prompts, problemas conocidos |
+| `Vaults_BMO_Config` | Configuration | Config de los 5 vaults |
+| `Backend_Puertos` | Configuration | Puertos canonicos todos los servicios |
+
+### A9. Graphify — estado de sincronizacion (27/05/2026)
+
+- Graphify construido sobre commit `91a49f1b`. HEAD actual: `50fdacd` (1 commit posterior). **Ligeramente stale.**
+- 2295 nodos, 3174 edges, 240 comunidades (151 visibles)
+- 93 paginas wiki auto-generadas en `OPOS_PROJECT/01-Wiki/Graphify/`
+- **Faltan en wiki manual:** proxy_agente_escritor como entrada backend, orchestrator como legacy, mistral_tools como candidata a limpieza
+- Comando para actualizar: `graphify update .`
+
+### A10. Wiki OPOS_PROJECT — estado (27/05/2026)
+
+25 paginas wiki manuales + 93 paginas Graphify auto. Paginas actualizadas:
+- `01-Wiki/Arquitectura/BMO_Fork_Integration.md` — ampliada con Cerebrito, refactorizacion, workflows/skills, opciones ocultar BMO (26/05)
+- `03-Status/Estado_Mayo_2026.md` — sin actualizar desde 23/05 (falta info Cerebrito y bugs BMO arreglados)
+
+---

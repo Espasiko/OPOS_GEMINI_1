@@ -170,7 +170,7 @@ Lanzado el .exe dentro del propio container Docker, con el `.env` al lado:
 
 ```
 2026-04-27 01:28:22 [INFO] 🔗 Obsidian URL: http://127.0.0.1:27123  ✅ detecta Windows
-2026-04-27 01:28:22 [INFO] 🤖 Mistral model: mistral-medium-latest    ✅ lee .env
+2026-04-27 01:28:22 [INFO] 🤖 Mistral model: mistral-medium-latest o mistral latest   ✅ lee .env
 INFO:     Started server process [224]
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 ✅ servidor levantado

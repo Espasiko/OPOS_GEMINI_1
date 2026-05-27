@@ -88,10 +88,10 @@ Tarea 3: Actualización del Plan Maestro v2.1
 - **Arquitectura Karpathy**: Implementada estructura de 3 capas (raw/, wiki/, schema/).
 - **Zettelkasten**: Las notas en `wiki/` deben ser atómicas e inmutables (una nota por personaje/término) para prevenir alucinaciones del LLM en documentos largos.
 - **Hot Cache**: Uso obligatorio de `index.md` en la raíz como hub de contexto para que el agente mantenga el hilo narrativo sin leer todo el vault.
-- **Reporte de Agentes**: Se confirma la instalación de 112 agentes/skills `bmad` en `/home/spas/OPOS_GEMINI_1/.agents/skills/`.
+- **Reporte de Agentes**: nO SE HA Se confirmado la instalación de 112 agentes/skills `bmad` en `/home/spas/OPOS_GEMINI_1/.agents/skills/`. No hace falta. en el variente escritor hace falta otros agentes el bmo plugin esta en /home/spas/obsidian-bmo-chatbot-plus , chandra modificado, falta ESCRITOR!
 
 Plan de Verificación
-1. **Perfil Nina**: Cargar el perfil `Nina_Editor.md` en BMO (ya configurado como default en data.json).
+1. **Perfil Nina**: Cargar el perfil `Nina_Editor.md` en BMO (ya configurado como default en data.json). No confirmado que lo lea o respeta!!!
 2. **Saludo**: Verificar que el agente responda con "Здравей Нина!" en búlgaro.
 3. **Conexión**: Si persiste el `ERR_CONNECTION_REFUSED`, el usuario debe arrancar el proxy local o configurar su propia API Key de Mistral en la interfaz de BMO (las keys han sido borradas de data.json por seguridad).
 4. **Estructura**: Las carpetas `raw/`, `wiki/`, `schema/` y el archivo `index.md` ya han sido creados.
@@ -102,7 +102,7 @@ Plan de Verificación
 ## 6. Hito 27/04/2026 — Compilación a `.exe` standalone
 
 **Objetivo conseguido (FASE 2 del plan):** el proxy ya es un único ejecutable
-Windows que Nina puede usar sin Python, sin WSL y sin saber programar.
+Windows que Nina puede usar sin Python, sin WSL y sin saber programar. FALTA EL EXE PARA MIGUEL ANGEL!!!
 
 **Entregable:** `D:\AgenteEscritor_Para_Nina.zip` (17.6 MB) con:
 

@@ -8,7 +8,7 @@
 | Dato | Valor |
 |------|-------|
 | **Nombre** | OpositAIA |
-| **Propósito** | Sistema multi-agente RAG para generar casos prácticos de oposiciones (Gestión SS A2) |
+| **Propósito** | Sistema multi-agente RAG para generar casos prácticos de oposiciones (ADMIN SS C1) |
 | **Raíz del proyecto** | `/home/spas/OPOS_GEMINI_1/` |
 | **Usuario OS** | `spas` (Linux Ubuntu) |
 | **Fecha documento** | 21/03/2026 |
@@ -128,7 +128,7 @@ pnpm build
 pnpm dev
 ```
 
-### 4.5 Generador V13 (pipeline de casos prácticos)
+### 4.5 Generador V13 (obsoleto , hay version 17, creo) (pipeline de casos prácticos)
 ```bash
 cd /home/spas/OPOS_GEMINI_1
 source .venv/bin/activate

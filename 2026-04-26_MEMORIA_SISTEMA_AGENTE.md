@@ -21,3 +21,5 @@ Hoy hemos conseguido romper las barreras entre Obsidian y los Agentes Autónomos
 - **Refuerzo de Seguridad:** Asegurar que el API Key de Obsidian Local REST API sea dinámica o persistente tras reinicios.
 
 **Nota final:** El sistema ya es capaz de recibir una orden compleja (ej: "Investiga y crea nota") y ejecutarla íntegramente de forma autónoma.
+**instruccion final**
+COMPRUEBA TODO ESTO SI SE HA HECHO, de que manera Y COMO ACTUALIZARLO Y RECOMPILARLO CON EL NUVO BMO IU Y TOOLS!

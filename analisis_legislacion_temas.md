@@ -1,0 +1,101 @@
+# Análisis de Legislación Citada en Temas
+
+## ✅ Referencias mapeadas a BOE (21)
+
+- **Constitución Española** → BOE-A-1978-31229
+- **ET** → BOE-A-2015-11430
+- **Ley 19/2021** → BOE-A-2021-21007
+- **Ley 20/2007** → BOE-A-2007-13409
+- **Ley 31/1995** → BOE-A-1995-24292
+- **RD 1415/2004** → BOE-A-2004-11836
+- **RD 2064/1995** → BOE-A-1996-1579
+- **RD 295/2009** → BOE-A-2009-4724
+- **RD 84/1996** → BOE-A-1996-4447
+- **Real Decreto 1148/2011** → BOE-A-2011-13119
+- **Real Decreto 1300/1995** → BOE-A-1996-1644
+- **Real Decreto 1335/2005** → BOE-A-2005-19151
+- **Real Decreto 1415/2004** → BOE-A-2004-11836
+- **Real Decreto 2064/1995** → BOE-A-1996-1579
+- **Real Decreto 295/2009** → BOE-A-2009-4724
+- **Real Decreto 357/1991** → BOE-A-1991-7270
+- **Real Decreto 39/1997** → BOE-A-1997-1853
+- **Real Decreto 625/1985** → BOE-A-1985-8124
+- **Real Decreto 84/1996** → BOE-A-1996-4447
+- **Real Decreto Legislativo 8/2015** → BOE-A-2023-11645
+- **Texto Refundido de la Ley General de la Seguridad Social** → BOE-A-2023-11645
+
+## ❌ Referencias sin BOE ID (66)
+
+- CONSTITUCIÓN ESPAÑOLA
+- Constitución española
+- LEY 27/2011
+- LEY 28/2011
+- Ley 18/2007
+- Ley 193/1963
+- Ley 2/2023
+- Ley 2/2025
+- Ley 20/2014
+- Ley 21/2021
+- Ley 24/1972
+- Ley 24/1997
+- Ley 26/1985
+- Ley 26/1990
+- Ley 27/2011
+- Ley 28/2011
+- Ley 3/2019
+- Ley 31/1984
+- Ley 32/2010
+- Ley 39/1999
+- Ley 39/2015
+- Ley 39/2105
+- Ley 42/2006
+- Ley 44/2015
+- Ley 45/1960
+- Ley 45/1969
+- Ley 46/1977
+- Ley 47/2015
+- Ley 51/1980
+- Ley 8/2019
+- RD 148/1996
+- RD 1539/2003
+- RD 1851/2009
+- RD 2366/1984
+- RD 2530/1970
+- RD 2621/1986
+- RD 8/2008
+- RD 84/1196
+- RD 84/1966
+- RD 84/1986
+- RD 928/1998
+- REAL DECRETO LEGISLATIVO 8/2015
+- Real Decreto 1191/2012
+- Real Decreto 1221/1992
+- Real Decreto 1299/2006
+- Real Decreto 1311/2007
+- Real Decreto 1314/1984
+- Real Decreto 1414/2004
+- Real Decreto 1576/1990
+- Real Decreto 1620/2011
+- Real Decreto 1647/1997
+- Real Decreto 696/2018
+- Real Decreto 8/2008
+- Real Decreto 928/1998
+- Real Decreto Legislativo 1/1994
+- Real Decreto Legislativo 5/2000
+- Real Decreto-Ley 2/2023
+- Real Decreto-ley 11/2024
+- Texto Refundido de la Ley general de la Seguridad Social
+- Texto Refundido de la ley General de la Seguridad Social
+- Texto refundido de la Ley General de la Seguridad Social
+- et
+- leta
+- ley 11/2024
+- real Decreto 84/1996
+- texto refundido de la Ley General de la Seguridad Social
+
+## 📊 Estadísticas
+
+- Total referencias encontradas: 87
+- Mapeadas correctamente: 21
+- Sin mapear: 66
+- Tasa cobertura: 24.1%
