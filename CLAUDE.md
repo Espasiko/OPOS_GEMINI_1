@@ -1,6 +1,6 @@
 # OpositAIA — CLAUDE.md
 > **Leer esto primero.** Cualquier IA que abra este proyecto debe leer este archivo antes de actuar.
-> Última actualización: 20/05/2026
+> Última actualización: 31/05/2026
 
 ---
 
@@ -8,10 +8,21 @@
 
 **OpositAIA** — plataforma IA para preparación de oposiciones de la Seguridad Social española.
 - 4 cuerpos objetivo: Aux AGE (C2), Adm AGE (C1), Adm SS (C1), Gest SS (A2)
-- Estrategia COSMIC: Create Once, Serve Many — 54.000 preguntas únicas, patres de casos practicos que se pueden incorporar y mezclar sin cambiar el sentido, de 4-8 personajes o por separado, hay 3 tipos de casos practicos! pregntas para test pos tema, partes de serie turca que se pueden modificar para distintas combinaciones de temas y parecer nuevas al usuario, con seguimiento de errores frequentes etc. 
-- Estado: sistema funcional con agente Chandra operativo, calculadoras SS/AGE verificadas. memoria actualizada en mcp memory grafo, md-s obsidian project vault en neo4j 
+- Estrategia COSMIC: Create Once, Serve Many — 54.000 preguntas únicas, casos prácticos modulares, series turca, seguimiento de errores
+- Estado: sistema funcional con agente Chandra operativo, calculadoras SS/AGE verificadas, BMO Chandra Edition multi-chat
 
 **Developer:** Spas | **Idioma de trabajo:** Español
+
+---
+
+## Fuentes de verdad (en orden de prioridad)
+
+1. **Wiki OPOS_PROJECT** → `/mnt/d/OPOS_PROJECT/01-Wiki/` — estado actualizado del proyecto (usar skill `/check-wiki`)
+2. **Graphify graph** → `graphify-out/graph.json` — mapa del código (usar skill `/sync-graphify`)
+3. **MCP memory grafo** → `/home/spas/memory.jsonl` — conocimiento acumulado
+4. **Este archivo** → resumen ejecutivo, NO fuente primaria de detalles
+5. **Código fuente** → leer solo cuando las fuentes anteriores no bastan
+6. **Lecciones IAs anteriores** → `/mnt/d/OPOS_PROJECT/01-Wiki/Lecciones_IAs_Anteriores.md` — LEER antes de diagnosticar bugs
 
 ---
 
@@ -20,29 +31,11 @@
 | Componente | Detalle |
 |-----------|---------|
 | **Backend** | FastAPI, Python 3.12, puerto **8080** |
-| **Arrancar backend** | `cd backend && ../.venv/bin/uvicorn main:app --host 0.0.0.0 --port 8080 --reload` |
+| **Arrancar backend** | Usar skill `/arrancar-backend` o `/arrancar-chandra` |
 | **Neo4j** | bolt://localhost:**7687** · user: neo4j · pass: opositaia2026 |
-| **Obsidian vault SS** | `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/` — leyes, trampas, estudio |
-| **Obsidian vault proyecto** | `D:\OPOS_PROJECT` — PRD, arquitectura, segundo cerebro |
-| **BMO Chandra** | Plugin Obsidian fork (MIT) — interfaz único de chat en Obsidian |
-| **MCP memory** | `/home/spas/memory.jsonl` (637 líneas, grafo de conocimiento) |
-| **Corte legal** | **04/03/2026** — no se usan datos normativos posteriores |
-
----
-
-## Archivos clave para entender el proyecto
-
-```
-CLAUDE.md                              ← este archivo (leer primero)
-docs/prd.md                            ← PRD oficial
-docs/project-overview.md               ← visión técnica
-15_05_2026_VISION_360_OPOSITAIA.md     ← visión completa (estado mayo 2026)
-BMAD_EXPLICADO_ADAPTADO.md             ← arquitectura agentes + roadmap
-20_05_MCP-S_PROYECTO_IDES.md           ← ecosistema MCP completo
-docs/AUDITORIA_IMPLEMENTADO_VS_DISEÑO_17_03_26.md  ← auditoría técnica
-15_05_2026_BORRADOR_AUDITORIA_Y_PLAN.md ← estado y plan actualizado
-/home/spas/obsidian-bmo-chatbot-plus/docs_planes - cerebrito BMO refactorizacion+ planes
-```
+| **BMO Chandra** | Plugin Obsidian fork — repo: `/home/spas/obsidian-bmo-chatbot-plus/` |
+| **AgenteEscritor** | Proxy Nina puerto **9000** — wiki: `01-Wiki/Backend/AgenteEscritor_Proxy.md` |
+| **Corte legal** | **04/03/2026** — normativa posterior = no existe para este sistema |
 
 ---
 
@@ -50,35 +43,25 @@ docs/AUDITORIA_IMPLEMENTADO_VS_DISEÑO_17_03_26.md  ← auditoría técnica
 
 | Decisión | Estado |
 |----------|--------|
-| **Qdrant DESCARTADO** para búsqueda legal | Neo4j 2026 tiene HNSW nativo. Qdrant solo para PDFs de academia |
-| **Copilot DESCARTADO** en Obsidian | Mala licencia. El único interfaz es **BMO Chandra Edition** |
+| **Qdrant DESCARTADO** para búsqueda legal | Neo4j HNSW nativo. Qdrant solo para PDFs de academia |
+| **Copilot DESCARTADO** en Obsidian | El único interfaz es **BMO Chandra Edition** |
 | **Salamandra DESCARTADA** para producción | Solo para preguntas pre-hechas COSMIC |
 | **Supabase DESCARTADO** | Neo4j es la base de datos de grafos |
 | **NO re-entrenar Salamandra** | Confirmado definitivamente |
-| **Proxy VPS muerto** | MISTRAL_URL en .env.backend apunta a proxy muerto — el código lo ignora. URL real: api.mistral.ai |
-| **Neo4j puerto 7687** (no 7688) | 7688 era temporal. El correcto es 7687 |
+| **Neo4j puerto 7687** (no 7688) | 7688 era temporal |
 
 ---
 
-## Agente Chandra — el corazón del sistema
+## Skills personalizadas disponibles
 
-- **Endpoint:** `POST /opos/v1/chat/completions` (OpenAI-compatible)
-- **Modelo:** Mistral medium-latest
-- **7 Manos:** tavily_search, search_boe, get_law_text_block, consultar_neo4j, calcular_ss, buscar_vault, escribir_vault
-- **Regla:** Chandra NUNCA genera datos numéricos sin pasar por calculadora Python
-- **Anti-alucinación:** Tier 1 (auto) → Tier 2 (DeepSeek) → Tier 3 (Claude Sonnet)
-
----
-
-## Los dos vaults de Obsidian — NO confundirlos
-
-| Vault | Ruta | Contenido |
-|-------|------|-----------|
-| **BOVEDA_OPOS** | `/mnt/d/BOVEDA_OPOS/BOVEDA_OPOS/` | Leyes SS, trampas, flashcards, estudio oposiciones |
-| **OPOS_PROJECT** | `D:\OPOS_PROJECT` | PRD, arquitectura, sesiones, segundo cerebro del PROYECTO |
-
-**Bridge REST API** (para BOVEDA_OPOS): `http://172.26.240.1:27123`
-**API Key Obsidian:** `097befc68922b9c32d6388ebbb871e127c5c9037af91a83813107e5e1e60699d`
+| Skill | Comando | Qué hace |
+|-------|---------|----------|
+| Arrancar backend | `/arrancar-backend` | Levanta FastAPI en 8080 |
+| Arrancar Chandra | `/arrancar-chandra` | Backend + Neo4j + test ping |
+| Sync Graphify | `/sync-graphify` | Actualiza grafos de los 3 repos |
+| Check Wiki | `/check-wiki` | Revisa wiki vs CLAUDE.md |
+| Deploy BMO | `/deploy-bmo` | Build + copy a vaults |
+| Rebuild EXE | `/rebuild-exe` | Docker cross-compile proxy |
 
 ---
 
@@ -92,44 +75,51 @@ docs/AUDITORIA_IMPLEMENTADO_VS_DISEÑO_17_03_26.md  ← auditoría técnica
 
 ---
 
-## Estado Neo4j (19/05/2026)
-
-- **108 leyes** indexadas
-- **6683 preceptos** con embeddings HNSW
-- **379 EXCEPCION_A** (trampas del examen)
-- **517 comunidades** Louvain
-- BMO conecta via Chandra mano #4 (consultar_neo4j)
-
----
-
 ## BMAD en este proyecto
 
-BMAD v6.1.1 instalado. Módulos: core, bmm, cis, tea, wds.
-- Config: `_bmad/bmm/config.yaml` (user_name: Spas, language: Spanish)
-- Output: `_bmad-output/`
-- Agente Staff: `.bmad-staff` — LEERLO SIEMPRE antes de empezar tarea compleja
-
-**Agente Staff** es el guardián de la memoria del proyecto. Lo conoce todo. Invócalo si tienes dudas sobre decisiones pasadas o si algún agente usa información desactualizada.
-
----
-
-## MCPs activos en Claude Code (desde 20/05/2026)
-
-- `memory` → `/home/spas/memory.jsonl` (grafo de 637 entidades)
-- `boe` → búsqueda BOE en tiempo real
-- `fetch` → descargar URLs
-- `github` → operaciones GitHub
-
-Ver detalle completo en `20_05_MCP-S_PROYECTO_IDES.md`
+BMAD v6.1.1 instalado. 27 skills activas (86 movidas a backup en `.claude/skills-backup-bmad-wds/`).
+- Agente Staff (`/bmad-staff`): guardián de la memoria del proyecto. Invocarlo si hay dudas sobre decisiones previas.
 
 ---
 
 ## Reglas de conducta para cualquier IA
 
-1. **Citar siempre el artículo BOE** cuando se afirme algo legal
-2. **Nunca calcular en LLM** — usar `calcular_ss` o `calculadora_age.py`
-3. **Verificar en Neo4j primero** antes de inventar estructura legal
-4. **Corte 04/03/2026** — normativa posterior = no existe para este sistema
-5. **No crear archivos nuevos en la raíz** — ya hay ~170 archivos sueltos
-6. **Consultar al agente Staff** si hay confusión sobre decisiones previas
-7. **Preguntar antes de modificar** los archivos prohibidos
+1. **Consultar wiki y graphify ANTES de leer código** — usar fuentes de verdad
+2. **Leer Lecciones_IAs_Anteriores.md** antes de diagnosticar bugs en BMO/proxy
+3. **Citar siempre el artículo BOE** cuando se afirme algo legal
+4. **Nunca calcular en LLM** — usar `calcular_ss` o `calculadora_age.py`
+5. **Verificar en Neo4j primero** antes de inventar estructura legal
+6. **Corte 04/03/2026** — normativa posterior = no existe
+7. **No crear archivos nuevos en la raíz** — ya hay ~170 archivos sueltos
+8. **Preguntar antes de modificar** los archivos prohibidos
+
+---
+
+## Detalle técnico → ver rules (se cargan automáticamente por directorio)
+
+- `.claude/rules/chandra.md` — agente Chandra, 7 manos, Neo4j
+- `.claude/rules/proxy-agente.md` — proxy AgenteEscritor, 17 tools, puerto 9000
+- `.claude/rules/bmo-plugin.md` — plugin BMO fork, build, deploy
+- `.claude/rules/vaults.md` — los 3 vaults de Obsidian, REST API bridge
+
+---
+
+## AgenteEscritor — estado actualizado (31/05/2026)
+
+> Leer esto ANTES de tocar el proxy o los vaults de escritura.
+
+- **Fuente de verdad del código:** `/home/spas/build_agente/proxy_agente_escritor.py` (NO el repo)
+- **17 tools** — ver lista completa en `01-Wiki/Backend/AgenteEscritor_Proxy.md`
+- **EXE compilado:** 23.4 MB · desplegado en Nina (`/mnt/d/AgenteEscritor_Para_Nina/`) y Miguel Ángel (`/mnt/d/AgenteEscritor_Miguel_Angel/`)
+- **Skill rebuild:** `/rebuild-exe` — sincroniza build→repo, compila con Docker, despliega a todos los vaults
+- **Multi-modelo:** 11+ proveedores. Selección por `model: "proveedor:modelo"` en perfil BMO.
+- **⚠️ Los IDs de OpenRouter cambian frecuentemente.** Verificar antes de hardcodear. Última verificación: 31/05/2026. Modelos activos documentados en `01-Wiki/Backend/31_05_2026_MEMORIA_HECHO.md`
+- **Vaults clientes:**
+  - Nina: vault búlgaro, perfil Sara, `/mnt/d/AgenteEscritor_Para_Nina/`
+  - Miguel Ángel: novela hitita, perfil Edi, `/mnt/d/AgenteEscritor_Miguel_Angel/` · entregado 31/05/2026
+- **Templates Templater:** sintaxis dual `tp.mcpTools ? ... : await tp.system.prompt()` — funciona tanto por proxy REST como desde UI Obsidian
+- **obsidian-git vs proxy git_save:** dos sistemas independientes. El plugin necesita `authorName`/`authorEmail` en su `data.json` o config local del repo git.
+- **Ollama local** en máquina Spas: `mistral-local:latest` (recomendado tools), `salamandra-r1:q5km`, `qwen2.5-coder:1.5b-base`
+- **Bitácora sesión 29-30/05:** `/mnt/d/AgenteEscritor_Para_Nina/30_05_26_BITACORA_AGENTE.md`
+- **Memoria sesión 31/05:** `/mnt/d/OPOS_PROJECT/01-Wiki/Backend/31_05_2026_MEMORIA_HECHO.md`
+- **PRD Cerebrito** (producto): `/home/spas/obsidian-bmo-chatbot-plus/docs_planes/prd_cerebrito.md`
