@@ -183,13 +183,14 @@ def create_obsidian_note(filename: str, content: str) -> str:
     """Crea un fichero nuevo Markdown y escribe el contenido dentro del vault."""
     filename = filename.replace(" ", "%20")
     if not filename.endswith(".md"): filename += ".md"
-    
+
     url = f"{OBSIDIAN_URL}/vault/{filename}"
     try:
         r = requests.put(url, headers=HEADERS, data=content.encode('utf-8'))
         if r.status_code in [200, 201, 204]:
-            return f"¡Éxito! La nota {filename} fue creda perfectamente."
-        return f"Fallo al crear nota. Código {r.status_code}"
+            return f"¡Éxito! La nota {filename} fue creada perfectamente."
+        log.warning(f"⚠️ create_obsidian_note({filename}) → HTTP {r.status_code}: {r.text[:200]}")
+        return f"Fallo al crear nota. Código {r.status_code}: {r.text[:100]}"
     except Exception as e:
         return f"Error de conexión: {str(e)}"
 
@@ -204,7 +205,8 @@ def update_obsidian_note(filename: str, content: str) -> str:
         r = requests.post(url, headers=HEADERS, data=content.encode('utf-8'))
         if r.status_code in [200, 201, 204]:
             return f"¡Éxito! Texto añadido a {filename}."
-        return f"Fallo al editar nota. Código {r.status_code}"
+        log.warning(f"⚠️ update_obsidian_note({filename}) → HTTP {r.status_code}: {r.text[:200]}")
+        return f"Fallo al editar nota. Código {r.status_code}: {r.text[:100]}"
     except Exception as e:
         return f"Error de conexión: {str(e)}"
 
@@ -220,7 +222,8 @@ def overwrite_obsidian_note(filename: str, content: str) -> str:
         r = requests.put(url, headers=HEADERS, data=content.encode('utf-8'))
         if r.status_code in [200, 201, 204]:
             return f"¡Éxito! La nota {filename} fue reescrita completamente."
-        return f"Fallo al reescribir nota. Código {r.status_code}"
+        log.warning(f"⚠️ overwrite_obsidian_note({filename}) → HTTP {r.status_code}: {r.text[:200]}")
+        return f"Fallo al reescribir nota. Código {r.status_code}: {r.text[:100]}"
     except Exception as e:
         return f"Error de conexión: {str(e)}"
 
@@ -242,12 +245,21 @@ def delete_obsidian_note(filename: str) -> str:
         return f"Error de conexión: {str(e)}"
 
 
-def list_vault_files(folder: str = "/", extension: str = ".md") -> str:
+def list_vault_files(folder: str = "/", extension: str = "") -> str:
     """Lista los archivos del vault de Obsidian, opcionalmente filtrados por carpeta y extensión.
 
     BUGFIX 28/05/2026: la Obsidian Local REST API NO es recursiva en /vault/.
     Si el cliente pide una subcarpeta, hay que llamar a /vault/{folder}/ directamente.
     Si no se especifica carpeta, recorremos recursivamente para tener un listado útil.
+
+    CAMBIO 01/06/2026: por defecto NO filtra por extensión → lista TODO (md, docx, pdf, txt, etc.)
+    para que el agente se entere de archivos no-md que el usuario pueda haber pegado y los pase
+    por `ingest_file()`. Si quieres solo md, pasa extension='.md'. Admite varias separadas por
+    coma: extension='.md,.docx,.pdf'.
+
+    OJO: La REST API de Obsidian respeta el filtro `showUnsupportedFiles` del vault (`app.json`).
+    Si está en false, los .docx/.txt no aparecen aunque existan en disco. Para esos casos,
+    usa `scan_disk_files(folder)` que lee el filesystem directamente.
     """
     headers = {"Authorization": HEADERS["Authorization"], "Accept": "application/json"}
 
@@ -283,13 +295,165 @@ def list_vault_files(folder: str = "/", extension: str = ".md") -> str:
             files = _walk("")
 
         if extension:
-            files = [f for f in files if f.endswith(extension)]
+            exts = tuple(e.strip().lower() for e in extension.split(",") if e.strip())
+            files = [f for f in files if f.lower().endswith(exts)]
 
         if not files:
-            return f"No se encontraron archivos en '{folder}' con extensión '{extension}'."
+            tip = ""
+            if not extension:
+                tip = (" Si esperabas ver un archivo no-md (docx/pdf/txt), comprueba que "
+                       "Obsidian tenga `showUnsupportedFiles: true` en app.json, o usa "
+                       "`scan_disk_files()` que lee el disco directo.")
+            return f"No se encontraron archivos en '{folder}'.{tip}"
         return json.dumps(files[:100], ensure_ascii=False, indent=2)
     except Exception as e:
         return f"Error de conexión: {str(e)}"
+
+
+def scan_disk_files(folder: str = "", extension: str = "") -> str:
+    """Lista archivos del vault leyendo DIRECTAMENTE del disco (sin pasar por REST API).
+
+    Útil cuando Obsidian filtra .docx/.txt/.pdf con `showUnsupportedFiles: false`.
+    Recorre recursivamente con un max_depth=6 y devuelve rutas relativas al vault.
+    Ignora carpetas internas (`.obsidian`, `.git`, `.smart-env`, `node_modules`, etc.).
+
+    Args:
+        folder: subcarpeta del vault (vacío = raíz).
+        extension: filtro por extensión (vacío = todas). Admite coma-separada: '.md,.docx'.
+    """
+    import os.path as _osp
+    vroot = _osp.realpath(VAULT_PATH)
+    base = _osp.realpath(_osp.join(vroot, folder.strip("/"))) if folder else vroot
+    if not base.startswith(vroot):
+        return "Error: por seguridad solo puedo escanear dentro del vault."
+    if not _osp.isdir(base):
+        return f"Error: la carpeta '{folder}' no existe en disco."
+
+    exts = tuple(e.strip().lower() for e in extension.split(",") if e.strip()) if extension else None
+    SKIP_DIRS = {".obsidian", ".git", ".smart-env", "node_modules", ".trash", "logs", "mingit"}
+    out = []
+    for root, dirs, files in os.walk(base):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
+        depth = root[len(vroot):].count(os.sep)
+        if depth > 6:
+            dirs[:] = []
+            continue
+        for fname in files:
+            if fname.startswith("."):
+                continue
+            if exts and not fname.lower().endswith(exts):
+                continue
+            rel = _osp.relpath(_osp.join(root, fname), vroot).replace("\\", "/")
+            out.append(rel)
+            if len(out) >= 300:
+                break
+        if len(out) >= 300:
+            break
+
+    if not out:
+        return f"No se encontraron archivos en disco en '{folder}'."
+    return json.dumps(sorted(out), ensure_ascii=False, indent=2)
+
+
+def ingest_file(path: str, target_md: str = "") -> str:
+    """Extrae el texto de un archivo no-md (.docx, .pdf, .txt, .csv, .rtf) del vault
+    y crea una nota .md GEMELA al lado con el contenido extraído. Esto permite que
+    Smart Connections / smart-lookup indexen semánticamente el contenido.
+
+    Args:
+        path: ruta del archivo dentro del vault (ej '03_NOTAS/borrador.docx').
+        target_md: ruta destino del .md (opcional). Si está vacío, usa '{path}.md'.
+
+    Smart Connections detectará el .md nuevo en cuestión de segundos y lo añadirá
+    al embed queue automáticamente.
+    """
+    import os.path as _osp
+    full = _osp.realpath(path if _osp.isabs(path) else _osp.join(VAULT_PATH, path))
+    vroot = _osp.realpath(VAULT_PATH)
+    if not (full == vroot or full.startswith(vroot + os.sep)):
+        return "Error: por seguridad solo puedo ingerir archivos dentro del vault."
+    if not _osp.exists(full):
+        return f"Error: no se encontró el archivo '{path}' en disco."
+
+    ext = _osp.splitext(full)[1].lower()
+    if ext == ".md":
+        return f"'{path}' ya es markdown — Smart Connections lo indexa automáticamente sin ingest_file."
+
+    texto = ""
+    if ext == ".docx":
+        try:
+            import docx
+            d = docx.Document(full)
+            partes = [p.text for p in d.paragraphs if p.text and p.text.strip()]
+            texto = "\n".join(partes)
+        except Exception as e:
+            return f"Error leyendo .docx: {e}"
+    elif ext == ".pdf":
+        rel = _osp.relpath(full, vroot).replace("\\", "/")
+        texto = read_pdf(rel, max_pages=100)
+        if texto.startswith("PDF "):
+            try:
+                texto = texto.split("\n\n", 1)[1]
+            except Exception:
+                pass
+        if texto.startswith("Error"):
+            return texto
+    elif ext in (".txt", ".csv", ".log", ".tsv", ".json", ".yaml", ".yml"):
+        try:
+            with open(full, "r", encoding="utf-8", errors="replace") as f:
+                texto = f.read()
+        except Exception as e:
+            return f"Error leyendo {ext}: {e}"
+    elif ext == ".rtf":
+        try:
+            with open(full, "rb") as f:
+                raw = f.read().decode("ascii", errors="ignore")
+            import re as _re
+            texto = _re.sub(r"\\[a-z]+-?\d* ?|[{}]", "", raw)
+        except Exception as e:
+            return f"Error leyendo .rtf: {e}"
+    else:
+        return (f"Error: extensión '{ext}' no soportada por ingest_file. "
+                f"Soportadas: .docx .pdf .txt .csv .log .tsv .json .yaml .rtf")
+
+    if not texto or not texto.strip():
+        return f"El archivo '{path}' no contiene texto extraíble (¿vacío o solo imágenes?)."
+
+    if len(texto) > 50000:
+        texto = texto[:50000] + "\n\n…[truncado en 50k chars]…"
+
+    rel_orig = _osp.relpath(full, vroot).replace("\\", "/")
+    if target_md:
+        rel_md = target_md.lstrip("/")
+        if not rel_md.endswith(".md"):
+            rel_md += ".md"
+    else:
+        rel_md = rel_orig + ".md"
+
+    iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    md_body = (
+        "---\n"
+        f"source_file: {rel_orig}\n"
+        f"source_type: {ext.lstrip('.')}\n"
+        f"ingested_at: {iso}\n"
+        "ingest_tool: ingest_file\n"
+        "---\n\n"
+        f"> Texto extraído automáticamente de `{rel_orig}` "
+        f"({ext.lstrip('.').upper()}) para indexación semántica.\n\n"
+        f"{texto}\n"
+    )
+
+    rel_md_url = rel_md.replace(" ", "%20")
+    url = f"{OBSIDIAN_URL}/vault/{rel_md_url}"
+    try:
+        r = requests.put(url, headers=HEADERS, data=md_body.encode("utf-8"), timeout=15)
+        if r.status_code in (200, 201, 204):
+            return (f"OK: ingerido '{rel_orig}' → '{rel_md}' ({len(texto)} chars). "
+                    f"Smart Connections lo indexará en segundos.")
+        log.warning(f"⚠️ ingest_file({path}) → HTTP {r.status_code}: {r.text[:200]}")
+        return f"Fallo al crear .md gemelo. HTTP {r.status_code}: {r.text[:120]}"
+    except Exception as e:
+        return f"Error de conexión: {e}"
 
 
 def find_similar_notes(query: str, k: int = 5) -> str:
@@ -781,6 +945,8 @@ names_to_functions = {
     "overwrite_obsidian_note": overwrite_obsidian_note,
     "delete_obsidian_note": delete_obsidian_note,
     "list_vault_files": list_vault_files,
+    "scan_disk_files": scan_disk_files,
+    "ingest_file": ingest_file,
     "find_similar_notes": find_similar_notes,
     "run_template": run_template,
     "git_status": git_status,
@@ -872,14 +1038,44 @@ tools = [
         "type": "function",
         "function": {
             "name": "list_vault_files",
-            "description": "Lista los archivos del vault de Obsidian. Úsalo para saber qué notas existen, explorar carpetas o buscar archivos por nombre.",
+            "description": "Lista los archivos del vault de Obsidian (vía REST API). Por defecto lista TODAS las extensiones (md, docx, pdf, txt, etc.) para que veas archivos que el usuario haya podido pegar. OJO: respeta `showUnsupportedFiles` de Obsidian — si está en false, los docx/txt no aparecen aunque existan; entonces usa `scan_disk_files`.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "folder": {"type": "string", "description": "Carpeta a listar (ej: 'wiki/personajes'). Por defecto '/' (raíz)."},
-                    "extension": {"type": "string", "description": "Filtrar por extensión (ej: '.md'). Por defecto '.md'."}
+                    "folder": {"type": "string", "description": "Carpeta a listar (ej: '03_NOTAS'). Por defecto '/' (raíz)."},
+                    "extension": {"type": "string", "description": "Filtrar por extensión, vacío = todas. Admite coma: '.md,.docx,.pdf'."}
                 },
                 "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "scan_disk_files",
+            "description": "Lista archivos del vault leyendo DIRECTAMENTE del disco, sin pasar por la REST API de Obsidian. Útil cuando Obsidian oculta archivos no-soportados (.docx, .txt, etc.). Recorre recursivamente todas las subcarpetas.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "folder": {"type": "string", "description": "Subcarpeta del vault, vacío = raíz."},
+                    "extension": {"type": "string", "description": "Filtro extensión (vacío = todas). Admite coma: '.md,.docx'."}
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ingest_file",
+            "description": "Extrae el texto de un archivo NO-md (.docx, .pdf, .txt, .csv, .rtf) del vault y crea una nota .md GEMELA al lado con el contenido. La nota .md la indexa Smart Connections automáticamente, así el usuario puede buscar semánticamente dentro de docs Word, PDFs, etc. ÚSALO siempre que detectes con `scan_disk_files` o `list_vault_files` un archivo no-md que aún NO tenga su gemelo .md.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Ruta del archivo original dentro del vault, ej '03_NOTAS/borrador.docx'."},
+                    "target_md": {"type": "string", "description": "Ruta destino del .md (opcional). Si vacío, usa '{path}.md'."}
+                },
+                "required": ["path"],
             },
         },
     },
@@ -1073,7 +1269,14 @@ def build_critical_context() -> str:
         "- `update_obsidian_note(filename, content)`: añade texto al final de una nota.\n"
         "- `overwrite_obsidian_note(filename, content)`: reescribe una nota entera (DESTRUCTIVO).\n"
         "- `delete_obsidian_note(filename)`: borra una nota (va a papelera Obsidian, DESTRUCTIVO).\n"
-        "- `list_vault_files(folder, extension)`: lista archivos del vault por carpeta/extensión.\n"
+        "- `list_vault_files(folder, extension)`: lista archivos del vault (REST API). Por "
+        "defecto lista TODAS las extensiones. Si esperabas ver un .docx/.txt y no aparece, "
+        "Obsidian lo oculta — usa `scan_disk_files` que lee disco directo.\n"
+        "- `scan_disk_files(folder, extension)`: lista archivos leyendo el disco (no pasa "
+        "por Obsidian). Útil para detectar archivos pegados manualmente que Obsidian no muestra.\n"
+        "- `ingest_file(path)`: convierte un archivo NO-md (.docx, .pdf, .txt, .rtf) en un .md "
+        "gemelo. ÚSALO siempre que veas un archivo no-md sin gemelo .md para que Smart "
+        "Connections pueda indexarlo y permitir búsqueda semántica sobre su contenido.\n"
         "- `find_similar_notes(query, k)`: búsqueda SEMÁNTICA del vault. Úsala cuando el "
         "usuario pregunte por un tema/personaje/lugar/idea sin saber el nombre exacto del "
         "archivo, o para encontrar pasajes relacionados. Prefiérela a list_vault_files "
@@ -1164,6 +1367,96 @@ async def health():
         "tavily_present": bool(TAVILY_API_KEY),
         "model": MISTRAL_MODEL,
     }
+
+
+@app.get("/diagnose")
+async def diagnose():
+    """Diagnóstico E2E: prueba GET, PUT, POST, DELETE contra la Obsidian REST API.
+    Acceder con: curl http://localhost:9000/diagnose"""
+    results = {}
+    auth_hdr = {"Authorization": f"Bearer {OBSIDIAN_API_KEY}"}
+    test_file = "__diag_test_deleteme.md"
+    test_url = f"{OBSIDIAN_URL}/vault/{test_file}"
+    test_body = "# Diagnóstico\nEsta nota la creó el proxy para verificar la REST API."
+
+    # 1) GET raíz (sin auth) — debe dar 200 (es exempt)
+    try:
+        r = requests.get(f"{OBSIDIAN_URL}/", timeout=3)
+        results["1_GET_root_no_auth"] = {"status": r.status_code, "ok": r.status_code == 200}
+    except Exception as e:
+        results["1_GET_root_no_auth"] = {"error": str(e)}
+
+    # 2) GET vault con solo Authorization — debe funcionar (como read_obsidian_note)
+    try:
+        r = requests.get(f"{OBSIDIAN_URL}/vault/", headers=auth_hdr, timeout=3)
+        results["2_GET_vault_auth_only"] = {"status": r.status_code, "ok": r.status_code == 200}
+    except Exception as e:
+        results["2_GET_vault_auth_only"] = {"error": str(e)}
+
+    # 3) PUT con HEADERS compartido (como create_obsidian_note — EL QUE FALLA)
+    try:
+        r = requests.put(test_url, headers=HEADERS, data=test_body.encode("utf-8"), timeout=5)
+        results["3_PUT_shared_HEADERS"] = {
+            "status": r.status_code,
+            "ok": r.status_code in [200, 201, 204],
+            "body": r.text[:200],
+            "sent_headers": dict(HEADERS),
+        }
+    except Exception as e:
+        results["3_PUT_shared_HEADERS"] = {"error": str(e)}
+
+    # 4) PUT con headers construidos en el momento (¿funciona diferente?)
+    try:
+        fresh_headers = {
+            "Authorization": f"Bearer {OBSIDIAN_API_KEY}",
+            "Content-Type": "text/markdown",
+        }
+        r = requests.put(test_url, headers=fresh_headers, data=test_body.encode("utf-8"), timeout=5)
+        results["4_PUT_fresh_headers"] = {
+            "status": r.status_code,
+            "ok": r.status_code in [200, 201, 204],
+            "body": r.text[:200],
+        }
+    except Exception as e:
+        results["4_PUT_fresh_headers"] = {"error": str(e)}
+
+    # 5) PUT SIN Content-Type (¿es ese el problema?)
+    try:
+        r = requests.put(test_url, headers=auth_hdr, data=test_body.encode("utf-8"), timeout=5)
+        results["5_PUT_no_content_type"] = {
+            "status": r.status_code,
+            "ok": r.status_code in [200, 201, 204],
+            "body": r.text[:200],
+        }
+    except Exception as e:
+        results["5_PUT_no_content_type"] = {"error": str(e)}
+
+    # 6) POST (como update_obsidian_note / append)
+    try:
+        r = requests.post(test_url, headers=HEADERS, data="\nAppend test.".encode("utf-8"), timeout=5)
+        results["6_POST_append"] = {
+            "status": r.status_code,
+            "ok": r.status_code in [200, 201, 204],
+            "body": r.text[:200],
+        }
+    except Exception as e:
+        results["6_POST_append"] = {"error": str(e)}
+
+    # 7) Limpieza: DELETE
+    try:
+        r = requests.delete(test_url, headers=auth_hdr, timeout=3)
+        results["7_DELETE_cleanup"] = {"status": r.status_code}
+    except Exception as e:
+        results["7_DELETE_cleanup"] = {"error": str(e)}
+
+    # 8) Dump de config para diagnóstico
+    results["config"] = {
+        "OBSIDIAN_URL": OBSIDIAN_URL,
+        "OBSIDIAN_API_KEY_first8": OBSIDIAN_API_KEY[:8] + "..." if OBSIDIAN_API_KEY else "EMPTY",
+        "HEADERS_keys": list(HEADERS.keys()),
+    }
+
+    return results
 
 # ==========================================
 # 🔀 MULTI-MODELO — proveedores OpenAI-compatibles
@@ -1321,6 +1614,12 @@ async def proxy_chat(request: Request):
             except Exception as e:
                 f_res = f"Error ejecutando {f_name}: {e}"
                 log.error(f_res)
+            # Log del resultado del tool (truncado a 200 chars para no saturar)
+            _res_repr = str(f_res)[:200]
+            if "Error" in _res_repr or "Fallo" in _res_repr or "error" in _res_repr:
+                log.warning(f"  ⚠️ {f_name} → {_res_repr}")
+            else:
+                log.info(f"  ✔️ {f_name} → {_res_repr}")
 
             messages.append({
                 "role": "tool",
