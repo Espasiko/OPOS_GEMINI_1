@@ -693,6 +693,232 @@ def _mistral_ocr_pdf(full_path: str, display_path: str) -> str:
         return f"Error en OCR Mistral: {e}"
 
 
+def ocr_image(path: str) -> str:
+    """Extrae el texto de una imagen (foto/escaneo) usando Mistral OCR.
+    `path` relativo a la raíz del vault o absoluto. Soporta JPG, JPEG, PNG, WEBP, BMP.
+    Ideal para fotos de apuntes a mano, capturas de pizarra o páginas escaneadas."""
+    import os.path as _osp
+    import base64 as _b64
+    SUPPORTED = (".jpg", ".jpeg", ".png", ".webp", ".bmp")
+    full = _osp.realpath(path if _osp.isabs(path) else _osp.join(VAULT_PATH, path))
+    vroot = _osp.realpath(VAULT_PATH)
+    if not (full == vroot or full.startswith(vroot + os.sep)):
+        return "Error: por seguridad solo puedo leer archivos dentro del vault."
+    if not _osp.exists(full):
+        return f"Error: no se encontró el archivo en '{path}'."
+    ext = _osp.splitext(full)[1].lower()
+    if ext not in SUPPORTED:
+        return f"Error: formato no soportado '{ext}'. Usa JPG, PNG, WEBP o BMP."
+    if not MISTRAL_API_KEY:
+        return "Error: falta MISTRAL_API_KEY en .env para hacer OCR de imágenes."
+    try:
+        mime = "image/jpeg" if ext in (".jpg", ".jpeg") else f"image/{ext.lstrip('.')}"
+        with open(full, "rb") as fh:
+            b64_data = _b64.b64encode(fh.read()).decode()
+        client = Mistral(api_key=MISTRAL_API_KEY)
+        resp = client.ocr.process(
+            document={
+                "type": "image_url",
+                "image_url": f"data:{mime};base64,{b64_data}",
+            },
+            model="mistral-ocr-latest",
+            include_image_base64=False,
+        )
+        partes = []
+        for page in resp.pages:
+            md = (page.markdown or "").strip()
+            if md:
+                partes.append(md)
+        texto = "\n\n".join(partes)
+        if not texto.strip():
+            return "El OCR no extrajo texto de la imagen. Comprueba que la foto tenga buena iluminación y el texto sea legible."
+        if len(texto) > 12000:
+            texto = texto[:12000] + "…"
+        return f"Texto extraído de '{path}' (OCR Mistral):\n\n{texto}"
+    except Exception as e:
+        return f"Error en OCR de imagen: {e}"
+
+
+def _guardar_json(path: str, obj) -> None:
+    """Guarda un dict como JSON sin romper si falla (best-effort)."""
+    import json as _json
+    try:
+        with open(path, "w", encoding="utf-8") as fh:
+            _json.dump(obj, fh, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def _ocr_one(full_path: str) -> tuple:
+    """OCR de UNA imagen (ruta absoluta ya validada).
+    Devuelve (estado, texto_o_error). estado: 'ok' | 'rate' | 'error'."""
+    import base64 as _b64, os.path as _osp
+    ext = _osp.splitext(full_path)[1].lower()
+    mime = "image/jpeg" if ext in (".jpg", ".jpeg") else f"image/{ext.lstrip('.')}"
+    try:
+        with open(full_path, "rb") as fh:
+            b64_data = _b64.b64encode(fh.read()).decode()
+        client = Mistral(api_key=MISTRAL_API_KEY)
+        resp = client.ocr.process(
+            document={"type": "image_url", "image_url": f"data:{mime};base64,{b64_data}"},
+            model="mistral-ocr-latest",
+            include_image_base64=False,
+        )
+        partes = [(p.markdown or "").strip() for p in resp.pages]
+        return ("ok", "\n\n".join(x for x in partes if x))
+    except Exception as e:
+        msg = str(e)
+        low = msg.lower()
+        if any(k in low for k in ("429", "rate", "quota", "limit", "too many", "capacity")):
+            return ("rate", msg)
+        return ("error", msg)
+
+
+def ocr_carpeta(folder: str, output_folder: str = "", pausa_seg: float = 2.0,
+                recursivo: bool = True, crear_indice: bool = True) -> str:
+    """Transcribe TODAS las imágenes de una carpeta del vault con OCR (lotes grandes).
+
+    Pensado para cientos/miles de fotos de apuntes manuscritos.
+    - Reanuda solo: si se corta, vuelve a llamarlo y salta lo ya hecho (.ocr_progreso.json).
+    - Ritmo tranquilo: espera `pausa_seg` entre imágenes (por defecto 2s, sin prisa).
+    - Si la API se satura (429/quota): espera 90s y reintenta; si sigue, PARA y avisa para reanudar.
+    - Guarda cada imagen como .md en `output_folder` (por defecto subcarpeta `_transcripciones`).
+    - Si crear_indice=True, crea una nota índice con enlaces [[...]] a todo lo transcrito.
+    """
+    import os.path as _osp, time as _time, json as _json
+    if not MISTRAL_API_KEY:
+        return "Error: falta MISTRAL_API_KEY en .env para hacer OCR."
+    SUPPORTED = (".jpg", ".jpeg", ".png", ".webp", ".bmp")
+    vroot = _osp.realpath(VAULT_PATH)
+    src = _osp.realpath(folder if _osp.isabs(folder) else _osp.join(VAULT_PATH, folder))
+    if not (src == vroot or src.startswith(vroot + os.sep)):
+        return "Error: por seguridad solo puedo leer carpetas dentro del vault."
+    if not _osp.isdir(src):
+        return f"Error: la carpeta '{folder}' no existe."
+    # Carpeta de salida (dentro del vault)
+    if output_folder:
+        out = _osp.realpath(output_folder if _osp.isabs(output_folder) else _osp.join(VAULT_PATH, output_folder))
+    else:
+        out = _osp.join(src, "_transcripciones")
+    if not (out == vroot or out.startswith(vroot + os.sep)):
+        return "Error: la carpeta de salida debe estar dentro del vault."
+    try:
+        os.makedirs(out, exist_ok=True)
+    except Exception as e:
+        return f"Error: no pude crear la carpeta de salida: {e}"
+
+    # Listar imágenes (sin entrar en la carpeta de salida)
+    imgs = []
+    if recursivo:
+        for root, _dirs, files in os.walk(src):
+            if _osp.realpath(root).startswith(out):
+                continue
+            for f in files:
+                if _osp.splitext(f)[1].lower() in SUPPORTED:
+                    imgs.append(_osp.join(root, f))
+    else:
+        for f in os.listdir(src):
+            full = _osp.join(src, f)
+            if _osp.isfile(full) and _osp.splitext(f)[1].lower() in SUPPORTED:
+                imgs.append(full)
+    imgs.sort()
+    if not imgs:
+        return f"No encontré imágenes (JPG/PNG/WEBP/BMP) en '{folder}'."
+
+    # Progreso (para reanudar)
+    prog_path = _osp.join(out, ".ocr_progreso.json")
+    done = {}
+    if _osp.exists(prog_path):
+        try:
+            with open(prog_path, "r", encoding="utf-8") as fh:
+                done = _json.load(fh)
+        except Exception:
+            done = {}
+
+    total = len(imgs)
+    nuevos, saltados, errores, transcritos = 0, 0, [], []
+    for img in imgs:
+        rel = _osp.relpath(img, vroot)
+        if done.get(rel) == "ok":
+            saltados += 1
+            continue
+        estado, texto = _ocr_one(img)
+        if estado == "rate":
+            _time.sleep(90)
+            estado, texto = _ocr_one(img)
+        if estado == "rate":
+            _guardar_json(prog_path, done)
+            pend = total - saltados - nuevos
+            return (f"⏸️ La API de OCR está saturada (límite de uso temporal).\n"
+                    f"Llevo {nuevos} transcritas nuevas y {saltados} ya estaban hechas. "
+                    f"Quedan {pend} pendientes.\n"
+                    f"Espera unos minutos y dime 'sigue con el OCR de {folder}' — "
+                    f"reanudaré exactamente desde donde lo dejé.")
+        if estado == "error":
+            errores.append(f"{_osp.basename(img)}: {texto[:80]}")
+            done[rel] = "error"
+            continue
+        # OK → guardar .md
+        base = _osp.splitext(_osp.basename(img))[0]
+        md_path = _osp.join(out, base.replace(" ", "_") + ".md")
+        cuerpo = (texto or "").strip() or "*(El OCR no extrajo texto legible de esta imagen.)*"
+        contenido = (
+            f"---\norigen: \"{rel}\"\ntipo: transcripcion-ocr\n"
+            f"fecha_ocr: {_time.strftime('%Y-%m-%d')}\nrevisado: false\n---\n\n"
+            f"# {base}\n\n"
+            f"> Transcripción automática (OCR) de `{_osp.basename(img)}`. "
+            f"Puede tener errores de lectura — revísala.\n\n{cuerpo}\n"
+        )
+        try:
+            with open(md_path, "w", encoding="utf-8") as fh:
+                fh.write(contenido)
+            done[rel] = "ok"
+            nuevos += 1
+            transcritos.append(base)
+        except Exception as e:
+            errores.append(f"{_osp.basename(img)}: no se pudo guardar ({e})")
+            done[rel] = "error"
+        if nuevos % 10 == 0:
+            _guardar_json(prog_path, done)
+        _time.sleep(max(0.0, pausa_seg))
+
+    _guardar_json(prog_path, done)
+
+    # Índice con wikilinks (semilla del grafo)
+    indice_msg = ""
+    if crear_indice and transcritos:
+        lineas = [
+            f"---\ntipo: indice-transcripciones\nactualizado: {_time.strftime('%Y-%m-%d')}\n---\n",
+            f"# Índice de transcripciones — {_osp.basename(src)}\n",
+            f"OCR automático, revisar. Total acumulado: {sum(1 for v in done.values() if v == 'ok')} imágenes.\n",
+        ]
+        lineas += [f"- [[{b}]]" for b in sorted(transcritos)]
+        idx_path = _osp.join(out, "_INDICE_TRANSCRIPCIONES.md")
+        try:
+            with open(idx_path, "w", encoding="utf-8") as fh:
+                fh.write("\n".join(lineas) + "\n")
+            indice_msg = f"\n📑 Índice con enlaces: {_osp.relpath(idx_path, vroot)}"
+        except Exception:
+            pass
+
+    resumen = (
+        f"✅ OCR terminado en '{folder}'.\n"
+        f"- Transcritas nuevas: {nuevos}\n"
+        f"- Ya estaban hechas (saltadas): {saltados}\n"
+        f"- Total de imágenes: {total}\n"
+        f"- Guardadas en: {_osp.relpath(out, vroot)}/"
+    )
+    if errores:
+        resumen += f"\n- ⚠️ {len(errores)} con error:\n  " + "\n  ".join(errores[:10])
+        if len(errores) > 10:
+            resumen += f"\n  …y {len(errores) - 10} más."
+    resumen += indice_msg
+    resumen += ("\n\nSiguiente paso sugerido: pídeme que cree fichas de wiki "
+                "(personajes, lugares, hallazgos, eventos…) a partir de estas "
+                "transcripciones para construir el grafo de conocimiento.")
+    return resumen
+
+
 def read_docx(path: str) -> str:
     """Extrae el texto de un .docx del vault. `path` relativo a la raíz del vault o absoluto
     (solo dentro del vault, por seguridad)."""
@@ -937,6 +1163,281 @@ def search_internet(query: str, max_results: int = 5) -> str:
         log.error(f"search_internet error: {e}")
         return f"[search_internet] Error: {str(e)}"
 
+
+# ==========================================
+# 🎓 TOOLS DE INVESTIGACIÓN ACADÉMICA (las usa el perfil Investigador de Miguel)
+# ==========================================
+
+def buscar_papers(query: str, limite: int = 5) -> str:
+    """Busca papers académicos REALES en OpenAlex (gratis, SIN API key). Devuelve título,
+    autores, año y DOI verificables. Pensada para dar bibliografía sin inventar citas."""
+    log.info(f"🎓 buscar_papers: '{query}'")
+    try:
+        lim = max(1, min(int(limite or 5), 10))
+    except (TypeError, ValueError):
+        lim = 5
+    try:
+        r = requests.get(
+            "https://api.openalex.org/works",
+            params={"search": query, "per-page": lim, "mailto": "agente@local"},
+            timeout=25,
+        )
+        if r.status_code != 200:
+            return f"[buscar_papers] OpenAlex HTTP {r.status_code}: {r.text[:160]}"
+        results = r.json().get("results", [])
+        if not results:
+            return f"[buscar_papers] Sin resultados para: '{query}'"
+        out = []
+        for w in results[:lim]:
+            title = w.get("title") or "(sin título)"
+            year = w.get("publication_year") or "?"
+            doi = w.get("doi") or ""
+            url = doi or w.get("id") or ""
+            authors = ", ".join(
+                a.get("author", {}).get("display_name", "?")
+                for a in (w.get("authorships") or [])[:4]
+            ) or "(autores no listados)"
+            cited = w.get("cited_by_count", 0)
+            # OpenAlex da el abstract como índice invertido; reconstruimos un fragmento.
+            abs_idx = w.get("abstract_inverted_index")
+            abstract = ""
+            if abs_idx:
+                try:
+                    pos = {}
+                    for word, idxs in abs_idx.items():
+                        for i in idxs:
+                            pos[i] = word
+                    abstract = " ".join(pos[i] for i in sorted(pos))[:280]
+                except Exception:
+                    abstract = ""
+            entry = (f"• {title} ({year})\n  Autores: {authors}\n  DOI/URL: {url}\n  Citas: {cited}")
+            if abstract:
+                entry += f"\n  Resumen: {abstract}…"
+            out.append(entry)
+        return ("Resultados de OpenAlex (REALES y verificables — cita con el DOI, sin '→ VERIFICAR'):\n\n"
+                + "\n\n".join(out))
+    except Exception as e:
+        log.error(f"buscar_papers error: {e}")
+        return f"[buscar_papers] Error: {str(e)}"
+
+
+def buscar_datasets(query: str, limite: int = 5) -> str:
+    """Busca datasets, modelos 3D, preprints y publicaciones de acceso abierto en Zenodo
+    (gratis, SIN API key). Útil para material primario digital y datos de excavación."""
+    log.info(f"🎓 buscar_datasets: '{query}'")
+    try:
+        lim = max(1, min(int(limite or 5), 10))
+    except (TypeError, ValueError):
+        lim = 5
+    try:
+        r = requests.get(
+            "https://zenodo.org/api/records",
+            params={"q": query, "size": lim, "sort": "bestmatch"},
+            timeout=25,
+        )
+        if r.status_code != 200:
+            return f"[buscar_datasets] Zenodo HTTP {r.status_code}: {r.text[:160]}"
+        hits = r.json().get("hits", {}).get("hits", [])
+        if not hits:
+            return f"[buscar_datasets] Sin resultados para: '{query}'"
+        out = []
+        for h in hits[:lim]:
+            md = h.get("metadata", {})
+            title = md.get("title", "(sin título)")
+            year = str(md.get("publication_date", "?"))[:4]
+            tipo = (md.get("resource_type", {}) or {}).get("type", "?")
+            doi = h.get("doi") or md.get("doi") or ""
+            url = h.get("links", {}).get("self_html") or (f"https://doi.org/{doi}" if doi else "")
+            out.append(f"• {title} ({year}) · tipo: {tipo}\n  {url}")
+        return ("Resultados de Zenodo (acceso abierto, verificables):\n\n" + "\n\n".join(out))
+    except Exception as e:
+        log.error(f"buscar_datasets error: {e}")
+        return f"[buscar_datasets] Error: {str(e)}"
+
+
+# ==========================================
+# 📚 TOOLS DE ESTUDIO (resumen, esquema, quiz)
+# ==========================================
+
+def _tool_llm_call(system_prompt: str, user_prompt: str, max_tokens: int = 4096) -> str:
+    """Llamada interna al LLM para tools que generan contenido.
+    Usa provider/model del .env. SIN tools (use_tools=False) para evitar recursion."""
+    provider = os.getenv("LLM_PROVIDER", "mistral").strip().lower()
+    if provider not in PROVIDERS:
+        provider = "mistral"
+    model = PROVIDERS[provider]["default_model"]
+    if provider == "mistral":
+        model = MISTRAL_MODEL
+    msgs = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    try:
+        resp = _chat_completion(provider, model, msgs, use_tools=False)
+        return resp["choices"][0]["message"].get("content", "")
+    except Exception as e:
+        log.error(f"_tool_llm_call error: {e}")
+        return f"Error: el LLM no respondió ({e})"
+
+
+def create_summary(nota_path: str, formato: str = "bullet") -> str:
+    """Lee una nota del vault y genera un resumen via LLM.
+    Formatos: 'bullet' (puntos), 'parrafo' (prosa), 'ficha' (ficha estudio con fechas+truco memoria).
+    Guarda en 00_ESTUDIO/resumenes/Resumen_{nombre}.md"""
+    content = read_obsidian_note(nota_path)
+    if content.startswith("Error"):
+        return f"[create_summary] No pude leer la nota: {content}"
+    if len(content) > 8000:
+        content = content[:8000] + "\n…(truncado)"
+
+    formato = formato.strip().lower()
+    if formato == "parrafo":
+        fmt_instruction = "Escribe un resumen en prosa fluida (2-4 párrafos)."
+    elif formato == "ficha":
+        fmt_instruction = (
+            "Escribe una ficha de estudio con: fechas clave, conceptos principales, "
+            "un truco mnemotécnico para recordar lo esencial, y 3 preguntas de repaso."
+        )
+    else:
+        formato = "bullet"
+        fmt_instruction = "Escribe un resumen en puntos (bullet points) claros y concisos."
+
+    system_prompt = (
+        "Eres un asistente de estudio experto. Genera resúmenes precisos y útiles "
+        "para preparar oposiciones. Usa markdown. Responde en español."
+    )
+    user_prompt = f"{fmt_instruction}\n\nContenido de la nota:\n\n{content}"
+
+    resumen = _tool_llm_call(system_prompt, user_prompt)
+    if resumen.startswith("Error:"):
+        return f"[create_summary] {resumen}"
+
+    nombre_base = Path(nota_path).stem
+    now = datetime.now()
+    md_body = (
+        f"---\ntipo: resumen\nfuente: \"{nota_path}\"\nformato: {formato}\n"
+        f"creado: {now.strftime('%Y-%m-%d %H:%M')}\n---\n\n"
+        f"# Resumen: {nombre_base}\n\n{resumen}\n"
+    )
+    target = f"00_ESTUDIO/resumenes/Resumen_{nombre_base}.md"
+    result = create_obsidian_note(target, md_body)
+    if "Éxito" in result:
+        return f"Resumen ({formato}) creado en `{target}`."
+    return f"[create_summary] Resumen generado pero fallo al guardar: {result}"
+
+
+def generate_esquema(tema: str, formato: str = "jerarquico") -> str:
+    """Genera esquema jerarquico/timeline/comparativo basado en wiki del vault.
+    NO usa mermaid, solo markdown con bullets indentados, negritas, [[wikilinks]].
+    Guarda en 00_ESTUDIO/esquemas/Esquema_{tema_safe}.md"""
+    context_raw = find_similar_notes(tema, k=5)
+    context = context_raw[:4000] if len(context_raw) > 4000 else context_raw
+
+    formato = formato.strip().lower()
+    if formato == "timeline":
+        fmt_instruction = (
+            "Genera un esquema tipo línea temporal (timeline) con fechas y eventos "
+            "ordenados cronológicamente. Usa bullets con fechas en negrita."
+        )
+    elif formato == "comparativo":
+        fmt_instruction = (
+            "Genera un esquema comparativo (tabla o columnas paralelas) que contraste "
+            "los conceptos principales. Usa bullets indentados y negritas."
+        )
+    else:
+        formato = "jerarquico"
+        fmt_instruction = (
+            "Genera un esquema jerárquico con niveles de indentación (bullets anidados). "
+            "Destaca conceptos clave en **negrita** y enlaza notas con [[wikilinks]]."
+        )
+
+    system_prompt = (
+        "Eres un asistente de estudio experto en crear esquemas visuales en markdown. "
+        "NO uses mermaid ni diagramas de código. Usa solo bullets indentados, negritas "
+        "y [[wikilinks]] de Obsidian. Responde en español."
+    )
+    user_prompt = (
+        f"{fmt_instruction}\n\nTema: {tema}\n\n"
+        f"Contexto del vault (notas relacionadas):\n{context}"
+    )
+
+    esquema = _tool_llm_call(system_prompt, user_prompt)
+    if esquema.startswith("Error:"):
+        return f"[generate_esquema] {esquema}"
+
+    tema_safe = re.sub(r'[^\w\s-]', '', tema)[:60].strip().replace(' ', '_')
+    now = datetime.now()
+    md_body = (
+        f"---\ntipo: esquema\ntema: \"{tema}\"\nformato: {formato}\n"
+        f"creado: {now.strftime('%Y-%m-%d %H:%M')}\n---\n\n"
+        f"# Esquema: {tema}\n\n{esquema}\n"
+    )
+    target = f"00_ESTUDIO/esquemas/Esquema_{tema_safe}.md"
+    result = create_obsidian_note(target, md_body)
+    if "Éxito" in result:
+        return f"Esquema ({formato}) creado en `{target}`."
+    return f"[generate_esquema] Esquema generado pero fallo al guardar: {result}"
+
+
+def generate_quiz(tema: str, n_preguntas: int = 5, tipo: str = "mixto") -> str:
+    """Genera cuestionario (test/desarrollo/mixto/verdadero_falso) con soluciones.
+    Guarda en 00_ESTUDIO/ejercicios/Quiz_{tema}_{timestamp}.md"""
+    context_raw = find_similar_notes(tema, k=5)
+    context = context_raw[:6000] if len(context_raw) > 6000 else context_raw
+
+    n_preguntas = max(1, min(int(n_preguntas), 20))
+    tipo = tipo.strip().lower()
+    if tipo == "test":
+        tipo_instruction = (
+            f"Genera {n_preguntas} preguntas tipo test (4 opciones, solo 1 correcta). "
+            "Al final incluye las soluciones con explicación breve."
+        )
+    elif tipo == "desarrollo":
+        tipo_instruction = (
+            f"Genera {n_preguntas} preguntas de desarrollo (respuesta larga). "
+            "Al final incluye una respuesta modelo para cada una."
+        )
+    elif tipo == "verdadero_falso":
+        tipo_instruction = (
+            f"Genera {n_preguntas} afirmaciones de verdadero/falso. "
+            "Al final incluye las soluciones indicando cuáles son verdaderas y cuáles falsas, con justificación."
+        )
+    else:
+        tipo = "mixto"
+        tipo_instruction = (
+            f"Genera {n_preguntas} preguntas mezclando tipos: test (4 opciones), "
+            "desarrollo corto y verdadero/falso. Al final incluye todas las soluciones."
+        )
+
+    system_prompt = (
+        "Eres un preparador de oposiciones experto. Genera cuestionarios rigurosos "
+        "y pedagógicos basados en el material proporcionado. Incluye siempre las "
+        "soluciones al final, separadas de las preguntas. Usa markdown. Responde en español."
+    )
+    user_prompt = (
+        f"{tipo_instruction}\n\nTema: {tema}\n\n"
+        f"Material de referencia del vault:\n{context}"
+    )
+
+    quiz = _tool_llm_call(system_prompt, user_prompt)
+    if quiz.startswith("Error:"):
+        return f"[generate_quiz] {quiz}"
+
+    tema_safe = re.sub(r'[^\w\s-]', '', tema)[:60].strip().replace(' ', '_')
+    now = datetime.now()
+    timestamp = now.strftime('%Y%m%d_%H%M')
+    md_body = (
+        f"---\ntipo: quiz\ntema: \"{tema}\"\nformato: {tipo}\n"
+        f"n_preguntas: {n_preguntas}\ncreado: {now.strftime('%Y-%m-%d %H:%M')}\n---\n\n"
+        f"# Quiz: {tema}\n\n{quiz}\n"
+    )
+    target = f"00_ESTUDIO/ejercicios/Quiz_{tema_safe}_{timestamp}.md"
+    result = create_obsidian_note(target, md_body)
+    if "Éxito" in result:
+        return f"Quiz ({tipo}, {n_preguntas} preguntas) creado en `{target}`."
+    return f"[generate_quiz] Quiz generado pero fallo al guardar: {result}"
+
+
 # Mapeo para ejecución
 names_to_functions = {
     "read_obsidian_note": read_obsidian_note,
@@ -952,12 +1453,19 @@ names_to_functions = {
     "git_status": git_status,
     "git_save": git_save,
     "read_pdf": read_pdf,
+    "ocr_image": ocr_image,
+    "ocr_carpeta": ocr_carpeta,
     "read_docx": read_docx,
     "fetch_url": fetch_url,
     "list_obsidian_plugins": list_obsidian_plugins,
     "read_obsidian_config": read_obsidian_config,
     "update_obsidian_config": update_obsidian_config,
     "search_internet": search_internet,
+    "create_summary": create_summary,
+    "generate_esquema": generate_esquema,
+    "generate_quiz": generate_quiz,
+    "buscar_papers": buscar_papers,
+    "buscar_datasets": buscar_datasets,
 }
 
 tools = [
@@ -1150,6 +1658,36 @@ tools = [
     {
         "type": "function",
         "function": {
+            "name": "ocr_image",
+            "description": "Extrae el texto de una imagen (foto o escaneo) usando OCR. Úsalo cuando el usuario suba una foto de apuntes, una captura de pizarra, o cualquier imagen con texto. Soporta JPG, PNG, WEBP, BMP. Si el usuario dice 'lee mis apuntes' y hay imágenes en 01_CRUDO/, úsalo.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Ruta de la imagen dentro del vault, ej '01_CRUDO/apuntes_tema5.jpg'"}
+                },
+                "required": ["path"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ocr_carpeta",
+            "description": "Transcribe con OCR TODAS las imágenes de una carpeta (lotes grandes: cientos o miles de fotos de apuntes manuscritos). Reanuda solo si se corta, va con pausas para no saturar la API, y si la API se satura PARA y avisa para reanudar luego. Guarda cada imagen como una nota .md y crea un índice con enlaces. Úsalo cuando el usuario diga 'procesa/transcribe todas mis notas/apuntes/fotos' de una carpeta.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "folder": {"type": "string", "description": "Carpeta del vault con las imágenes, ej '01_CRUDO/apuntes_mano'"},
+                    "output_folder": {"type": "string", "description": "Carpeta donde guardar los .md (opcional; por defecto una subcarpeta '_transcripciones')"},
+                    "pausa_seg": {"type": "number", "description": "Segundos de espera entre imágenes (opcional, por defecto 2). Súbelo si la API se satura."}
+                },
+                "required": ["folder"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "read_docx",
             "description": "Extrae el texto de un archivo Word (.docx) del vault. Úsalo cuando el usuario mencione un documento Word o un borrador en .docx.",
             "parameters": {
@@ -1225,6 +1763,82 @@ tools = [
                 "required": ["query"],
             },
         },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "buscar_papers",
+            "description": "Busca artículos académicos REALES en OpenAlex (gratis). Devuelve título, autores, año y DOI verificables. Úsalo para encontrar y citar bibliografía científica/histórica sin inventar referencias. Ideal para arqueología, historia y humanidades.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Tema o palabras clave en inglés, ej 'Sea Peoples Late Bronze Age collapse'"},
+                    "limite": {"type": "integer", "description": "Número de resultados (1-10, por defecto 5)"}
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "buscar_datasets",
+            "description": "Busca datasets, modelos 3D de artefactos, preprints y publicaciones de acceso abierto en Zenodo (gratis). Útil para datos de excavación y material primario digital.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Tema o palabras clave, ej 'Hittite excavation pottery'"},
+                    "limite": {"type": "integer", "description": "Número de resultados (1-10, por defecto 5)"}
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_summary",
+            "description": "Lee una nota del vault y genera un resumen automático (bullet points, prosa o ficha de estudio). Lo guarda en 00_ESTUDIO/resumenes/.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "nota_path": {"type": "string", "description": "Ruta de la nota a resumir, ej: 'Capitulo_3.md'"},
+                    "formato": {"type": "string", "enum": ["bullet", "parrafo", "ficha"], "description": "Formato del resumen: bullet (puntos), parrafo (prosa), ficha (estudio con trucos memoria). Por defecto: bullet."}
+                },
+                "required": ["nota_path"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "generate_esquema",
+            "description": "Genera un esquema de estudio (jerárquico, timeline o comparativo) sobre un tema, usando notas del vault como contexto. Lo guarda en 00_ESTUDIO/esquemas/.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "tema": {"type": "string", "description": "El tema sobre el que generar el esquema"},
+                    "formato": {"type": "string", "enum": ["jerarquico", "timeline", "comparativo"], "description": "Tipo de esquema: jerarquico (bullets anidados), timeline (cronológico), comparativo (contraste). Por defecto: jerarquico."}
+                },
+                "required": ["tema"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "generate_quiz",
+            "description": "Genera un cuestionario de estudio con preguntas y soluciones sobre un tema, usando notas del vault como referencia. Lo guarda en 00_ESTUDIO/ejercicios/.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "tema": {"type": "string", "description": "El tema sobre el que generar el cuestionario"},
+                    "n_preguntas": {"type": "integer", "description": "Número de preguntas (1-20). Por defecto: 5."},
+                    "tipo": {"type": "string", "enum": ["test", "desarrollo", "mixto", "verdadero_falso"], "description": "Tipo de preguntas: test (4 opciones), desarrollo, mixto, verdadero_falso. Por defecto: mixto."}
+                },
+                "required": ["tema"],
+            },
+        },
     }
 ]
 
@@ -1289,11 +1903,36 @@ def build_critical_context() -> str:
         "- `git_save(message)`: guarda una versión (commit) del vault. Úsalo cuando el "
         "usuario pida guardar o hacer copia de seguridad.\n"
         "- `read_pdf(path)`: extrae el texto de un PDF del vault (con OCR automático si está escaneado).\n"
+        "- `ocr_image(path)`: extrae el texto de una imagen (foto/escaneo) con OCR. Úsalo cuando "
+        "el usuario suba fotos de apuntes a 01_CRUDO/ (JPG, PNG, WEBP, BMP).\n"
+        "- `ocr_carpeta(folder, pausa_seg)`: transcribe con OCR TODAS las imágenes de una carpeta "
+        "(lotes grandes, cientos/miles de fotos). Reanuda solo si se corta y avisa si la API se "
+        "satura. Úsalo cuando el usuario diga 'transcribe/procesa todas mis notas o fotos' de una carpeta.\n"
         "- `read_docx(path)`: extrae el texto de un documento Word (.docx) del vault.\n"
         "- `fetch_url(url)`: lee el texto de una página web concreta (cuyo enlace ya conoces).\n"
         "- `list_obsidian_plugins()` / `read_obsidian_config(plugin_id)`: diagnostican la "
         "configuración de Obsidian. `update_obsidian_config(plugin_id, new_json)` la modifica "
         "(solo si el usuario lo pide; avisa de reiniciar Obsidian).\n"
+        "- `create_summary(nota_path, formato)`: genera un resumen automático de una nota "
+        "(formatos: bullet, parrafo, ficha). Lo guarda en 00_ESTUDIO/resumenes/.\n"
+        "- `generate_esquema(tema, formato)`: genera un esquema de estudio sobre un tema "
+        "(formatos: jerarquico, timeline, comparativo). Usa notas del vault como contexto. "
+        "Lo guarda en 00_ESTUDIO/esquemas/.\n"
+        "- `generate_quiz(tema, n_preguntas, tipo)`: genera un cuestionario con soluciones "
+        "(tipos: test, desarrollo, mixto, verdadero_falso). Usa notas del vault como "
+        "referencia. Lo guarda en 00_ESTUDIO/ejercicios/.\n"
+        "\n[REGLAS DE USO DE HERRAMIENTAS — OBLIGATORIAS]\n"
+        "- Para crear, leer, editar o guardar notas DEBES LLAMAR a la herramienta correspondiente "
+        "(create_obsidian_note, read_obsidian_note, update_obsidian_note, etc.). No describas lo que "
+        "harías: HAZLO llamando a la herramienta.\n"
+        "- create_obsidian_note REQUIERE 2 argumentos: filename (ruta, ej '03_NOTAS/mi_ficha.md') y "
+        "content (el markdown). read_obsidian_note REQUIERE filename. Nunca llames a una herramienta "
+        "sin sus argumentos obligatorios.\n"
+        "- La autenticación de la REST API de Obsidian YA está configurada en el sistema. NUNCA pidas "
+        "al usuario una API key, ni sugieras desactivar plugins, ni hables de 'Local REST API'.\n"
+        "- PROHIBIDO inventar errores: NUNCA digas que una herramienta falló o dio un error (401, "
+        "autorización, etc.) si NO la has llamado realmente en esta respuesta. Solo reporta un error "
+        "si la herramienta lo devolvió de verdad, y entonces cítalo literal.\n"
         "Responde en el idioma del usuario (español o búlgaro).\n"
     )
 
@@ -1309,8 +1948,10 @@ async def get_models():
     """OpenAI-compatible. Anuncia 'agente-escritor' (default) + un modelo por proveedor,
     para que el SELECTOR DE MODELOS de BMO permita cambiar sin tocar .env. El usuario elige
     'proveedor:modelo' y el proxy enruta (cada proveedor necesita su key en .env)."""
-    ids = ["agente-escritor"]
+    ids = ["agente-escritor", "yayo"]
     for prov, cfg in PROVIDERS.items():
+        if cfg.get("local"):
+            continue  # ollama/llamacpp: SIGUEN funcionando si se escriben, pero NO se anuncian en el menú
         ids.append(f"{prov}:{cfg['default_model']}")
     ids += [
         # Mistral extras
@@ -1319,23 +1960,34 @@ async def get_models():
         "openai:gpt-4o",
         # DeepSeek extras
         "deepseek:deepseek-reasoner",
-        # OpenRouter — IDs verificados 2026-05-31
+        # OpenRouter premium — IDs verificados 2026-06-06
         "openrouter:anthropic/claude-sonnet-4.6",
         "openrouter:anthropic/claude-haiku-4.5",
         "openrouter:openai/gpt-4o",
         "openrouter:google/gemini-2.5-flash",
+        # Gemini extras (IDs reales verificados 2026-06-06)
+        "gemini:gemini-2.5-flash",
+        "gemini:gemini-3-flash-preview",
+        "gemini:gemini-3.1-flash-lite",
+        # OpenRouter GRATIS (con tools) — IDs verificados funcionando 2026-06-06
         "openrouter:google/gemma-4-31b-it:free",
+        "openrouter:openai/gpt-oss-120b:free",
         "openrouter:meta-llama/llama-3.3-70b-instruct:free",
-        "openrouter:deepseek/deepseek-v4-flash:free",
-        # Groq extras
+        # Groq (gratis, con tool calling) — verificados funcionando 2026-06-06
         "groq:llama-3.3-70b-versatile",
-        # Ollama local
-        "ollama:mistral-local:latest",
-        "ollama:salamandra-r1:q5km",
+        "groq:openai/gpt-oss-120b",
+        "groq:openai/gpt-oss-20b",
+        "groq:qwen/qwen3-32b",
     ]
+    # Dedup conservando orden (evita duplicados en el menú)
+    seen, uniq = set(), []
+    for i in ids:
+        if i not in seen:
+            seen.add(i)
+            uniq.append(i)
     data = [
         {"id": i, "object": "model", "created": 1686935002, "owned_by": "agente-escritor"}
-        for i in ids
+        for i in uniq
     ]
     return {"object": "list", "data": data}
 
@@ -1467,8 +2119,8 @@ async def diagnose():
 PROVIDERS = {
     # --- Nube (necesitan API key en .env) ---
     "mistral":    {"base_url": "https://api.mistral.ai/v1", "key_env": "MISTRAL_API_KEY", "default_model": "mistral-large-latest"},
-    "groq":       {"base_url": "https://api.groq.com/openai/v1", "key_env": "GROQ_API_KEY", "default_model": "llama-3.3-70b-versatile"},
-    "gemini":     {"base_url": "https://generativelanguage.googleapis.com/v1beta/openai", "key_env": "GEMINI_API_KEY", "default_model": "gemini-2.0-flash"},
+    "groq":       {"base_url": "https://api.groq.com/openai/v1", "key_env": "GROQ_API_KEY", "default_model": "openai/gpt-oss-120b"},
+    "gemini":     {"base_url": "https://generativelanguage.googleapis.com/v1beta/openai", "key_env": "GEMINI_API_KEY", "default_model": "gemini-flash-latest"},
     "grok":       {"base_url": "https://api.x.ai/v1", "key_env": "XAI_API_KEY", "default_model": "grok-2-latest"},
     "openai":     {"base_url": "https://api.openai.com/v1", "key_env": "OPENAI_API_KEY", "default_model": "gpt-4o-mini"},
     "deepseek":   {"base_url": "https://api.deepseek.com/v1", "key_env": "DEEPSEEK_API_KEY", "default_model": "deepseek-chat"},
@@ -1478,7 +2130,7 @@ PROVIDERS = {
     # Kimi (Moonshot). Usa .ai para internacional, .cn para China.
     "kimi":       {"base_url": "https://api.moonshot.ai/v1", "key_env": "MOONSHOT_API_KEY", "default_model": "kimi-k2-0905-preview"},
     # MiniMax: endpoint OpenAI-compat; algunos planes exigen GroupId — verificar si falla.
-    "minimax":    {"base_url": "https://api.minimax.io/v1", "key_env": "MINIMAX_API_KEY", "default_model": "MiniMax-Text-01"},
+    "minimax":    {"base_url": "https://minimax-m2.com/api/v1", "key_env": "MINIMAX_API_KEY", "default_model": "MiniMax-M2.7"},
     # --- Local (sin key; el usuario avanzado levanta el servidor) ---
     # Ollama: `ollama serve` expone OpenAI-compat en 11434. llama.cpp: usar LLAMACPP_BASE_URL.
     "ollama":     {"base_url": os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1"), "key_env": "OLLAMA_API_KEY", "default_model": os.getenv("OLLAMA_MODEL", "mistral-local:latest"), "local": True},
@@ -1505,11 +2157,54 @@ def resolve_provider_and_model(requested_model: str):
     return prov, PROVIDERS[prov]["default_model"]
 
 
-def _chat_completion(provider: str, model: str, msgs: list, use_tools: bool = True) -> dict:
+def _sanitize_messages(msgs: list) -> list:
+    """Limpia el array de mensajes antes de enviarlo al proveedor:
+    1. Fusiona mensajes assistant consecutivos (BMO a veces genera esto al filtrar historial)
+    2. Asegura que el último mensaje no-system sea user/tool (Mistral lo exige)
+    3. Elimina mensajes con content vacío"""
+    if not msgs:
+        return msgs
+    cleaned = []
+    for m in msgs:
+        role = m.get("role", "")
+        content = m.get("content")
+        # Saltar mensajes vacíos (excepto si tienen tool_calls)
+        if not content and not m.get("tool_calls") and role != "tool":
+            continue
+        # Fusionar assistant consecutivos
+        if role == "assistant" and cleaned and cleaned[-1].get("role") == "assistant" and not cleaned[-1].get("tool_calls"):
+            prev_content = cleaned[-1].get("content", "") or ""
+            new_content = content or ""
+            cleaned[-1] = {**cleaned[-1], "content": (prev_content + "\n" + new_content).strip()}
+        else:
+            cleaned.append(m)
+    # Si el último mensaje es assistant (sin tool_calls), añadir user sintético
+    if cleaned and cleaned[-1].get("role") == "assistant" and not cleaned[-1].get("tool_calls"):
+        cleaned.append({"role": "user", "content": "Continúa."})
+    return cleaned
+
+
+def _chat_completion(provider: str, model: str, msgs: list, use_tools: bool = True, max_tokens: int = 4096) -> dict:
     """Llama a {base_url}/chat/completions (formato OpenAI) vía requests. Devuelve el JSON.
-    Lanza RuntimeError si falta la key o si la respuesta no es 200."""
+    Lanza RuntimeError si falta la key o si la respuesta no es 200.
+
+    `max_tokens` se reenvía SIEMPRE (por defecto 4096): si no se manda, OpenRouter (y otros)
+    reservan el máximo del modelo (p.ej. 16384) y rechazan con 402 si la key tiene poco saldo."""
     cfg = PROVIDERS[provider]
     api_key = os.getenv(cfg["key_env"], "").strip()
+    if not api_key and not cfg.get("local"):
+        # La key puede haberse añadido/cambiado en el .env DESPUÉS de arrancar el .exe.
+        # Recargamos el .env en caliente (override) y reintentamos antes de fallar.
+        # Así añadir una key funciona sin tener que reiniciar el .bat.
+        try:
+            for _cand in (".env", ".env.backend"):
+                _p = APP_DIR / _cand
+                if _p.exists():
+                    load_dotenv(_p, override=True)
+                    break
+        except Exception:
+            pass
+        api_key = os.getenv(cfg["key_env"], "").strip()
     if not api_key:
         if cfg.get("local"):
             api_key = "local"  # Ollama/llama.cpp no requieren key real
@@ -1517,14 +2212,26 @@ def _chat_completion(provider: str, model: str, msgs: list, use_tools: bool = Tr
             raise RuntimeError(f"Falta la API key {cfg['key_env']} para el proveedor '{provider}'.")
     url = cfg["base_url"].rstrip("/") + "/chat/completions"
     payload = {"model": model, "messages": msgs}
+    try:
+        if max_tokens and int(max_tokens) > 0:
+            payload["max_tokens"] = int(max_tokens)
+    except (TypeError, ValueError):
+        payload["max_tokens"] = 4096
     if use_tools:
         payload["tools"] = tools
         payload["tool_choice"] = "auto"
-    r = requests.post(
-        url,
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        json=payload, timeout=120,
-    )
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    # Reintento ante 429 (rate-limit). Mistral free = ~1 req/seg; el bucle de agente puede
+    # dispararse rápido y chocar. Esperamos y reintentamos en vez de romper la tarea.
+    import time as _t
+    r = None
+    for _intento in range(3):
+        r = requests.post(url, headers=headers, json=payload, timeout=120)
+        if r.status_code == 429 and _intento < 2:
+            log.warning(f"[429 {provider}] rate-limit, espero y reintento ({_intento + 1}/2)…")
+            _t.sleep(3 * (_intento + 1))   # backoff: 3s, luego 6s
+            continue
+        break
     if r.status_code != 200:
         raise RuntimeError(f"HTTP {r.status_code} de {provider}: {r.text[:300]}")
     return r.json()
@@ -1572,15 +2279,59 @@ async def proxy_chat(request: Request):
         ] + list(incoming_messages)
 
     provider, model = resolve_provider_and_model(data.get("model", ""))
-    log.info(f"🚀 Petición interceptada ({len(messages)} mensajes). Proveedor={provider} · modelo={model}")
+    messages = _sanitize_messages(messages)
+    # max_tokens del cliente (BMO manda el del perfil, ~4096). Si no viene, 4096.
+    # Esto evita que OpenRouter reserve el máximo del modelo (16384) y dé 402 con poco saldo.
+    client_max_tokens = data.get("max_tokens") or 4096
+    log.info(f"🚀 Petición interceptada ({len(messages)} mensajes). Proveedor={provider} · modelo={model} · max_tokens={client_max_tokens}")
 
     try:
-        resp = _chat_completion(provider, model, messages)
+        resp = _chat_completion(provider, model, messages, max_tokens=client_max_tokens)
     except Exception as e:
-        log.error(f"[LLM inicial · {provider}] {e}")
+        emsg = str(e)
+        low = emsg.lower()
+        # 1) Límite por MINUTO del proveedor (típico de Groq gratis: 8K TPM). NO es contexto.
+        if any(k in low for k in ("tokens per minute", "tpm", "rate_limit", "rate limit",
+                                  "requests per minute", "rpm", "too many requests", "429")):
+            log.warning(f"[rate-limit · {provider} · {model}] {emsg[:200]}")
+            aviso = (
+                f"⏳ El proveedor **{provider}** está saturado (límite de uso por minuto). "
+                "No es que el texto sea largo: el plan gratis de Groq solo admite ~8.000 tokens/minuto "
+                "y el agente con sus herramientas ya ocupa casi eso.\n\n"
+                "Solución: usa **gemini:gemini-flash-latest** o **mistral:mistral-large-latest** "
+                "(sin ese tope), o espera un minuto y reintenta."
+            )
+            return JSONResponse(
+                status_code=200,
+                content={"choices": [{"index": 0, "finish_reason": "stop",
+                                      "message": {"role": "assistant", "content": aviso}}],
+                         "model": model},
+            )
+        # 2) Texto demasiado largo para el CONTEXTO del modelo → mensaje claro, no "fallo inesperado".
+        if any(k in low for k in ("context length", "context_length", "maximum context",
+                                  "too many tokens", "tokens_limit", "input is too long",
+                                  "string too long", "3230", "request entity too large",
+                                  "reduce the length", "context window")):
+            log.warning(f"[contexto excedido · {provider} · {model}] {emsg[:200]}")
+            aviso = (
+                f"⚠️ El texto es demasiado largo para el modelo actual (**{model}**). "
+                "No he perdido nada de la conversación. Tienes 2 opciones:\n\n"
+                "1. Pídemelo **por partes** (por ejemplo, un capítulo cada vez), o\n"
+                "2. Cambia a un modelo de **contexto grande** (Gemini ~1M, o mistral-large) "
+                "en el selector de modelos de BMO y repite."
+            )
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "choices": [{"index": 0, "finish_reason": "stop",
+                                 "message": {"role": "assistant", "content": aviso}}],
+                    "model": model,
+                },
+            )
+        log.error(f"[LLM inicial · {provider}] {emsg}")
         return JSONResponse(
             status_code=502,
-            content={"error": {"message": f"Error del proveedor {provider}: {e}", "type": "upstream_error"}},
+            content={"error": {"message": f"Error del proveedor {provider}: {emsg}", "type": "upstream_error"}},
         )
 
     msg = resp["choices"][0]["message"]
@@ -1629,7 +2380,7 @@ async def proxy_chat(request: Request):
             })
 
         try:
-            resp = _chat_completion(provider, model, messages)
+            resp = _chat_completion(provider, model, messages, max_tokens=client_max_tokens)
         except Exception as e:
             log.error(f"[LLM paso {step} · {provider}] {e}")
             return JSONResponse(
@@ -1646,7 +2397,7 @@ async def proxy_chat(request: Request):
         "id": f"chatcmpl-{int(time.time())}",
         "object": "chat.completion",
         "created": int(time.time()),
-        "model": "agente-escritor",
+        "model": data.get("model", "agente-escritor"),
         "choices": [
             {
                 "index": 0,
